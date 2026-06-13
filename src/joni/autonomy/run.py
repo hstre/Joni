@@ -149,11 +149,13 @@ def one_cycle() -> dict:
     #     auto-confirmed). Joni does not only react to sources.
     invented = invent.invent(cs, extensions, proto, cycle)
 
-    # 5. Hourly self-review -> a first-person report + provisional self-model claims.
+    # 5. Self-review -> the next installment of the first-person report. Fires every 10
+    #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
-    if self_review.should_review(extensions, now):
+    if self_review.should_review(extensions, now, runs=window["runs"]):
         self_review.run_review(cs, extensions, proto, cycle,
                                days=days_running, spend=budget.spent_eur,
+                               runs=window["runs"],
                                context={"judged": judged, "methods": found_methods,
                                         "trialed": trialed, "developed": developed,
                                         "invented": invented})
