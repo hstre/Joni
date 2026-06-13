@@ -32,13 +32,21 @@ from . import (
     invent,
     layer9_view,
     methods,
+    reader,
     self_review,
     site,
     trials,
 )
 from .budget import load as load_budget
 from .budget import save as save_budget
-from .config import online, paths, runs_per_week, runtime_days, weekly_budget_eur
+from .config import (
+    online,
+    paths,
+    read_pdfs,
+    runs_per_week,
+    runtime_days,
+    weekly_budget_eur,
+)
 from .improve import derive, judge
 from .protocol import Protocol
 from .sources import get_fetchers
@@ -122,7 +130,15 @@ def one_cycle() -> dict:
             continue
         judged.append((item, rel))
         if rel.topic:
-            cs.learn(item.title, rel.topic)
+            cs.learn(item.title, rel.topic, source_id=item.key)
+
+    # 3a. Read the actual papers (PDF) - arXiv full text, a url queue (incl. SSRN), and a
+    #     local inbox. Extracted sentences enter as candidate claims; relations stay the
+    #     Semantic Layer's to decide.
+    read = {"papers": 0, "claims": 0}
+    if read_pdfs():
+        read = reader.read_papers(cs, judged, extensions, proto, cycle, p,
+                                  online=online())
 
     for conflict_id in cs.detect_and_open_conflicts():
         proto.record(cycle, "conflict_open",
@@ -185,9 +201,10 @@ def one_cycle() -> dict:
     reflect = _reflect(cs, window, budget, judged, proto, cycle)
 
     emerged_n = sum(1 for v in (emerged["topic"], emerged["synthesis"], emerged["method"]) if v)
+    read_note = f"· read {read['papers']} paper(s) " if read.get("papers") else ""
     proto.record(cycle, "note",
-                 f"cycle done · {len(new_items)} new · {found_methods['methods']} method(s) "
-                 f"· {trialed['trialed']} trialed · {developed['links']} new link(s) "
+                 f"cycle done · {len(new_items)} new {read_note}· {found_methods['methods']} "
+                 f"method(s) · {trialed['trialed']} trialed · {developed['links']} new link(s) "
                  f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent "
                  f"· spend €{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
 
@@ -197,7 +214,7 @@ def one_cycle() -> dict:
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,
-            "trialed": trialed, "emerged": emerged}
+            "trialed": trialed, "emerged": emerged, "read": read}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:

@@ -241,3 +241,27 @@ gerahmt sind. Π/√JSD ist in DESi aktuell **nicht** als saubere Paar-Distanz e
 das Mess-Feld `pi_distance` bleibt optional (None) und die Entscheidung stützt sich auf
 Frames + Tension + Logik; sobald DESi eine √JSD-Distanz exponiert, fließt sie ohne weitere
 Architekturänderung ein.
+
+### Eintrag 2026-06-13 ~23:15 UTC — Semantic Layer live + Layer-9-Landkarte + PDF-Port
+- **Semantic Layer live bestätigt:** Nach Cutover lädt im Lauf der **echte** DESi-Layer
+  (`desi-semantic-layer` v0.1.0); er produzierte **9 Semantic-Cluster** über den Backlog,
+  alle `insufficient-semantic-evidence` (Routing/Memory-Claims sind in DESi
+  *frame_undeclared* → konservativ, ehrlich). Ein **Backfill** (`develop`, 3/Zyklus)
+  versieht die ~70 Alt-Links nachträglich mit governter Semantik (PR #29).
+- **Layer-9-Landkarte** (PR #28): `docs/layer9.html` — lebende Karte statt Logfile.
+  Conversation/Epistemic-Doppelsicht, klickbare Herkunft, Claim/Evidenz/Konflikt-Graph in
+  Sektoren (Füllfarbe=Status, Größe=Salienz, Rand=Evidenz, gestrichelt=Taint),
+  Status-Timeline, Taint/Authority-Influence-Map mit Rot-Flag. Wahrheit ≠ Salienz getrennt.
+- **PDF-Eingangsport** (dieser Eintrag): Joni liest jetzt die **echten Paper**, nicht nur
+  Abstracts. Drei Eingänge — **arXiv-Volltext** (PDF zum relevanten Treffer),
+  **PDF-per-URL-Queue** (`state/pdf_urls.json`, inkl. direkter SSRN-Download-Links,
+  ratenbegrenzt/größenbegrenzt) und **lokaler Posteingang** (`inbox/*.pdf`). Extraktion ist
+  Jonis eigene, leichte, deterministische Satz-/Claim-Auswahl; die Sätze landen als
+  **candidate**-Claims durchs Gate, an die Quelle verankert (Provenance source_id) — die
+  **Relationen entscheidet weiterhin der Semantic Layer**. `pypdf` als soft dependency
+  (Import-Panic in kaputten Umgebungen abgefangen → sauberer No-op). Gesamt: **187 passed**,
+  ruff clean.
+
+**Bedienung:** Paper-PDFs in `inbox/` ablegen, oder direkte PDF-URLs (arXiv/SSRN) in
+`state/pdf_urls.json` (JSON-Liste) eintragen. arXiv-Treffer werden automatisch im Volltext
+gelesen.

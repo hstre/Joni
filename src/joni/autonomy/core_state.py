@@ -57,12 +57,16 @@ class CoreState:
             ptype, op, payload=payload, proposer="joni",
             provenance=Provenance.from_operator(), target_objects=tuple(targets)), actor="joni")
 
-    def learn(self, text: str, topic: str) -> str:
-        """A source (paper) creates a candidate claim; the operator activates it."""
+    def learn(self, text: str, topic: str, *, source_id: str | None = None) -> str:
+        """A source (paper) creates a candidate claim; the operator activates it.
+
+        ``source_id`` anchors the claim to where it came from (a paper id / PDF url), so
+        provenance is real and source-diversity is measurable downstream."""
+        prov = Provenance.from_source(source_id) if source_id else Provenance.from_source()
         self.core.submit(make_proposal(
             ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
             payload={"text": text, "topic": topic}, proposer="source",
-            provenance=Provenance.from_source()), actor="joni")
+            provenance=prov), actor="joni")
         claim = self._newest(l9.ObjectType.CLAIM)
         self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
                  {"to_status": "active"}, targets=(claim.id,))
