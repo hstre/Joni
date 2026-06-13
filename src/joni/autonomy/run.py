@@ -22,7 +22,7 @@ import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from .. import persistence
+from .. import desi_link, persistence
 from ..conflict import detect_conflicts, weaker_claim
 from ..models import ClaimStatus, Trigger
 from ..operators import assert_claim, resolve_conflict
@@ -96,7 +96,7 @@ def one_cycle() -> dict:
             window["retired"] = True
             proto.record(cycle, "retired", "runtime window of "
                          f"{runtime_days()} days reached - Joni stands down")
-        _finish(p, state, budget, window, extensions, proto)
+        _finish(p, state, budget, window, extensions, proto, None)
         return {"cycle": cycle, "retired": True}
 
     state.tick += 1
@@ -153,13 +153,18 @@ def one_cycle() -> dict:
                          refs={"url": imp.source_url})
 
     extensions["seen"] = sorted(seen)[-2000:]   # bound the dedup set
+
+    # 5. Reflect through DESi: its real routing table + deterministic tools (free).
+    reflect = _reflect(state, window, budget, judged, proto, cycle)
+
     proto.record(cycle, "note",
-                 f"cycle done · {len(new_items)} new · spend €{budget.spent_eur:.4f}")
+                 f"cycle done · {len(new_items)} new · spend €{budget.spent_eur:.4f} "
+                 f"· routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
-    _finish(p, state, budget, window, extensions, proto)
+    _finish(p, state, budget, window, extensions, proto, reflect)
     return {"cycle": cycle, "new_items": len(new_items), "asks": len(asks_new),
-            "spend": budget.spent_eur, "retired": False}
+            "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"]}
 
 
 def _resolve_conflicts(state: Layer9) -> list[str]:
@@ -173,13 +178,52 @@ def _resolve_conflicts(state: Layer9) -> list[str]:
     return resolved
 
 
-def _finish(p, state, budget, window, extensions, proto: Protocol) -> None:
+def _reflect(state: Layer9, window: dict, budget, judged: list, proto: Protocol,
+             cycle: int) -> dict:
+    """Use DESi's real routing logic + tools, with a deterministic fallback.
+
+    Free by default: a DESi tool computes Joni's runtime age (a non-math module), and
+    DESi's routing table decides the cheapest model to assess this cycle's top claim
+    (decision logged, not executed). When DESi is off/absent, both fall back to Joni's
+    own deterministic path.
+    """
+    out = {"routing_engine": desi_link.routing_engine(), "days_running": None,
+           "last_route": None}
+
+    start_date = window["start"][:10]
+    today = datetime.now(UTC).date().isoformat()
+    tool = desi_link.try_tool(f"days between {start_date} and {today}")
+    if tool is not None:
+        out["days_running"] = tool["result"]
+        proto.record(cycle, "tooled",
+                     f"DESi {tool['tool']}: {tool['result']} day(s) running",
+                     refs={"task_class": tool["task_class"]}, model=f"desi:{tool['tool']}")
+    else:
+        out["days_running"] = (datetime.now(UTC).date()
+                               - datetime.fromisoformat(window["start"]).date()).days
+
+    if judged:
+        allowance_usd = round(budget.per_run_allowance(runs_per_week()) * 1.07, 6)
+        route = desi_link.route_model("scientific_claim", budget_usd=max(allowance_usd, 1e-4))
+        if route is not None:
+            out["last_route"] = route
+            proto.record(cycle, "routed",
+                         f"DESi routes scientific_claim -> {route['model']} "
+                         f"(~${route['cost_usd']:.6f})",
+                         refs={"reason": route["reason"][:140], "task_class": "scientific_claim"},
+                         model=route["model"], cost_eur=0.0)
+    return out
+
+
+def _finish(p, state, budget, window, extensions, proto: Protocol, reflect=None) -> None:
     persistence.save(state, p.state)
     save_budget(budget, p.budget)
     _save_json(p.window, window)
     _save_json(p.extensions, extensions)
+    snap = _snapshot(state)
+    snap.update(reflect or {"routing_engine": desi_link.routing_engine()})
     site.render(p.docs_index, p.docs_data, {
-        "snapshot": _snapshot(state),
+        "snapshot": snap,
         "budget": {"spent_eur": budget.spent_eur, "cap_eur": budget.cap_eur, "runs": budget.runs},
         "window": window,
         "extensions": extensions,

@@ -10,5 +10,6 @@ import tempfile
 from pathlib import Path
 
 os.environ["JONI_STATE"] = str(Path(tempfile.mkdtemp(prefix="joni-test-")) / "state.json")
-# Default tests use the deterministic local creativity engine, not Kevin.
+# Default tests use the deterministic local engines, not Kevin or DESi.
 os.environ.pop("JONI_USE_KEVIN", None)
+os.environ.pop("JONI_USE_DESI", None)

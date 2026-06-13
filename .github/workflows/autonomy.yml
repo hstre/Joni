@@ -23,6 +23,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch DESi for real routing (optional; falls back if unavailable)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: hstre/DESi
+          path: _desi
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -38,6 +44,8 @@ jobs:
           JONI_WEEKLY_BUDGET_EUR: "20"
           JONI_RUNTIME_DAYS: "7"
           JONI_RUNS_PER_WEEK: "672"   # every 15 min over a week (paces the budget)
+          JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
+          DESI_ROOT: ${{ github.workspace }}/_desi
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: python -m joni.autonomy run
