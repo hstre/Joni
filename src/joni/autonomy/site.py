@@ -139,6 +139,9 @@ font-size:12.5px}}
 <p class=tag>An operative identity running under one DESi rule: it may research and build
 <i>peripheral</i> improvements into itself, but it may not change its protected core
 without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
+<p class=tag><a href="layer9.html" style="color:var(--acc);text-decoration:none">
+&rarr; open the <b>Layer 9 epistemic map</b></a> — what Joni believes, what it rests on,
+what is uncertain, what contradicts, and what changed.</p>
 </header>
 <div class=wrap>
   <div class=card>

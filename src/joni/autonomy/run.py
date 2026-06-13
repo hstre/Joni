@@ -30,6 +30,7 @@ from . import (
     emerge,
     governance,
     invent,
+    layer9_view,
     methods,
     self_review,
     site,
@@ -260,13 +261,17 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
     _save_json(p.extensions, extensions)
     snap = cs.snapshot()
     snap.update(reflect or {"routing_engine": desi_link.routing_engine()})
+    budget_d = {"spent_eur": budget.spent_eur, "cap_eur": budget.cap_eur, "runs": budget.runs}
     site.render(p.docs_index, p.docs_data, {
         "snapshot": snap,
-        "budget": {"spent_eur": budget.spent_eur, "cap_eur": budget.cap_eur, "runs": budget.runs},
+        "budget": budget_d,
         "window": window,
         "extensions": extensions,
         "protocol": proto.all(),
     })
+    # The human-facing Layer-9 map (living map, not a logfile).
+    layer9_view.render(p.docs_layer9, {
+        "export": cs.epistemic_export(), "budget": budget_d, "window": window})
 
 
 def runs_per_week_value() -> int:

@@ -25,6 +25,12 @@ from .config import Paths
 
 _SEED_TOPICS = ("privacy", "routing", "memory", "drift")
 
+# The taint contamination flags shown in the influence map (mirrors desi_layer9.taint).
+_CONTAMINATION_FIELDS = (
+    "source_exposed", "interaction_exposed", "affective_pressure", "adversarial_source",
+    "frame_contamination_possible", "role_contamination_possible", "unverified_model_output",
+)
+
 
 class CoreState:
     def __init__(self, core: l9.Layer9) -> None:
@@ -191,6 +197,136 @@ class CoreState:
             "self_model": len(s.all(l9.ObjectType.SELF_MODEL_CLAIM)),
             "hypotheses": len(self.hypotheses()),
         }
+
+    # -- rich export for the human-facing Layer-9 map ----------------------- #
+    def epistemic_export(self, *, ledger_tail: int = 200) -> dict:
+        """A JSON-serialisable view of the whole epistemic state for the visualisation.
+
+        It separates, per object, the things humans must see at a glance: epistemic
+        *status* (truth), *salience* (how present/referenced it is - NOT truth), support,
+        evidence strength, and taint. Plus the relations (evidence, conflicts, derivation),
+        the utterances (narratives) with their basis, the status-change timeline, and the
+        taint/authority summary with a flag if anything tainted reached high authority.
+        """
+        s = self.core
+        objs = list(s.objects.values())
+        ref_count = self._reference_counts(objs)
+
+        def taint_flags(o) -> list[str]:
+            d = o.taint.to_dict()
+            return [k for k in _CONTAMINATION_FIELDS if d.get(k)]
+
+        claims = []
+        for c in s.all(l9.ObjectType.CLAIM):
+            links = [el for el in s.all(l9.ObjectType.EVIDENCE_LINK) if el.claim_id == c.id]
+            claims.append({
+                "id": c.id, "text": c.text, "topic": c.topic,
+                "status": c.status.value, "authority": c.authority.value,
+                "support": round(c.confidence_or_support, 3),
+                "salience": ref_count.get(c.id, 0),
+                "evidence_strength": round(sum(el.strength for el in links), 3),
+                "evidence_count": len(links),
+                "taint": taint_flags(c), "derived_from": list(c.derived_from),
+                "ledger_event": c.ledger_event, "tick": c.last_changed_tick,
+            })
+
+        def simple(o, **extra) -> dict:
+            base = {"id": o.id, "status": o.status.value, "authority": o.authority.value,
+                    "taint": taint_flags(o), "tick": o.last_changed_tick}
+            base.update(extra)
+            return base
+
+        evidence_links = [
+            {"id": el.id, "claim_id": el.claim_id, "evidence_id": el.evidence_id,
+             "relation": el.relation.value, "strength": round(el.strength, 3),
+             "review_status": el.review_status, "status": el.status.value}
+            for el in s.all(l9.ObjectType.EVIDENCE_LINK)]
+        conflicts = [
+            simple(x, claim_ids=list(x.claim_ids), conflict_status=x.conflict_status.value,
+                   kind=x.kind, severity=x.severity, reason=x.resolution_reason or "")
+            for x in s.all(l9.ObjectType.CONFLICT)]
+        methods = [
+            simple(m, name=m.name, summary=m.summary, origin=m.origin,
+                   applicable_to=list(m.applicable_to), trial_count=m.trial_count,
+                   success=m.success_count, failure=m.failure_count)
+            for m in s.all(l9.ObjectType.METHOD)]
+        self_model = [
+            simple(sm, text=sm.text, evidence=list(sm.evidence),
+                   counterevidence=list(sm.counterevidence))
+            for sm in s.all(l9.ObjectType.SELF_MODEL_CLAIM)]
+        narratives = [
+            {"id": ns.id, "text": ns.text, "basis": list(ns.basis),
+             "ledger_event": ns.ledger_event, "tick": ns.last_changed_tick}
+            for ns in s.all(l9.ObjectType.NARRATIVE_SUMMARY)]
+        semantic = [
+            simple(sc, members=list(sc.members), decision=sc.decision.value,
+                   semantic_state=sc.semantic_state.value,
+                   lexical_trigger=round(sc.lexical_trigger, 3),
+                   semantic_layer=sc.semantic_layer, rationale=sc.decision_rationale)
+            for sc in s.all(l9.ObjectType.SEMANTIC_CLUSTER)]
+        preferences = [
+            simple(p, subject=p.subject, stance=p.stance, strength=round(p.strength, 3))
+            for p in s.all(l9.ObjectType.PREFERENCE)]
+        memory = [
+            simple(m, summary=m.summary, kind=m.kind.value,
+                   retrieval_weight=round(m.retrieval_weight, 3))
+            for m in s.all(l9.ObjectType.MEMORY_EPISODE)]
+
+        ledger = [
+            {"id": e.id, "tick": e.tick, "operator": e.operator.value, "actor": e.actor,
+             "decision": e.decision, "reason": e.reason[:160],
+             "input_refs": list(e.input_refs), "output_refs": list(e.output_refs),
+             "cost": e.cost, "event_hash": (e.event_hash or "")[:12]}
+            for e in s.ledger[-ledger_tail:]]
+
+        taint_summary = {f: sum(1 for o in objs if o.taint.to_dict().get(f))
+                         for f in _CONTAMINATION_FIELDS}
+        taint_summary["human_validated"] = sum(
+            1 for o in objs if o.taint.human_validated)
+        authority_summary: dict[str, int] = {}
+        for o in objs:
+            authority_summary[o.authority.value] = authority_summary.get(o.authority.value, 0) + 1
+        # the red flag: anything contaminated that nonetheless reached high authority.
+        high = {l9.Authority.AUTHORITATIVE.value, l9.Authority.CONTROL.value}
+        tainted_authoritative = [
+            o.id for o in objs
+            if o.authority.value in high and o.taint.is_contaminated]
+
+        return {
+            "tick": s.tick,
+            "claims": claims, "evidence_links": evidence_links, "conflicts": conflicts,
+            "methods": methods, "self_model": self_model, "narratives": narratives,
+            "semantic_clusters": semantic, "preferences": preferences, "memory": memory,
+            "ledger": ledger, "counts": {
+                "claims": len(claims), "evidence_links": len(evidence_links),
+                "conflicts": len(conflicts), "methods": len(methods),
+                "self_model": len(self_model), "memory": len(memory),
+                "semantic_clusters": len(semantic), "preferences": len(preferences),
+                "ledger": len(s.ledger),
+            },
+            "taint_summary": taint_summary, "authority_summary": authority_summary,
+            "tainted_authoritative": tainted_authoritative,
+        }
+
+    @staticmethod
+    def _reference_counts(objs) -> dict[str, int]:
+        """How many other objects point at each object - a salience proxy (NOT truth)."""
+        counts: dict[str, int] = {}
+
+        def bump(ids):
+            for i in ids:
+                counts[i] = counts.get(i, 0) + 1
+
+        for o in objs:
+            bump(getattr(o, "derived_from", ()) or ())
+            bump(getattr(o, "claim_ids", ()) or ())
+            bump(getattr(o, "members", ()) or ())
+            bump(getattr(o, "basis", ()) or ())
+            bump(getattr(o, "evidence", ()) or ())
+            cid = getattr(o, "claim_id", "")
+            if cid:
+                bump((cid,))
+        return counts
 
 
 def seed_core() -> l9.Layer9:

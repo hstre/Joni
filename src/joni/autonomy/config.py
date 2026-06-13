@@ -57,6 +57,10 @@ class Paths:
     def docs_data(self) -> Path:
         return self.root / "docs" / "data.json"
 
+    @property
+    def docs_layer9(self) -> Path:
+        return self.root / "docs" / "layer9.html"
+
 
 def paths() -> Paths:
     return Paths(repo_root())

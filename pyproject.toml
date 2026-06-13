@@ -42,3 +42,8 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# layer9_view.py embeds a self-contained HTML/CSS/JS template as one raw string;
+# its (non-Python) lines legitimately exceed the line length.
+"src/joni/autonomy/layer9_view.py" = ["E501"]
