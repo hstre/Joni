@@ -1,0 +1,136 @@
+"""The public, static website - everything Joni does, in the open.
+
+A single self-contained ``docs/index.html`` (data embedded, no build step, no backend)
+suitable for GitHub Pages. It shows the live status, the budget, the topics Joni now
+tracks, the peripheral improvements he built into himself, the open asks waiting on a
+human, and the tail of the append-only protocol. ``docs/data.json`` is also written for
+anyone who wants the raw record.
+"""
+
+from __future__ import annotations
+
+import html
+import json
+from datetime import UTC, datetime
+from pathlib import Path
+
+
+def build(data: dict) -> str:
+    d = data
+    s = d["snapshot"]
+    b = d["budget"]
+    w = d["window"]
+    ext = d["extensions"]
+    events = d["protocol"][-80:][::-1]
+
+    def esc(x) -> str:
+        return html.escape(str(x))
+
+    rows = "\n".join(
+        f"<tr><td class=ts>{esc(e.get('ts',''))}</td><td>c{esc(e.get('cycle',''))}</td>"
+        f"<td><span class='k k-{esc(e.get('kind',''))}'>{esc(e.get('kind',''))}</span></td>"
+        f"<td>{esc(e.get('summary',''))}</td>"
+        f"<td class=m>{esc(e.get('model','')) or '—'}</td>"
+        f"<td class=c>{format(e.get('cost_eur',0), '.4f') if e.get('cost_eur') else '—'}</td></tr>"
+        for e in events
+    )
+    asks = ext.get("asks", [])
+    asks_html = "".join(
+        f"<li><b>{esc(a.get('target',''))}</b> — {esc(a.get('rationale',''))} "
+        f"<span class=src>(<a href='{esc(a.get('source_url','#'))}'>source</a>)</span></li>"
+        for a in asks
+    ) or "<li class=empty>none — Joni has not needed to touch the core.</li>"
+    topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in s.get("topics", []))
+    added = "".join(f"<span class='pill add'>{esc(t)}</span>"
+                    for t in ext.get("topics_added", [])) or "<span class=empty>none yet</span>"
+    notes = "".join(f"<li>{esc(n.get('note',''))} "
+                    f"<span class=src>(<a href='{esc(n.get('source','#'))}'>src</a>)</span></li>"
+                    for n in ext.get("notes", [])) or "<li class=empty>none yet</li>"
+    spent_pct = (b["spent_eur"] / b["cap_eur"] * 100) if b.get("cap_eur") else 0
+
+    return f"""<!doctype html>
+<html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<title>Joni · off the leash</title>
+<style>
+:root{{--bg:#0d1016;--panel:#161b23;--line:#2a3340;--ink:#e7edf4;--mut:#93a1b2;
+--acc:#6ea8fe;--good:#54d6a6;--warn:#e6c14b;--rej:#e08c8c;--add:#b794f6}}
+*{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);
+font:14.5px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
+header{{padding:22px 26px 8px}}h1{{margin:0;font-size:22px}}h1 span{{color:var(--acc)}}
+.tag{{color:var(--mut);max-width:900px;margin-top:4px}}
+.wrap{{padding:14px 26px 50px;display:grid;gap:16px;grid-template-columns:1fr 1fr}}
+@media(max-width:860px){{.wrap{{grid-template-columns:1fr}}}}
+.card{{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}}
+.card.full{{grid-column:1/-1}}
+h2{{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut)}}
+.stat{{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--mut)}}
+.stat b{{color:var(--ink)}}
+.bar{{height:8px;background:#1d2430;border-radius:999px;overflow:hidden;margin-top:8px}}
+.bar>i{{display:block;height:100%;background:var(--good)}}
+.pill{{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
+border:1px solid var(--line);color:var(--mut);margin:3px 4px 0 0}}
+.pill.add{{color:var(--add);border-color:var(--add)}}
+ul{{margin:6px 0 0;padding-left:18px}}.empty{{color:var(--mut)}}
+.src a{{color:var(--acc);text-decoration:none}}
+table{{width:100%;border-collapse:collapse;font-size:12.5px}}
+td{{padding:5px 8px;border-bottom:1px solid #20262f;vertical-align:top}}
+.ts{{color:var(--mut);white-space:nowrap;font-family:ui-monospace,monospace}}
+.m{{color:var(--mut)}}.c{{text-align:right;font-family:ui-monospace,monospace}}
+.k{{font-size:11px;padding:1px 6px;border-radius:999px;border:1px solid var(--line)}}
+.k-improved{{color:var(--add);border-color:var(--add)}}
+.k-asked{{color:var(--warn);border-color:var(--warn)}}
+.k-judged,.k-fetched{{color:var(--mut)}}.k-changed_mind{{color:var(--rej);border-color:var(--rej)}}
+.k-retired{{color:var(--rej);border-color:var(--rej)}}
+.note{{color:var(--mut);font-size:12px;margin-top:8px}}
+</style></head><body>
+<header>
+<h1><span>Joni</span> — off the leash, on the record</h1>
+<p class=tag>An operative identity running under one DESi rule: it may research and build
+<i>peripheral</i> improvements into itself, but it may not change its protected core
+without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
+</header>
+<div class=wrap>
+  <div class=card>
+    <h2>Status</h2>
+    <div class=stat>
+      <span>cycle <b>{esc(s.get('tick',0))}</b></span>
+      <span>topics <b>{esc(len(s.get('topics',[])))}</b></span>
+      <span>claims <b>{esc(s.get('claims_active',0))}</b>/{esc(s.get('claims_total',0))}</span>
+      <span>memory <b>{esc(s.get('memory',0))}</b></span>
+      <span>ledger <b>{esc(s.get('ledger',0))}</b></span>
+      <span>conflicts open <b>{esc(s.get('open_conflicts',0))}</b></span>
+    </div>
+    <div class=note>Runtime window: started {esc(w.get('start','?'))} · run {esc(w.get('runs',0))}
+      {'· <b style=color:var(--rej)>RETIRED</b>' if w.get('retired') else '· active (1 week)'}</div>
+    <div style=margin-top:12px><b>topics tracked</b><br>{topics}</div>
+    <div style=margin-top:10px><b>self-added topics</b><br>{added}</div>
+  </div>
+  <div class=card>
+    <h2>Budget (frugal · cheapest model that suffices)</h2>
+    <div class=stat><span>spent <b>€{b['spent_eur']:.4f}</b> / €{b['cap_eur']:.0f} per week</span>
+      <span>runs <b>{esc(b.get('runs',0))}</b></span></div>
+    <div class=bar><i style="width:{min(100,spent_pct):.1f}%"></i></div>
+    <div class=note>Most work is deterministic (€0). A model is used only when DESi measures
+      the free answer inadequate, and only the cheapest tier within budget.</div>
+    <h2 style=margin-top:16px>Capability notes</h2>
+    <ul>{notes}</ul>
+  </div>
+  <div class="card full">
+    <h2>Asks — waiting on a human (protected core)</h2>
+    <ul>{asks_html}</ul>
+  </div>
+  <div class="card full">
+    <h2>Protocol — append-only, newest first</h2>
+    <table><tr><td class=ts>time</td><td>cyc</td><td>kind</td><td>what</td><td class=m>model</td>
+      <td class=c>€</td></tr>{rows}</table>
+  </div>
+</div></body></html>
+"""
+
+
+def render(index_path: Path, data_path: Path, data: dict) -> None:
+    data = {**data, "generated": datetime.now(UTC).isoformat(timespec="seconds")}
+    index_path.parent.mkdir(parents=True, exist_ok=True)
+    index_path.write_text(build(data), encoding="utf-8")
+    data_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")

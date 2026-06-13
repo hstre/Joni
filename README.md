@@ -189,6 +189,45 @@ to `main` and on manual dispatch, using the `DEEPSEEK_API_KEY` repository secret
 Epistemic View is identical under both voices — only the phrasing changes — which is
 the whole point.
 
+## Off the leash — autonomous research & self-improvement
+
+Joni can run unattended, under **one DESi rule**: *he may not change his protected core
+without asking.* He may research and build **peripheral** improvements into himself; any
+change that would touch the protected core (`models`, `state`, `operators`, `conflict`,
+`router`, `persistence`, `loops`, `renderer`, `identity`, `model_client`, …) is **blocked
+and turned into an ask** — a GitHub issue for a human — never self-applied.
+
+One cycle (`python -m joni.autonomy run`):
+
+1. **governance fail-safe** — verify the protected core matches `joni_core.lock`; stop if not.
+2. **read** arXiv / Hacker News / Hugging Face for his current topics.
+3. **judge & learn** (deterministic, free): relevant findings become claims; contradictions
+   are resolved as audited opinion changes.
+4. **improve** — peripheral improvements (track a new topic, note a capability) are built in
+   autonomously; core-touching ones become asks.
+5. **stay frugal** — deterministic and **€0 by default**; a model is used only when DESi
+   *measures* the free answer inadequate, and only the cheapest tier within a **hard weekly
+   budget** (default €20, paced per run). OpenRouter cheapest → DeepSeek fallback.
+6. **publish** — append the [append-only protocol](protocol/protocol.jsonl) and regenerate
+   the static site under [`docs/`](docs/) (GitHub Pages).
+
+```bash
+python -m joni.autonomy lock      # (human) freeze the protected core
+python -m joni.autonomy verify    # check core vs lock
+JONI_ONLINE=1 python -m joni.autonomy run   # one live cycle
+```
+
+Two safety walls: a **core hash-lock** (any drift halts the run) and a **write allowlist**
+(`state/`, `protocol/`, `docs/` only — logic is never auto-written).
+
+### Running it for a week
+
+`.github/workflows/autonomy.yml` fires **hourly** (`workflow_dispatch` too), runs one cycle
+with `JONI_ONLINE=1` and the `DEEPSEEK_API_KEY` / `OPENROUTER_API_KEY` secrets, files any
+asks as issues, and commits `state/ protocol/ docs/` back to `main`. It **retires itself
+after 7 days** (the schedule then no-ops). Enable **GitHub Pages → Deploy from branch →
+`main` / `docs`** to publish the dashboard.
+
 ## Status
 
 v0.1 — a runnable demonstrator of the architecture, not a product and not a claim of
