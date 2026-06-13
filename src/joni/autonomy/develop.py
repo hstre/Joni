@@ -29,9 +29,10 @@ _TRIGGER = 0.3      # cheap lexical trigger; below this we do not even ask the S
 
 
 def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
-            max_links: int = 2) -> dict:
+            max_links: int = 2, max_backfill: int = 3) -> dict:
     layer = layer or NullSemanticLayer()
     linked = set(extensions.get("linked", []))
+    annotated = set(extensions.get("semantic_backfilled", []))   # pairs with a semantic record
     live = sorted(cs.active_claims(), key=lambda c: c.id)
 
     new_links = 0
@@ -50,11 +51,15 @@ def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             sc = adapter.analyse_pair(cs.core, a, b, layer=layer, lexical_trigger=trigger,
                                       run_id=f"joni-c{cycle}")
             linked.add(key)
+            annotated.add(key)                            # it now has a semantic record
             acted = _act_on(cs, proto, cycle, a, b, sc)
             new_links += acted
             if acted:
                 break
     extensions["linked"] = sorted(linked)[-1000:]
+
+    backfilled = _backfill_legacy(cs, extensions, proto, cycle, linked, annotated, layer,
+                                  max_backfill)
 
     reviewed = 0
     for x in cs.core.open_conflicts():
@@ -63,7 +68,42 @@ def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             reviewed += 1
             proto.record(cycle, "developed", f"opened review of contradiction {x.id}")
 
-    return {"links": new_links, "conflicts_reviewed": reviewed}
+    return {"links": new_links, "conflicts_reviewed": reviewed, "backfilled": backfilled}
+
+
+def _backfill_legacy(cs, extensions, proto, cycle, linked, done, layer, limit) -> int:
+    """Give already-linked pairs a Layer-9 semantic record they never had.
+
+    The backlog of pairs was linked by lexical overlap under the old logic - with no
+    governed semantic decision behind it. We retroactively run the Semantic Layer over a
+    few of them each cycle (append-only annotation; the old link is not altered, but a
+    contradiction/tension the layer now sees is opened honestly). Bounded and deduped, so
+    it works through the backlog over time and then goes quiet."""
+    by_id = {c.id: c for c in cs.active_claims()}
+    n = 0
+    for key in sorted(linked):
+        if n >= limit:
+            break
+        if key in done:
+            continue
+        a_id, _, b_id = key.partition("|")
+        a, b = by_id.get(a_id), by_id.get(b_id)
+        if a is None or b is None:
+            done.add(key)                                 # not both live anymore - skip
+            continue
+        sc = adapter.analyse_pair(cs.core, a, b, layer=layer, run_id=f"joni-c{cycle}-bf")
+        done.add(key)
+        n += 1
+        if sc.decision.value in ("contradictory", "tension"):
+            sev = "hard" if sc.decision.value == "contradictory" else "soft"
+            cid = cs.open_conflict((a_id, b_id), severity=sev)
+            proto.record(cycle, "developed",
+                         f"backfill: Layer 9 now sees {a_id}/{b_id} {sc.decision.value} -> {cid}")
+        else:
+            proto.record(cycle, "developed",
+                         f"backfill: {a_id}/{b_id} semantic record = {sc.decision.value}")
+    extensions["semantic_backfilled"] = sorted(done)[-4000:]
+    return n
 
 
 def _act_on(cs, proto, cycle, a, b, sc) -> int:
