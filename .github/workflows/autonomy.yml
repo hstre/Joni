@@ -6,7 +6,7 @@ name: joni-autonomy
 # It retires itself after the runtime window (1 week) - the schedule then no-ops cheaply.
 on:
   schedule:
-    - cron: "0 * * * *"     # hourly
+    - cron: "*/15 * * * *"  # every 15 minutes
   workflow_dispatch:
 
 concurrency:
@@ -37,7 +37,7 @@ jobs:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
           JONI_RUNTIME_DAYS: "7"
-          JONI_RUNS_PER_WEEK: "168"
+          JONI_RUNS_PER_WEEK: "672"   # every 15 min over a week (paces the budget)
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: python -m joni.autonomy run
@@ -47,6 +47,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Ensure the label exists (idempotent).
+          gh label create joni-core-ask \
+            --color FBCA04 \
+            --description "Joni wants to change his protected DESi core - needs human approval" \
+            --force || true
           python - <<'PY'
           import json, pathlib, subprocess
           p = pathlib.Path("state/asks_new.json")
@@ -61,8 +66,8 @@ jobs:
                   "To approve: implement it yourself (a human), then regenerate the lock "
                   "with `python -m joni.autonomy lock` and commit."
               )
-              subprocess.run(["gh", "issue", "create", "--title", title, "--body", body],
-                             check=False)
+              subprocess.run(["gh", "issue", "create", "--title", title, "--body", body,
+                              "--label", "joni-core-ask"], check=False)
           PY
 
       - name: Commit and push (allowlisted paths only)

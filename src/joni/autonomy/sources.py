@@ -80,23 +80,41 @@ class ArxivFetcher:
 class HackerNewsFetcher:
     name = "hackernews"
 
-    def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
-        query = " ".join(queries) or "AI"
+    def _search(self, term: str, hits: int) -> list[dict]:
         url = "https://hn.algolia.com/api/v1/search?" + urllib.parse.urlencode(
-            {"query": query, "tags": "story", "hitsPerPage": limit}
+            {"query": term, "tags": "story", "hitsPerPage": hits}
         )
         try:
-            data = json.loads(_get(url))
-        except Exception:  # noqa: BLE001
+            return json.loads(_get(url)).get("hits", [])
+        except Exception:  # noqa: BLE001 - a failing term is just skipped
             return []
-        items: list[Item] = []
-        for hit in data.get("hits", []):
-            title = hit.get("title") or hit.get("story_title") or ""
-            link = hit.get("url") or f"https://news.ycombinator.com/item?id={hit.get('objectID')}"
-            if title:
-                items.append(Item("hackernews", str(hit.get("objectID")), title, link,
-                                  hit.get("story_text") or "", float(hit.get("points") or 0)))
-        return items
+
+    def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
+        # Search each topic separately and merge - a single combined query (AND
+        # semantics) matches almost nothing, which is why it used to return zero.
+        terms = [q for q in queries if q][:4] or ["LLM agents"]
+        merged: dict[str, Item] = {}
+        for term in terms:
+            for hit in self._search(term, max(3, limit)):
+                title = hit.get("title") or hit.get("story_title") or ""
+                oid = str(hit.get("objectID"))
+                if not title or oid in merged:
+                    continue
+                link = hit.get("url") or f"https://news.ycombinator.com/item?id={oid}"
+                merged[oid] = Item("hackernews", oid, title, link,
+                                   hit.get("story_text") or "", float(hit.get("points") or 0))
+
+        # Fallback to popular AI stories if the topic searches came up empty.
+        if not merged:
+            for hit in self._search("LLM", max(3, limit)):
+                title = hit.get("title") or ""
+                oid = str(hit.get("objectID"))
+                if title and oid not in merged:
+                    merged[oid] = Item("hackernews", oid, title,
+                                       hit.get("url") or f"https://news.ycombinator.com/item?id={oid}",
+                                       hit.get("story_text") or "", float(hit.get("points") or 0))
+
+        return sorted(merged.values(), key=lambda it: -it.score)[:limit]
 
 
 class HuggingFaceFetcher:
