@@ -171,6 +171,10 @@ class CoreState:
     # -- snapshot for the site ---------------------------------------------- #
     def snapshot(self) -> dict:
         s = self.core
+        ms = s.all(l9.ObjectType.METHOD)
+        trials = sum(m.trial_count for m in ms)
+        ready = sum(1 for m in ms if m.status is Status.PROVISIONAL
+                    and m.trial_count >= 3 and m.success_count > m.failure_count)
         return {
             "tick": s.tick,
             "topics": self.topics(),
@@ -179,7 +183,9 @@ class CoreState:
             "memory": len(s.all(l9.ObjectType.MEMORY_EPISODE)),
             "ledger": len(s.ledger),
             "open_conflicts": len(s.open_conflicts()),
-            "methods": len(s.all(l9.ObjectType.METHOD)),
+            "methods": len(ms),
+            "method_trials": trials,
+            "methods_ready": ready,
             "preferences": len(s.all(l9.ObjectType.PREFERENCE)),
             "evidence_links": len(s.all(l9.ObjectType.EVIDENCE_LINK)),
             "self_model": len(s.all(l9.ObjectType.SELF_MODEL_CLAIM)),

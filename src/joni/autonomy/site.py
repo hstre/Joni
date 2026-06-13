@@ -99,6 +99,7 @@ td{{padding:5px 8px;border-bottom:1px solid #20262f;vertical-align:top}}
 .k-improved{{color:var(--add);border-color:var(--add)}}
 .k-asked{{color:var(--warn);border-color:var(--warn)}}
 .k-judged,.k-fetched{{color:var(--mut)}}.k-changed_mind{{color:var(--rej);border-color:var(--rej)}}
+.k-method,.k-trialed{{color:var(--good);border-color:var(--good)}}
 .k-retired{{color:var(--rej);border-color:var(--rej)}}
 .note{{color:var(--mut);font-size:12px;margin-top:8px}}
 </style></head><body>
@@ -119,6 +120,8 @@ without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
       <span>memory <b>{esc(s.get('memory',0))}</b></span>
       <span>ledger <b>{esc(s.get('ledger',0))}</b></span>
       <span>methods for Kevin <b>{esc(s.get('methods',0))}</b></span>
+      <span>method trials <b>{esc(s.get('method_trials',0))}</b></span>
+      <span>activation-ready <b>{esc(s.get('methods_ready',0))}</b></span>
       <span>evidence links <b>{esc(s.get('evidence_links',0))}</b></span>
       <span>hypotheses <b>{esc(s.get('hypotheses',0))}</b></span>
       <span>self-model <b>{esc(s.get('self_model',0))}</b></span>
