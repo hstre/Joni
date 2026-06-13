@@ -23,7 +23,17 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from .. import desi_link
-from . import core_state, develop, governance, invent, methods, self_review, site, trials
+from . import (
+    core_state,
+    develop,
+    emerge,
+    governance,
+    invent,
+    methods,
+    self_review,
+    site,
+    trials,
+)
 from .budget import load as load_budget
 from .budget import save as save_budget
 from .config import online, paths, runs_per_week, runtime_days, weekly_budget_eur
@@ -149,6 +159,11 @@ def one_cycle() -> dict:
     #     auto-confirmed). Joni does not only react to sources.
     invented = invent.invent(cs, extensions, proto, cycle)
 
+    # 4d. Emergent self-development: let real structure precipitate out of recurring
+    #     patterns in his own net - new topics, higher-order syntheses, transferable
+    #     methods. Deeper than pairwise bridging; self-limiting once consolidated.
+    emerged = emerge.emerge(cs, extensions, proto, cycle)
+
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
@@ -158,16 +173,17 @@ def one_cycle() -> dict:
                                runs=window["runs"],
                                context={"judged": judged, "methods": found_methods,
                                         "trialed": trialed, "developed": developed,
-                                        "invented": invented})
+                                        "invented": invented, "emerged": emerged})
         reviewed = True
 
     # 6. Reflect through DESi: its real routing table + deterministic tools (free).
     reflect = _reflect(cs, window, budget, judged, proto, cycle)
 
+    emerged_n = sum(1 for v in (emerged["topic"], emerged["synthesis"], emerged["method"]) if v)
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new · {found_methods['methods']} method(s) "
                  f"· {trialed['trialed']} trialed · {developed['links']} new link(s) "
-                 f"· {invented['hypotheses']} hypothesis(es) "
+                 f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent "
                  f"· spend €{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
@@ -176,7 +192,7 @@ def one_cycle() -> dict:
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,
-            "trialed": trialed}
+            "trialed": trialed, "emerged": emerged}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:

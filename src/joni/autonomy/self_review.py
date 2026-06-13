@@ -120,7 +120,16 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
     sections.append({"title": "What I looked at", "text": " ".join(look)})
 
     # 2 - What caught my interest.
+    emerged = context.get("emerged", {}) or {}
     interest: list[str] = []
+    if emerged.get("topic"):
+        interest.append(f"The most interesting thing is something that surfaced on its own: "
+                        f"“{emerged['topic']}” kept recurring across several of my topics, so "
+                        "I have started tracking it as a topic in its own right — I did not go "
+                        "looking for it, it precipitated out of what I already held.")
+    if emerged.get("method"):
+        interest.append(f"I also noticed “{emerged['method']}” works as a lens across more than "
+                        "one of my topics, so I abstracted it into a method for Kevin to try.")
     if invented.get("hypotheses") and hyps:
         h = max(hyps, key=lambda c: int(c.id.split("-")[-1]))
         interest.append("What I am most pleased with is a guess I made myself: "
@@ -177,6 +186,11 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
     if added:
         learned.append(f"I have widened into {len(added)} topic(s) I added myself: "
                        f"{', '.join(added[:5])}.")
+    emergent_topics = extensions.get("emerged_topics", [])
+    if emergent_topics:
+        learned.append(f"And {len(emergent_topics)} topic(s) have emerged from my own "
+                       f"recurring patterns rather than from any source: "
+                       f"{', '.join(emergent_topics[:5])}.")
     learned.append(f"All of this hour cost €{spend:.4f}; I stay deterministic and free "
                    "unless something genuinely needs a model, and this hour it did not.")
     learned.append("The thing I keep relearning about myself is that I would rather stay "
