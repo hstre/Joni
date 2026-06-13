@@ -9,18 +9,18 @@
       "evaluation",
       "memory"
     ],
-    "claims_total": 41,
+    "claims_total": 42,
     "claims_active": 35,
     "memory": 27,
-    "ledger": 262,
+    "ledger": 272,
     "open_conflicts": 0,
     "methods": 2,
-    "method_trials": 6,
+    "method_trials": 8,
     "methods_ready": 0,
     "preferences": 1,
-    "evidence_links": 12,
+    "evidence_links": 14,
     "self_model": 3,
-    "hypotheses": 6,
+    "hypotheses": 7,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": null
@@ -28,11 +28,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 12
+    "runs": 13
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 12,
+    "runs": 13,
     "retired": false
   },
   "extensions": {
@@ -175,9 +175,11 @@
       "C-10|C-15",
       "C-10|C-16",
       "C-10|C-17",
+      "C-10|C-18",
       "C-12|C-13",
       "C-12|C-14",
       "C-12|C-15",
+      "C-12|C-16",
       "C-1|C-30",
       "C-1|C-33",
       "C-1|C-34"
@@ -188,7 +190,8 @@
       "alignment|memory",
       "alignment|privacy",
       "alignment|routing",
-      "drift|evaluation"
+      "drift|evaluation",
+      "drift|memory"
     ],
     "methods_seen": [
       "github:f/prompts.chat",
@@ -1747,7 +1750,107 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:24+00:00",
+      "cycle": 13,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:25+00:00",
+      "cycle": 13,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:25+00:00",
+      "cycle": 13,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:26+00:00",
+      "cycle": 13,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:26+00:00",
+      "cycle": 13,
+      "kind": "trialed",
+      "summary": "Kevin trialed 2 method(s): 2 passed, 0 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:26+00:00",
+      "cycle": 13,
+      "kind": "developed",
+      "summary": "linked C-10 <-> C-18 (contextualizes, unreviewed)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:27+00:00",
+      "cycle": 13,
+      "kind": "developed",
+      "summary": "linked C-12 <-> C-16 (contextualizes, unreviewed)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:27+00:00",
+      "cycle": 13,
+      "kind": "invented",
+      "summary": "new hypothesis bridging drift x memory (candidate, derived from C-25+C-4)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:27+00:00",
+      "cycle": 13,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:15:27+00:00",
+      "cycle": 13,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 2 trialed · 2 new link(s) · 1 hypothesis(es) · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-13T21:08:22+00:00"
+  "generated": "2026-06-13T21:15:27+00:00"
 }
