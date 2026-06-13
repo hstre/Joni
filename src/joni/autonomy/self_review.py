@@ -222,7 +222,14 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     }
     extensions["last_review"] = review
     extensions["last_review_ts"] = now.isoformat(timespec="seconds")
+    # The diary: every review is *appended*, never overwriting the last. Each hour is its
+    # own dated entry, kept in full. Bounded to a week of hourly entries (Joni retires after
+    # a week anyway), so it stays a complete record without growing without end.
+    diary = extensions.setdefault("diary", [])
+    diary.append(review)
+    extensions["diary"] = diary[-200:]
+    # A lightweight index kept for compatibility.
     history = extensions.setdefault("review_history", [])
     history.append({"ts": review["ts"], "headline": headline})
-    extensions["review_history"] = history[-30:]
+    extensions["review_history"] = history[-200:]
     return review

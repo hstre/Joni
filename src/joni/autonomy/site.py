@@ -51,25 +51,39 @@ def build(data: dict) -> str:
     route_line = (f" · last route → {esc(lr['model'])} (~${lr['cost_usd']:.6f})"
                   if lr else "")
 
-    review = ext.get("last_review")
-    if review:
-        sections = "".join(
+    def _movements(entry) -> str:
+        return "".join(
             f"<div class=movement><h3>{esc(sec.get('title',''))}</h3>"
             f"<p>{esc(sec.get('text',''))}</p></div>"
-            for sec in review.get("sections", []))
-        assessments = "".join(
+            for sec in entry.get("sections", []))
+
+    def _assessments(entry) -> str:
+        return "".join(
             f"<li>{esc(a.get('text',''))} "
             f"<span class=src>(evidence {len(a.get('evidence', []))}, "
             f"counter {len(a.get('counterevidence', []))})</span></li>"
-            for a in review.get("assessments", [])) or "<li class=empty>no assessment</li>"
+            for a in entry.get("assessments", [])) or "<li class=empty>no assessment</li>"
+
+    diary = ext.get("diary") or ([ext["last_review"]] if ext.get("last_review") else [])
+    if diary:
+        latest = diary[-1]
         review_html = (
-            f"<div class=note><b>{esc(review.get('ts',''))}</b> · written in the first person, "
-            f"grounded in my own state — a report, not a performance.</div>"
-            f"<p class=lede>{esc(review.get('headline',''))}</p>"
-            f"{sections}"
+            f"<div class=note><b>{esc(latest.get('ts',''))}</b> · written in the first person, "
+            f"grounded in my own state — a report, not a performance. "
+            f"{len(diary)} entr{'y' if len(diary) == 1 else 'ies'} so far; nothing overwritten."
+            f"</div>"
+            f"<p class=lede>{esc(latest.get('headline',''))}</p>"
+            f"{_movements(latest)}"
             f"<div class=note style='margin-top:12px'>The <i>provisional</i> beliefs this "
             f"review updated about myself (evidence-backed, never facts):</div>"
-            f"<ul>{assessments}</ul>")
+            f"<ul>{_assessments(latest)}</ul>")
+        earlier = "".join(
+            f"<details class=entry><summary>{esc(e.get('ts',''))} · "
+            f"{esc(e.get('headline',''))}</summary>{_movements(e)}</details>"
+            for e in diary[:-1][::-1])
+        if earlier:
+            review_html += (f"<h2 style='margin-top:18px'>Earlier entries — newest first</h2>"
+                            f"{earlier}")
     else:
         review_html = "<p class=empty>No self-review yet (runs hourly).</p>"
 
@@ -114,6 +128,11 @@ td{{padding:5px 8px;border-bottom:1px solid #20262f;vertical-align:top}}
 .movement h3{{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;
 color:var(--acc)}}
 .movement p{{margin:0;color:var(--ink);max-width:760px}}
+.entry{{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:8px 0;
+background:#12161d}}
+.entry summary{{cursor:pointer;color:var(--mut);font-family:ui-monospace,monospace;
+font-size:12.5px}}
+.entry[open] summary{{color:var(--ink);margin-bottom:6px}}
 </style></head><body>
 <header>
 <h1><span>Joni</span> — off the leash, on the record</h1>

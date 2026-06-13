@@ -60,6 +60,36 @@ def test_review_is_a_detailed_first_person_report():
     assert h                                                  # (the hypothesis it narrates)
 
 
+def test_diary_accumulates_and_does_not_overwrite():
+    cs = _cs()
+    ext = {"topics_added": []}
+    r1 = self_review.run_review(cs, ext, _Proto(), 1, days=0, spend=0.0)
+    cs.learn("a new thing I read about routing", "routing")     # state moves on
+    r2 = self_review.run_review(cs, ext, _Proto(), 2, days=1, spend=0.0)
+
+    diary = ext["diary"]
+    assert len(diary) == 2                                       # both kept, none overwritten
+    assert diary[0]["headline"] == r1["headline"]               # the old entry survives intact
+    assert diary[0]["sections"] == r1["sections"]
+    assert diary[-1]["headline"] == r2["headline"]
+    assert ext["last_review"]["headline"] == r2["headline"]     # latest still points at newest
+
+
+def test_earlier_diary_entries_render_on_the_site():
+    cs = _cs()
+    ext = {"topics_added": []}
+    self_review.run_review(cs, ext, _Proto(), 1, days=0, spend=0.0)
+    self_review.run_review(cs, ext, _Proto(), 2, days=1, spend=0.0)
+    from joni.autonomy import site
+    html = site.build({
+        "snapshot": cs.snapshot(), "generated": "now",
+        "budget": {"spent_eur": 0.0, "cap_eur": 20.0, "runs": 1},
+        "window": {"start": "2026-06-13", "runs": 1},
+        "extensions": ext, "protocol": [],
+    })
+    assert "Earlier entries" in html                  # the diary is shown, not just the latest
+
+
 def test_review_is_hourly_not_every_cycle():
     now = datetime.now(UTC)
     assert self_review.should_review({}, now) is True             # never reviewed -> yes
