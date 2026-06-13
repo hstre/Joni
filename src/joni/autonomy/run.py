@@ -22,17 +22,12 @@ import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from .. import desi_link, persistence
-from ..conflict import detect_conflicts, weaker_claim
-from ..models import ClaimStatus, Trigger
-from ..operators import assert_claim, resolve_conflict
-from ..seed import seed_identity
-from ..state import Layer9
-from . import governance, site
+from .. import desi_link
+from . import core_state, governance, site
 from .budget import load as load_budget
 from .budget import save as save_budget
 from .config import online, paths, runs_per_week, runtime_days, weekly_budget_eur
-from .improve import apply_peripheral, derive, judge
+from .improve import derive, judge
 from .protocol import Protocol
 from .sources import get_fetchers
 
@@ -53,21 +48,6 @@ def _save_json(path: Path, data) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def _snapshot(state: Layer9) -> dict:
-    return {
-        "tick": state.tick,
-        "topics": state.topics(),
-        "claims_total": len(state.claims),
-        "claims_active": len(state.active_claims()),
-        "memory": len(state.memory),
-        "ledger": len(state.ledger),
-        "open_conflicts": len(state.open_conflicts()),
-        "goals": len(state.active_goals()),
-        "projects": len(state.active_projects()),
-        "preferences": len(state.preferences),
-    }
-
-
 def one_cycle() -> dict:
     p = paths()
     # 0. Fail-safe governance check: never proceed on a tampered core.
@@ -81,9 +61,12 @@ def one_cycle() -> dict:
         "start": datetime.now(UTC).isoformat(timespec="seconds"), "runs": 0, "retired": False
     }
     started = datetime.fromisoformat(window["start"])
-    expired = datetime.now(UTC) - started > timedelta(days=runtime_days())
+    now = datetime.now(UTC)
+    expired = now - started > timedelta(days=runtime_days())
+    days_running = (now.date() - started.date()).days     # real time - no tick jumps
 
-    state = persistence.load(p.state) or seed_identity()
+    cs = core_state.load_or_migrate(p)
+    cs.set_day(days_running)
     budget = load_budget(p.budget, cap_eur=weekly_budget_eur())
     extensions = _load_json(p.extensions, {})
     extensions.setdefault("topics_added", [])
@@ -96,15 +79,14 @@ def one_cycle() -> dict:
             window["retired"] = True
             proto.record(cycle, "retired", "runtime window of "
                          f"{runtime_days()} days reached - Joni stands down")
-        _finish(p, state, budget, window, extensions, proto, None)
+        _finish(p, cs, budget, window, extensions, proto, None)
         return {"cycle": cycle, "retired": True}
 
-    state.tick += 1
     window["runs"] += 1
     budget.runs += 1
 
     # 2. Read the sources.
-    queries = state.topics() or _DEFAULT_QUERIES
+    queries = cs.topics() or _DEFAULT_QUERIES
     seen = set(extensions["seen"])
     fetched: list = []
     for fetcher in get_fetchers(online=online()):
@@ -115,10 +97,10 @@ def one_cycle() -> dict:
 
     new_items = [it for it in fetched if it.key not in seen]
 
-    # 3. Judge, learn, resolve contradictions.
+    # 3. Judge and learn (claims via the gate); contradictions OPEN, never force-resolved.
     judged: list = []
     for item in new_items:
-        rel = judge(state, item)
+        rel = judge(cs, item)
         seen.add(item.key)
         proto.record(cycle, "judged",
                      f"{'relevant' if rel.relevant else 'skip'}: {item.title[:80]}",
@@ -128,19 +110,17 @@ def one_cycle() -> dict:
             continue
         judged.append((item, rel))
         if rel.topic:
-            assert_claim(state, item.title, rel.topic, support=item.score and 0.6 or 0.58,
-                         status=ClaimStatus.ACTIVE, trigger=Trigger.RESEARCH_HARVEST,
-                         reviewed_by="deterministic")
+            cs.learn(item.title, rel.topic)
 
-    for conflict in list(_resolve_conflicts(state)):
-        proto.record(cycle, "changed_mind",
-                     f"resolved {conflict} - a claim was rejected on new evidence")
+    for conflict_id in cs.detect_and_open_conflicts():
+        proto.record(cycle, "conflict_open",
+                     f"opened {conflict_id} - two claims held open, not smoothed away")
 
-    # 4. Improvements, split by governance.
+    # 4. Improvements, split by governance (peripheral ones applied via the gate).
     asks_new: list = []
-    for imp in derive(state, judged):
+    for imp in derive(cs, judged):
         if imp.autonomous:
-            refs = apply_peripheral(state, extensions, imp)
+            refs = _apply(cs, extensions, imp)
             proto.record(cycle, "improved", f"{imp.kind}: {imp.title[:80]}",
                          refs={**refs, "source": imp.source_key, "url": imp.source_url})
         else:
@@ -155,30 +135,36 @@ def one_cycle() -> dict:
     extensions["seen"] = sorted(seen)[-2000:]   # bound the dedup set
 
     # 5. Reflect through DESi: its real routing table + deterministic tools (free).
-    reflect = _reflect(state, window, budget, judged, proto, cycle)
+    reflect = _reflect(cs, window, budget, judged, proto, cycle)
 
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new · spend €{budget.spent_eur:.4f} "
                  f"· routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
-    _finish(p, state, budget, window, extensions, proto, reflect)
+    _finish(p, cs, budget, window, extensions, proto, reflect)
     return {"cycle": cycle, "new_items": len(new_items), "asks": len(asks_new),
-            "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"]}
+            "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
+            "days_running": days_running}
 
 
-def _resolve_conflicts(state: Layer9) -> list[str]:
-    """Detect and resolve contradictions; return ids of resolved conflicts."""
-    detect_conflicts(state)
-    resolved = []
-    for conflict in list(state.open_conflicts()):
-        loser = weaker_claim(state, conflict)
-        resolve_conflict(state, conflict.id, reject=loser, reviewed_by="deterministic")
-        resolved.append(conflict.id)
-    return resolved
+def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
+    """Apply a peripheral improvement through the gate (claims/preferences only)."""
+    if imp.kind == "track_topic":
+        cid = cs.learn(f"{imp.target} is worth tracking as a topic", imp.target)
+        extensions.setdefault("topics_added", [])
+        if imp.target not in extensions["topics_added"]:
+            extensions["topics_added"].append(imp.target)
+        return {"claim": cid, "topic": imp.target}
+    if imp.kind == "note_capability":
+        pid = cs.note_preference(imp.target)
+        extensions.setdefault("notes", [])
+        extensions["notes"].append({"note": imp.rationale, "source": imp.source_url})
+        return {"preference": pid}
+    return {}
 
 
-def _reflect(state: Layer9, window: dict, budget, judged: list, proto: Protocol,
+def _reflect(cs, window: dict, budget, judged: list, proto: Protocol,
              cycle: int) -> dict:
     """Use DESi's real routing logic + tools, with a deterministic fallback.
 
@@ -215,12 +201,13 @@ def _reflect(state: Layer9, window: dict, budget, judged: list, proto: Protocol,
     return out
 
 
-def _finish(p, state, budget, window, extensions, proto: Protocol, reflect=None) -> None:
-    persistence.save(state, p.state)
+def _finish(p, cs: core_state.CoreState, budget, window, extensions,
+            proto: Protocol, reflect=None) -> None:
+    core_state.save(cs, p)
     save_budget(budget, p.budget)
     _save_json(p.window, window)
     _save_json(p.extensions, extensions)
-    snap = _snapshot(state)
+    snap = cs.snapshot()
     snap.update(reflect or {"routing_engine": desi_link.routing_engine()})
     site.render(p.docs_index, p.docs_data, {
         "snapshot": snap,
