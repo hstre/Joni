@@ -73,6 +73,22 @@ class CoreState:
                  {"claim_ids": list(claim_ids), "severity": severity}, targets=tuple(claim_ids))
         return self._newest(l9.ObjectType.CONFLICT).id
 
+    def propose_self_model(self, text: str, *, evidence=(), counterevidence=()) -> str:
+        """A provisional belief Joni holds about itself - never a fact (§6)."""
+        self._op(ProposalType.SELF_MODEL_PROPOSAL, Operator.SELF_MODEL_PROPOSE,
+                 {"text": text, "evidence": list(evidence),
+                  "counterevidence": list(counterevidence)})
+        return self._newest(l9.ObjectType.SELF_MODEL_CLAIM).id
+
+    def render_narrative(self, text: str, *, basis=()) -> str:
+        """Language only - describes state, never overwrites it."""
+        self._op(ProposalType.STATE_REVISION_PROPOSAL, Operator.NARRATIVE_RENDER,
+                 {"text": text, "basis": list(basis)}, targets=tuple(basis))
+        return self._newest(l9.ObjectType.NARRATIVE_SUMMARY).id
+
+    def confirmed_claims(self) -> list:
+        return [c for c in self.core.all(l9.ObjectType.CLAIM) if c.status is Status.CONFIRMED]
+
     def _newest(self, object_type):
         return max(self.core.all(object_type), key=lambda o: int(o.id.split("-")[-1]))
 
