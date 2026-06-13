@@ -1,17 +1,23 @@
 name: joni-autonomy
 
-# Joni off the leash: an hourly cycle that researches, learns, builds peripheral
-# improvements into itself, raises core changes as asks (never self-applied), stays
-# within a hard weekly budget, and publishes everything to the static site under docs/.
-# It retires itself after the runtime window (1 week) - the schedule then no-ops cheaply.
+# Joni off the leash: he runs *continuously*. One job loops - research, learn, build
+# peripheral improvements into himself, raise core changes as asks (never self-applied),
+# stay within a hard weekly budget, publish to the static site - cycle after cycle, with a
+# short pause between, until the job's time budget is up. A new job then takes over, so
+# Joni keeps running for his whole runtime window (1 week), after which he retires and the
+# loop ends cheaply.
+#
+# There is no per-15-min schedule: the loop *is* the cadence. The hourly schedule below is
+# only a re-launcher - it starts the next continuous job when the previous one ends (the
+# concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
 on:
   schedule:
-    - cron: "*/15 * * * *"  # every 15 minutes
+    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
   group: joni-autonomy
-  cancel-in-progress: false
+  cancel-in-progress: false  # never cut a running loop off; the next job waits its turn
 
 permissions:
   contents: write          # commit state/protocol/docs back to main
@@ -20,7 +26,7 @@ permissions:
 jobs:
   cycle:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 350     # just under GitHub's 6h job cap; the loop stops itself before
     steps:
       - uses: actions/checkout@v4
       - name: Fetch DESi for real routing (optional; falls back if unavailable)
@@ -41,30 +47,41 @@ jobs:
       - name: Verify protected core (fail-safe)
         run: python -m joni.autonomy verify
 
-      - name: Run one autonomous cycle
+      - name: Run Joni continuously (loop until the job's time budget)
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
           JONI_RUNTIME_DAYS: "7"
-          JONI_RUNS_PER_WEEK: "672"   # every 15 min over a week (paces the budget)
+          JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
+          JONI_LOOP_MINUTES: "320"    # run cycles for ~5.3h, then let the next job take over
+          JONI_LOOP_PAUSE_SECONDS: "180"   # a polite pause between cycles
           DESI_ROOT: ${{ github.workspace }}/_desi
           GITHUB_TOKEN: ${{ github.token }}   # higher rate limit for the GitHub source
+          GH_TOKEN: ${{ github.token }}       # for `gh` (filing asks)
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: python -m joni.autonomy run
-
-      - name: File core-change asks as issues
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          # Ensure the label exists (idempotent).
+          set +e
+          git config user.name "joni-bot"
+          git config user.email "actions@github.com"
           gh label create joni-core-ask \
             --color FBCA04 \
             --description "Joni wants to change his protected DESi core - needs human approval" \
             --force || true
-          python - <<'PY'
+
+          deadline=$(( $(date +%s) + JONI_LOOP_MINUTES * 60 ))
+          n=0
+          while [ "$(date +%s)" -lt "$deadline" ]; do
+            n=$((n + 1))
+            echo "::group::Joni cycle $n"
+
+            python -m joni.autonomy verify || { echo "core verify failed - stopping"; exit 1; }
+            python -m joni.autonomy run
+            rc=$?
+
+            # File any new core-change asks raised this cycle (never self-applied).
+            python - <<'PY'
           import json, pathlib, subprocess
           p = pathlib.Path("state/asks_new.json")
           asks = json.loads(p.read_text()) if p.exists() else []
@@ -82,30 +99,31 @@ jobs:
                               "--label", "joni-core-ask"], check=False)
           PY
 
-      - name: Commit and push (allowlisted paths only)
-        if: always()
-        run: |
-          git config user.name "joni-bot"
-          git config user.email "actions@github.com"
-          git add state protocol docs
-          if git diff --cached --quiet; then
-            echo "nothing to commit"
-            exit 0
-          fi
-          git commit -m "joni: autonomous cycle $(date -u +%FT%TZ)"
-          # main may have advanced (a human merge) while this cycle was running. The bot
-          # only ever touches state/protocol/docs - paths humans never edit - so a rebase
-          # onto the latest main is always clean. Rebase + retry instead of dropping the
-          # cycle's work on a non-fast-forward rejection.
-          for attempt in 1 2 3 4 5; do
-            if git push origin HEAD:main; then
-              echo "pushed on attempt $attempt"
-              exit 0
+            # Commit + push this cycle. The bot only ever touches state/protocol/docs - paths
+            # humans never edit - so a rebase onto the latest main is always clean. Rebase +
+            # retry instead of dropping the cycle's work on a non-fast-forward rejection.
+            git add state protocol docs
+            if git diff --cached --quiet; then
+              echo "nothing to commit this cycle"
+            else
+              git commit -m "joni: autonomous cycle $(date -u +%FT%TZ)"
+              for attempt in 1 2 3 4 5; do
+                if git push origin HEAD:main; then
+                  echo "pushed on attempt $attempt"
+                  break
+                fi
+                echo "push rejected - rebasing onto latest main (attempt $attempt)"
+                git fetch origin main || true
+                git rebase origin/main || { git rebase --abort || true; }
+                sleep $((attempt * 3))
+              done
             fi
-            echo "push rejected - rebasing onto latest main (attempt $attempt)"
-            git fetch origin main || true
-            git rebase origin/main || { git rebase --abort || true; }
-            sleep $((attempt * 3))
+
+            echo "::endgroup::"
+            if [ "$rc" -eq 42 ]; then
+              echo "Joni has retired (runtime window elapsed) - ending the loop."
+              break
+            fi
+            sleep "$JONI_LOOP_PAUSE_SECONDS"
           done
-          echo "could not push after retries"
-          exit 1
+          echo "loop ended after $n cycle(s)"
