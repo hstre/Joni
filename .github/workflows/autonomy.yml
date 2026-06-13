@@ -1,0 +1,79 @@
+name: joni-autonomy
+
+# Joni off the leash: an hourly cycle that researches, learns, builds peripheral
+# improvements into itself, raises core changes as asks (never self-applied), stays
+# within a hard weekly budget, and publishes everything to the static site under docs/.
+# It retires itself after the runtime window (1 week) - the schedule then no-ops cheaply.
+on:
+  schedule:
+    - cron: "0 * * * *"     # hourly
+  workflow_dispatch:
+
+concurrency:
+  group: joni-autonomy
+  cancel-in-progress: false
+
+permissions:
+  contents: write          # commit state/protocol/docs back to main
+  issues: write            # file core-change asks for a human
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install -e ".[llm]"
+
+      - name: Verify protected core (fail-safe)
+        run: python -m joni.autonomy verify
+
+      - name: Run one autonomous cycle
+        env:
+          JONI_ONLINE: "1"
+          JONI_WEEKLY_BUDGET_EUR: "20"
+          JONI_RUNTIME_DAYS: "7"
+          JONI_RUNS_PER_WEEK: "168"
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: python -m joni.autonomy run
+
+      - name: File core-change asks as issues
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, pathlib, subprocess
+          p = pathlib.Path("state/asks_new.json")
+          asks = json.loads(p.read_text()) if p.exists() else []
+          for a in asks:
+              title = f"[joni-core-ask] {a.get('target','core')}: needs human approval"
+              body = (
+                  "Joni found something that would require changing his **protected DESi "
+                  "core**. Under his rule he did **not** self-apply it - he is asking.\n\n"
+                  f"- target: `{a.get('target')}`\n- rationale: {a.get('rationale')}\n"
+                  f"- source: {a.get('source_url')}\n- cycle: {a.get('cycle')}\n\n"
+                  "To approve: implement it yourself (a human), then regenerate the lock "
+                  "with `python -m joni.autonomy lock` and commit."
+              )
+              subprocess.run(["gh", "issue", "create", "--title", title, "--body", body],
+                             check=False)
+          PY
+
+      - name: Commit and push (allowlisted paths only)
+        if: always()
+        run: |
+          git config user.name "joni-bot"
+          git config user.email "actions@github.com"
+          git add state protocol docs
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "joni: autonomous cycle $(date -u +%FT%TZ)"
+            git push
+          fi
