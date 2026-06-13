@@ -25,6 +25,7 @@ from pathlib import Path
 from .. import desi_link
 from . import (
     core_state,
+    desi_semantics,
     develop,
     emerge,
     governance,
@@ -151,18 +152,21 @@ def one_cycle() -> dict:
 
     extensions["seen"] = sorted(seen)[-2000:]   # bound the dedup set
 
-    # 4b. Self-development: keep restructuring from existing state (evidence web +
-    #     engaging conflicts), even when no new papers arrived. Honest, never confirms.
-    developed = develop.develop(cs, extensions, proto, cycle)
+    # The DESi Semantic Layer (real frames/logic/tension) governs whether claims relate;
+    # lexical overlap is only a trigger. Absent DESi -> a fail-closed null layer.
+    semantic_layer = desi_semantics.get_semantic_layer()
+
+    # 4b. Self-development: link claims the *Semantic Layer* says relate (not word overlap),
+    #     and engage conflicts. Honest, never confirms.
+    developed = develop.develop(cs, extensions, proto, cycle, layer=semantic_layer)
 
     # 4c. Invention: make something up - a cross-topic hypothesis (candidate, never
     #     auto-confirmed). Joni does not only react to sources.
     invented = invent.invent(cs, extensions, proto, cycle)
 
-    # 4d. Emergent self-development: let real structure precipitate out of recurring
-    #     patterns in his own net - new topics, higher-order syntheses, transferable
-    #     methods. Deeper than pairwise bridging; self-limiting once consolidated.
-    emerged = emerge.emerge(cs, extensions, proto, cycle)
+    # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
+    #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
+    emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
 
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.

@@ -19,7 +19,7 @@ replay and migration (PR 3), and the Joni/Kevin integrations (PR 4/5) build on t
 
 from __future__ import annotations
 
-from . import migration, persistence
+from . import migration, persistence, semantics
 from .base import EpistemicObject
 from .core import JournalEntry, Layer9, make_proposal
 from .enums import (
@@ -34,6 +34,8 @@ from .enums import (
     OriginType,
     ProposalType,
     RelationType,
+    SemanticDecision,
+    SemanticState,
     Status,
     authority_rank,
     may_grant,
@@ -58,6 +60,7 @@ from .objects import (
     Proposal,
     Review,
     SelfModelClaim,
+    SemanticCluster,
     Source,
 )
 from .provenance import Provenance
@@ -83,12 +86,16 @@ __all__ = [
     # enums
     "ObjectType", "Status", "Authority", "OriginType", "RelationType",
     "ConflictStatus", "MemoryKind", "ProposalType", "Operator",
+    "SemanticState", "SemanticDecision",
     "AUTHORITY_ORDER", "authority_rank", "may_grant",
     "OPERATORS_GRANTING_AUTHORITATIVE", "OPERATORS_GRANTING_CONTROL",
     # objects
     "Claim", "Evidence", "EvidenceLink", "Constraint", "Goal", "Preference",
     "Project", "Method", "MemoryEpisode", "Conflict", "Decision", "Proposal",
     "Review", "Source", "OperationalState", "SelfModelClaim", "NarrativeSummary",
+    "SemanticCluster",
+    # the semantic boundary (port to the DESi Semantic Layer)
+    "semantics",
     # transitions + rules
     "TRANSITIONS", "CONFLICT_TRANSITIONS", "TransitionError", "allowed",
     "validate_transition", "assert_transition",

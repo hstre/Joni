@@ -26,6 +26,8 @@ from .enums import (
     Operator,
     ProposalType,
     RelationType,
+    SemanticDecision,
+    SemanticState,
     Status,
 )
 from .hashing import chain_event
@@ -46,6 +48,7 @@ from .objects import (
     Project,
     Proposal,
     SelfModelClaim,
+    SemanticCluster,
 )
 from .provenance import Provenance
 from .rules import can_confirm_claim
@@ -430,6 +433,24 @@ class Layer9:
                          status=Status.ACTIVE, authority=Authority.AUTHORITATIVE)
         return [os_.id], "active", f"operational snapshot {os_.id}"
 
+    def _h_semantic_cluster_propose(self, p, actor, gov):
+        # An append-only annotation of a Semantic-Layer analysis. It records what was
+        # measured and what Layer 9 decided; it NEVER edits the analysed claims and is
+        # never authoritative. Provenance/version are kept for audit and replay.
+        sc = self._mint(
+            SemanticCluster, ObjectType.SEMANTIC_CLUSTER, p, actor,
+            members=tuple(p.payload.get("members", p.target_objects)),
+            surface_terms=tuple(p.payload.get("surface_terms", ())),
+            lexical_trigger=_clamp(p.payload.get("lexical_trigger", 0.0)),
+            measurement=dict(p.payload.get("measurement", {})),
+            decision=SemanticDecision(p.payload.get("decision", "insufficient-semantic-evidence")),
+            semantic_state=SemanticState(p.payload.get("semantic_state", "lexical-candidate")),
+            decision_rationale=p.payload.get("decision_rationale", ""),
+            semantic_layer=p.payload.get("semantic_layer", "absent"),
+            semantic_layer_version=str(p.payload.get("semantic_layer_version", "0")),
+            status=Status.CANDIDATE, authority=Authority.UNTRUSTED)
+        return [sc.id], sc.semantic_state.value, f"semantic analysis {sc.id}: {sc.decision.value}"
+
     def _h_narrative_render(self, p, actor, gov):
         # A narrative is language only: it summarises, it never writes operational state
         # or facts. It is untrusted by construction.
@@ -464,6 +485,7 @@ _HANDLERS = {
     Operator.METHOD_REJECT: Layer9._h_method_reject,
     Operator.SELF_MODEL_PROPOSE: Layer9._h_self_model_propose,
     Operator.NARRATIVE_RENDER: Layer9._h_narrative_render,
+    Operator.SEMANTIC_CLUSTER_PROPOSE: Layer9._h_semantic_cluster_propose,
 }
 
 

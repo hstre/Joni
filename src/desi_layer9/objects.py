@@ -18,6 +18,8 @@ from .enums import (
     Operator,
     ProposalType,
     RelationType,
+    SemanticDecision,
+    SemanticState,
 )
 
 
@@ -201,3 +203,31 @@ class NarrativeSummary(EpistemicObject):
     object_type: ObjectType = ObjectType.NARRATIVE_SUMMARY
     text: str = ""
     basis: tuple[str, ...] = ()           # the object ids it summarises
+
+
+@dataclass
+class SemanticCluster(EpistemicObject):
+    """Layer 9's auditable annotation of a DESi Semantic-Layer analysis over claims.
+
+    It is an **annotation over claims, never a rewrite of them**. It keeps three things
+    cleanly separated and on the permanent record:
+
+      1. what the DESi Semantic Layer *measured* (``measurement``: frames, Π-distance,
+         √JSD, logical audit, frame tension, EN signal) - with its version;
+      2. what Layer 9 *decided* from that (``decision`` + ``semantic_state``);
+      3. (Joni's later synthesis is a separate object, referencing this one.)
+
+    Append-only: a newer Semantic-Layer version emits *new* clusters; it never edits the
+    originals or the claims. Always a candidate analysis - never authoritative.
+    """
+
+    object_type: ObjectType = ObjectType.SEMANTIC_CLUSTER
+    members: tuple[str, ...] = ()                 # claim ids analysed (2 for a pair, N for a group)
+    surface_terms: tuple[str, ...] = ()           # the lexical hooks that triggered analysis
+    lexical_trigger: float = 0.0                  # the cheap overlap that nominated it
+    measurement: dict = field(default_factory=dict)  # raw DESi Semantic-Layer outputs
+    decision: SemanticDecision = SemanticDecision.INSUFFICIENT  # the governed relationship
+    semantic_state: SemanticState = SemanticState.LEXICAL_CANDIDATE  # governance disposition
+    decision_rationale: str = ""
+    semantic_layer: str = "absent"                # which Semantic Layer produced the measures
+    semantic_layer_version: str = "0"
