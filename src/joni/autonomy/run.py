@@ -23,7 +23,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from .. import desi_link
-from . import core_state, governance, self_review, site
+from . import core_state, develop, governance, self_review, site
 from .budget import load as load_budget
 from .budget import save as save_budget
 from .config import online, paths, runs_per_week, runtime_days, weekly_budget_eur
@@ -134,6 +134,10 @@ def one_cycle() -> dict:
 
     extensions["seen"] = sorted(seen)[-2000:]   # bound the dedup set
 
+    # 4b. Self-development: keep restructuring from existing state (evidence web +
+    #     engaging conflicts), even when no new papers arrived. Honest, never confirms.
+    developed = develop.develop(cs, extensions, proto, cycle)
+
     # 5. Hourly self-review -> provisional self-model claims, reported on the site.
     reviewed = False
     if self_review.should_review(extensions, now):
@@ -145,14 +149,15 @@ def one_cycle() -> dict:
     reflect = _reflect(cs, window, budget, judged, proto, cycle)
 
     proto.record(cycle, "note",
-                 f"cycle done · {len(new_items)} new · spend €{budget.spent_eur:.4f} "
-                 f"· routing via {reflect['routing_engine']}")
+                 f"cycle done · {len(new_items)} new · {developed['links']} new link(s) · "
+                 f"spend €{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
     _finish(p, cs, budget, window, extensions, proto, reflect)
     return {"cycle": cycle, "new_items": len(new_items), "asks": len(asks_new),
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
-            "days_running": days_running, "reviewed": reviewed}
+            "days_running": days_running, "reviewed": reviewed,
+            "developed": developed}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:

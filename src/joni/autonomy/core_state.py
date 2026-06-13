@@ -89,6 +89,28 @@ class CoreState:
     def confirmed_claims(self) -> list:
         return [c for c in self.core.all(l9.ObjectType.CLAIM) if c.status is Status.CONFIRMED]
 
+    def corroborate(self, claim_id: str, by_claim, *, relation: str = "supports") -> str:
+        """Attach an (unreviewed) evidence link from another claim's content.
+
+        Honest self-organisation: it builds the evidence web but does NOT review or
+        confirm anything - confirmation still needs an independent human reviewer.
+        ``relation`` is ``supports`` for strong overlap, else ``contextualizes``.
+        """
+        self.core.submit(make_proposal(
+            ProposalType.CLAIM_PROPOSAL, Operator.EVIDENCE_ATTACH,
+            payload={"content": f"{relation} via {by_claim.id}: {by_claim.text}",
+                     "relation": relation, "review_status": "unreviewed"},
+            proposer="joni", provenance=Provenance.from_operator(),
+            target_objects=(claim_id,)), actor="joni")
+        return self._newest(l9.ObjectType.EVIDENCE_LINK).id
+
+    def review_conflict(self, conflict_id: str):
+        return self._op(ProposalType.STATE_REVISION_PROPOSAL, Operator.CONFLICT_REVIEW,
+                        {}, targets=(conflict_id,))
+
+    def evidence_links(self) -> int:
+        return len(self.core.all(l9.ObjectType.EVIDENCE_LINK))
+
     def _newest(self, object_type):
         return max(self.core.all(object_type), key=lambda o: int(o.id.split("-")[-1]))
 
@@ -133,6 +155,8 @@ class CoreState:
             "open_conflicts": len(s.open_conflicts()),
             "methods": len(s.all(l9.ObjectType.METHOD)),
             "preferences": len(s.all(l9.ObjectType.PREFERENCE)),
+            "evidence_links": len(s.all(l9.ObjectType.EVIDENCE_LINK)),
+            "self_model": len(s.all(l9.ObjectType.SELF_MODEL_CLAIM)),
         }
 
 
