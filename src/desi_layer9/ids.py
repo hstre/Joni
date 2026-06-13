@@ -31,6 +31,7 @@ PREFIX: dict[ObjectType, str] = {
     ObjectType.OPERATIONAL_STATE: "OS",
     ObjectType.SELF_MODEL_CLAIM: "SM",
     ObjectType.NARRATIVE_SUMMARY: "NS",
+    ObjectType.SEMANTIC_CLUSTER: "SC",
 }
 
 

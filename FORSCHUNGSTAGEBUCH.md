@@ -198,3 +198,46 @@ kontinuierlich (ein Zyklus ~alle 3 Min) auf dem audited Layer-9-Kern, mit Method
 Kevin-Trials, Erfindung, **emergenter** Selbst-Entwicklung (erstes `memory-as-a-lens`
 bereits live), stündlichem/10-Run-Ich-Form-Bericht und öffentlichem Dashboard. Plan:
 mehrere Stunden laufen lassen, dann Deltas gegen die Baseline auswerten.
+
+### Eintrag 2026-06-13 ~22:40 UTC — Architektur-Korrektur: der Semantic Layer gehört in Layer 9
+**Anlass (Nutzer):** Die Bedeutungs-Entscheidung („welche Begriffe meinen dasselbe")
+darf **nicht in Joni** liegen — sonst säße eine epistemisch zentrale Interpretation in
+genau dem System, dessen Vorschläge kontrolliert werden. Außerdem hat **DESi** den
+Semantic Layer bereits fertig (FrameDetector, LogicalAuditor, FrameTensionRouter, Π/√JSD,
+Duplikat-/EN-Erkennung) — also **keine zweite Semantik bauen**.
+
+**Zwischenfehler & Korrektur:** Ich hatte zuerst einen eigenen Concept-Normalizer /
+Sense-Resolver / Embedding-Clusterer angefangen. Das war die verbotene Doppel-Architektur
+und wurde **verworfen**. Stattdessen:
+
+- **Layer 9 bekommt einen Port** (`desi_layer9/semantics/ports.py`) zum vorhandenen DESi
+  Semantic Layer + eine **governte Entscheidung** (`decision.py`) und einen **Adapter**
+  (`adapter.py`), der die Analyse als **append-only Annotation** (`SemanticCluster`) durchs
+  Gate schreibt. `desi_layer9` bleibt dependency-frei; die echte DESi-Bindung wird injiziert
+  (`joni/autonomy/desi_semantics.py`, soft — fällt auf einen *fail-closed* Null-Layer zurück).
+- **Lexikalische Überschneidung ist nur noch Trigger.** `develop.py`: `_overlap()` vergibt
+  **keine** Relation mehr; der Trigger ruft den Layer-9-Adapter, und erst dessen *governte*
+  Entscheidung (duplicate | supports | complementary | tension | contradictory | unrelated |
+  insufficient) erzeugt einen Link oder öffnet einen Konflikt. Ohne Semantic Layer →
+  *insufficient* → **kein** Link (nie lexikalischer Fallback).
+- **Joni darf nur synthetisieren, wenn Layer 9 den Cluster `synthesis-eligible` markiert;
+  Kevin bekommt eine Methode nur danach.** `emerge.py` ist entsprechend gated.
+- **Getrennt gespeichert:** (1) was der Semantic Layer maß (frames, Π-distance, logical
+  audit, frame tension, EN), (2) was Layer 9 entschied (decision + semantic_state), (3) was
+  Joni daraus machte (separates Objekt). Original-Claims bleiben **unverändert**.
+- **Verifiziert:** echte DESi-Bindung lädt FrameDetector/LogicalAuditor/FrameTensionRouter
+  und liefert echte Frames (information_theoretic, thermodynamic, formal_logic). Für
+  generische Routing-Claims sagt DESi *frame_undeclared* → Layer 9 konservativ *insufficient*
+  (keine Auto-Synthese ohne echten Frame — genau die gewünschte Governance).
+- **Tests:** Integrationsmatrix (`tests/test_semantic_layer.py`) — lexikalische Differenz/
+  semantische Äquivalenz, lexikalische Identität/verschiedene Frames, Duplikation,
+  Kontradiktion, Frame-Tension, EN, geteiltes Vokabular ohne Bezug, Replay-Determinismus,
+  Versionswechsel des Layers, fehlende/ungültige Layer-Ausgabe. Gesamt: **177 passed**,
+  ruff clean, `joni.autonomy verify` weiter OK (kein geschütztes Kernmodul berührt).
+
+**Offen / zu beobachten:** DESi erkennt für viele von Jonis aktuellen Alltags-Claims noch
+keinen Frame (→ *insufficient*); echte Synthesen entstehen erst, wenn Claims klar
+gerahmt sind. Π/√JSD ist in DESi aktuell **nicht** als saubere Paar-Distanz exponiert —
+das Mess-Feld `pi_distance` bleibt optional (None) und die Entscheidung stützt sich auf
+Frames + Tension + Logik; sobald DESi eine √JSD-Distanz exponiert, fließt sie ohne weitere
+Architekturänderung ein.

@@ -8,19 +8,25 @@ single observation), each through the gate, none faking authority:
   * **emergent topic** - a content term that keeps recurring across many claims spanning
     several different topics is promoted to a topic Joni tracks in its own right;
   * **emergent synthesis** - when >=3 claims on one topic share a through-line term, Joni
-    mints a higher-order *candidate* claim abstracting that cluster (a step up the
-    abstraction ladder, not a sideways bridge);
-  * **emergent method** - a term that recurs across >=2 different topics is a transferable
-    lens, so Joni stores it as a *candidate method* for Kevin, scoped to those topics.
+    mints a higher-order *candidate* claim abstracting that cluster - **but only if Layer 9
+    (via the DESi Semantic Layer) marks the cluster ``synthesis-eligible``**. Lexical
+    recurrence is just the trigger; it never decides the claims belong together;
+  * **emergent method** - a term that recurs across >=2 different topics is offered to
+    Kevin as a *candidate method* - again **only after** a synthesis-eligible decision.
 
-Everything is deterministic and self-limiting: each move fires only when a genuine
-recurrence threshold is met, at most one of each per cycle, deduped - so once the net is
-consolidated it goes quiet until new material recurs.
+The lexical recurrence is a cheap candidate generator. The judgement that the underlying
+claims are semantically compatible is the Semantic Layer's, governed by Layer 9. Each move
+fires at most once per cycle, deduped; when the Semantic Layer is unavailable the cluster
+is *insufficient* and no synthesis/method is produced.
 """
 
 from __future__ import annotations
 
 from collections import defaultdict
+
+from desi_layer9 import SemanticState
+from desi_layer9.semantics import adapter
+from desi_layer9.semantics.ports import NullSemanticLayer
 
 from ..conflict import _content
 
@@ -61,7 +67,20 @@ def _term_index(claims) -> dict[str, dict]:
     return idx
 
 
-def emerge(cs, extensions: dict, proto, cycle: int = 0) -> dict:
+def _eligible_cluster(cs, proto, cycle, claims, *, layer, surface_term):
+    """Run the Layer-9 semantic adapter over a group; return the recorded SemanticCluster.
+    Joni only proceeds if it comes back ``synthesis-eligible`` - he never decides this."""
+    sc = adapter.analyse_cluster(cs.core, claims, layer=layer, surface_term=surface_term,
+                                 run_id=f"joni-c{cycle}")
+    if sc.semantic_state is not SemanticState.SYNTHESIS_ELIGIBLE:
+        proto.record(cycle, "emerged",
+                     f"'{surface_term}' cluster not synthesised: Layer 9 says "
+                     f"{sc.decision.value} ({sc.semantic_state.value})")
+    return sc
+
+
+def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
+    layer = layer or NullSemanticLayer()
     live = cs.active_claims()
     idx = _term_index(live)
     known_topics = set(cs.topics())
@@ -102,16 +121,19 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0) -> dict:
         key = f"{topic}|{term}"
         if key in done_syn or len(cluster) < _MIN_CLAIMS:
             continue
+        done_syn.add(key)                                   # analysed once, eligible or not
+        sc = _eligible_cluster(cs, proto, cycle, cluster, layer=layer, surface_term=term)
+        if sc.semantic_state is not SemanticState.SYNTHESIS_ELIGIBLE:
+            continue                                        # Layer 9 did not clear it
         parents = tuple(sorted(c.id for c in cluster))[:5]
         cs.hypothesize(
             f"Across my {topic} claims, '{term}' recurs as a through-line worth testing "
             "as a single underlying factor.", topic, parents=parents)
-        done_syn.add(key)
         made_syn += 1
         out["synthesis"] = made_syn
         proto.record(cycle, "emerged",
-                     f"synthesis on {topic}: '{term}' abstracted from {len(cluster)} claims "
-                     f"({', '.join(parents)})")
+                     f"synthesis on {topic}: '{term}' (Layer 9 synthesis-eligible, "
+                     f"{sc.id}) from {len(cluster)} claims ({', '.join(parents)})")
     extensions["synthesized"] = sorted(done_syn)[-500:]
 
     # -- 3. emergent method: a cross-topic lens stored as a candidate for Kevin --------- #
@@ -124,16 +146,19 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     if lenses:
         term, e = lenses[0]
         topics = tuple(sorted(e["topics"]))
-        cs.propose_method(
-            name=f"{term}-as-a-lens",
-            summary=(f"'{term}' recurs across {', '.join(topics)} in my own evidence; "
-                     f"treat it as a transferable lens and read a new problem through it."),
-            applicable_to=topics, origin="joni:emergent")
-        done_meth.add(term)
-        out["method"] = term
-        proto.record(cycle, "emerged",
-                     f"method candidate for Kevin: '{term}-as-a-lens' from a recurrence "
-                     f"across {', '.join(topics)}")
+        done_meth.add(term)                                 # analysed once
+        # Kevin only receives a method after Layer 9 marks the cluster synthesis-eligible.
+        sc = _eligible_cluster(cs, proto, cycle, e["claims"][:6], layer=layer, surface_term=term)
+        if sc.semantic_state is SemanticState.SYNTHESIS_ELIGIBLE:
+            cs.propose_method(
+                name=f"{term}-as-a-lens",
+                summary=(f"'{term}' recurs across {', '.join(topics)} in my own evidence; "
+                         f"treat it as a transferable lens and read a new problem through it."),
+                applicable_to=topics, origin="joni:emergent")
+            out["method"] = term
+            proto.record(cycle, "emerged",
+                         f"method candidate for Kevin: '{term}-as-a-lens' (Layer 9 "
+                         f"synthesis-eligible, {sc.id}) across {', '.join(topics)}")
     extensions["emerged_methods"] = sorted(done_meth)
 
     return out

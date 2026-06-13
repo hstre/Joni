@@ -65,6 +65,15 @@ _GOAL_LIKE: dict[Status, frozenset[Status]] = {
     S.SUPERSEDED: _TERMINAL,
 }
 
+# Semantic clusters: a candidate analysis. It is never promoted to authoritative; a
+# recomputation supersedes it, a contaminated one is quarantined, a withdrawn one rejected.
+_SEMANTIC: dict[Status, frozenset[Status]] = {
+    S.CANDIDATE: frozenset({S.SUPERSEDED, S.REJECTED, S.QUARANTINED}),
+    S.SUPERSEDED: _TERMINAL,
+    S.REJECTED: _TERMINAL,
+    S.QUARANTINED: frozenset({S.CANDIDATE, S.REJECTED}),
+}
+
 # Memory episodes: recorded -> active; may be superseded/quarantined but salience
 # (recall) never changes status (see rules: recall must not promote).
 _MEMORY: dict[Status, frozenset[Status]] = {
@@ -88,6 +97,7 @@ TRANSITIONS: dict[ObjectType, dict[Status, frozenset[Status]]] = {
     ObjectType.GOAL: _GOAL_LIKE,
     ObjectType.PROJECT: _GOAL_LIKE,
     ObjectType.MEMORY_EPISODE: _MEMORY,
+    ObjectType.SEMANTIC_CLUSTER: _SEMANTIC,
 }
 
 CONFLICT_TRANSITIONS: dict[ConflictStatus, frozenset[ConflictStatus]] = {

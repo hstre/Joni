@@ -32,6 +32,41 @@ class ObjectType(StrEnum):
     OPERATIONAL_STATE = "operational_state"
     SELF_MODEL_CLAIM = "self_model_claim"
     NARRATIVE_SUMMARY = "narrative_summary"
+    SEMANTIC_CLUSTER = "semantic_cluster"
+
+
+class SemanticState(StrEnum):
+    """The auditable lifecycle of a semantic cluster proposal.
+
+    Meaning equivalence is decided *here*, in Layer 9, never inside Joni or Kevin. A
+    cluster climbs these stages only as it passes deterministic checks; a model is asked
+    only for genuine boundary cases, and a human for the rest. Only ``SYNTHESIS_ELIGIBLE``
+    clusters may feed a Joni synthesis or a Kevin method.
+    """
+
+    LEXICAL_CANDIDATE = "lexical-candidate"        # cheap recurrence found the members
+    SEMANTIC_MEASURED = "semantic-measured"        # the DESi Semantic Layer has run
+    SYNTHESIS_ELIGIBLE = "synthesis-eligible"      # may become a synthesis/method
+    SYNTHESIS_REJECTED = "synthesis-rejected"      # not the same concept / contradictory
+    HUMAN_REVIEW_REQUIRED = "human-review-required"  # borderline; a human must decide
+    INSUFFICIENT_EVIDENCE = "insufficient-semantic-evidence"  # layer absent/invalid output
+
+
+class SemanticDecision(StrEnum):
+    """The governed relationship Layer 9 reads out of the DESi Semantic Layer's measures.
+
+    The *measurement* (frames, Π-distance, √JSD, logical audit, frame tension, EN signal)
+    comes from DESi; the *classification* into one of these is Layer 9's governed decision.
+    Joni never assigns these itself.
+    """
+
+    DUPLICATE = "duplicate"                # same claim, semantically
+    SUPPORTS = "supports"                  # one backs the other
+    COMPLEMENTARY = "complementary"        # related, add up to more (synthesis candidate)
+    TENSION = "tension"                    # in semantic tension (EN may apply)
+    CONTRADICTORY = "contradictory"        # logically opposed
+    UNRELATED = "unrelated"                # shared words, different concepts
+    INSUFFICIENT = "insufficient-semantic-evidence"  # the layer could not decide
 
 
 class Status(StrEnum):
@@ -131,6 +166,7 @@ class ProposalType(StrEnum):
     METHOD_PROPOSAL = "method_proposal"
     STATE_REVISION_PROPOSAL = "state_revision_proposal"
     SELF_MODEL_PROPOSAL = "self_model_proposal"
+    SEMANTIC_PROPOSAL = "semantic_proposal"
 
 
 class Operator(StrEnum):
@@ -173,6 +209,7 @@ class Operator(StrEnum):
     SELF_MODEL_PROPOSE = "self_model_propose"
     SELF_MODEL_REVISE = "self_model_revise"
     NARRATIVE_RENDER = "narrative_render"
+    SEMANTIC_CLUSTER_PROPOSE = "semantic_cluster_propose"
 
 
 # Operators permitted to grant high authority. Enforced by the gate (PR 2); declared
