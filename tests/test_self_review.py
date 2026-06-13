@@ -41,6 +41,25 @@ def test_review_records_protocol_and_narrative():
     assert ns and ns[0].authority is l9.Authority.UNTRUSTED
 
 
+def test_review_is_a_detailed_first_person_report():
+    cs = _cs()
+    cs.learn("cheap local routing beats a remote call for short tasks", "routing")
+    h = cs.hypothesize("Hypothesis: routing discipline transfers to memory", "routing",
+                       parents=[cs.active_claims()[0].id])
+    review = self_review.run_review(
+        cs, {"topics_added": ["calibration"]}, _Proto(), 1, days=2, spend=0.0,
+        context={"invented": {"hypotheses": 1}, "developed": {"links": 1},
+                 "methods": {"methods": 1}, "trialed": {"trialed": 1}})
+
+    titles = [s["title"] for s in review["sections"]]
+    assert titles == ["What I looked at", "What caught my interest",
+                      "Where I had doubts", "What I took away"]
+    blob = " ".join(s["text"] for s in review["sections"])
+    assert " I " in blob                                      # first person, throughout
+    assert "I am most pleased" in blob                        # reports the guess it made
+    assert h                                                  # (the hypothesis it narrates)
+
+
 def test_review_is_hourly_not_every_cycle():
     now = datetime.now(UTC)
     assert self_review.should_review({}, now) is True             # never reviewed -> yes
