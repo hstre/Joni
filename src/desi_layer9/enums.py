@@ -179,7 +179,6 @@ class Operator(StrEnum):
 # here so the authority model is fully specified in one place.
 OPERATORS_GRANTING_AUTHORITATIVE: frozenset[Operator] = frozenset({
     Operator.CLAIM_CONFIRM,
-    Operator.CLAIM_CREATE,        # may create directly-authoritative deterministic facts
     Operator.GOAL_CREATE,
     Operator.PROJECT_CREATE,
     Operator.METHOD_PROMOTE,
