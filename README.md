@@ -222,7 +222,7 @@ Two safety walls: a **core hash-lock** (any drift halts the run) and a **write a
 
 ### Running it for a week
 
-`.github/workflows/autonomy.yml` fires **hourly** (`workflow_dispatch` too), runs one cycle
+`.github/workflows/autonomy.yml` fires **every 15 minutes** (`workflow_dispatch` too), runs one cycle
 with `JONI_ONLINE=1` and the `DEEPSEEK_API_KEY` / `OPENROUTER_API_KEY` secrets, files any
 asks as issues, and commits `state/ protocol/ docs/` back to `main`. It **retires itself
 after 7 days** (the schedule then no-ops). Enable **GitHub Pages → Deploy from branch →
