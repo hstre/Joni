@@ -51,6 +51,21 @@ def build(data: dict) -> str:
     route_line = (f" · last route → {esc(lr['model'])} (~${lr['cost_usd']:.6f})"
                   if lr else "")
 
+    review = ext.get("last_review")
+    if review:
+        assessments = "".join(
+            f"<li>{esc(a.get('text',''))} "
+            f"<span class=src>(evidence {len(a.get('evidence', []))}, "
+            f"counter {len(a.get('counterevidence', []))})</span></li>"
+            for a in review.get("assessments", [])) or "<li class=empty>no assessment</li>"
+        review_html = (
+            f"<div class=note><b>{esc(review.get('ts',''))}</b> · "
+            f"these are <i>provisional</i> beliefs about myself, evidence-backed, not facts.</div>"
+            f"<p style='color:var(--ink);margin:8px 0'>{esc(review.get('headline',''))}</p>"
+            f"<ul>{assessments}</ul>")
+    else:
+        review_html = "<p class=empty>No self-review yet (runs hourly).</p>"
+
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width, initial-scale=1">
@@ -120,6 +135,10 @@ without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
       the free answer inadequate, and only the cheapest tier within budget.</div>
     <h2 style=margin-top:16px>Capability notes</h2>
     <ul>{notes}</ul>
+  </div>
+  <div class="card full">
+    <h2>Self-review · hourly · provisional self-model (not facts)</h2>
+    {review_html}
   </div>
   <div class="card full">
     <h2>Asks — waiting on a human (protected core)</h2>
