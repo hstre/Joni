@@ -25,6 +25,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--budget", type=float, default=1.0, help="external-API budget")
     p.add_argument("--ledger", action="store_true", help="dump the full audit ledger")
     p.add_argument("--auto", action="store_true", help="show the autobiographical memory")
+    p.add_argument("--state", metavar="PATH", default=None,
+                   help="resume from / save to a persisted identity (lives on across runs)")
     return p
 
 
@@ -36,8 +38,12 @@ def _hr(title: str) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
-    joni = Joni(budget=args.budget)
+    joni = Joni(budget=args.budget, state_path=args.state)
     joni.live(ticks=args.ticks)
+    if args.state:
+        joni.save()
+        print(f"(identity persisted to {args.state} · creativity engine: "
+              f"{joni.snapshot()['creativity']})")
 
     snap = joni.snapshot()
     _hr(f"{snap['name']} · tick {snap['tick']}")
