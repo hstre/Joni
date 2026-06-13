@@ -1,17 +1,18 @@
 {
   "snapshot": {
-    "tick": 1,
+    "tick": 2,
     "topics": [
       "routing",
+      "alignment",
       "drift",
       "evaluation",
       "memory",
       "privacy"
     ],
-    "claims_total": 11,
-    "claims_active": 11,
-    "memory": 11,
-    "ledger": 16,
+    "claims_total": 21,
+    "claims_active": 21,
+    "memory": 21,
+    "ledger": 26,
     "open_conflicts": 0,
     "goals": 3,
     "projects": 0,
@@ -20,16 +21,17 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 1
+    "runs": 2
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 1,
+    "runs": 2,
     "retired": false
   },
   "extensions": {
     "topics_added": [
-      "evaluation"
+      "evaluation",
+      "alignment"
     ],
     "notes": [
       {
@@ -42,9 +44,18 @@
       "arxiv:2606.13651v1",
       "arxiv:2606.13654v1",
       "arxiv:2606.13672v1",
+      "arxiv:2606.13673v1",
+      "arxiv:2606.13675v1",
+      "arxiv:2606.13679v1",
       "arxiv:2606.13681v1",
+      "hackernews:13718752",
+      "hackernews:16065845",
+      "hackernews:16153840",
+      "hackernews:39161339",
+      "huggingface:2606.07867",
       "huggingface:2606.10423",
       "huggingface:2606.12243",
+      "huggingface:2606.12730",
       "huggingface:2606.13174",
       "huggingface:2606.13572"
     ]
@@ -230,7 +241,189 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:26+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: InterleaveThinker: Reinforcing Agentic Interleaved Generation",
+      "refs": {
+        "source": "arxiv:2606.13679v1",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.13679v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Improving Robotic Generalist Policies via Flow Reversal Steering",
+      "refs": {
+        "source": "arxiv:2606.13675v1",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.13675v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: SpatialClaw: Rethinking Action Interface for Agentic Spatial Reasoning",
+      "refs": {
+        "source": "arxiv:2606.13673v1",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.13673v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Cloudflare Reverse Proxies Are Dumping Uninitialized Memory",
+      "refs": {
+        "source": "hackernews:13718752",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://bugs.chromium.org/p/project-zero/issues/detail?id=1139"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Reading privileged memory with a side-channel",
+      "refs": {
+        "source": "hackernews:16065845",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: In loving memory of square checkbox",
+      "refs": {
+        "source": "hackernews:39161339",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://tonsky.me/blog/checkbox/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Google Memory Loss",
+      "refs": {
+        "source": "hackernews:16153840",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://www.tbray.org/ongoing/When/201x/2018/01/15/Google-is-losing-its-memory"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Rethinking Psychometric Evaluation of LLMs: When and Why Self-Reports Predict Be",
+      "refs": {
+        "source": "huggingface:2606.12730",
+        "topic": "routing",
+        "new_topic": "alignment",
+        "url": "https://huggingface.co/papers/2606.12730"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: The Cold-Start Safety Gap in LLM Agents",
+      "refs": {
+        "source": "huggingface:2606.07867",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.07867"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "improved",
+      "summary": "track_topic: alignment",
+      "refs": {
+        "claim": "C-21",
+        "topic": "alignment",
+        "source": "huggingface:2606.12730",
+        "url": "https://huggingface.co/papers/2606.12730"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:31:27+00:00",
+      "cycle": 2,
+      "kind": "note",
+      "summary": "cycle done · 9 new · spend €0.0000",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-13T15:19:44+00:00"
+  "generated": "2026-06-13T15:31:27+00:00"
 }
