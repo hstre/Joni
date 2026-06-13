@@ -64,6 +64,21 @@ def test_develop_engages_open_conflicts_into_review():
     assert x.conflict_status.value == "under_review"   # engaged, not force-resolved
 
 
+def test_backfill_gives_legacy_links_a_semantic_record():
+    # a pair "linked" under the old lexical logic, with no semantic annotation yet
+    cs = _cs_with_corroborating_claims()
+    a, b = cs.active_claims()[0].id, cs.active_claims()[1].id
+    ext = {"linked": [f"{a}|{b}"], "semantic_backfilled": []}
+    out = develop.develop(cs, ext, _Proto(), layer=StubSemanticLayer())
+    assert out["backfilled"] >= 1
+    clusters = cs.core.all(l9.ObjectType.SEMANTIC_CLUSTER)
+    assert clusters and set(clusters[0].members) == {a, b}   # the backlog pair is now recorded
+    # and it is not re-analysed next cycle
+    before = len(clusters)
+    develop.develop(cs, ext, _Proto(), layer=StubSemanticLayer())
+    assert len(cs.core.all(l9.ObjectType.SEMANTIC_CLUSTER)) == before
+
+
 def test_develop_never_confirms_a_claim():
     cs = _cs_with_corroborating_claims()
     develop.develop(cs, {}, _Proto())
