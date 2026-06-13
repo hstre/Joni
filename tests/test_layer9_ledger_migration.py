@@ -18,7 +18,8 @@ def _seed_core() -> l9.Layer9:
                          proposer="joni", provenance=Provenance.from_operator())
     core.submit(p)
     cid = core.all(l9.ObjectType.CLAIM)[0].id
-    core.submit(l9.make_proposal(PT.CLAIM_PROPOSAL, OP.CLAIM_REVISE, payload={"to_status": "active"},
+    core.submit(l9.make_proposal(PT.CLAIM_PROPOSAL, OP.CLAIM_REVISE,
+                                 payload={"to_status": "active"},
                                  proposer="joni", provenance=Provenance.from_operator(),
                                  target_objects=(cid,)))
     return core

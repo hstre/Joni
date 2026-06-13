@@ -88,12 +88,13 @@ A backup is taken before originals are touched.
 
 ## Remaining limits (honest)
 
-- `EpistemicIdentity` (PR 4) is the authoritative epistemic identity on the core, with
-  the dual view, the self/operational/narrative separation, reload and migration. The
-  **legacy operative-shell runtime** (`joni/state.py`, `joni/autonomy/`) still drives the
-  live "off the leash" demonstrator on the old container; cutting that live loop fully
-  over to the core (and deleting the old store) is the next step — the migration importer
-  for it already exists.
+- The live **autonomy loop now runs on the core**: `joni/autonomy/` records claims,
+  preferences and conflicts through the gate into `state/layer9.json` (replayable, chain-
+  verified), migrating the legacy `joni_state.json` on first run. Conflicts are **opened,
+  not force-resolved** — Joni can hold two incompatible explanations open. Time is real:
+  the core's `tick` is the wall-clock day count, with no artificial per-cycle jumps. The
+  old `joni/state.py` / `operators.py` / `conflict.py` remain as library modules used by
+  the migration and detection heuristics, but are no longer the authoritative store.
 - `support` / `confidence_or_support` is an internal metric in `[0, 1]` — **not a
   probability**.
 - Independent-review enforcement and richer goal/project operational lifecycles are

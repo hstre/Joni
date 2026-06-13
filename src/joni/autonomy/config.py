@@ -22,7 +22,11 @@ class Paths:
 
     @property
     def state(self) -> Path:
-        return self.root / "state" / "joni_state.json"
+        return self.root / "state" / "joni_state.json"     # legacy (migration source)
+
+    @property
+    def core(self) -> Path:
+        return self.root / "state" / "layer9.json"          # the authoritative core
 
     @property
     def budget(self) -> Path:

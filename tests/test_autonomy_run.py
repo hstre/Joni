@@ -23,7 +23,8 @@ def test_one_cycle_produces_protocol_site_and_state(monkeypatch, tmp_path):
     assert (root / "docs" / "index.html").exists()
     assert "Joni" in (root / "docs" / "index.html").read_text()
     assert (root / "protocol" / "protocol.jsonl").read_text().strip()
-    assert (root / "state" / "joni_state.json").exists()
+    assert (root / "state" / "layer9.json").exists()        # the authoritative core
+    assert summary["days_running"] == 0                      # real time, no tick jump
     # The peripheral improvement was self-applied; the ask was queued for a human.
     ext = json.loads((root / "state" / "extensions.json").read_text())
     assert ext["topics_added"]
