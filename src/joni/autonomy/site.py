@@ -112,7 +112,8 @@ without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
   <div class=card>
     <h2>Status</h2>
     <div class=stat>
-      <span>cycle <b>{esc(s.get('tick',0))}</b></span>
+      <span>day <b>{esc(s.get('tick',0))}</b> of the week</span>
+      <span>run <b>{esc(w.get('runs',0))}</b></span>
       <span>topics <b>{esc(len(s.get('topics',[])))}</b></span>
       <span>claims <b>{esc(s.get('claims_active',0))}</b>/{esc(s.get('claims_total',0))}</span>
       <span>memory <b>{esc(s.get('memory',0))}</b></span>
