@@ -149,11 +149,14 @@ def one_cycle() -> dict:
     #     auto-confirmed). Joni does not only react to sources.
     invented = invent.invent(cs, extensions, proto, cycle)
 
-    # 5. Hourly self-review -> provisional self-model claims, reported on the site.
+    # 5. Hourly self-review -> a first-person report + provisional self-model claims.
     reviewed = False
     if self_review.should_review(extensions, now):
         self_review.run_review(cs, extensions, proto, cycle,
-                               days=days_running, spend=budget.spent_eur)
+                               days=days_running, spend=budget.spent_eur,
+                               context={"judged": judged, "methods": found_methods,
+                                        "trialed": trialed, "developed": developed,
+                                        "invented": invented})
         reviewed = True
 
     # 6. Reflect through DESi: its real routing table + deterministic tools (free).

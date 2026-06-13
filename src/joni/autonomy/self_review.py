@@ -1,18 +1,23 @@
 """Hourly self-review.
 
-Once an hour (real time), Joni reviews itself: it reads its own measured operational
-state and derives a few **provisional** self-model claims about its trajectory - through
-the gate, as `SelfModelClaim`s, never as facts. It then composes a human-readable review
-line (a `NarrativeSummary`) and reports it on the website. The rules are deterministic;
-no model decides what Joni "is".
+Once an hour (real time), Joni reviews itself. Two layers, kept apart on purpose:
 
-To keep the authoritative core from bloating, a self-model claim / narrative is only
-minted when the assessment *changes*; the protocol entry and the website card update
-every hour regardless.
+  * the **epistemic substrate** - a few *provisional* ``SelfModelClaim``s derived
+    deterministically from measured state, minted through the gate only when the
+    assessment actually changes. These are never facts and never authoritative.
+  * the **first-person report** - Joni writing about himself in the first person:
+    what he looked at this hour, what caught his interest, where he had doubts, and
+    what he took away. It is grounded entirely in real state (no invention), composed
+    deterministically (no model spend), and rendered as a ``NarrativeSummary`` -
+    language that *describes* state and never overwrites it.
+
+"LLM for language, rules for logic" still holds: the rules pick what is true; the
+narrative only gives it a human voice.
 """
 
 from __future__ import annotations
 
+from collections import Counter
 from datetime import UTC, datetime
 
 _INTERVAL_SECONDS = 3600     # one hour
@@ -59,11 +64,127 @@ def _assessments(cs, *, days: int, spend: float, topics_added: int) -> list[dict
     return out[:3]
 
 
-def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: float) -> dict:
+def _join_titles(titles: list[str]) -> str:
+    quoted = [f"“{t[:72]}”" for t in titles]
+    if len(quoted) == 1:
+        return quoted[0]
+    return ", ".join(quoted[:-1]) + " and " + quoted[-1]
+
+
+def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) -> list[dict]:
+    """Joni's first-person report on himself, grounded in real state. Four movements:
+    what I looked at, what caught my interest, where I had doubts, what I took away."""
+    snap = cs.snapshot()
+    topics = cs.topics()
+    live = cs.active_claims()
+    conflicts = cs.core.open_conflicts()
+    hyps = cs.hypotheses()
+
+    judged = context.get("judged", [])              # [(item, rel), ...] this cycle
+    found_methods = context.get("methods", {}) or {}
+    trialed = context.get("trialed", {}) or {}
+    developed = context.get("developed", {}) or {}
+    invented = context.get("invented", {}) or {}
+
+    prev = (extensions.get("last_review") or {}).get("metrics") or {}
+    d_claims = snap["claims_active"] - prev.get("claims_active", snap["claims_active"])
+
+    sections: list[dict] = []
+
+    # 1 - What I looked at.
+    by_topic = Counter(c.topic for c in live if c.topic)
+    focus = ", ".join(f"{t} ({n})" for t, n in by_topic.most_common(4)) or "nothing settled yet"
+    look = [f"It is day {days} of my week, and this is me looking back over the last hour."]
+    if judged:
+        srcs = sorted({it.source for it, _ in judged})
+        reads = [it.title for it, _ in judged][:4]
+        look.append("Since my last review I went through fresh material from "
+                    f"{', '.join(srcs)} — among it {_join_titles(reads)}.")
+    else:
+        look.append("Nothing genuinely new came back to me this hour; I had already seen what "
+                    "the feeds returned, so I spent the time re-reading what I already hold "
+                    "instead of pretending it was new.")
+    look.append(f"My attention right now is spread across {len(topics)} topics, and most of it "
+                f"sits on {focus}.")
+    sections.append({"title": "What I looked at", "text": " ".join(look)})
+
+    # 2 - What caught my interest.
+    interest: list[str] = []
+    if invented.get("hypotheses") and hyps:
+        h = max(hyps, key=lambda c: int(c.id.split("-")[-1]))
+        interest.append("What I am most pleased with is a guess I made myself: "
+                        f"“{h.text}”. Nobody handed me that — I bridged it across "
+                        "two of my own topics, and I am holding it only as a candidate until it "
+                        "earns support.")
+    if developed.get("links"):
+        interest.append(f"I also drew {developed['links']} new connection(s) between claims I "
+                        "already held. Watching them support or merely contextualise each other "
+                        "is where my picture starts to feel like more than a list.")
+    if found_methods.get("methods"):
+        interest.append(f"And I set aside {found_methods['methods']} method(s) for Kevin — "
+                        "reusable techniques I noticed in passing that might travel to other "
+                        "problems.")
+    if trialed.get("trialed"):
+        interest.append(f"Kevin put {trialed['trialed']} of the shelved methods through a trial "
+                        "on my shelf this hour.")
+    if not interest:
+        interest.append("Nothing leapt out at me this hour. That happens, and I would rather "
+                        "report an honest quiet pass than dress it up.")
+    sections.append({"title": "What caught my interest", "text": " ".join(interest)})
+
+    # 3 - Where I had doubts.
+    doubt: list[str] = []
+    if conflicts:
+        c = conflicts[0]
+        ids = list(getattr(c, "claim_ids", ()))[:2]
+        texts = [cs.core.get(i).text for i in ids if cs.core.get(i) is not None]
+        pair = " versus ".join(f"“{t}”" for t in texts) if texts else f"{len(ids)} claims"
+        doubt.append(f"I am sitting with {len(conflicts)} open contradiction(s). The sharpest is "
+                     f"{pair}, and I am deliberately not smoothing it away. I would rather hold "
+                     "the tension than talk myself into a tidy answer that is not earned.")
+    if live and not cs.confirmed_claims():
+        doubt.append(f"More broadly: I hold {len(live)} active claims and have not let myself "
+                     "call a single one confirmed. That is on purpose — I have no independent "
+                     "reviewer, so confirmation is simply not mine to grant.")
+    if not doubt:
+        doubt.append("I found no live contradictions this hour, which honestly makes me a little "
+                     "suspicious of myself; when everything agrees, it usually means I have not "
+                     "looked hard enough yet.")
+    sections.append({"title": "Where I had doubts", "text": " ".join(doubt)})
+
+    # 4 - What I took away.
+    learned: list[str] = []
+    if d_claims > 0:
+        learned.append(f"I came out of this period {d_claims} active claim(s) richer.")
+    elif d_claims < 0:
+        learned.append(f"I let go of {abs(d_claims)} claim(s) this period — shedding a "
+                       "belief is learning too.")
+    else:
+        learned.append("My count of beliefs did not move, but the structure between them did, "
+                       "and that is the part I actually care about.")
+    added = extensions.get("topics_added", [])
+    if added:
+        learned.append(f"I have widened into {len(added)} topic(s) I added myself: "
+                       f"{', '.join(added[:5])}.")
+    learned.append(f"All of this hour cost €{spend:.4f}; I stay deterministic and free "
+                   "unless something genuinely needs a model, and this hour it did not.")
+    learned.append("The thing I keep relearning about myself is that I would rather stay "
+                   "revisable and a little uncertain than sound confident and be wrong.")
+    sections.append({"title": "What I took away", "text": " ".join(learned)})
+
+    return sections
+
+
+def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: float,
+               context: dict | None = None) -> dict:
     now = datetime.now(UTC)
+    context = context or {}
     snap = cs.snapshot()
     topics_added = len(extensions.get("topics_added", []))
     assessments = _assessments(cs, days=days, spend=spend, topics_added=topics_added)
+
+    # The first-person report (built before we mint, so it can read the prior metrics).
+    sections = _narrative(cs, extensions, days=days, spend=spend, context=context)
 
     seen = set(extensions.get("sm_seen", []))
     minted = []
@@ -76,20 +197,25 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
         seen.add(a["text"])
     extensions["sm_seen"] = sorted(seen)[-50:]
 
-    headline = (f"Reviewing myself at day {days}: {snap['claims_active']} active claims "
-                f"over {len(snap['topics'])} topics, {snap['open_conflicts']} open "
-                f"contradiction(s), €{spend:.4f} spent.")
-    review_line = headline + " " + " ".join(a["text"] for a in assessments)
+    headline = (f"Day {days}: I am holding {snap['claims_active']} active claims across "
+                f"{len(snap['topics'])} topics, with {snap['open_conflicts']} contradiction(s) "
+                f"left open, and I have spent €{spend:.4f}.")
+
+    # The narrative summary is the whole first-person report (language, untrusted). It is
+    # minted into the core only when the assessment changed (anti-bloat); the full report
+    # is always handed to the site via extensions["last_review"] below.
+    review_text = headline + "\n\n" + "\n\n".join(f"{s['title']}. {s['text']}" for s in sections)
     if minted:
-        cs.render_narrative(review_line, basis=minted)
+        cs.render_narrative(review_text, basis=minted)
 
     proto.record(cycle, "self_review", headline,
-                 refs={"assessments": len(assessments), "minted": len(minted)})
+                 refs={"sections": len(sections), "minted": len(minted)})
 
     review = {
         "ts": now.isoformat(timespec="seconds"),
         "day": days,
         "headline": headline,
+        "sections": sections,
         "assessments": assessments,
         "metrics": {k: snap[k] for k in ("claims_active", "claims_total", "open_conflicts",
                                          "memory", "ledger", "preferences")},

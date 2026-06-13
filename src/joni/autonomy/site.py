@@ -53,15 +53,22 @@ def build(data: dict) -> str:
 
     review = ext.get("last_review")
     if review:
+        sections = "".join(
+            f"<div class=movement><h3>{esc(sec.get('title',''))}</h3>"
+            f"<p>{esc(sec.get('text',''))}</p></div>"
+            for sec in review.get("sections", []))
         assessments = "".join(
             f"<li>{esc(a.get('text',''))} "
             f"<span class=src>(evidence {len(a.get('evidence', []))}, "
             f"counter {len(a.get('counterevidence', []))})</span></li>"
             for a in review.get("assessments", [])) or "<li class=empty>no assessment</li>"
         review_html = (
-            f"<div class=note><b>{esc(review.get('ts',''))}</b> · "
-            f"these are <i>provisional</i> beliefs about myself, evidence-backed, not facts.</div>"
-            f"<p style='color:var(--ink);margin:8px 0'>{esc(review.get('headline',''))}</p>"
+            f"<div class=note><b>{esc(review.get('ts',''))}</b> · written in the first person, "
+            f"grounded in my own state — a report, not a performance.</div>"
+            f"<p class=lede>{esc(review.get('headline',''))}</p>"
+            f"{sections}"
+            f"<div class=note style='margin-top:12px'>The <i>provisional</i> beliefs this "
+            f"review updated about myself (evidence-backed, never facts):</div>"
             f"<ul>{assessments}</ul>")
     else:
         review_html = "<p class=empty>No self-review yet (runs hourly).</p>"
@@ -102,6 +109,11 @@ td{{padding:5px 8px;border-bottom:1px solid #20262f;vertical-align:top}}
 .k-method,.k-trialed{{color:var(--good);border-color:var(--good)}}
 .k-retired{{color:var(--rej);border-color:var(--rej)}}
 .note{{color:var(--mut);font-size:12px;margin-top:8px}}
+.lede{{color:var(--ink);font-size:15px;margin:10px 0 14px;font-style:italic}}
+.movement{{margin:12px 0;padding-left:12px;border-left:2px solid var(--line)}}
+.movement h3{{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;
+color:var(--acc)}}
+.movement p{{margin:0;color:var(--ink);max-width:760px}}
 </style></head><body>
 <header>
 <h1><span>Joni</span> — off the leash, on the record</h1>
