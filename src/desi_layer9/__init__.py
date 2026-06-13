@@ -20,6 +20,7 @@ replay and migration (PR 3), and the Joni/Kevin integrations (PR 4/5) build on t
 from __future__ import annotations
 
 from .base import EpistemicObject
+from .core import Layer9, make_proposal
 from .enums import (
     AUTHORITY_ORDER,
     OPERATORS_GRANTING_AUTHORITATIVE,
@@ -37,6 +38,7 @@ from .enums import (
     may_grant,
 )
 from .ids import IdMinter
+from .ledger import LedgerEvent
 from .objects import (
     Claim,
     Conflict,
@@ -90,4 +92,6 @@ __all__ = [
     "validate_transition", "assert_transition",
     "validate_conflict_transition", "assert_conflict_transition",
     "can_confirm_claim", "method_after_single_gate",
+    # the authoritative core + gate (PR 2)
+    "Layer9", "make_proposal", "LedgerEvent",
 ]
