@@ -55,8 +55,10 @@ local DESi core
 ├── conflict engine  deterministic contradiction detection    (conflict.py)
 ├── autobiographical memory   episodic, recalled by relevance (memory.py)
 ├── research harvester + improvement loop   evolution per tick (loops.py)
+├── creativity engine   local, or the sibling Kevin engine    (creativity.py)
 ├── router + budget  cheapest capable tier; API on demand     (router.py)
 ├── model client     local small / specialist / external API  (model_client.py)
+├── persistence      the whole identity to/from JSON          (persistence.py)
 ├── audit ledger     append-only receipts (L9-####)           (in state.py)
 └── renderer         the two views, produced together         (renderer.py)
 ```
@@ -80,6 +82,33 @@ finding, detects contradictions, **resolves them (the justified opinion changes)
 advances a goal, and periodically forms a preference, starts or abandons a project.
 Run many ticks and you get an identity that visibly evolves — drops ideas, picks up
 new ones, makes progress — while every step stays a ledger event you can point at.
+
+### Persistence — it actually lives on
+
+The whole of Layer 9 (claims with their status history, goals, preferences, projects,
+memory, conflicts, the ledger, the id counters and the tick) serialises to one JSON
+document and reloads verbatim. Because ids are sequential and there is no PRNG, a
+reloaded identity is the *same self* — same memories, same rejected ideas, same goals
+in progress — it simply continues.
+
+```bash
+python -m joni --ticks 8 --state joni.json "your take on privacy?"   # runs, saves
+python -m joni --ticks 4 --state joni.json "and now?"                # resumes, continues
+```
+
+The server persists automatically (`JONI_STATE`, default `~/.joni/state.json`): it
+resumes on startup and saves after every mutation.
+
+### Creativity engine — Kevin plugs in
+
+New projects are not invented by the renderer; a creativity engine proposes them from
+current state, then an audited operator starts them. Two implementations behind one
+protocol: a deterministic **local** engine (default), or the sibling **Kevin**
+creativity-routing engine — it frames *"how do I make progress on `<topic>`?"* as a
+problem and routes it through unexplored-space → wild variation → method transfer →
+selection. Enable with `JONI_USE_KEVIN=1` (install Kevin first, e.g. `pip install -e
+../Kevin`); projects it proposes are credited to the `kevin` engine in the ledger.
+Both are deterministic, so Joni stays replay-stable either way.
 
 ---
 
@@ -151,7 +180,14 @@ make demo
 ```
 
 The engines, state, routing and ledger are byte-for-byte identical either way — only
-the voice moves.
+the voice moves. (`DEEPSEEK_API_KEY2` is also accepted; the real voice retries
+transient egress failures via `JONI_LLM_RETRIES` / `JONI_LLM_BACKOFF`.)
+
+Two CI workflows: the default one runs offline (MockModel) on every push; a separate
+`live-deepseek` workflow runs `scripts/live_smoke.py` against the real voice on pushes
+to `main` and on manual dispatch, using the `DEEPSEEK_API_KEY` repository secret. The
+Epistemic View is identical under both voices — only the phrasing changes — which is
+the whole point.
 
 ## Status
 

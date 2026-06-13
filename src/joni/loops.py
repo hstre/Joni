@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .conflict import detect_conflicts, weaker_claim
+from .creativity import CreativityEngine, LocalCreativity
 from .models import ClaimStatus, LedgerEvent, ProjectStatus
 from .operators import (
     abandon_project,
@@ -71,8 +72,12 @@ class ResearchHarvester:
         return items[i]
 
 
-def run_tick(state: Layer9, router: Router, harvester: ResearchHarvester) -> list[LedgerEvent]:
+def run_tick(
+    state: Layer9, router: Router, harvester: ResearchHarvester,
+    creativity: CreativityEngine | None = None,
+) -> list[LedgerEvent]:
     """Advance the identity by one tick. Returns the ledger events produced."""
+    creativity = creativity or LocalCreativity()
     state.tick += 1
     start_index = len(state.ledger)
 
@@ -112,10 +117,12 @@ def run_tick(state: Layer9, router: Router, harvester: ResearchHarvester) -> lis
             form_preference(state, top.topic, "prefers", strength=top.support,
                             formed_from=(top.id,))
 
-    # 6. Every 4th tick, start a project on the current strongest topic (creativity /
-    #    self-proposed improvement); abandon projects whose topic lost all support.
+    # 6. Every 4th tick, the creativity engine proposes a project on the current
+    #    strongest topic (self-proposed improvement); abandon projects whose topic
+    #    lost all support. The engine name is audited as the project's reviewer.
     if state.tick % 4 == 0 and topics:
-        start_project(state, f"Deepen work on {topic}", topic)
+        idea = creativity.propose(state, topic)
+        start_project(state, idea.title, idea.topic, reviewed_by=idea.engine)
     for project in list(state.active_projects()):
         supported = any(
             c.status in {ClaimStatus.ACTIVE, ClaimStatus.CONFIRMED} and c.topic == project.topic
@@ -127,7 +134,10 @@ def run_tick(state: Layer9, router: Router, harvester: ResearchHarvester) -> lis
     return state.ledger[start_index:]
 
 
-def live(state: Layer9, router: Router, harvester: ResearchHarvester, *, ticks: int) -> None:
+def live(
+    state: Layer9, router: Router, harvester: ResearchHarvester, *, ticks: int,
+    creativity: CreativityEngine | None = None,
+) -> None:
     """Run many ticks - the weeks-long evolving instance, compressed."""
     for _ in range(ticks):
-        run_tick(state, router, harvester)
+        run_tick(state, router, harvester, creativity)

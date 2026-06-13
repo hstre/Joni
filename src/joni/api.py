@@ -19,6 +19,7 @@ Endpoints:
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -27,6 +28,7 @@ from pydantic import BaseModel, Field
 
 from .identity import Joni
 from .models import LedgerEvent
+from .seed import seed_identity
 
 app = FastAPI(
     title="Joni",
@@ -36,7 +38,11 @@ app = FastAPI(
 )
 
 _WEB = Path(__file__).parent / "web"
-_JONI = Joni()
+
+# The server keeps a persistent identity: it resumes from disk on startup and saves
+# after every mutation, so Joni lives on across restarts. Path via JONI_STATE.
+_STATE_PATH = os.getenv("JONI_STATE") or str(Path.home() / ".joni" / "state.json")
+_JONI = Joni(state_path=_STATE_PATH, autosave=True)
 
 
 # --------------------------------------------------------------------------- #
@@ -153,7 +159,8 @@ def live(req: LiveRequest) -> dict:
 @app.post("/api/reset")
 def reset() -> dict:
     global _JONI
-    _JONI = Joni()
+    _JONI = Joni(state_path=_STATE_PATH, autosave=True, state=seed_identity())
+    _JONI.save()  # overwrite the persisted identity with the fresh one
     return {"snapshot": _JONI.snapshot()}
 
 
