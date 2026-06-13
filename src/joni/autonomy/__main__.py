@@ -3,6 +3,9 @@
     run      run one autonomous cycle (research -> learn -> improve -> publish)
     verify   check the protected core against the lock (fail-safe gate)
     lock     (re)freeze the protected core into joni_core.lock - a HUMAN action
+
+``run`` exits 42 once Joni has retired (runtime window elapsed), so a wrapper loop
+can stop cleanly.
 """
 
 from __future__ import annotations
@@ -13,6 +16,8 @@ import sys
 from . import governance
 from .config import paths
 from .run import one_cycle
+
+RETIRED_EXIT = 42
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -36,7 +41,7 @@ def main(argv: list[str] | None = None) -> int:
 
     summary = one_cycle()
     print("cycle:", summary)
-    return 0
+    return RETIRED_EXIT if summary.get("retired") else 0
 
 
 if __name__ == "__main__":
