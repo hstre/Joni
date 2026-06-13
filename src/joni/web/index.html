@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Joni · operative identity</title>
+<style>
+  :root {
+    --bg:#0d1016; --panel:#161b23; --panel2:#1d2430; --line:#2a3340; --ink:#e7edf4;
+    --mut:#93a1b2; --acc:#6ea8fe; --good:#54d6a6; --warn:#e6c14b; --bad:#e08c8c;
+    --rej:#d9776f; --mem:#b794f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14.5px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px 6px}
+  h1{margin:0;font-size:21px} h1 span{color:var(--acc)}
+  .tag{color:var(--mut);font-size:13px;margin-top:3px;max-width:900px}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 24px 36px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  .pane{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    display:flex;flex-direction:column;min-height:520px}
+  .pane h2{margin:0;padding:13px 16px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--mut);border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+  .body{padding:14px 16px;overflow:auto;flex:1}
+  .bar{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);padding:10px 16px;
+    border-bottom:1px solid var(--line)}
+  .bar b{color:var(--ink)}
+  .controls{display:flex;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+    padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
+  button:hover{border-color:var(--acc)} button:disabled{opacity:.5;cursor:default}
+  button.primary{background:var(--acc);color:#0b0e13;border-color:var(--acc);font-weight:600}
+  .chat{display:flex;flex-direction:column;gap:10px}
+  .msg{padding:10px 13px;border-radius:10px;max-width:92%}
+  .msg.user{align-self:flex-end;background:var(--panel2);border:1px solid var(--line)}
+  .msg.joni{align-self:flex-start;background:#15212e;border:1px solid #24405b}
+  .msg .who{font-size:11px;color:var(--mut);margin-bottom:3px}
+  .ask{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+  .ask input{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:9px 11px;font:inherit}
+  .trace{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+  .trace .u{font-style:italic;color:var(--ink);margin-bottom:10px;border-left:3px solid var(--acc);padding-left:10px}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:4px 10px;font-size:13px}
+  .kv .k{color:var(--mut)} .kv .v{color:var(--ink);font-family:ui-monospace,monospace}
+  .kv .v.op{color:var(--warn)} .kv .v.trg{color:var(--rej)} .kv .v.lg{color:var(--good)}
+  .sec{margin-top:8px}
+  .sec h3{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);
+    margin:14px 0 6px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  .claim,.ev{font-size:12.5px;padding:5px 0;border-bottom:1px solid #20262f;font-family:ui-monospace,monospace}
+  .pill{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:999px;border:1px solid var(--line);
+    color:var(--mut);margin-right:5px}
+  .pill.active{color:var(--good);border-color:var(--good)}
+  .pill.rejected{color:var(--rej);border-color:var(--rej)}
+  .pill.confirmed{color:var(--acc);border-color:var(--acc)}
+  .ev.hl{background:#16241c;border-radius:6px;padding:5px 8px;border:1px solid var(--good)}
+  .empty{color:var(--mut)}
+  .tabs{display:flex;gap:6px;padding:8px 16px 0}
+  .tabs button{font-size:12px;border-radius:8px 8px 0 0}
+  .tabs button.on{background:var(--panel);border-bottom-color:var(--panel);color:var(--acc)}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>Joni</span> — an operative identity</h1>
+  <p class="tag">It reads like a person: memory, continuity, preferences, projects, goals, reasoned
+    changes of mind. Inside there is no person — only controlled state and deterministic operators.
+    The right pane dissolves every line on the left into the claim, operator and ledger event that produced it.</p>
+</header>
+
+<div class="wrap">
+  <!-- LEFT: Conversation View -->
+  <div class="pane">
+    <h2><span>Conversation View</span><span class="mut">the apparent person</span></h2>
+    <div class="bar" id="bar">loading…</div>
+    <div class="controls">
+      <button onclick="tick(1)">+1 tick</button>
+      <button onclick="tick(8)">live 8 ticks</button>
+      <button onclick="reset()">reset</button>
+      <span class="mut" id="ctlnote" style="align-self:center"></span>
+    </div>
+    <div class="body"><div class="chat" id="chat">
+      <div class="msg joni"><div class="who">Joni</div>Run me forward a few ticks, then ask me something — about privacy, routing, memory or drift.</div>
+    </div></div>
+    <div class="ask">
+      <input id="prompt" placeholder="ask Joni…  e.g. what's your take on privacy?"
+             onkeydown="if(event.key==='Enter')ask()" />
+      <button class="primary" id="askbtn" onclick="ask()">ask</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Epistemic View -->
+  <div class="pane">
+    <h2><span>Epistemic View</span><span class="mut">why it said that</span></h2>
+    <div class="tabs">
+      <button class="on" id="t-trace" onclick="showTab('trace')">last utterance</button>
+      <button id="t-state" onclick="showTab('state')">state</button>
+      <button id="t-ledger" onclick="showTab('ledger')">ledger</button>
+    </div>
+    <div class="body">
+      <div id="tab-trace"><p class="empty">Ask something on the left — its full derivation appears here.</p></div>
+      <div id="tab-state" style="display:none"></div>
+      <div id="tab-ledger" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>(s||"").replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let lastTrace=null, tab='trace';
+
+async function jget(u){return (await fetch(u)).json();}
+async function jpost(u,b){return (await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b||{})})).json();}
+
+function setBar(s){
+  $("bar").innerHTML =
+    `tick <b>${s.tick}</b> · claims <b>${s.claims.active}</b>/${s.claims.total} active`
+    +` · goals <b>${s.goals}</b> · projects <b>${s.projects}</b> · prefs <b>${s.preferences}</b>`
+    +` · memory <b>${s.memory}</b> · ledger <b>${s.ledger_events}</b>`
+    +` · spend <b>${s.spend}</b>/${(s.spend+s.budget_remaining).toFixed(3)}`;
+}
+
+function addMsg(who, text){
+  const d=document.createElement('div'); d.className='msg '+(who==='you'?'user':'joni');
+  d.innerHTML=`<div class="who">${who==='you'?'you':'Joni'}</div>${esc(text)}`;
+  $("chat").appendChild(d); $("chat").parentElement.scrollTop=1e9;
+}
+
+async function ask(){
+  const p=$("prompt").value.trim(); if(!p)return;
+  $("prompt").value=''; addMsg('you',p);
+  $("askbtn").disabled=true;
+  try{
+    const d=await jpost('/api/respond',{prompt:p});
+    addMsg('joni',d.conversation); setBar(d.snapshot);
+    lastTrace={...d.epistemic, utterance:d.conversation}; tab='trace'; setTabs(); renderTrace();
+  }catch(e){addMsg('joni','(error: '+e.message+')');}
+  $("askbtn").disabled=false;
+}
+
+async function tick(n){
+  $("ctlnote").textContent='…';
+  const d=await jpost('/api/live',{ticks:n}); setBar(d.snapshot);
+  $("ctlnote").textContent=`advanced to tick ${d.snapshot.tick}`;
+  if(tab!=='trace') refreshTab();
+}
+async function reset(){
+  const d=await jpost('/api/reset',{}); setBar(d.snapshot); $("chat").innerHTML='';
+  addMsg('joni','Reset. Fresh identity at tick 0.'); lastTrace=null; renderTrace(); $("ctlnote").textContent='';
+}
+
+function renderTrace(){
+  const box=$("tab-trace");
+  if(!lastTrace){box.innerHTML='<p class="empty">Ask something on the left — its full derivation appears here.</p>';return;}
+  const e=lastTrace;
+  const row=(k,v,cls)=>`<div class="k">${k}</div><div class="v ${cls||''}">${v??'—'}</div>`;
+  box.innerHTML=
+    `<div class="trace"><div class="u">“${esc(e.utterance)}”</div>`
+    +`<div class="kv">`
+    +row('claims', e.claims.join(', ')||'—')
+    +row('goals', e.goals.join(', ')||'—')
+    +row('memory', e.memory.join(', ')||'—')
+    +row('operator', e.operator, 'op')
+    +row('trigger', e.trigger, 'trg')
+    +row('reviewed_by', e.reviewed_by)
+    +row('ledger_event', e.ledger_event, 'lg')
+    +row('routed_to', e.routed_to)
+    +`</div></div>`
+    +`<p class="mut">Every field above points at real state. The ledger tab highlights `
+    +`<b>${e.ledger_event||'—'}</b>.</p>`;
+}
+
+async function renderState(){
+  const d=await jget('/api/state'); const box=$("tab-state");
+  const claims=d.claims.map(c=>`<div class="claim"><span class="pill ${c.status}">${c.status}</span>`
+    +`<b>${c.id}</b> <span class="mut">[${c.topic}] support ${c.support}`
+    +`${c.changes?` · ${c.changes} change(s)`:''}</span><br>${esc(c.text)}</div>`).join('');
+  const goals=d.goals.map(g=>`<div class="claim"><b>${g.id}</b> <span class="mut">[${g.horizon}] `
+    +`${g.status} · prio ${g.priority} · progress ${g.progress}</span><br>${esc(g.text)}</div>`).join('');
+  const prefs=d.preferences.map(p=>`<div class="claim"><b>${p.id}</b> ${esc(p.stance)} ${esc(p.subject)} `
+    +`<span class="mut">(${p.strength}) from ${p.formed_from.join(', ')||'—'}</span></div>`).join('');
+  const projs=d.projects.map(p=>`<div class="claim"><span class="pill ${p.status==='abandoned'?'rejected':'active'}">${p.status}</span>`
+    +`<b>${p.id}</b> <span class="mut">[${p.topic}]</span> ${esc(p.title)}</div>`).join('')||'<p class="empty">none</p>';
+  box.innerHTML=`<div class="sec"><h3>Claims</h3>${claims}</div>`
+    +`<div class="sec"><h3>Goals</h3>${goals}</div>`
+    +`<div class="sec"><h3>Projects</h3>${projs}</div>`
+    +`<div class="sec"><h3>Preferences</h3>${prefs||'<p class="empty">none</p>'}</div>`;
+}
+
+async function renderLedger(){
+  const d=await jget('/api/ledger'); const hl=lastTrace&&lastTrace.ledger_event;
+  $("tab-ledger").innerHTML=d.ledger.map(e=>{
+    const on=(e.id===hl)?' hl':'';
+    const cost=e.cost?` · cost ${e.cost}`:'';
+    return `<div class="ev${on}"><b>${e.id}</b> t${e.tick} <span class="mut">${e.operator}</span> `
+      +`<span class="pill">${e.reviewed_by}</span>${esc(e.summary)}${cost}</div>`;
+  }).reverse().join('');
+}
+
+function setTabs(){for(const t of ['trace','state','ledger'])$("t-"+t).className=(t===tab)?'on':'';
+  for(const t of ['trace','state','ledger'])$("tab-"+t).style.display=(t===tab)?'block':'none';}
+function showTab(t){tab=t;setTabs();refreshTab();}
+function refreshTab(){if(tab==='trace')renderTrace();else if(tab==='state')renderState();else renderLedger();}
+
+jget('/api/state').then(d=>setBar(d.snapshot));
+</script>
+</body>
+</html>
