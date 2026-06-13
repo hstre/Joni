@@ -1,31 +1,39 @@
 {
   "snapshot": {
-    "tick": 2,
+    "tick": 3,
     "topics": [
       "routing",
-      "alignment",
       "drift",
+      "alignment",
       "evaluation",
       "memory",
       "privacy"
     ],
-    "claims_total": 21,
-    "claims_active": 21,
-    "memory": 21,
-    "ledger": 26,
+    "claims_total": 27,
+    "claims_active": 27,
+    "memory": 27,
+    "ledger": 32,
     "open_conflicts": 0,
     "goals": 3,
     "projects": 0,
-    "preferences": 2
+    "preferences": 2,
+    "routing_engine": "DESi",
+    "days_running": 0,
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 2
+    "runs": 3
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 2,
+    "runs": 3,
     "retired": false
   },
   "extensions": {
@@ -45,19 +53,26 @@
       "arxiv:2606.13654v1",
       "arxiv:2606.13672v1",
       "arxiv:2606.13673v1",
+      "arxiv:2606.13674v1",
       "arxiv:2606.13675v1",
       "arxiv:2606.13679v1",
       "arxiv:2606.13681v1",
       "hackernews:13718752",
       "hackernews:16065845",
       "hackernews:16153840",
+      "hackernews:21559139",
       "hackernews:39161339",
+      "hackernews:40279632",
+      "hackernews:45256577",
+      "hackernews:47647788",
+      "huggingface:2606.00467",
       "huggingface:2606.07867",
       "huggingface:2606.10423",
       "huggingface:2606.12243",
       "huggingface:2606.12730",
       "huggingface:2606.13174",
-      "huggingface:2606.13572"
+      "huggingface:2606.13572",
+      "huggingface:2606.13594"
     ]
   },
   "protocol": [
@@ -423,7 +438,170 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:34+00:00",
+      "cycle": 3,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "judged",
+      "summary": "relevant: RepWAM: World Action Modeling with Representation Visual-Action Tokenizers",
+      "refs": {
+        "source": "arxiv:2606.13674v1",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.13674v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "judged",
+      "summary": "relevant: The threat is comfortable drift toward not understanding what you're doing",
+      "refs": {
+        "source": "hackernews:47647788",
+        "topic": "drift",
+        "new_topic": null,
+        "url": "https://ergosphere.blog/posts/the-machines-are-fine/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "judged",
+      "summary": "relevant: I feel Apple has lost its alignment with me and other long-time customers",
+      "refs": {
+        "source": "hackernews:45256577",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://morrick.me/archives/10137"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "judged",
+      "summary": "skip: Attackers can decloak routing-based VPNs",
+      "refs": {
+        "source": "hackernews:40279632",
+        "topic": null,
+        "new_topic": null,
+        "url": "https://www.leviathansecurity.com/blog/tunnelvision"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "judged",
+      "summary": "relevant: Show HN: Open-Source Alternative to Intercom, Drift, Zendesk, FreshChat",
+      "refs": {
+        "source": "hackernews:21559139",
+        "topic": "drift",
+        "new_topic": null,
+        "url": "https://github.com/chatwoot/chatwoot"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "judged",
+      "summary": "relevant: On the Limits of LLM Adaptability: Impact of Model-Internalized Priors on Annota",
+      "refs": {
+        "source": "huggingface:2606.00467",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.00467"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "judged",
+      "summary": "relevant: See What I See, Know What I Think: Dense Latent Communication Across Heterogeneo",
+      "refs": {
+        "source": "huggingface:2606.13594",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.13594"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T15:55:35+00:00",
+      "cycle": 3,
+      "kind": "note",
+      "summary": "cycle done · 7 new · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-13T15:31:27+00:00"
+  "generated": "2026-06-13T15:55:35+00:00"
 }
