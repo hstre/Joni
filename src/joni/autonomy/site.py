@@ -47,6 +47,9 @@ def build(data: dict) -> str:
                     f"<span class=src>(<a href='{esc(n.get('source','#'))}'>src</a>)</span></li>"
                     for n in ext.get("notes", [])) or "<li class=empty>none yet</li>"
     spent_pct = (b["spent_eur"] / b["cap_eur"] * 100) if b.get("cap_eur") else 0
+    lr = s.get("last_route")
+    route_line = (f" · last route → {esc(lr['model'])} (~${lr['cost_usd']:.6f})"
+                  if lr else "")
 
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8>
@@ -103,6 +106,8 @@ without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
     </div>
     <div class=note>Runtime window: started {esc(w.get('start','?'))} · run {esc(w.get('runs',0))}
       {'· <b style=color:var(--rej)>RETIRED</b>' if w.get('retired') else '· active (1 week)'}</div>
+    <div class=note>Routing engine: <b>{esc(s.get('routing_engine','?'))}</b>
+      · day {esc(s.get('days_running','?'))} of the week{route_line}</div>
     <div style=margin-top:12px><b>topics tracked</b><br>{topics}</div>
     <div style=margin-top:10px><b>self-added topics</b><br>{added}</div>
   </div>

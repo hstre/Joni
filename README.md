@@ -208,7 +208,14 @@ One cycle (`python -m joni.autonomy run`):
 5. **stay frugal** — deterministic and **€0 by default**; a model is used only when DESi
    *measures* the free answer inadequate, and only the cheapest tier within a **hard weekly
    budget** (default €20, paced per run). OpenRouter cheapest → DeepSeek fallback.
-6. **publish** — append the [append-only protocol](protocol/protocol.jsonl) and regenerate
+6. **route through real DESi** (opt-in, `JONI_USE_DESI=1`) — with the sibling
+   `desi-governance` package installed, Joni uses DESi's own `EpistemicRouter` (its
+   empirical routing table picks the Pareto-cheapest capable model + cost, logged with
+   DESi's reason) and DESi's deterministic **tool registry** — not just arithmetic, also
+   `date_math`, `unit_conversion`, `retrieval`. Free table lookups (Joni classifies tasks
+   itself, so DESi's paid classifier is never invoked); falls back to Joni's own frugal
+   layer when DESi is absent. Install: `pip install -e ".[desi]"` (or `-e ../DESi`).
+7. **publish** — append the [append-only protocol](protocol/protocol.jsonl) and regenerate
    the static site under [`docs/`](docs/) (GitHub Pages).
 
 ```bash
