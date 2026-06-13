@@ -43,6 +43,9 @@ jobs:
       - name: Install Kevin (so he can trial the methods Joni shelves; optional)
         continue-on-error: true
         run: python -m pip install "kevin @ git+https://github.com/hstre/Kevin"
+      - name: Install DESi (so the real Semantic Layer is live; optional)
+        continue-on-error: true
+        run: python -m pip install -e _desi || python -m pip install _desi
 
       - name: Verify protected core (fail-safe)
         run: python -m joni.autonomy verify
