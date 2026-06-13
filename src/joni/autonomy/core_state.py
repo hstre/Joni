@@ -111,6 +111,21 @@ class CoreState:
     def evidence_links(self) -> int:
         return len(self.core.all(l9.ObjectType.EVIDENCE_LINK))
 
+    def hypothesize(self, text: str, topic: str, *, parents=()) -> str:
+        """Joni invents his own conjecture - a CANDIDATE claim derived from his own
+        claims. It is never auto-activated or confirmed: a guess stays a guess until it
+        earns support."""
+        self.core.submit(make_proposal(
+            ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
+            payload={"text": text, "topic": topic, "support": 0.4}, proposer="joni",
+            provenance=Provenance.from_operator(), target_objects=tuple(parents)),
+            actor="joni")
+        return self._newest(l9.ObjectType.CLAIM).id
+
+    def hypotheses(self) -> list:
+        return [c for c in self.core.all(l9.ObjectType.CLAIM)
+                if c.status is Status.CANDIDATE and c.derived_from]
+
     def _newest(self, object_type):
         return max(self.core.all(object_type), key=lambda o: int(o.id.split("-")[-1]))
 
@@ -157,6 +172,7 @@ class CoreState:
             "preferences": len(s.all(l9.ObjectType.PREFERENCE)),
             "evidence_links": len(s.all(l9.ObjectType.EVIDENCE_LINK)),
             "self_model": len(s.all(l9.ObjectType.SELF_MODEL_CLAIM)),
+            "hypotheses": len(self.hypotheses()),
         }
 
 

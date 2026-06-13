@@ -46,6 +46,7 @@ jobs:
           JONI_RUNS_PER_WEEK: "672"   # every 15 min over a week (paces the budget)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           DESI_ROOT: ${{ github.workspace }}/_desi
+          GITHUB_TOKEN: ${{ github.token }}   # higher rate limit for the GitHub source
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: python -m joni.autonomy run
