@@ -69,9 +69,9 @@ def build(data: dict) -> str:
         latest = diary[-1]
         review_html = (
             f"<div class=note><b>{esc(latest.get('ts',''))}</b> · written in the first person, "
-            f"grounded in my own state — a report, not a performance. "
-            f"{len(diary)} entr{'y' if len(diary) == 1 else 'ies'} so far; nothing overwritten."
-            f"</div>"
+            f"grounded in my own state — a report, not a performance. A fresh installment "
+            f"every 10 runs; {len(diary)} entr{'y' if len(diary) == 1 else 'ies'} so far, "
+            f"nothing overwritten.</div>"
             f"<p class=lede>{esc(latest.get('headline',''))}</p>"
             f"{_movements(latest)}"
             f"<div class=note style='margin-top:12px'>The <i>provisional</i> beliefs this "

@@ -21,12 +21,23 @@ from collections import Counter
 from datetime import UTC, datetime
 
 _INTERVAL_SECONDS = 3600     # one hour
+_EVERY_RUNS = 10             # ...or every 10 runs, whichever comes first
 
 
-def should_review(extensions: dict, now: datetime) -> bool:
+def should_review(extensions: dict, now: datetime, *, runs: int | None = None,
+                  every_runs: int = _EVERY_RUNS) -> bool:
+    """Time to write the next installment of the report?
+
+    Joni reviews on a run-count milestone - every ``every_runs`` runs - and, as a
+    fallback, at least once an hour. Either trigger continues the diary.
+    """
     last = extensions.get("last_review_ts")
     if not last:
         return True
+    if runs is not None:
+        last_run = extensions.get("last_review_run")
+        if last_run is None or runs - last_run >= every_runs:
+            return True
     try:
         return (now - datetime.fromisoformat(last)).total_seconds() >= _INTERVAL_SECONDS
     except ValueError:
@@ -176,7 +187,7 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
 
 
 def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: float,
-               context: dict | None = None) -> dict:
+               runs: int | None = None, context: dict | None = None) -> dict:
     now = datetime.now(UTC)
     context = context or {}
     snap = cs.snapshot()
@@ -197,9 +208,10 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
         seen.add(a["text"])
     extensions["sm_seen"] = sorted(seen)[-50:]
 
-    headline = (f"Day {days}: I am holding {snap['claims_active']} active claims across "
-                f"{len(snap['topics'])} topics, with {snap['open_conflicts']} contradiction(s) "
-                f"left open, and I have spent €{spend:.4f}.")
+    run_part = f", run {runs}" if runs is not None else ""
+    headline = (f"Day {days}{run_part}: I am holding {snap['claims_active']} active claims "
+                f"across {len(snap['topics'])} topics, with {snap['open_conflicts']} "
+                f"contradiction(s) left open, and I have spent €{spend:.4f}.")
 
     # The narrative summary is the whole first-person report (language, untrusted). It is
     # minted into the core only when the assessment changed (anti-bloat); the full report
@@ -222,6 +234,8 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     }
     extensions["last_review"] = review
     extensions["last_review_ts"] = now.isoformat(timespec="seconds")
+    if runs is not None:
+        extensions["last_review_run"] = runs
     # The diary: every review is *appended*, never overwriting the last. Each hour is its
     # own dated entry, kept in full. Bounded to a week of hourly entries (Joni retires after
     # a week anyway), so it stays a complete record without growing without end.

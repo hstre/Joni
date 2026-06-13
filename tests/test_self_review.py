@@ -90,6 +90,22 @@ def test_earlier_diary_entries_render_on_the_site():
     assert "Earlier entries" in html                  # the diary is shown, not just the latest
 
 
+def test_review_continues_the_report_every_ten_runs():
+    now = datetime.now(UTC)
+    # Just reviewed at run 5: not due on time, and not yet 10 runs later.
+    ext = {"last_review_ts": now.isoformat(), "last_review_run": 5}
+    assert self_review.should_review(ext, now, runs=9) is False     # only 4 runs on
+    assert self_review.should_review(ext, now, runs=15) is True      # 10 runs on -> installment
+
+
+def test_run_number_is_recorded_and_shown_in_the_report():
+    cs = _cs()
+    ext = {"topics_added": []}
+    review = self_review.run_review(cs, ext, _Proto(), 1, days=0, spend=0.0, runs=20)
+    assert ext["last_review_run"] == 20
+    assert "run 20" in review["headline"]
+
+
 def test_review_is_hourly_not_every_cycle():
     now = datetime.now(UTC)
     assert self_review.should_review({}, now) is True             # never reviewed -> yes
