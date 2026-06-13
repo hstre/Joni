@@ -1,0 +1,200 @@
+# Forschungstagebuch — Joni / Kevin / Layer 9
+
+Ein Forschungstagebuch über den Aufbau und das Verhalten eines selbstständig laufenden,
+epistemisch sauberen KI-Agenten-Ökosystems. Es protokolliert **Entscheidungen, Experimente
+und Beobachtungen** auf Forschungsebene. Die *maschinelle* Protokollierung jeder einzelnen
+Handlung lebt daneben weiter in `protocol/protocol.jsonl` (append-only) und `docs/data.json`
+(Live-Snapshot); Joni führt zusätzlich sein **eigenes** Ich-Form-Tagebuch (Self-Review,
+alle 10 Runs). Dieses Dokument ist die Sicht *von außen* auf das System — geführt vom
+Entwickler/Forscher, fortlaufend ergänzt.
+
+> Leitprinzip des gesamten Ökosystems: **„LLM für Sprache, Regeln für Logik."**
+> Jede Bewertung, Zustandsänderung, Orchestrierung ist deterministisch und nachvollziehbar;
+> ein Sprachmodell formuliert nur, es entscheidet nie.
+
+---
+
+## 1. Das System auf einen Blick
+
+Drei Komponenten, ein gemeinsamer Kern:
+
+| Komponente | Repo | Rolle |
+|---|---|---|
+| **Kevin** | `hstre/Kevin` | Kreativitäts-Routing: unerforschte Lösungsräume → wilde Variation → Methoden-Transfer → epistemische Selektion → menschliche Richtung. Findet/abstrahiert Methoden, **trial't** sie, **promotet nie**. |
+| **Joni** | `hstre/Joni` | Operative Identität mit Doppelsicht (Conversation View = scheinbare Person; Epistemic View = Claims/Operatoren/Ledger dahinter). Läuft autonom, forscht, lernt, entwickelt sich selbst weiter, berichtet öffentlich. |
+| **desi_layer9** | in `hstre/Joni` (`src/desi_layer9/`) | Der **eine autoritative epistemische Kern**: geschlossenes Schema, Autorität/Provenance/Taint, ein State-Update-Gate als einziger Schreibpfad, hash-verketteter Ledger + Replay. Joni und Kevin schreiben nur durch das Gate. |
+
+**Governance-Grundregeln** (warum das hier interessant ist):
+- Geschlossene Enumerationen (Status, Authority, Operator …), sequentielle IDs, kein PRNG →
+  **replay-stabil**.
+- Status-Leiter: candidate → provisional → active → confirmed (+ contested/rejected/
+  superseded/quarantined/expired). Modell-Herkunft (Kevin/Joni) kann **nie** auf
+  `authoritative` heben — das ist menschliche/Operator-Autorität.
+- Konflikte dürfen **offen bleiben** (kein erzwungenes Glätten zu einer hübschen Antwort).
+- Joni darf seine **Peripherie** selbst umbauen (Themen, Evidenznetz, Hypothesen,
+  Selbstbild), aber **nicht** seinen geschützten Kern — Kernänderungen werden als
+  GitHub-Issue („joni-core-ask") an einen Menschen gestellt, nie selbst angewandt.
+- Hartes Wochenbudget (€20); fast alles ist deterministisch und damit €0.
+
+---
+
+## 2. Chronologie der Entwicklung (2026-06-13)
+
+Alle Arbeit auf Branch `claude/kevin-creativity-architecture-ukz17g`, squash-merged nach
+`main`. PR-Nummern beziehen sich auf `hstre/Joni`, sofern nicht anders genannt.
+
+### E1 — Kevin: Kreativitäts-Architektur
+Aufbau der fünfstufigen Routing-Architektur (Lösungsräume → wilde Variation → Methoden-
+Transfer → Selektion → menschliche Richtung), reale DeepSeek-Anbindung, Web/API, sowie
+DESi-gestützte Vorhersage, **wo** überhaupt Lösungsräume sind (Blind-Spot-Coverage).
+Layer-9-Methodenbibliothek wächst aus echten Läufen.
+
+### E2 — Joni: operative Identität
+Doppelsicht (Person vs. Epistemik), Persistenz, Kevin als Kreativ-Engine, reale Stimme,
+autonome Recherche „off the leash", DESi-Router-Integration, vollständiger Layer-9-Kern.
+
+### E3 — Layer 9 als gemeinsamer Kern (21-Punkte-Spezifikation)
+`desi_layer9` als **ein** autoritativer Kern: Schema/Autorität/Provenance/Taint, Gate als
+einziger Schreibpfad, hash-verketteter Ledger + Replay + Migration, adversariale
+Control-Plane-Tests, Joni-/Kevin-Integration. Entscheidung: lebt **im Joni-Repo** (kein
+separates Repo — außerhalb des GitHub-Scopes), abhängigkeitsfrei, später extrahierbar.
+
+### E4 — Cutover auf den Kern + Echtzeit
+Jonis Autonomie-Schleife auf `desi_layer9` umgestellt; `tick` = reale Tage seit Start,
+keine künstlichen Zeitsprünge mehr.
+
+### E5 — Methoden-Ernte → Kevin (PR Joni #17)
+Joni durchsucht arXiv / HackerNews / HuggingFace / **GitHub**; was nach wiederverwendbarer
+Technik aussieht, legt er als **Methoden-Kandidat** im Layer ab — für Kevin. Live bestätigt:
+`stored method candidate for Kevin: prompts.chat / core (from github)`.
+
+### E6 — Kevin trial't das Regal (Kevin #10, Joni #18)
+Kevin zieht Kandidaten/Provisorische vom gemeinsamen Regal, läuft einen deterministischen
+**Transfer-Trial**, protokolliert das Ergebnis durchs Gate — **promotet nie**. Joni ruft
+Kevins Trial-Logik jeden Zyklus auf demselben In-Memory-Kern auf (ein Kern, kein zweiter
+Store). Ab ≥3 Trials mit mehr Erfolgen als Fehlern wird eine provisorische Methode
+*activation-ready* — die finale Freigabe macht ein Mensch.
+
+### E7 — Self-Review als Ich-Form-Bericht (Joni #19)
+Der stündliche Self-Review las sich wie eine Metrik-Liste. Jetzt schreibt Joni **in der
+Ich-Form**, in vier Bewegungen, geerdet im realen Zustand, deterministisch, €0:
+*Was ich mir angeschaut habe · Was mich interessiert hat · Wo ich Zweifel hatte · Was ich
+mitgenommen habe.* Die deterministischen Self-Model-Claims bleiben als epistemisches
+Substrat darunter.
+
+### E8 — Tagebuch statt Überschreiben (Joni #20)
+Jede Self-Review-Installment wird **angehängt**, nie überschrieben. Website zeigt den
+neuesten Eintrag voll, ältere als aufklappbare datierte Einträge. Nichts geht verloren.
+
+### E9 — Push-Robustheit: „hängt bei run 10" (Joni #21)
+**Diagnose:** Die Zyklen liefen einwandfrei, aber `git push` wurde `non-fast-forward`
+abgewiesen, wenn während des ~1-Minuten-Zyklus ein menschlicher PR nach `main` merged —
+die Zyklus-Ergebnisse wurden still verworfen, die Seite fror ein. **Fix:** Der Bot fasst
+nur `state/protocol/docs` an (Pfade, die kein Mensch editiert), also `git push` jetzt mit
+**Rebase + Retry** (5×) statt Aufgeben beim ersten Reject.
+
+### E10 — Kontinuierlicher Lauf statt 15-Min-Cron (Joni #22)
+GitHub drosselte den `*/15`-Cron faktisch auf ~stündlich und verwarf den Rest. Daher:
+**kontinuierliche Schleife** — ein Job läuft *verify → cycle → asks → commit+push → kurze
+Pause → wiederholen* für ~5,3 h, dann übernimmt der nächste Job (Concurrency-Handoff, genau
+einer gleichzeitig; der stündliche Cron ist nur noch Re-Launcher). `run` endet mit Exit 42
+bei Retirement, damit die Schleife sauber stoppt. Live bestätigt: run 13 → 14 → 15 alle
+~3 Min aus **einem** Job.
+
+### E11 — Bericht alle 10 Runs (Joni #23)
+Self-Review feuert jetzt auf einem **Run-Meilenstein** (alle 10 Runs) zusätzlich zur
+stündlichen Reserve. Run-Nummer steht in jeder Überschrift („Day N, run M: …"); das
+Tagebuch wächst als ein fortlaufender Bericht.
+
+### E12 — Emergente Selbst-Entwicklung (Joni #24)  ⟵ tiefster Schritt
+Statt nur Themenpaare zu brücken, lässt Joni **echte Struktur aus wiederkehrenden Mustern
+in seinem eigenen Netz auskristallisieren**, alles durchs Gate, selbst-begrenzend:
+- **Emergentes Thema** — ein Begriff, der über mehrere *verschiedene* Themen wiederkehrt,
+  wird zu einem eigenen verfolgten Thema.
+- **Emergente Synthese** — bei ≥3 Claims eines Themas mit gemeinsamem roten Faden ein
+  übergeordneter **Kandidaten-Claim** (eine Stufe die Abstraktionsleiter hoch).
+- **Emergente Methode** — ein Begriff über ≥2 Themen ist eine transferierbare Linse →
+  Methoden-Kandidat `<begriff>-as-a-lens` für Kevin.
+
+**Erste Live-Beobachtung (Zyklus 21:42, commit `8632d3d`):**
+```
+synthesis on routing: 'memory' abstracted from 5 claims (C-15, C-16, C-17, C-18, C-5)
+method candidate for Kevin: 'memory-as-a-lens' from a recurrence across memory, routing
+```
+Also: Joni hat selbstständig erkannt, dass „memory" als roter Faden durch 5 seiner
+Routing-Claims läuft, daraus eine höherstufige Hypothese gebildet **und** „memory" als
+transferierbare Linse für Kevin abgelegt — beides aus dem eigenen Bestand, nicht aus einer
+Quelle.
+
+---
+
+## 3. Baseline-Messung (Tag 0, run 24, 2026-06-13 ~21:45 UTC)
+
+Ausgangspunkt für den „was hat sich nach ein paar Stunden getan"-Vergleich:
+
+| Größe | Wert |
+|---|---:|
+| Runs | 24 |
+| Themen | 6 (routing, privacy, drift, alignment, evaluation, memory) |
+| davon selbst hinzugefügt | 2 (evaluation, alignment) |
+| Claims (aktiv / gesamt) | 35 / 52 |
+| Evidence-Links | 36 |
+| Hypothesen (candidate, selbst erfunden) | 17 |
+| Methoden für Kevin | 3 (2× GitHub, 1× emergent: `memory-as-a-lens`) |
+| Methoden-Trials (durch Kevin) | 31 |
+| activation-ready | 0 |
+| Self-Model-Claims | 3 |
+| offene Konflikte | 0 |
+| Memory-Episoden | 27 |
+| Ledger-Einträge | 384 |
+| Tagebuch-Installments | 2 |
+| Kern-Asks an Menschen | 0 |
+| Modellkosten | €0.0000 |
+
+**Was Joni über sich selbst sagt** (provisorische Self-Model-Claims, keine Fakten):
+1. „I rarely promote beliefs to confirmed — I mostly hold active, revisable claims."
+2. „I tend to broaden my topics quickly as I read."
+3. „I operate almost entirely deterministically, at no model cost."
+
+---
+
+## 4. Offene Fragen & Hypothesen zum Beobachten
+
+- **Sättigung vs. Wachstum:** Geht die emergente Entwicklung nach Konsolidierung erwartbar
+  in Ruhe (self-limiting), oder findet sie durch neue Quellen immer wieder frisches
+  Material? → Evidence-Links- und `emerged`-Rate über die Zeit verfolgen.
+- **Qualität der Synthesen:** Sind die emergenten Synthesen inhaltlich tragfähig oder
+  oberflächliche Begriffs-Koinzidenzen? (Stopword-Liste ggf. nachschärfen.)
+- **Methoden-Reifung:** Erreicht je eine *provisorische* Methode `activation-ready`? Das
+  setzt voraus, dass ein Mensch sie zuerst candidate→provisional hebt.
+- **Konflikte:** Bisher 0 offene Konflikte — feuert die Kontradiktions-Erkennung zu selten?
+  (Antonym-/Negations-Regeln beobachten, wenn widersprüchliche Quellen kommen.)
+- **Drift im Selbstbild:** Ändern sich die Self-Model-Claims über Tage?
+
+---
+
+## 5. Betriebs- & Sicherheitsnotizen
+
+- **Offen:** DeepSeek-Key `sk-1c71963824…` wurde im Klartext geteilt → **rotieren**
+  (als kompromittiert behandeln).
+- **Offen:** GitHub Pages aktivieren (Settings → Pages → `main` / `docs`) für das
+  Live-Dashboard `https://hstre.github.io/Joni/`.
+- Modell-Identitäts-ID des Entwickler-Assistenten gehört **nicht** in Commits/PRs/Code.
+- Joni **retired** sich automatisch nach 7 Tagen Laufzeit-Fenster.
+- Wenn ein `joni-core-ask`-Issue erscheint: Joni will den geschützten Kern ändern — Mensch
+  prüft, implementiert ggf. selbst, dann `python -m joni.autonomy lock` neu und committen.
+
+---
+
+## 6. Wie dieses Tagebuch fortgeschrieben wird
+
+Neue Einträge **unten anhängen**, nie alte überschreiben (gleiche Disziplin wie Jonis
+eigenes Tagebuch). Format pro Eintrag: **Datum/Zeit · Anlass · Beobachtung (mit echten
+Zahlen/Zitaten aus `protocol.jsonl` / `data.json`) · Entscheidung · offene Fragen.**
+
+### Eintrag 2026-06-13 ~21:47 UTC — Tagebuch angelegt, System läuft
+Forschungstagebuch erstellt; Baseline bei run 24 festgehalten (siehe §3). Joni läuft
+kontinuierlich (ein Zyklus ~alle 3 Min) auf dem audited Layer-9-Kern, mit Methoden-Ernte,
+Kevin-Trials, Erfindung, **emergenter** Selbst-Entwicklung (erstes `memory-as-a-lens`
+bereits live), stündlichem/10-Run-Ich-Form-Bericht und öffentlichem Dashboard. Plan:
+mehrere Stunden laufen lassen, dann Deltas gegen die Baseline auswerten.
