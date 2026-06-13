@@ -3,22 +3,22 @@
     "tick": 0,
     "topics": [
       "routing",
-      "drift",
       "privacy",
+      "drift",
       "alignment",
       "evaluation",
       "memory"
     ],
-    "claims_total": 32,
-    "claims_active": 31,
+    "claims_total": 37,
+    "claims_active": 35,
     "memory": 27,
-    "ledger": 200,
+    "ledger": 226,
     "open_conflicts": 0,
-    "methods": 0,
+    "methods": 2,
     "preferences": 1,
-    "evidence_links": 2,
+    "evidence_links": 4,
     "self_model": 3,
-    "hypotheses": 1,
+    "hypotheses": 2,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": {
@@ -31,11 +31,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 7
+    "runs": 8
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 7,
+    "runs": 8,
     "retired": false
   },
   "extensions": {
@@ -63,6 +63,8 @@
       "arxiv:2606.13675v1",
       "arxiv:2606.13679v1",
       "arxiv:2606.13681v1",
+      "github:f/prompts.chat",
+      "github:home-assistant/core",
       "github:juspay/hyperswitch",
       "github:lm-sys/FastChat",
       "github:mlflow/mlflow",
@@ -70,10 +72,14 @@
       "hackernews:13718752",
       "hackernews:16065845",
       "hackernews:16153840",
+      "hackernews:16727869",
       "hackernews:21559139",
+      "hackernews:22703000",
+      "hackernews:28085632",
       "hackernews:39161339",
       "hackernews:40279632",
       "hackernews:45256577",
+      "hackernews:47225130",
       "hackernews:47647788",
       "huggingface:2606.00467",
       "huggingface:2606.07867",
@@ -141,10 +147,17 @@
     ],
     "linked": [
       "C-10|C-12",
-      "C-1|C-30"
+      "C-10|C-13",
+      "C-1|C-30",
+      "C-1|C-33"
     ],
     "invented": [
-      "alignment|drift"
+      "alignment|drift",
+      "alignment|evaluation"
+    ],
+    "methods_seen": [
+      "github:f/prompts.chat",
+      "github:home-assistant/core"
     ]
   },
   "protocol": [
@@ -1016,7 +1029,212 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:47+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:48+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:48+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "judged",
+      "summary": "skip: 1.1.1.1: Fast, privacy-first consumer DNS service",
+      "refs": {
+        "source": "hackernews:16727869",
+        "topic": null,
+        "new_topic": null,
+        "url": "https://blog.cloudflare.com/announcing-1111/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "judged",
+      "summary": "relevant: Zoom needs to clean up its privacy act",
+      "refs": {
+        "source": "hackernews:22703000",
+        "topic": "privacy",
+        "new_topic": null,
+        "url": "https://blogs.harvard.edu/doc/2020/03/27/zoom/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "judged",
+      "summary": "relevant: Meta’s AI smart glasses and data privacy concerns",
+      "refs": {
+        "source": "hackernews:47225130",
+        "topic": "privacy",
+        "new_topic": null,
+        "url": "https://www.svd.se/a/K8nrV4/metas-ai-smart-glasses-and-data-privacy-concerns-workers-say-we-see-everything"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "judged",
+      "summary": "skip: An Open Letter Against Apple's Privacy-Invasive Content Scanning Technology",
+      "refs": {
+        "source": "hackernews:28085632",
+        "topic": null,
+        "new_topic": null,
+        "url": "https://appleprivacyletter.com/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "judged",
+      "summary": "relevant: prompts.chat",
+      "refs": {
+        "source": "github:f/prompts.chat",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://github.com/f/prompts.chat"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "judged",
+      "summary": "relevant: core",
+      "refs": {
+        "source": "github:home-assistant/core",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "https://github.com/home-assistant/core"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: prompts.chat (from github)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: core (from github)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "developed",
+      "summary": "linked C-1 <-> C-33 (contextualizes, unreviewed)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "developed",
+      "summary": "linked C-10 <-> C-13 (contextualizes, unreviewed)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "invented",
+      "summary": "new hypothesis bridging alignment x evaluation (candidate, derived from C-21+C-11)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T18:26:50+00:00",
+      "cycle": 8,
+      "kind": "note",
+      "summary": "cycle done · 6 new · 2 method(s) · 2 new link(s) · 1 hypothesis(es) · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-13T18:20:23+00:00"
+  "generated": "2026-06-13T18:26:50+00:00"
 }
