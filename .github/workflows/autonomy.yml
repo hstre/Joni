@@ -34,6 +34,9 @@ jobs:
           python-version: "3.11"
       - name: Install
         run: python -m pip install -e ".[llm]"
+      - name: Install Kevin (so he can trial the methods Joni shelves; optional)
+        continue-on-error: true
+        run: python -m pip install "kevin @ git+https://github.com/hstre/Kevin"
 
       - name: Verify protected core (fail-safe)
         run: python -m joni.autonomy verify

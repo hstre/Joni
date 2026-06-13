@@ -23,7 +23,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from .. import desi_link
-from . import core_state, develop, governance, invent, methods, self_review, site
+from . import core_state, develop, governance, invent, methods, self_review, site, trials
 from .budget import load as load_budget
 from .budget import save as save_budget
 from .config import online, paths, runs_per_week, runtime_days, weekly_budget_eur
@@ -119,6 +119,10 @@ def one_cycle() -> dict:
     # 3b. Store methods Joni found, as candidates in the Layer 9 core - for Kevin.
     found_methods = methods.harvest(cs, judged, extensions, proto, cycle)
 
+    # 3c. Kevin trials the shelf in-process: candidate/provisional methods get a
+    #     deterministic transfer trial (recorded, never promoted). No-op without Kevin.
+    trialed = trials.run_trials(cs, proto, cycle)
+
     # 4. Improvements, split by governance (peripheral ones applied via the gate).
     asks_new: list = []
     for imp in derive(cs, judged):
@@ -157,7 +161,8 @@ def one_cycle() -> dict:
 
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new · {found_methods['methods']} method(s) "
-                 f"· {developed['links']} new link(s) · {invented['hypotheses']} hypothesis(es) "
+                 f"· {trialed['trialed']} trialed · {developed['links']} new link(s) "
+                 f"· {invented['hypotheses']} hypothesis(es) "
                  f"· spend €{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
@@ -165,7 +170,8 @@ def one_cycle() -> dict:
     return {"cycle": cycle, "new_items": len(new_items), "asks": len(asks_new),
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
             "days_running": days_running, "reviewed": reviewed,
-            "developed": developed, "invented": invented, "methods": found_methods}
+            "developed": developed, "invented": invented, "methods": found_methods,
+            "trialed": trialed}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
