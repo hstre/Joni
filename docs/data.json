@@ -9,18 +9,18 @@
       "evaluation",
       "memory"
     ],
-    "claims_total": 43,
+    "claims_total": 44,
     "claims_active": 35,
     "memory": 27,
-    "ledger": 282,
+    "ledger": 292,
     "open_conflicts": 0,
     "methods": 2,
-    "method_trials": 10,
+    "method_trials": 12,
     "methods_ready": 0,
     "preferences": 1,
-    "evidence_links": 16,
+    "evidence_links": 18,
     "self_model": 3,
-    "hypotheses": 8,
+    "hypotheses": 9,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": null
@@ -28,11 +28,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 14
+    "runs": 15
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 14,
+    "runs": 15,
     "retired": false
   },
   "extensions": {
@@ -177,11 +177,13 @@
       "C-10|C-17",
       "C-10|C-18",
       "C-10|C-19",
+      "C-10|C-20",
       "C-12|C-13",
       "C-12|C-14",
       "C-12|C-15",
       "C-12|C-16",
       "C-12|C-17",
+      "C-12|C-18",
       "C-1|C-30",
       "C-1|C-33",
       "C-1|C-34"
@@ -194,7 +196,8 @@
       "alignment|routing",
       "drift|evaluation",
       "drift|memory",
-      "drift|privacy"
+      "drift|privacy",
+      "drift|routing"
     ],
     "methods_seen": [
       "github:f/prompts.chat",
@@ -1953,7 +1956,107 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:34+00:00",
+      "cycle": 15,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:36+00:00",
+      "cycle": 15,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:36+00:00",
+      "cycle": 15,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:37+00:00",
+      "cycle": 15,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:37+00:00",
+      "cycle": 15,
+      "kind": "trialed",
+      "summary": "Kevin trialed 2 method(s): 2 passed, 0 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:37+00:00",
+      "cycle": 15,
+      "kind": "developed",
+      "summary": "linked C-10 <-> C-20 (contextualizes, unreviewed)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:37+00:00",
+      "cycle": 15,
+      "kind": "developed",
+      "summary": "linked C-12 <-> C-18 (contextualizes, unreviewed)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:37+00:00",
+      "cycle": 15,
+      "kind": "invented",
+      "summary": "new hypothesis bridging drift x routing (candidate, derived from C-25+C-9)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:37+00:00",
+      "cycle": 15,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-13T21:21:37+00:00",
+      "cycle": 15,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 2 trialed · 2 new link(s) · 1 hypothesis(es) · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-13T21:18:32+00:00"
+  "generated": "2026-06-13T21:21:37+00:00"
 }
