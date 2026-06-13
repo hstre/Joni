@@ -61,6 +61,14 @@ class Paths:
     def docs_layer9(self) -> Path:
         return self.root / "docs" / "layer9.html"
 
+    @property
+    def pdf_inbox(self) -> Path:
+        return self.root / "inbox"               # drop PDFs here for Joni to read
+
+    @property
+    def pdf_urls(self) -> Path:
+        return self.root / "state" / "pdf_urls.json"   # a queue of direct PDF urls (incl. SSRN)
+
 
 def paths() -> Paths:
     return Paths(repo_root())
@@ -82,3 +90,7 @@ def runs_per_week() -> int:
 
 def online() -> bool:
     return os.getenv("JONI_ONLINE") == "1"
+
+
+def read_pdfs() -> bool:
+    return os.getenv("JONI_READ_PDFS", "1") != "0"
