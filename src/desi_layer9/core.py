@@ -24,9 +24,11 @@ from .enums import (
     MemoryKind,
     ObjectType,
     Operator,
+    ProposalType,
     RelationType,
     Status,
 )
+from .hashing import chain_event
 from .ids import IdMinter
 from .ledger import LedgerEvent
 from .objects import (
@@ -54,6 +56,40 @@ _CONTROLLED_FIELDS = ("status", "authority")        # never adopted from a paylo
 _METHOD_TRIALS_FOR_ACTIVE = 3
 
 
+@dataclass
+class JournalEntry:
+    """One recorded operation - the replayable unit. State = f(seed, journal)."""
+
+    operator: Operator
+    proposal_type: ProposalType
+    payload: dict
+    proposer: str
+    provenance: dict                 # Provenance.to_dict()
+    target_objects: tuple[str, ...]
+    actor: str
+    governance_approved: bool
+    reason: str = ""
+
+    def to_dict(self) -> dict:
+        return {
+            "operator": self.operator.value, "proposal_type": self.proposal_type.value,
+            "payload": self.payload, "proposer": self.proposer, "provenance": self.provenance,
+            "target_objects": list(self.target_objects), "actor": self.actor,
+            "governance_approved": self.governance_approved, "reason": self.reason,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict) -> JournalEntry:
+        return cls(
+            operator=Operator(d["operator"]), proposal_type=ProposalType(d["proposal_type"]),
+            payload=dict(d.get("payload", {})), proposer=d.get("proposer", "unknown"),
+            provenance=dict(d.get("provenance", {})),
+            target_objects=tuple(d.get("target_objects", ())),
+            actor=d.get("actor", "system"), governance_approved=bool(d.get("governance_approved")),
+            reason=d.get("reason", ""),
+        )
+
+
 def _clamp(x: float) -> float:
     return round(min(1.0, max(0.0, float(x))), 6)
 
@@ -66,6 +102,7 @@ class Layer9:
     objects: dict[str, object] = field(default_factory=dict)
     minter: IdMinter = field(default_factory=IdMinter)
     ledger: list[LedgerEvent] = field(default_factory=list)
+    journal: list[JournalEntry] = field(default_factory=list)
     _seq: int = 0
 
     # -- reads -------------------------------------------------------------- #
@@ -90,12 +127,23 @@ class Layer9:
             input_refs=tuple(input_refs), output_refs=tuple(output_refs),
             reviewed_by=reviewed_by, cost=cost, sampling_provenance=sampling or {},
         )
+        previous = self.ledger[-1] if self.ledger else None
         self.ledger.append(ev)
+        chain_event(ev, previous, self)
         return ev
 
     # -- the ONLY public write path ----------------------------------------- #
     def submit(self, proposal: Proposal, *, actor: str = "system",
                governance_approved: bool = False) -> Decision:
+        # 0. journal the operation - the replayable unit (state = f(seed, journal)).
+        self.journal.append(JournalEntry(
+            operator=proposal.requested_operator, proposal_type=proposal.proposal_type,
+            payload=dict(proposal.payload), proposer=proposal.proposer,
+            provenance=proposal.provenance.to_dict(),
+            target_objects=tuple(proposal.target_objects), actor=actor,
+            governance_approved=governance_approved, reason=proposal.reason,
+        ))
+
         # 1. record the proposal (its taint reflects who proposed it).
         proposal.id = self.minter.next(ObjectType.PROPOSAL)
         proposal.created_tick = proposal.last_changed_tick = self.tick
