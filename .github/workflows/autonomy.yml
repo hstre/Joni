@@ -90,7 +90,22 @@ jobs:
           git add state protocol docs
           if git diff --cached --quiet; then
             echo "nothing to commit"
-          else
-            git commit -m "joni: autonomous cycle $(date -u +%FT%TZ)"
-            git push
+            exit 0
           fi
+          git commit -m "joni: autonomous cycle $(date -u +%FT%TZ)"
+          # main may have advanced (a human merge) while this cycle was running. The bot
+          # only ever touches state/protocol/docs - paths humans never edit - so a rebase
+          # onto the latest main is always clean. Rebase + retry instead of dropping the
+          # cycle's work on a non-fast-forward rejection.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "push rejected - rebasing onto latest main (attempt $attempt)"
+            git fetch origin main || true
+            git rebase origin/main || { git rebase --abort || true; }
+            sleep $((attempt * 3))
+          done
+          echo "could not push after retries"
+          exit 1
