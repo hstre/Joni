@@ -44,8 +44,8 @@ class Fetcher(Protocol):
         ...
 
 
-def _get(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": _UA})
+def _get(url: str, headers: dict | None = None) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": _UA, **(headers or {})})
     with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # noqa: S310 - fixed hosts
         return resp.read()
 
@@ -173,7 +173,37 @@ class MockFetcher:
         return list(self._BANK)[:limit]
 
 
+class GitHubFetcher:
+    name = "github"
+
+    def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
+        import os
+        headers = {"Accept": "application/vnd.github+json"}
+        token = os.getenv("GITHUB_TOKEN")
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        terms = [q for q in queries if q][:4] or ["agent"]
+        merged: dict[str, Item] = {}
+        for term in terms:
+            url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
+                {"q": f"{term} in:name,description", "sort": "stars", "order": "desc",
+                 "per_page": max(2, limit // 2)})
+            try:
+                data = json.loads(_get(url, headers))
+            except Exception:  # noqa: BLE001 - rate limit / network: degrade quietly
+                continue
+            for repo in data.get("items", []):
+                full = repo.get("full_name", "")
+                if not full or full in merged:
+                    continue
+                merged[full] = Item(
+                    "github", full, repo.get("name", full),
+                    repo.get("html_url", f"https://github.com/{full}"),
+                    repo.get("description") or "", float(repo.get("stargazers_count") or 0))
+        return sorted(merged.values(), key=lambda it: -it.score)[:limit]
+
+
 def get_fetchers(*, online: bool) -> list[Fetcher]:
     if online:
-        return [ArxivFetcher(), HackerNewsFetcher(), HuggingFaceFetcher()]
+        return [ArxivFetcher(), HackerNewsFetcher(), HuggingFaceFetcher(), GitHubFetcher()]
     return [MockFetcher()]

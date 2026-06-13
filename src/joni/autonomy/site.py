@@ -119,6 +119,7 @@ without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
       <span>memory <b>{esc(s.get('memory',0))}</b></span>
       <span>ledger <b>{esc(s.get('ledger',0))}</b></span>
       <span>evidence links <b>{esc(s.get('evidence_links',0))}</b></span>
+      <span>hypotheses <b>{esc(s.get('hypotheses',0))}</b></span>
       <span>self-model <b>{esc(s.get('self_model',0))}</b></span>
       <span>conflicts open <b>{esc(s.get('open_conflicts',0))}</b></span>
     </div>
