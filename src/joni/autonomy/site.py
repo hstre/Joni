@@ -118,6 +118,7 @@ without asking. Everything it does is logged here. {esc(d['generated'])}.</p>
       <span>claims <b>{esc(s.get('claims_active',0))}</b>/{esc(s.get('claims_total',0))}</span>
       <span>memory <b>{esc(s.get('memory',0))}</b></span>
       <span>ledger <b>{esc(s.get('ledger',0))}</b></span>
+      <span>methods for Kevin <b>{esc(s.get('methods',0))}</b></span>
       <span>evidence links <b>{esc(s.get('evidence_links',0))}</b></span>
       <span>hypotheses <b>{esc(s.get('hypotheses',0))}</b></span>
       <span>self-model <b>{esc(s.get('self_model',0))}</b></span>

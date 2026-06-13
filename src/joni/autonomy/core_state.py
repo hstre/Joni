@@ -126,6 +126,17 @@ class CoreState:
         return [c for c in self.core.all(l9.ObjectType.CLAIM)
                 if c.status is Status.CANDIDATE and c.derived_from]
 
+    def propose_method(self, *, name: str, summary: str, applicable_to=(),
+                       origin: str = "joni") -> str:
+        """Store a method Joni found, as a CANDIDATE in the shared Layer 9 core - for
+        Kevin (or a human) to trial and promote later. Joni never promotes it himself."""
+        self.core.submit(make_proposal(
+            ProposalType.METHOD_PROPOSAL, Operator.METHOD_PROPOSE,
+            payload={"name": name, "summary": summary, "steps": [],
+                     "origin": origin, "applicable_to": list(applicable_to)},
+            proposer="joni", provenance=Provenance.from_operator()), actor="joni")
+        return self._newest(l9.ObjectType.METHOD).id
+
     def _newest(self, object_type):
         return max(self.core.all(object_type), key=lambda o: int(o.id.split("-")[-1]))
 
