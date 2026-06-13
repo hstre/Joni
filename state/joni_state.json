@@ -1,0 +1,468 @@
+{
+  "schema": 1,
+  "name": "Joni",
+  "tick": 1,
+  "counters": {
+    "C": 11,
+    "G": 3,
+    "PR": 2,
+    "P": 0,
+    "M": 11,
+    "X": 0,
+    "L9": 16
+  },
+  "claims": [
+    {
+      "id": "C-1",
+      "text": "Local-first models keep data fully private",
+      "topic": "privacy",
+      "status": "active",
+      "support": 0.5,
+      "created_tick": 0,
+      "last_changed_tick": 0,
+      "history": []
+    },
+    {
+      "id": "C-2",
+      "text": "Self-improvement can run unbounded if it is monitored",
+      "topic": "drift",
+      "status": "active",
+      "support": 0.4,
+      "created_tick": 0,
+      "last_changed_tick": 0,
+      "history": []
+    },
+    {
+      "id": "C-3",
+      "text": "Most turns can be answered by a small local model",
+      "topic": "routing",
+      "status": "active",
+      "support": 0.66,
+      "created_tick": 0,
+      "last_changed_tick": 0,
+      "history": []
+    },
+    {
+      "id": "C-4",
+      "text": "Continuity comes from episodic memory, not summaries",
+      "topic": "memory",
+      "status": "active",
+      "support": 0.68,
+      "created_tick": 0,
+      "last_changed_tick": 0,
+      "history": []
+    },
+    {
+      "id": "C-5",
+      "text": "EvoArena: Tracking Memory Evolution for Robust LLM Agents in Dynamic Environments",
+      "topic": "routing",
+      "status": "active",
+      "support": 0.58,
+      "created_tick": 1,
+      "last_changed_tick": 1,
+      "history": []
+    },
+    {
+      "id": "C-6",
+      "text": "$\\texttt{WEAVER}$, Better, Faster, Longer: An Effective World Model for Robotic Manipulation",
+      "topic": "routing",
+      "status": "active",
+      "support": 0.58,
+      "created_tick": 1,
+      "last_changed_tick": 1,
+      "history": []
+    },
+    {
+      "id": "C-7",
+      "text": "Getting Better at Working With You: Compiling User Corrections into Runtime Enforcement for Coding Agents",
+      "topic": "routing",
+      "status": "active",
+      "support": 0.6,
+      "created_tick": 1,
+      "last_changed_tick": 1,
+      "history": []
+    },
+    {
+      "id": "C-8",
+      "text": "WebChallenger: A Reliable and Efficient Generalist Web Agent",
+      "topic": "routing",
+      "status": "active",
+      "support": 0.6,
+      "created_tick": 1,
+      "last_changed_tick": 1,
+      "history": []
+    },
+    {
+      "id": "C-9",
+      "text": "ArogyaSutra: A Multi-Agent Framework for Multimodal Medical Reasoning in Indic Languages",
+      "topic": "routing",
+      "status": "active",
+      "support": 0.6,
+      "created_tick": 1,
+      "last_changed_tick": 1,
+      "history": []
+    },
+    {
+      "id": "C-10",
+      "text": "VIA-SD: Verification via Intra-Model Routing for Speculative Decoding",
+      "topic": "routing",
+      "status": "active",
+      "support": 0.6,
+      "created_tick": 1,
+      "last_changed_tick": 1,
+      "history": []
+    },
+    {
+      "id": "C-11",
+      "text": "evaluation is worth tracking as a topic",
+      "topic": "evaluation",
+      "status": "active",
+      "support": 0.55,
+      "created_tick": 1,
+      "last_changed_tick": 1,
+      "history": []
+    }
+  ],
+  "goals": [
+    {
+      "id": "G-1",
+      "text": "Run locally for weeks without losing continuity",
+      "horizon": "long",
+      "status": "active",
+      "priority": 0.8,
+      "progress": 0.0,
+      "created_tick": 0
+    },
+    {
+      "id": "G-2",
+      "text": "Keep every self-change auditable",
+      "horizon": "long",
+      "status": "active",
+      "priority": 0.9,
+      "progress": 0.0,
+      "created_tick": 0
+    },
+    {
+      "id": "G-3",
+      "text": "Reduce external API spend",
+      "horizon": "short",
+      "status": "active",
+      "priority": 0.6,
+      "progress": 0.0,
+      "created_tick": 0
+    }
+  ],
+  "preferences": [
+    {
+      "id": "PR-1",
+      "subject": "small local models",
+      "stance": "prefers",
+      "strength": 0.66,
+      "formed_from": [
+        "C-3"
+      ],
+      "created_tick": 0
+    },
+    {
+      "id": "PR-2",
+      "subject": "router-note",
+      "stance": "values",
+      "strength": 0.6,
+      "formed_from": [],
+      "created_tick": 1
+    }
+  ],
+  "projects": [],
+  "memory": [
+    {
+      "id": "M-1",
+      "tick": 0,
+      "kind": "learned",
+      "summary": "Came to hold C-1: Local-first models keep data fully private",
+      "refs": [
+        "C-1",
+        "L9-1"
+      ]
+    },
+    {
+      "id": "M-2",
+      "tick": 0,
+      "kind": "learned",
+      "summary": "Came to hold C-2: Self-improvement can run unbounded if it is monitored",
+      "refs": [
+        "C-2",
+        "L9-2"
+      ]
+    },
+    {
+      "id": "M-3",
+      "tick": 0,
+      "kind": "learned",
+      "summary": "Came to hold C-3: Most turns can be answered by a small local model",
+      "refs": [
+        "C-3",
+        "L9-3"
+      ]
+    },
+    {
+      "id": "M-4",
+      "tick": 0,
+      "kind": "learned",
+      "summary": "Came to hold C-4: Continuity comes from episodic memory, not summaries",
+      "refs": [
+        "C-4",
+        "L9-4"
+      ]
+    },
+    {
+      "id": "M-5",
+      "tick": 1,
+      "kind": "learned",
+      "summary": "Came to hold C-5: EvoArena: Tracking Memory Evolution for Robust LLM Agents in Dynamic Environments",
+      "refs": [
+        "C-5",
+        "L9-9"
+      ]
+    },
+    {
+      "id": "M-6",
+      "tick": 1,
+      "kind": "learned",
+      "summary": "Came to hold C-6: $\\texttt{WEAVER}$, Better, Faster, Longer: An Effective World Model for Robotic Manipulation",
+      "refs": [
+        "C-6",
+        "L9-10"
+      ]
+    },
+    {
+      "id": "M-7",
+      "tick": 1,
+      "kind": "learned",
+      "summary": "Came to hold C-7: Getting Better at Working With You: Compiling User Corrections into Runtime Enforcement for Coding Agents",
+      "refs": [
+        "C-7",
+        "L9-11"
+      ]
+    },
+    {
+      "id": "M-8",
+      "tick": 1,
+      "kind": "learned",
+      "summary": "Came to hold C-8: WebChallenger: A Reliable and Efficient Generalist Web Agent",
+      "refs": [
+        "C-8",
+        "L9-12"
+      ]
+    },
+    {
+      "id": "M-9",
+      "tick": 1,
+      "kind": "learned",
+      "summary": "Came to hold C-9: ArogyaSutra: A Multi-Agent Framework for Multimodal Medical Reasoning in Indic Languages",
+      "refs": [
+        "C-9",
+        "L9-13"
+      ]
+    },
+    {
+      "id": "M-10",
+      "tick": 1,
+      "kind": "learned",
+      "summary": "Came to hold C-10: VIA-SD: Verification via Intra-Model Routing for Speculative Decoding",
+      "refs": [
+        "C-10",
+        "L9-14"
+      ]
+    },
+    {
+      "id": "M-11",
+      "tick": 1,
+      "kind": "learned",
+      "summary": "Came to hold C-11: evaluation is worth tracking as a topic",
+      "refs": [
+        "C-11",
+        "L9-15"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "ledger": [
+    {
+      "id": "L9-1",
+      "tick": 0,
+      "operator": "claim_assert",
+      "summary": "assert C-1 [active] on 'privacy': Local-first models keep data fully private",
+      "refs": [
+        "C-1"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-2",
+      "tick": 0,
+      "operator": "claim_assert",
+      "summary": "assert C-2 [active] on 'drift': Self-improvement can run unbounded if it is monitored",
+      "refs": [
+        "C-2"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-3",
+      "tick": 0,
+      "operator": "claim_assert",
+      "summary": "assert C-3 [active] on 'routing': Most turns can be answered by a small local model",
+      "refs": [
+        "C-3"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-4",
+      "tick": 0,
+      "operator": "claim_assert",
+      "summary": "assert C-4 [active] on 'memory': Continuity comes from episodic memory, not summaries",
+      "refs": [
+        "C-4"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-5",
+      "tick": 0,
+      "operator": "goal_adopt",
+      "summary": "adopt G-1 [long]: Run locally for weeks without losing continuity",
+      "refs": [
+        "G-1"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-6",
+      "tick": 0,
+      "operator": "goal_adopt",
+      "summary": "adopt G-2 [long]: Keep every self-change auditable",
+      "refs": [
+        "G-2"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-7",
+      "tick": 0,
+      "operator": "goal_adopt",
+      "summary": "adopt G-3 [short]: Reduce external API spend",
+      "refs": [
+        "G-3"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-8",
+      "tick": 0,
+      "operator": "preference_form",
+      "summary": "form PR-1: prefers small local models",
+      "refs": [
+        "PR-1",
+        "C-3"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-9",
+      "tick": 1,
+      "operator": "claim_assert",
+      "summary": "assert C-5 [active] on 'routing': EvoArena: Tracking Memory Evolution for Robust LLM Agents in Dynamic Environments",
+      "refs": [
+        "C-5"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-10",
+      "tick": 1,
+      "operator": "claim_assert",
+      "summary": "assert C-6 [active] on 'routing': $\\texttt{WEAVER}$, Better, Faster, Longer: An Effective World Model for Robotic Manipulation",
+      "refs": [
+        "C-6"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-11",
+      "tick": 1,
+      "operator": "claim_assert",
+      "summary": "assert C-7 [active] on 'routing': Getting Better at Working With You: Compiling User Corrections into Runtime Enforcement for Coding Agents",
+      "refs": [
+        "C-7"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-12",
+      "tick": 1,
+      "operator": "claim_assert",
+      "summary": "assert C-8 [active] on 'routing': WebChallenger: A Reliable and Efficient Generalist Web Agent",
+      "refs": [
+        "C-8"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-13",
+      "tick": 1,
+      "operator": "claim_assert",
+      "summary": "assert C-9 [active] on 'routing': ArogyaSutra: A Multi-Agent Framework for Multimodal Medical Reasoning in Indic Languages",
+      "refs": [
+        "C-9"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-14",
+      "tick": 1,
+      "operator": "claim_assert",
+      "summary": "assert C-10 [active] on 'routing': VIA-SD: Verification via Intra-Model Routing for Speculative Decoding",
+      "refs": [
+        "C-10"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-15",
+      "tick": 1,
+      "operator": "claim_assert",
+      "summary": "assert C-11 [active] on 'evaluation': evaluation is worth tracking as a topic",
+      "refs": [
+        "C-11"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    },
+    {
+      "id": "L9-16",
+      "tick": 1,
+      "operator": "preference_form",
+      "summary": "form PR-2: values router-note",
+      "refs": [
+        "PR-2"
+      ],
+      "reviewed_by": "deterministic",
+      "cost": 0.0
+    }
+  ]
+}
