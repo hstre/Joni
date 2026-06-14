@@ -33,11 +33,15 @@ class SemanticMeasurement:
     routed_pipeline: str | None = None
     inheritance_allowed: bool = False
     en_recommended: bool = False                  # an EN operation is warranted (tension)
-    pi_distance: float | None = None              # √JSD if the layer exposes it, else None
+    pi_distance: float | None = None              # √JSD if a projector is available, else None
     duplicate: bool | None = None                 # explicit duplication signal, if any
     layer_name: str = "absent"
     layer_version: str = "0"
     error: str = ""                               # non-empty => layer absent/invalid output
+    # which semantic components actually produced this measurement, and which were not
+    # available (e.g. no domain-agnostic projector for Π/√JSD). Recorded on every measure.
+    components: tuple[str, ...] = ()
+    components_unavailable: tuple[str, ...] = ()
     extra: dict = field(default_factory=dict)
 
     @property
@@ -59,6 +63,8 @@ class SemanticMeasurement:
             "en_recommended": self.en_recommended, "pi_distance": self.pi_distance,
             "duplicate": self.duplicate, "layer_name": self.layer_name,
             "layer_version": self.layer_version, "error": self.error,
+            "components": list(self.components),
+            "components_unavailable": list(self.components_unavailable),
         }
 
 
