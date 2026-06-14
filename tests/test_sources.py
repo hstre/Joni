@@ -13,7 +13,7 @@ def _canned(payload):
 
 def test_online_fetchers_include_zenodo_and_openalex():
     names = {f.name for f in sources.get_fetchers(online=True)}
-    assert {"arxiv", "zenodo", "openalex"} <= names
+    assert {"arxiv", "zenodo", "openalex", "openclaw"} <= names
     # offline stays deterministic - a single mock source
     assert [f.name for f in sources.get_fetchers(online=False)] == ["mock"]
 
@@ -46,6 +46,22 @@ def test_openalex_fetcher_rebuilds_abstract_and_parses(monkeypatch):
     assert it.url == "https://papers.ssrn.com/abstract=42"      # SSRN reachable via OpenAlex
     assert it.summary == "Evaluation is hard"
     assert it.score == 7.0
+
+
+def test_openclaw_fetcher_surfaces_community_modules(monkeypatch):
+    payload = {"items": [
+        {"full_name": "openclaw/clawhub", "name": "clawhub",
+         "html_url": "https://github.com/openclaw/clawhub",
+         "description": "Skill + Plugin Registry for OpenClaw", "stargazers_count": 8956}]}
+    monkeypatch.setattr(sources, "_get", _canned(payload))
+    items = sources.OpenClawFetcher().fetch(["memory"], limit=4)
+    assert any(it.source == "openclaw" and it.id == "openclaw/clawhub" for it in items)
+    assert items[0].score == 8956.0
+
+
+def test_openclaw_topics_are_env_tunable(monkeypatch):
+    monkeypatch.setenv("JONI_OPENCLAW_TOPICS", "openclaw-skills, custom-topic")
+    assert sources.OpenClawFetcher()._topics() == ["openclaw-skills", "custom-topic"]
 
 
 def test_a_failing_source_degrades_quietly(monkeypatch):

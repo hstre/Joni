@@ -278,8 +278,62 @@ class OpenAlexFetcher:
         return sorted(merged.values(), key=lambda it: -it.score)[:limit]
 
 
+class OpenClawFetcher:
+    """The OpenClaw community ships a lot of agent *modules* on GitHub - skills, plugins, agent
+    templates - under the ``openclaw*`` topics (and the ``openclaw/`` org). Joni looks there
+    too: for each of his own topics he searches the OpenClaw ecosystem, plus a small sweep of
+    notable modules, so he can spot one worth learning from. Read-only - a module repo enters
+    as a SOURCE like any other, never an authority. Scope is env-tunable via
+    ``JONI_OPENCLAW_TOPICS`` (comma-separated GitHub topics)."""
+
+    name = "openclaw"
+
+    def _topics(self) -> list[str]:
+        import os
+        raw = os.getenv("JONI_OPENCLAW_TOPICS", "openclaw-skills,openclaw-plugin,openclaw")
+        return [t.strip() for t in raw.split(",") if t.strip()][:3] or ["openclaw"]
+
+    def _search(self, q: str, headers: dict, per_page: int) -> list[dict]:
+        url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
+            {"q": q, "sort": "stars", "order": "desc", "per_page": max(2, per_page)})
+        try:
+            return json.loads(_get(url, headers)).get("items", [])
+        except Exception:  # noqa: BLE001 - rate limit / network: degrade quietly
+            return []
+
+    @staticmethod
+    def _add(merged: dict, repo: dict) -> None:
+        full = repo.get("full_name", "")
+        if not full or full in merged:
+            return
+        merged[full] = Item(
+            "openclaw", full, repo.get("name", full),
+            repo.get("html_url", f"https://github.com/{full}"),
+            repo.get("description") or "", float(repo.get("stargazers_count") or 0))
+
+    def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
+        import os
+        headers = {"Accept": "application/vnd.github+json"}
+        token = os.getenv("GITHUB_TOKEN")
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        topics = self._topics()
+        terms = [q for q in queries if q][:2]
+        merged: dict[str, Item] = {}
+        # OpenClaw modules that match Joni's current interests
+        for term in terms:
+            for topic in topics[:2]:
+                for repo in self._search(f"{term} topic:{topic}", headers, limit // 2):
+                    self._add(merged, repo)
+        # a baseline sweep of notable modules, so he always sees the ecosystem's staples
+        if len(merged) < limit:
+            for repo in self._search(f"topic:{topics[0]}", headers, limit):
+                self._add(merged, repo)
+        return sorted(merged.values(), key=lambda it: -it.score)[:limit]
+
+
 def get_fetchers(*, online: bool) -> list[Fetcher]:
     if online:
         return [ArxivFetcher(), HackerNewsFetcher(), HuggingFaceFetcher(), GitHubFetcher(),
-                ZenodoFetcher(), OpenAlexFetcher()]
+                ZenodoFetcher(), OpenAlexFetcher(), OpenClawFetcher()]
     return [MockFetcher()]
