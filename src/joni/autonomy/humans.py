@@ -138,8 +138,10 @@ def _open_need(cs, extensions: dict) -> tuple[str, str] | None:
 
 
 def draft_outbox(cs, extensions: dict, proto, cycle: int, *, platforms, max_new: int = 1) -> list:
-    """Draft at most one polite forum question from an open need. Bounded and de-duplicated;
-    posting itself is gated elsewhere."""
+    """Draft at most one polite forum question from an open need. Bounded and de-duplicated.
+
+    A draft is only ever *drafted* - it is never posted by the loop. Posting is done later by
+    the relay (on the VPS) and ONLY for drafts a human has approved (see ``select_postable``)."""
     if not platforms:
         return []
     out = extensions.setdefault("forum_outbox", [])
@@ -151,16 +153,37 @@ def draft_outbox(cs, extensions: dict, proto, cycle: int, *, platforms, max_new:
             break
         key, question = need
         platform = platforms[len(asked) % len(platforms)]      # rotate, deterministic
-        draft = {"cycle": cycle, "platform": platform, "need": key, "question": question,
-                 "status": "queued", "posted_url": None}
+        fid = f"FA-{cycle}-{_fingerprint(platform, key, question)[:6]}"
+        draft = {"id": fid, "cycle": cycle, "platform": platform, "need": key,
+                 "question": question, "status": "drafted", "posted_url": None}
         out.append(draft)
         asked.append(key)
         drafts.append(draft)
         proto.record(cycle, "forum_draft",
-                     f"drafted a polite question for {platform} (need {key}) - queued")
+                     f"drafted {fid} for {platform} (need {key}) - awaiting human approval")
     extensions["forum_outbox"] = out[-200:]
     extensions["forum_asked"] = asked[-500:]
     return drafts
+
+
+def select_postable(outbox: list, approved_ids) -> list:
+    """The moderation gate: of the drafted questions, only those a human has approved and that
+    are not yet posted may be sent. Pure function - the relay calls this before posting."""
+    approved = set(approved_ids or ())
+    return [d for d in (outbox or [])
+            if isinstance(d, dict) and d.get("id") in approved and d.get("status") != "posted"]
+
+
+def approve(approved_path: Path, draft_id: str) -> list:
+    """Record a human approval for one drafted question (so the relay may post it). Returns the
+    full approved-id list. This is the ONLY way a post ever leaves Joni - a deliberate gate."""
+    ids = _load(approved_path, [])
+    if not isinstance(ids, list):
+        ids = []
+    if draft_id not in ids:
+        ids.append(draft_id)
+    _save(approved_path, ids)
+    return ids
 
 
 def _registry(extensions: dict, platforms) -> list[dict]:
@@ -181,19 +204,10 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     heard = ingest_inbox(cs, extensions, proto, cycle, paths.forum_inbox)
     drafted = draft_outbox(cs, extensions, proto, cycle, platforms=platforms)
 
+    # The loop never posts - posting is the relay's job (on the VPS), and only for drafts a
+    # human approved. ``live`` is recorded for the page; it does not let the loop post.
     posted = 0
-    if live:
-        # Live posting is deliberately not wired to a real network call here: it is an
-        # outward, public, irreversible act that needs per-platform credentials and the
-        # operator's explicit go-ahead. Until that exists, even in "live" mode we leave the
-        # draft queued and flag it, rather than silently posting on someone's behalf.
-        for d in extensions.get("forum_outbox", []):
-            if d.get("status") == "queued":
-                d["status"] = "needs_credentials"
-        proto.record(cycle, "forum_note",
-                     "forum_live is on but no platform credentials are wired - drafts held")
-
-    # Persist the queues so a human can act on them and feed replies back.
+    # Publish the outbox so a human can review/approve and the relay can act on it.
     _save(paths.forum_outbox, extensions.get("forum_outbox", []))
     return {"heard": heard["heard"], "conflicts": heard["conflicts"],
             "drafted": len(drafted), "posted": posted,

@@ -82,8 +82,13 @@ def build(data: dict) -> str:
     outbox = [d for d in ext.get("forum_outbox", []) if isinstance(d, dict)][-6:]
     outbox_html = "".join(
         f"<li><span class=chip>{esc(d.get('platform',''))} · "
-        f"{esc(d.get('status','queued'))}</span> {esc(d.get('question',''))}</li>"
+        f"{esc(d.get('status','drafted'))}</span> <code>{esc(d.get('id',''))}</code> "
+        f"{esc(d.get('question',''))}</li>"
         for d in outbox) or "<li class=empty>no questions drafted yet</li>"
+    approve_note = ("<div class=note style='margin-top:4px'>Nothing is posted without approval. "
+                    "Approve a draft with <code>python -m joni.autonomy approve &lt;id&gt;</code> "
+                    "(or add its id to <code>state/forum_approved.json</code>); only then may the "
+                    "relay post it.</div>")
     heard = [h for h in ext.get("forum_heard", []) if isinstance(h, dict)][-6:]
     heard_html = "".join(
         f"<li><div><b>{esc(h.get('platform',''))}:{esc(h.get('handle',''))}</b> "
@@ -268,6 +273,7 @@ what is uncertain, what contradicts, and what changed.</p>
     <div style='margin:6px 0'>{reg_html}</div>
     <h3 style='margin:10px 0 4px'>Drafted questions (outbox)</h3>
     <ul>{outbox_html}</ul>
+    {approve_note}
     <h3 style='margin:10px 0 4px'>Heard from people — and how it was treated</h3>
     <ul>{heard_html}</ul>
   </div>
