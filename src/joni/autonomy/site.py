@@ -102,7 +102,10 @@ def build(data: dict) -> str:
     heard = [h for h in ext.get("forum_heard", []) if isinstance(h, dict)][-6:]
     heard_html = "".join(
         f"<li><div><b>{esc(h.get('platform',''))}:{esc(h.get('handle',''))}</b> "
-        f"<span class=src>→ {esc(h.get('claim',''))}</span></div>"
+        f"<span class=src>→ {esc(h.get('claim',''))}</span>"
+        + (" <span class=chip>Reaktion auf willy-Post (Legacy)</span>"
+           if h.get("origin") == "predecessor-thread" else "")
+        + "</div>"
         f"<div class=asrow>{esc(h.get('text',''))}</div>"
         f"<div class=asrow><span class=k>treated as</span> {esc(h.get('treated_as',''))}</div></li>"
         for h in reversed(heard)) or \
