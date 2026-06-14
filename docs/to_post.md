@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_46 offene(r) Entwurf/Entwürfe._
+_47 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -255,14 +255,6 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 - Gepostet unter (URL): ____________
 
-## FA-257-0bac4f · Vorschlag: moltbook
-
-```
-Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my evaluation claims, 'cross-model' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
-```
-
-- Gepostet unter (URL): ____________
-
 ## FA-258-11b79a · Vorschlag: lesswrong
 
 ```
@@ -371,6 +363,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to have." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-265-91aac2 · Vorschlag: reddit
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to when." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-265-a42a6c · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to when." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
