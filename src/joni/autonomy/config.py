@@ -74,6 +74,16 @@ class Paths:
     def pdf_urls(self) -> Path:
         return self.root / "state" / "pdf_urls.json"   # a queue of direct PDF urls (incl. SSRN)
 
+    @property
+    def forum_inbox(self) -> Path:
+        # Human/forum replies for Joni to ingest - each treated as a SOURCE, never an authority.
+        return self.root / "state" / "forum_inbox.json"
+
+    @property
+    def forum_outbox(self) -> Path:
+        # Polite questions/posts Joni drafts for forums; posting is gated (see forum_live()).
+        return self.root / "state" / "forum_outbox.json"
+
 
 def paths() -> Paths:
     return Paths(repo_root())
@@ -99,3 +109,21 @@ def online() -> bool:
 
 def read_pdfs() -> bool:
     return os.getenv("JONI_READ_PDFS", "1") != "0"
+
+
+# Default forums Joni may engage. He treats people there as sources, never authorities.
+_DEFAULT_FORUMS = ("huggingface", "hacker_news", "reddit", "lesswrong")
+
+
+def forum_platforms() -> tuple[str, ...]:
+    raw = os.getenv("JONI_FORUMS")
+    if not raw:
+        return _DEFAULT_FORUMS
+    return tuple(p.strip() for p in raw.split(",") if p.strip())
+
+
+def forum_live() -> bool:
+    """Whether Joni may actually *post* to forums. Off by default: posting is an outward,
+    public, irreversible act, so it needs the operator's explicit opt-in plus per-platform
+    credentials. When off, Joni still drafts (into the outbox) and still ingests replies."""
+    return os.getenv("JONI_FORUM_LIVE", "0") == "1"
