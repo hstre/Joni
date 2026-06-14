@@ -13,10 +13,10 @@
     "claims_total": 71,
     "claims_active": 45,
     "memory": 27,
-    "ledger": 1242,
+    "ledger": 1258,
     "open_conflicts": 2,
     "methods": 5,
-    "method_trials": 294,
+    "method_trials": 299,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 70,
@@ -29,11 +29,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 97
+    "runs": 98
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 97,
+    "runs": 98,
     "retired": false
   },
   "extensions": {
@@ -984,8 +984,12 @@
       "C-10|C-29@bge-small-en-v1.5",
       "C-10|C-3",
       "C-10|C-31",
+      "C-10|C-31@bge-small-en-v1.5",
       "C-10|C-35",
+      "C-10|C-35@bge-small-en-v1.5",
       "C-10|C-36",
+      "C-10|C-36@bge-small-en-v1.5",
+      "C-10|C-3@bge-small-en-v1.5",
       "C-10|C-5",
       "C-10|C-6",
       "C-10|C-7",
@@ -1046,14 +1050,14 @@
     "pdf_inbox_seen": [],
     "read_fulltext_priority": true,
     "learned_queries": [
-      "routing mechanism",
-      "privacy mechanism",
-      "alignment+drift behind",
-      "alignment+drift topic",
       "alignment+evaluation behind",
       "alignment+evaluation topic",
       "routing evaluation",
-      "privacy evaluation"
+      "privacy evaluation",
+      "alignment+drift apply",
+      "alignment+evaluation apply",
+      "routing mechanism",
+      "privacy mechanism"
     ],
     "strategy_sm": [
       "underframed"
@@ -11074,7 +11078,134 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:17+00:00",
+      "cycle": 98,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:18+00:00",
+      "cycle": 98,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:18+00:00",
+      "cycle": 98,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:19+00:00",
+      "cycle": 98,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:20+00:00",
+      "cycle": 98,
+      "kind": "trialed",
+      "summary": "Kevin trialed 5 method(s): 5 passed, 0 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "developed",
+      "summary": "backfill: C-10/C-31 semantic record = supports",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "developed",
+      "summary": "backfill: C-10/C-35 semantic record = supports",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "developed",
+      "summary": "backfill: C-10/C-36 semantic record = supports",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-32 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-37 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "strategy",
+      "summary": "under-framed inputs (67% insufficient) -> read full text; refine queries: routing mechanism, privacy mechanism",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:43:21+00:00",
+      "cycle": 98,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 5 trialed · 0 new link(s) · 0 hypothesis(es) · 0 emergent · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T05:39:45+00:00"
+  "generated": "2026-06-14T05:43:21+00:00"
 }
