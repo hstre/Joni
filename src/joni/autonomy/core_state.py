@@ -144,6 +144,12 @@ class CoreState:
         return self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
                         {"to_status": "active"}, targets=(claim_id,))
 
+    def reject_claim(self, claim_id: str):
+        """Give up on a claim/hypothesis - honestly. Shedding a guess that earned nothing
+        is part of not degenerating; it is gate-recorded, never silent."""
+        return self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REJECT,
+                        {}, targets=(claim_id,))
+
     def propose_method(self, *, name: str, summary: str, applicable_to=(),
                        origin: str = "joni") -> str:
         """Store a method Joni found, as a CANDIDATE in the shared Layer 9 core - for

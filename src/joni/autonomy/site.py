@@ -60,6 +60,16 @@ def build(data: dict) -> str:
     lr = s.get("last_route")
     route_line = (f" · last route → {esc(lr['model'])} (~${lr['cost_usd']:.6f})"
                   if lr else "")
+    vit = ext.get("vitality", {}) or {}
+    vcol = {"developing": "var(--good)", "degenerating": "var(--rej)"}.get(
+        vit.get("verdict"), "var(--warn)")
+    vit_line = (
+        f"<div class=note>Vitality: <b style='color:{vcol}'>{esc(vit.get('verdict','—'))}</b> "
+        f"· development {esc(vit.get('development',0))} · degeneration "
+        f"{esc(vit.get('degeneration',0))} · {esc(vit.get('unsupported_hypotheses',0))} "
+        f"unsupported idea(s) · semantic-usable "
+        f"{int((vit.get('usable_semantic_rate',0) or 0)*100)}% · stagnation "
+        f"{esc(vit.get('stagnation_cycles',0))} cycle(s)</div>" if vit else "")
 
     def _movements(entry) -> str:
         return "".join(
@@ -184,6 +194,7 @@ what is uncertain, what contradicts, and what changed.</p>
       {'· <b style=color:var(--rej)>RETIRED</b>' if w.get('retired') else '· active (1 week)'}</div>
     <div class=note>Routing engine: <b>{esc(s.get('routing_engine','?'))}</b>
       · day {esc(s.get('days_running','?'))} of the week{route_line}</div>
+    {vit_line}
     <div style=margin-top:12px><b>topics tracked</b><br>{topics}</div>
     <div style=margin-top:10px><b>self-added topics</b><br>{added}</div>
   </div>
