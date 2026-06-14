@@ -322,3 +322,51 @@ Zwei Loops, mit denen Joni nicht nur *mehr* lernt, sondern *besser wird*:
 Damit ist der Kreis geschlossen: PDF-Volltext + Rahmungs-Queries liefern besser gerahmte
 Claims → DESi kann sie bewerten → Hypothesen können echte Evidenz sammeln und ehrlich
 erstarken, statt nur als Vermutung zu existieren. Gesamt: **197 passed**, ruff clean.
+
+### Eintrag 2026-06-14 ~05:30 UTC — Der semantische Messkanal wird real wirksam
+**Befund (Nutzer-Urteil bestätigt):** Architektur richtig, Semantik praktisch wirkungslos.
+Fast alle echten DESi-Messungen endeten `frame_undeclared` / `gap_detected` / `undecidable`
+→ Layer 9 korrekt `insufficient`. Tiefe Suche über *alle* in-scope Repos:
+
+- Das **√JSD-Mathe existiert** und ist dependency-frei (`AleXiona/backend/spl.py:compute_jsd`,
+  Base-2 JSD ∈ [0,1]); `SemanticProjection` (Π) als Struktur ebenfalls.
+- **Aber kein domänen-agnostischer Projektor:** der einzige Text→Verteilungs-Projektor ist
+  *klinisch* (`clinical_spl.make_projection` braucht einen `claim_type`). DESis `spl_adapter`
+  ist Claim-*Extraktion*, „Duplikation" ist exaktes Fingerprinting. Π/√JSD sind also echtes
+  *Mathe ohne allgemeinen Input-Projektor* — nicht Integrations-, sondern Projektor-Lücke.
+
+**Entscheidung (Nutzer):** lokales Embedding-Modell als der fehlende allgemeine Projektor,
+**innerhalb** des bestehenden DESi-Layers, nicht als paralleles System.
+
+**Umsetzung (PR #36/#37/#38), strikt nach Vorgabe:**
+- **Cosinus, ausdrücklich als solcher** (`distance_metric="cosine"`); **nie** als Π/√JSD
+  ausgegeben — `pi_distance` bleibt `None`, die √JSD-Strecke bleibt separat und inaktiv, bis
+  je ein echter Verteilungs-Projektor existiert.
+- **Volle Modell-Identität in jeder Messung:** Modell, Revision, Dimension, Normalisierung,
+  Metrik. Gepinnt: fastembed `BAAI/bge-small-en-v1.5` (Fallback ST `all-MiniLM-L6-v2`).
+- **Cache per `sha256(claim)+revision`** → Modellwechsel invalidiert; Originalclaims unberührt.
+- **Layer 9 kombiniert die Kanäle, fail-closed:** Frame-Konflikt/Logik-Reject/Tension veto
+  zuerst; **kleine Distanz + Polaritäts-Clash → CONTRADICTORY** (Embedding sieht Negation
+  nicht). Kein Modell → keine Distanz → `insufficient`.
+- **Konservative Schwellen** + gelabeltes Joni-Kalibrier-Set: unrelated wird **nie**
+  synthesis-eligible, Duplikate werden erkannt. Nicht auf „viele Synthesen" getrimmt.
+- Reale Integrationstests (installiertes Modell, sonst skip) + injizierter Embedder:
+  Paraphrasen / gleiche Wörter andere Bedeutung / ähnlich-aber-widersprüchlich / identisch /
+  Modellwechsel+Cache-Invalidierung / fehlgeschlagener Download (fail-closed) / Replay.
+- **#38:** Backfill dedupliziert per `pair@semantic-revision` → wenn das Modell online kommt,
+  wird der ~70-Paar-Backlog einmal **neu vermessen** (sonst bliebe der Effekt auf neue Claims
+  beschränkt, und bei „0 new" unsichtbar).
+
+**Live bestätigt (Zyklus 05:25, commit `c320819`):**
+```
+Cluster mit echter Cosinus-Messung: 3 (wächst, Backlog 3/Zyklus)
+Cosinus-Entscheidungen: {'supports': 3}   # nicht mehr insufficient
+Modell: BAAI/bge-small-en-v1.5 · rev bge-small-en-v1.5 · dim 384 · normalized True · metric cosine
+pi_distance: None
+```
+Das Modell lädt auf GitHubs Runner (offenes Internet), nicht in dieser Sandbox (Netzpolitik).
+Damit: **Architektur richtig UND Semantik faktisch wirksam.** Gesamt: 209 passed, ruff clean.
+
+**Offene Beobachtung / Kalibrierung:** Schwellen (`DIST_DUPLICATE 0.10`, `COMPLEMENTARY 0.30`,
+`SUPPORTS 0.45`, `BORDERLINE 0.60`) sind bewusst konservativ und gehören an einem größeren
+gelabelten Joni-Set empirisch nachgezogen, sobald genug echte Paare vermessen sind.
