@@ -6,39 +6,46 @@
       "privacy",
       "drift",
       "alignment",
+      "distillation",
       "evaluation",
       "memory"
     ],
-    "claims_total": 52,
-    "claims_active": 35,
+    "claims_total": 66,
+    "claims_active": 45,
     "memory": 27,
-    "ledger": 900,
-    "open_conflicts": 0,
-    "methods": 3,
-    "method_trials": 184,
+    "ledger": 982,
+    "open_conflicts": 2,
+    "methods": 5,
+    "method_trials": 189,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 70,
     "self_model": 4,
-    "hypotheses": 17,
+    "hypotheses": 18,
     "routing_engine": "DESi",
     "days_running": 1,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 75
+    "runs": 76
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 75,
+    "runs": 76,
     "retired": false
   },
   "extensions": {
     "topics_added": [
       "evaluation",
-      "alignment"
+      "alignment",
+      "distillation"
     ],
     "notes": [
       {
@@ -50,7 +57,15 @@
         "source": "https://github.com/remix-run/react-router"
       }
     ],
-    "asks": [],
+    "asks": [
+      {
+        "kind": "core_change",
+        "target": "operators",
+        "rationale": "reading suggests a change to protected core logic - needs human approval",
+        "source_url": "http://arxiv.org/abs/2606.13678v1",
+        "cycle": 76
+      }
+    ],
     "seen": [
       "arxiv:2606.13651v1",
       "arxiv:2606.13654v1",
@@ -58,7 +73,9 @@
       "arxiv:2606.13673v1",
       "arxiv:2606.13674v1",
       "arxiv:2606.13675v1",
+      "arxiv:2606.13678v1",
       "arxiv:2606.13679v1",
+      "arxiv:2606.13680v1",
       "arxiv:2606.13681v1",
       "github:f/prompts.chat",
       "github:home-assistant/core",
@@ -269,6 +286,7 @@
       "C-1|C-34"
     ],
     "invented": [
+      "alignment|distillation",
       "alignment|drift",
       "alignment|evaluation",
       "alignment|memory",
@@ -286,6 +304,8 @@
       "privacy|routing"
     ],
     "methods_seen": [
+      "arxiv:2606.13678v1",
+      "arxiv:2606.13680v1",
       "github:f/prompts.chat",
       "github:home-assistant/core"
     ],
@@ -783,7 +803,10 @@
     "emerged_topics": [],
     "synthesized": [
       "routing|agents",
-      "routing|memory"
+      "routing|memory",
+      "routing|reasoning",
+      "routing|solution",
+      "routing|strategies"
     ],
     "emerged_methods": [
       "memory"
@@ -860,7 +883,10 @@
       "C-1|C-33",
       "C-1|C-34"
     ],
-    "pdf_read": [],
+    "pdf_read": [
+      "arxiv:2606.13678v1",
+      "arxiv:2606.13680v1"
+    ],
     "pdf_urls_seen": [],
     "pdf_inbox_seen": [],
     "read_fulltext_priority": true,
@@ -8315,7 +8341,268 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:46+00:00",
+      "cycle": 76,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:47+00:00",
+      "cycle": 76,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:47+00:00",
+      "cycle": 76,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:49+00:00",
+      "cycle": 76,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:49+00:00",
+      "cycle": 76,
+      "kind": "judged",
+      "summary": "relevant: Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+      "refs": {
+        "source": "arxiv:2606.13680v1",
+        "topic": "routing",
+        "new_topic": "distillation",
+        "url": "http://arxiv.org/abs/2606.13680v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:49+00:00",
+      "cycle": 76,
+      "kind": "judged",
+      "summary": "relevant: A model of local and global reciprocity",
+      "refs": {
+        "source": "arxiv:2606.13678v1",
+        "topic": "routing",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.13678v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:51+00:00",
+      "cycle": 76,
+      "kind": "read",
+      "summary": "read full text of Learning to Reason by Analogy via Retrieval-Augmented Reinfo: 5 claim(s) [arxiv:2606.13680v1]",
+      "refs": {
+        "url": "https://arxiv.org/pdf/2606.13680v1.pdf",
+        "topic": "routing"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:53+00:00",
+      "cycle": 76,
+      "kind": "read",
+      "summary": "read full text of A model of local and global reciprocity: 5 claim(s) [arxiv:2606.13678v1]",
+      "refs": {
+        "url": "https://arxiv.org/pdf/2606.13678v1.pdf",
+        "topic": "routing"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:53+00:00",
+      "cycle": 76,
+      "kind": "conflict_open",
+      "summary": "opened X-1 - two claims held open, not smoothed away",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:53+00:00",
+      "cycle": 76,
+      "kind": "conflict_open",
+      "summary": "opened X-2 - two claims held open, not smoothed away",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:53+00:00",
+      "cycle": 76,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fi (from arxiv)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:53+00:00",
+      "cycle": 76,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: A model of local and global reciprocity (from arxiv)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "trialed",
+      "summary": "Kevin trialed 5 method(s): 5 passed, 0 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "improved",
+      "summary": "track_topic: distillation",
+      "refs": {
+        "claim": "C-65",
+        "topic": "distillation",
+        "source": "arxiv:2606.13680v1",
+        "url": "http://arxiv.org/abs/2606.13680v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "asked",
+      "summary": "core change needs approval: operators (A model of local and global reciprocity)",
+      "refs": {
+        "url": "http://arxiv.org/abs/2606.13678v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-1",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-2",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "invented",
+      "summary": "new hypothesis bridging alignment x distillation (candidate, derived from C-21+C-65)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "emerged",
+      "summary": "'reasoning' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:54+00:00",
+      "cycle": 76,
+      "kind": "emerged",
+      "summary": "'solution' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:55+00:00",
+      "cycle": 76,
+      "kind": "emerged",
+      "summary": "'strategies' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:55+00:00",
+      "cycle": 76,
+      "kind": "strategy",
+      "summary": "under-framed inputs (100% insufficient) -> read full text; refine queries: (already refined)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:55+00:00",
+      "cycle": 76,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:55+00:00",
+      "cycle": 76,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:26:55+00:00",
+      "cycle": 76,
+      "kind": "note",
+      "summary": "cycle done · 2 new · read 2 paper(s) · 2 method(s) · 5 trialed · 0 new link(s) · 1 hypothesis(es) · 0 emergent · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T04:23:27+00:00"
+  "generated": "2026-06-14T04:26:55+00:00"
 }
