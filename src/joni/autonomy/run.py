@@ -29,6 +29,7 @@ from . import (
     desi_semantics,
     develop,
     emerge,
+    experts,
     governance,
     homeostasis,
     humans,
@@ -229,6 +230,12 @@ def one_cycle() -> dict:
     human_io = humans.interact(cs, extensions, proto, cycle, paths=p,
                                platforms=forum_platforms(), live=forum_live())
 
+    # 4j. Alexandria assessment panel (opt-in, budget-gated): occasionally three models
+    #     cross-assess one hard open question (assessors, not authorities). Their judgements
+    #     enter as SOURCES, dissent preserved - Joni decides, never the panel.
+    panel = experts.maybe_convene(cs, extensions, proto, budget, cycle,
+                                  runs_per_week=runs_per_week())
+
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
@@ -251,12 +258,14 @@ def one_cycle() -> dict:
                   if human_io.get("heard") else "")
     recon_note = (f"· reconsolidated {reconsolidated['links']} link(s) via "
                   f"'{reconsolidated['lens']}' " if reconsolidated.get("ran") else "")
+    panel_note = (f"· panel ({', '.join(panel['experts'])}) advised " if panel.get("convened")
+                  else "")
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new {read_note}· {found_methods['methods']} "
                  f"method(s) · {trialed['trialed']} trialed · {developed['links']} new link(s) "
                  f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent {prune_note}"
-                 f"{recon_note}{forum_note}· {vitality['verdict']} · spend €{budget.spent_eur:.4f} "
-                 f"· routing via {reflect['routing_engine']}")
+                 f"{recon_note}{panel_note}{forum_note}· {vitality['verdict']} · spend "
+                 f"€{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
     _save_json(p.commissions_new, commissions_new)
@@ -268,7 +277,7 @@ def one_cycle() -> dict:
             "developed": developed, "invented": invented, "methods": found_methods,
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
-            "reconsolidated": reconsolidated, "human_io": human_io}
+            "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
