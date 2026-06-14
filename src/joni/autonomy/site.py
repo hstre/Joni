@@ -67,11 +67,16 @@ def build(data: dict) -> str:
     diary = ext.get("diary") or ([ext["last_review"]] if ext.get("last_review") else [])
     if diary:
         latest = diary[-1]
+        principles = "".join(f"<li>{esc(p)}</li>" for p in latest.get("principles", []))
+        principles_html = (f"<div class=note style='margin-bottom:6px'>Standing principles "
+                           f"(stated once, not repeated each report):</div><ul>{principles}</ul>"
+                           if principles else "")
         review_html = (
             f"<div class=note><b>{esc(latest.get('ts',''))}</b> · written in the first person, "
             f"grounded in my own state — a report, not a performance. A fresh installment "
             f"every 10 runs; {len(diary)} entr{'y' if len(diary) == 1 else 'ies'} so far, "
             f"nothing overwritten.</div>"
+            f"{principles_html}"
             f"<p class=lede>{esc(latest.get('headline',''))}</p>"
             f"{_movements(latest)}"
             f"<div class=note style='margin-top:12px'>The <i>provisional</i> beliefs this "
