@@ -265,3 +265,36 @@ Architekturänderung ein.
 **Bedienung:** Paper-PDFs in `inbox/` ablegen, oder direkte PDF-URLs (arXiv/SSRN) in
 `state/pdf_urls.json` (JSON-Liste) eintragen. arXiv-Treffer werden automatisch im Volltext
 gelesen.
+
+### Eintrag 2026-06-14 ~04:10 UTC — Nachtlauf, Mitternachts-Freeze & Replay-Fix
+**Beobachtung (Delta zur run-24-Baseline):** Joni lief über Nacht weiter bis **run 68**
+(letzter Commit 00:02). Der **echte DESi Semantic Layer** ist live (`desi-semantic-layer`
+v0.1.0) und annotierte den Backlog — Cluster alle `insufficient-semantic-evidence`, weil
+DESi für die meisten Routing/Memory-Claims (noch) *frame_undeclared* zurückgibt (ehrlich,
+konservativ). Die Layer-9-Landkarte (`docs/layer9.html`) wird jeden Zyklus erzeugt.
+
+**Vorfall — Loop fror um 00:02 ein.** Diagnose: `core.tick` wird pro Zyklus auf
+`days_running` gesetzt. Den ganzen 13.06. war das `0`; um **Mitternacht** (14.06.) sprang
+es auf `1`. Neue Objekte bekamen `created_tick=1`, ältere `0` — aber `persistence.replay()`
+spielte das **ganze Journal mit einem einzigen Tick** ab und konnte den 0/1-Mix nicht
+reproduzieren → **`snapshot_hash`-Mismatch** → `load()` warf → jeder Zyklus crashte beim
+Laden und committete nichts. (Vor Mitternacht blieb der Tick konstant `0`, deshalb fiel es
+erst beim ersten Tageswechsel auf.)
+
+**Lehre / Architektur:** Der heilige Satz *„state = f(seed, journal)"* hielt nur, solange
+der Tick konstant war. Ein **mutierender, nicht-journaler** Zustandsanteil (der Tick) hat
+die Replay-Determinismus-Garantie gebrochen — und zwar **zeitverzögert**, erst beim
+Tageswechsel. Genau die Art Bug, die in einem deterministischen, append-only System nicht
+auftreten *darf*; sie zeigt, dass jede Zustandsänderung, die in Objekt-Feldern landet,
+auch im Journal stehen muss.
+
+**Fix:** Tick **pro `JournalEntry`** journalisieren und beim Replay vor jeder Operation
+wiederherstellen → Replay reproduziert die historischen `created_tick`s und damit den
+Hash. Dazu `persistence.repair()` (+ `load(verify=)`) für Alt-States und **Self-Heal** in
+`load_or_migrate` (repair-then-load statt Crash). Den eingefrorenen Live-State repariert
+(830 Ledger-Events erhalten), Loop auf dem Fix neu gestartet. Regressionstests:
+Round-Trip über einen Tickwechsel; Repair eines tick-losen Alt-States. **189 passed.**
+
+**Offene Beobachtung:** Damit echte *Synthesen* (statt `insufficient`) entstehen, braucht
+es Claims mit klarem DESi-Frame — der PDF-Volltext-Port (E14) sollte hier helfen, weil
+Paper-Sätze öfter empirisch/kausal gerahmt sind als Kurz-Titel.
