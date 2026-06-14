@@ -1,51 +1,85 @@
 name: joni-auftrag
 
 # Joni commissions Claude to extend him. When the autonomy loop files a `joni-auftrag`
-# issue (a non-core extension request Joni derived from his own state), this workflow runs
-# Claude Code to *implement* it and open a pull request - automatically. The protected DESi
-# core is off-limits, and nothing is merged: the PR waits for the human merge gate.
+# issue (a non-core extension request Joni derived from his own state), Claude Code picks it
+# up, implements it, and opens a pull request - automatically. The protected DESi core is
+# off-limits, and nothing is merged: the PR waits for the human merge gate.
 #
-# Joni writes the order; Claude carries it out; a human still decides. The loop itself never
-# runs Claude (it uses cheap models) - this is the only place Claude touches the codebase on
-# Joni's behalf, and only ever for a non-core extension.
+# Why a schedule (not just the label event): issues created by the loop use the repo's
+# GITHUB_TOKEN, and GitHub deliberately does NOT let GITHUB_TOKEN-created events trigger
+# another workflow (recursion guard). So the `issues: labeled` trigger only fires for a
+# *human* applying the label; the schedule below is what actually catches Joni's own orders.
+# A `joni-auftrag-wip` label marks an order as taken so it is never picked up twice.
 
 on:
   issues:
-    types: [labeled]
+    types: [labeled]          # human applies the label -> immediate (this path DOES trigger)
+  schedule:
+    - cron: "*/30 * * * *"    # catch loop-filed Aufträge (GITHUB_TOKEN can't trigger events)
+  workflow_dispatch:
 
 permissions:
   contents: write          # push the extension branch
   pull-requests: write     # open the PR (never merged here)
-  issues: write            # comment back on the Auftrag
+  issues: write            # read the order, mark it taken, comment back
 
 concurrency:
-  group: joni-auftrag-${{ github.event.issue.number }}
+  group: joni-auftrag       # one Auftrag at a time
   cancel-in-progress: false
 
 jobs:
-  implement:
-    # Only the moment the `joni-auftrag` label is applied - not other labels, not core-asks.
-    if: github.event.label.name == 'joni-auftrag'
+  run:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Pick the Auftrag to work on
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create joni-auftrag-wip --repo "$GITHUB_REPOSITORY" --color C5DEF5 \
+            --description "A joni-auftrag Claude is currently implementing" --force || true
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            # a human applied a label; only act on our label
+            if [ "${{ github.event.label.name }}" = "joni-auftrag" ]; then
+              echo "issue=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            # schedule / manual: take the oldest open joni-auftrag not already in progress
+            n=$(gh issue list --repo "$GITHUB_REPOSITORY" --label joni-auftrag --state open \
+                  --search "-label:joni-auftrag-wip sort:created-asc" \
+                  --json number --jq '.[0].number // empty')
+            echo "issue=$n" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Ensure an Anthropic key is configured (fail loudly, not silently)
+        if: steps.pick.outputs.issue != ''
         env:
           KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -z "$KEY" ]; then
-            msg="Auto-build skipped: no ANTHROPIC_API_KEY secret is configured on this repo, so Claude cannot pick up this Auftrag automatically. Add the secret (Settings -> Secrets and variables -> Actions) and re-apply the joni-auftrag label to retry."
-            gh issue comment "${{ github.event.issue.number }}" --body "$msg"
+            msg="Auto-build skipped: no ANTHROPIC_API_KEY secret is configured on this repo, so Claude cannot pick up this Auftrag automatically. Add the secret (Settings -> Secrets and variables -> Actions); it will be retried on the next schedule."
+            gh issue comment "${{ steps.pick.outputs.issue }}" --repo "$GITHUB_REPOSITORY" --body "$msg"
             echo "no ANTHROPIC_API_KEY - cannot run Claude"
             exit 1
           fi
 
+      - name: Mark the Auftrag as taken (so it is not picked up twice)
+        if: steps.pick.outputs.issue != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue edit "${{ steps.pick.outputs.issue }}" --repo "$GITHUB_REPOSITORY" \
+            --add-label joni-auftrag-wip
+
       - uses: actions/checkout@v4
+        if: steps.pick.outputs.issue != ''
         with:
           fetch-depth: 0
 
       - name: Fetch DESi (so the real Semantic Layer is available; optional)
+        if: steps.pick.outputs.issue != ''
         continue-on-error: true
         uses: actions/checkout@v4
         with:
@@ -53,32 +87,36 @@ jobs:
           path: _desi
 
       - uses: actions/setup-python@v5
+        if: steps.pick.outputs.issue != ''
         with:
           python-version: "3.11"
 
       - name: Install Joni with dev + extras (so Claude can run pytest + ruff)
+        if: steps.pick.outputs.issue != ''
         run: |
           python -m pip install -e ".[dev,llm,pdf,embed]"
           python -m pip install -e _desi || true
 
       - name: Claude implements the (non-core) extension and opens a PR
+        if: steps.pick.outputs.issue != ''
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
-            You are implementing a "joni-auftrag" - a work order Joni (this repo's autonomous
-            agent) wrote, asking to EXTEND him outside his protected core. The issue that
-            triggered this run is your task; read its title and body for the exact request,
-            the acceptance criterion, and the component it names.
+            Implement the "joni-auftrag" in issue #${{ steps.pick.outputs.issue }} of this
+            repository. First read that issue in full (e.g. `gh issue view
+            ${{ steps.pick.outputs.issue }}`): it is a work order Joni (this repo's autonomous
+            agent) wrote, asking to EXTEND him outside his protected core. It names the exact
+            request, the acceptance criterion, and the component to extend.
 
             Hard rules (these are the whole point of the order - do not break them):
-              * NON-CORE ONLY. You may extend only the module named in the issue, which will be
-                one of: the semantic measurement channel (src/joni/autonomy/desi_semantics.py,
+              * NON-CORE ONLY. You may extend only the module the issue names, which will be one
+                of: the semantic measurement channel (src/joni/autonomy/desi_semantics.py,
                 embeddings.py), the conflict qualifier (qualify.py), the reading layer
                 (sources.py, reader.py), or the emergence layer (emerge.py, strengthen.py).
               * NEVER touch the protected DESi core: do not change Layer-9 operators, the
                 scoring/belief logic, the ledger format, the router algorithm, the state
-                machine, or anything under src/desi_layer9/ core engine. Do NOT run
+                machine, or the core engine under src/desi_layer9/. Do NOT run
                 `python -m joni.autonomy lock` and do NOT alter the core lock.
               * Keep the architecture rule "LLM for language, rules for logic": new logic must
                 be deterministic; do not move scoring/orchestration into a model call.
@@ -87,13 +125,13 @@ jobs:
             Do this:
               1. Implement exactly the extension the issue asks for - no more.
               2. Add focused tests under tests/ that prove the acceptance criterion in the issue.
-              3. Run `python -m pytest -q` and `python -m ruff check src tests` and make both pass.
-              4. Run `python -m joni.autonomy verify` to confirm the protected core is untouched;
-                 if it fails, you changed something you must not have - revert that part.
-              5. Open a pull request that references the issue (include "Closes #<issue number>"),
-                 explains what you extended and how the acceptance criterion is met, and states
-                 that the protected core was not touched. Do NOT merge it - leave it for human
-                 review.
+              3. Run `python -m pytest -q` and `python -m ruff check src tests`; make both pass.
+              4. Run `python -m joni.autonomy verify` to confirm the protected core is untouched.
+                 If it fails, you changed something you must not have - revert that part.
+              5. Open a pull request that references the issue (include "Closes
+                 #${{ steps.pick.outputs.issue }}"), explains what you extended and how the
+                 acceptance criterion is met, and states that the protected core was not
+                 touched. Do NOT merge it - leave it for human review.
 
             If the request cannot be done without touching the protected core, do NOT force it:
             open no PR, and instead comment on the issue explaining that it needs the
