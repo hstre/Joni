@@ -28,6 +28,10 @@ if [ -f /root/.ssh/authorized_keys ]; then
   install -o "${USER_NAME}" -g "${USER_NAME}" -m 600 \
     /root/.ssh/authorized_keys "${HOME_DIR}/.ssh/authorized_keys"
 fi
+# Passwordless sudo for the single owner of this box: lets you (and remote help) fix things
+# without being locked out, even after root SSH is disabled below.
+echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME}
+chmod 440 /etc/sudoers.d/${USER_NAME}
 
 echo "== ssh hardening =="
 # Only lock SSH down to keys-only if the joni user actually has a key - otherwise we would
@@ -63,7 +67,9 @@ else
 fi
 python3 -m venv "${APP_DIR}/.venv"
 "${APP_DIR}/.venv/bin/pip" install --quiet --upgrade pip
-"${APP_DIR}/.venv/bin/pip" install --quiet -e "${APP_DIR}[dev,llm,pdf,embed]"
+# Core only - the dry-run relay needs no heavy extras. Optional features (llm/pdf/embed)
+# can be added later with: .venv/bin/pip install -e "REPO[llm,pdf,embed]"
+"${APP_DIR}/.venv/bin/pip" install --quiet -e "${APP_DIR}"
 # a secrets file you fill in later; root-readable only
 [ -f "${HOME_DIR}/joni/relay.env" ] || printf '# fill per platform you enable; never commit\n' > "${HOME_DIR}/joni/relay.env"
 chmod 600 "${HOME_DIR}/joni/relay.env"
