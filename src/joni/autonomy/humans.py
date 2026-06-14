@@ -287,9 +287,38 @@ def _registry(extensions: dict, platforms) -> list[dict]:
     return [{"platform": p, **v} for p, v in reg.items()]
 
 
+def _post_approved(extensions: dict, proto, cycle: int, paths, live: bool) -> int:
+    """When live, post the drafts a human approved - but only to platforms with a *ready*
+    adapter (currently Moltbook, an agent-only network where autonomous posting is the norm).
+    Each post is marked and recorded; an unconfigured or failing platform is skipped and
+    retried next cycle. Human forums have no ready adapter, so they keep waiting on the
+    'you post, Joni writes' path. Still gated: forum_live() must be on AND the draft approved."""
+    if not live:
+        return 0
+    approved = _load(paths.forum_approved, [])
+    postable = select_postable(extensions.get("forum_outbox", []), approved)
+    if not postable:
+        return 0
+    from joni.relay.adapters import NotReady, get_adapter
+    posted = 0
+    for d in postable:
+        adapter = get_adapter(d.get("platform", ""))
+        if not adapter.ready():
+            continue                       # no live adapter for this platform - leave it queued
+        try:
+            url = adapter.post(d.get("question", ""))
+        except NotReady:
+            continue                       # not configured / transient - retry next cycle
+        d["status"], d["posted_url"] = "posted", url
+        posted += 1
+        proto.record(cycle, "forum_post",
+                     f"posted {d.get('id')} to {d.get('platform')} (human-approved) -> {url}")
+    return posted
+
+
 def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live: bool) -> dict:
-    """One cycle of human/forum interaction: ingest replies (strictly), draft a question, and
-    keep the registry. Posting stays gated: when not live, drafts wait for a human to post."""
+    """One cycle of human/forum interaction: ingest replies (strictly), draft a question,
+    keep the registry, and - when live - post any human-approved draft to a ready adapter."""
     extensions["forum_stance"] = STANCE
     registry = _registry(extensions, platforms)
     folded = _fold_replies(paths)          # a human's pasted replies -> inbox (then reset)
@@ -298,10 +327,10 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     heard = ingest_inbox(cs, extensions, proto, cycle, paths.forum_inbox)
     drafted = draft_outbox(cs, extensions, proto, cycle, platforms=platforms)
 
-    # The loop never posts. In the "you post, Joni writes" path a human carries the drafts to a
-    # forum; the relay only ever posts drafts a human approved. We publish the outbox and a
-    # copy-paste post sheet so a human can act on it. ``live`` is recorded for the page only.
-    posted = 0
+    # Posting is gated: only when live AND a human approved the draft AND the platform has a
+    # ready adapter (Moltbook today). Everything else stays on the "you post, Joni writes"
+    # path - published as the outbox + a copy-paste post sheet for a human to carry.
+    posted = _post_approved(extensions, proto, cycle, paths, live)
     _save(paths.forum_outbox, extensions.get("forum_outbox", []))
     _write_post_sheet(paths, extensions.get("forum_outbox", []))
     return {"heard": heard["heard"], "conflicts": heard["conflicts"],
