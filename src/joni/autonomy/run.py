@@ -36,6 +36,7 @@ from . import (
     layer9_view,
     methods,
     reader,
+    reconsolidate,
     self_review,
     site,
     strategy,
@@ -197,6 +198,11 @@ def one_cycle() -> dict:
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
     emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
 
+    # 4d-bis. Reconsolidation: now and then (every ~12 cycles), re-read memory across one of
+    #     Kevin's lenses for cross-topic links the within-topic develop pass would miss.
+    reconsolidated = reconsolidate.reconsolidate(cs, extensions, proto, cycle,
+                                                 layer=semantic_layer)
+
     # 4e. Strengthen Joni's own ideas: test his hypotheses against evidence (Semantic
     #     Layer governs support/contradiction), vet via Kevin, and let a hypothesis earn
     #     candidate -> active. Never confirms - that stays a human's call.
@@ -243,11 +249,13 @@ def one_cycle() -> dict:
     prune_note = f"· shed {regulated['pruned']} dead idea(s) " if regulated.get("pruned") else ""
     forum_note = (f"· heard {human_io['heard']} human input(s) "
                   if human_io.get("heard") else "")
+    recon_note = (f"· reconsolidated {reconsolidated['links']} link(s) via "
+                  f"'{reconsolidated['lens']}' " if reconsolidated.get("ran") else "")
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new {read_note}· {found_methods['methods']} "
                  f"method(s) · {trialed['trialed']} trialed · {developed['links']} new link(s) "
                  f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent {prune_note}"
-                 f"{forum_note}· {vitality['verdict']} · spend €{budget.spent_eur:.4f} "
+                 f"{recon_note}{forum_note}· {vitality['verdict']} · spend €{budget.spent_eur:.4f} "
                  f"· routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
@@ -260,7 +268,7 @@ def one_cycle() -> dict:
             "developed": developed, "invented": invented, "methods": found_methods,
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
-            "human_io": human_io}
+            "reconsolidated": reconsolidated, "human_io": human_io}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
