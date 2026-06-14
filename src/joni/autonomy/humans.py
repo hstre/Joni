@@ -331,6 +331,7 @@ def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_po
     autopost = set(forum_autopost())
     approved = set(_load(paths.forum_approved, []) or ())
     posted = 0
+    noted = False                          # record one diagnostic reason per cycle, not per draft
     for d in extensions.get("forum_outbox", []):
         if posted >= max_post:
             break
@@ -341,11 +342,18 @@ def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_po
             continue                       # human forum -> needs approval; leave it queued
         adapter = get_adapter(platform)
         if not adapter.ready():
+            if platform in autopost and not noted:
+                proto.record(cycle, "forum_post",
+                             f"{platform}: live adapter not ready (MOLTBOOK_API_KEY missing?)")
+                noted = True
             continue                       # no live adapter for this platform - leave it queued
         try:
             url = adapter.post(d.get("question", ""))
-        except NotReady:
-            continue                       # not configured / transient - retry next cycle
+        except NotReady as exc:
+            if platform in autopost and not noted:
+                proto.record(cycle, "forum_post", f"{platform} not posted: {exc}")
+                noted = True
+            continue                       # transient / API error - retry next cycle
         d["status"], d["posted_url"] = "posted", url
         posted += 1
         gate = "agent-net auto" if platform in autopost else "human-approved"

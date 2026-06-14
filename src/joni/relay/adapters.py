@@ -9,6 +9,7 @@ API, respecting the platform's bot policy and rate limits) is a localised change
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import urllib.error
@@ -102,8 +103,13 @@ class MoltbookAdapter(ForumAdapter):
         try:
             res = self._request("POST", "/posts", {
                 "type": "text", "title": title, "content": text, "submolt": self._submolt()})
-        except urllib.error.URLError as e:          # network/HTTP error -> not posted, retry later
-            raise NotReady(f"moltbook: request failed ({e})") from e
+        except urllib.error.HTTPError as e:         # the API answered with an error status
+            body = ""
+            with contextlib.suppress(Exception):
+                body = e.read().decode("utf-8", "ignore")[:160]
+            raise NotReady(f"moltbook: HTTP {e.code} {body}".strip()) from e
+        except urllib.error.URLError as e:          # network error -> not posted, retry later
+            raise NotReady(f"moltbook: {e.reason}") from e
         pid = res.get("id") or res.get("post_id") or ""
         return res.get("url") or (f"https://www.moltbook.com/posts/{pid}" if pid else "")
 
