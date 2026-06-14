@@ -120,6 +120,11 @@ def one_cycle() -> dict:
     # 2. Read the sources. Queries = current topics + the refinements Joni's own
     #    self-optimisation has learned (see step 4e).
     queries = (cs.topics() or _DEFAULT_QUERIES) + list(extensions.get("learned_queries", []))
+    # Starved topics first: ones Joni hypothesises on but has no evidence for (e.g. 'evaluation')
+    # otherwise fall off the capped query list and never get fed. Put them at the front.
+    starved = reader.starved_topics(cs)
+    if starved:
+        queries = starved + [q for q in queries if q not in starved]
     queries = queries[:8]
     seen = set(extensions["seen"])
     fetched: list = []
