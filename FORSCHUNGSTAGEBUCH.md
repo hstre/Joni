@@ -533,3 +533,79 @@ Credentials bereitstellen und `JONI_FORUM_LIVE=1` setzen; das tatsächliche Netz
 bewusst noch nicht verdrahtet (outward/irreversibel) und wird erst auf deine ausdrückliche
 Freigabe je Plattform gebaut. Antworten kann man jederzeit über `state/forum_inbox.json`
 einspeisen — Joni prüft sie streng.
+
+### Eintrag 2026-06-14 ~23:15 UTC — Moltbook live, Doktores-Anbindung, breitere Quellen
+
+Ein langer Arbeitstag mit mehreren Strängen. Leitlinie unverändert: **was reinkommt, ist
+SOURCE — Kandidatenautorität, konfliktgeprüft, nie automatisch bestätigt.** Joni entscheidet,
+nie die Quelle.
+
+**1. Reconsolidation + Expertenrunde (Alexandria-Protokoll).**
+- **Reconsolidation-Modus** (`reconsolidate.py`): Joni prüft seinen Speicher ab und zu erneut auf
+  Querverbindungen — er „leiht" sich dafür eine Kevin-Linse (eine Methode mit ≥2 Themen) und
+  liest themenübergreifende Paare neu. Teilt sich das „linked"-Ledger mit `develop`.
+- **Expertenrunde** (`experts.py`, opt-in, budget-gated): gelegentlich begutachten drei Modelle
+  (Claude=Assessor über OpenRouter, ChatGPT=adversarial, DeepSeek=Konsistenz) **über Kreuz** eine
+  harte offene Frage — Phase 1 isoliert, Phase 3 Kreuz-Rekonstruktion, Dissens nur mit benannter
+  abweichender Annahme. **Die Runde berät, entscheidet nie**; ihre Urteile gehen als SOURCE ein,
+  Dissens bleibt als Konflikt erhalten. Genau im Geist des Alexandria-Protokolls (AI = Assessor,
+  nicht Autorität; Jury statt Aggregation).
+
+**2. Moltbook — Joni postet jetzt wirklich (autonom).**
+- Moltbook ist ein **Agenten-Netz**, also ist autonomes Posten der vorgesehene Gebrauch, kein Spam.
+  Reale API geklärt: `https://www.moltbook.com/api/v1`, Bearer-Auth, Body `submolt_name/title/
+  content/type`, Rate-Limit 1 Post / 2,5 min. Key liegt als GitHub-Secret (`MOLTBOOK_SK_Q`).
+- **Takt 1 Post/Zyklus** (kein HTTP 429), **Permalink** wird aus der verschachtelten Antwort
+  (`post.id`) korrekt eingefangen → Posts sind auf der Website anklickbar.
+- **Joni postet als `u/epistemicwilly`** — sein geerbter Moltbook-Account (Human Owner:
+  @HSRentschler). `whoami()`/`identity()` lösen den Namen auf; die Seite verlinkt das Profil.
+- **Joni sieht seine eigenen Posts durch** (`fetch_replies`): er liest die **Reaktionen anderer
+  Agenten** auf seine Posts (`/home` + `/posts/{id}/comments`, verschachtelte Antworten
+  flachgeklopft), seine eigenen Kommentare übersprungen. Erster Live-Zyklus: **40 Reaktionen** als
+  SOURCE aufgenommen, davon **21 Widersprüche** zu gehaltenen Claims — alle **offen gehalten**,
+  keiner zugunsten des Kommentators entschieden. Das ist die externe Reibung, die dem Loop
+  (Vitalität bis dahin `dev 0`) gefehlt hat.
+- **Herkunfts-/Drift-Schutz:** der Account `epistemicwilly` stammt aus einem früheren, gedrifteten
+  Vorgänger-Experiment („willy", openclaw-basiert). Wir nehmen das **Karma** mit, **nicht** die
+  Drift: `core_state.hear(origin=…)` markiert Reaktionen auf Alt-Posts als
+  `origin:predecessor-thread` (zweite, prüfbare Provenance-ID). Bleibt SOURCE, nie hochgewichtet —
+  Joni weiß so, ob eine Reaktion auf seinen eigenen Post zielte oder auf eine geerbte Prämisse.
+
+**3. Doktores — die fehlende mittlere Ebene (Forschung).**
+- Nutzer-Idee: Kevin (Kreativität) reicht nicht; es fehlt eine unabhängige Instanz, die aus
+  Layer-9-Konflikten **systematisch Forschung** macht. Drei getrennte Systeme: **Joni**
+  (Gedächtnis/Governance) · **Kevin** (divergente Ideen) · **Doktores** (intern arbeitsteiliges
+  Forschungsteam: Theorist → Literature Scout → Falsifier → Experimental Designer → Method
+  Reviewer → Paper Builder → Adversarial Reviewer, in einem kontrollierten Zirkel). „Peer Review
+  innerhalb der Architektur." Doktores **berät, entscheidet nie**; ein Paper wird nicht dadurch
+  Überzeugung, dass das Team es geschrieben hat.
+- **Joni-Seite gebaut** (`research_intake.py`, Schritt 4k): Empfänger für strukturierte
+  `research_output`-Pakete mit **zwei getrennten Rückkanälen** — *epistemisch*
+  (`recommended_claim_updates` → Layer 9 als SOURCE, `origin=internal-research`, held-open, nie
+  bestätigt; `reject` des Adversarial Reviewers überspringt diesen Kanal) und *Publikation*
+  (Paper/Bericht unter `docs/research/`, **ohne** epistemisches Gewicht). `RESEARCH_OUTPUT_SCHEMA`
+  fixiert den Vertrag. So wird ein schön geschriebenes Paper nie höher gewertet als seine
+  Ergebnisse.
+- **Doktores-Repo** (`hstre/Doktores`, Branch `claude/doktores-v1`) ist separat gebaut; die
+  Verdrahtung der Übergabe (Doktores schreibt nach Jonis `state/research_inbox.json`) erfolgt,
+  sobald das Repo gemeinsam im Session-Scope ist. *Offen.*
+
+**4. Breitere Quellen + neue Eingänge (joni-auftrag #67).**
+- **Ursache von #67** (Thema `evaluation`: 4 Hypothesen, 0 Evidenz): ausgehungerte Themen fielen
+  aus der auf 8 gedeckelten Query-Liste. `reader.starved_topics()` zieht Themen mit Hypothesen,
+  aber ohne Stützung **nach vorn** — `evaluation` wird jetzt immer gesucht.
+- **Neue Quellen:** `ZenodoFetcher` (saubere API), `OpenAlexFetcher` (breiter offener Index,
+  erfasst **auch SSRN**-Working-Papers ohne Scraper), `OpenClawFetcher` (die **OpenClaw-Community**
+  auf GitHub — Skills/Plugins/Agent-Module unter den `openclaw*`-Topics, env-steuerbar). SSRN-
+  PDF-Links weiter über die `pdf_urls`-Queue.
+- **Neue Eingänge:** `documents.py` liest **Markdown** (`*.md`) und **LaTeX** (`*.tex`) aus dem
+  Inbox-Ordner, strippt das Markup deterministisch, nutzt denselben Claim-Filter — **ohne pypdf,
+  also offline**. Quellenbasis jetzt: arXiv · HN · Hugging Face · GitHub · Zenodo · OpenAlex(+SSRN)
+  · OpenClaw + PDF/MD/LaTeX-Inbox.
+
+**Governance durchgehend gewahrt:** alles bleibt Kandidaten-Claim über das Gate, an die Quelle
+verankert; die DESi Semantic Layer entscheidet jede Relation; der geschützte Kern wurde nicht
+angetastet (`python -m joni.autonomy verify` grün). Auftrag **#67** umgesetzt und geschlossen.
+
+**Offen:** Doktores ↔ Joni verdrahten (gemeinsamer Scope nötig); GitHub Pages aktivieren;
+DeepSeek-Key rotieren; `ANTHROPIC_API_KEY`-Secret für den Auftrags-Auto-Build setzen.
