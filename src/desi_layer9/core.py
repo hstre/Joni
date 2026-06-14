@@ -61,7 +61,13 @@ _METHOD_TRIALS_FOR_ACTIVE = 3
 
 @dataclass
 class JournalEntry:
-    """One recorded operation - the replayable unit. State = f(seed, journal)."""
+    """One recorded operation - the replayable unit. State = f(seed, journal).
+
+    ``tick`` is the core's tick at the moment the operation ran, so replay can restore the
+    exact historical tick before re-applying it (objects record ``created_tick`` /
+    ``last_changed_tick``). Without it, a journal spanning a tick change (e.g. a midnight
+    day rollover) would not reproduce its own snapshot hash.
+    """
 
     operator: Operator
     proposal_type: ProposalType
@@ -72,6 +78,7 @@ class JournalEntry:
     actor: str
     governance_approved: bool
     reason: str = ""
+    tick: int = 0
 
     def to_dict(self) -> dict:
         return {
@@ -79,6 +86,7 @@ class JournalEntry:
             "payload": self.payload, "proposer": self.proposer, "provenance": self.provenance,
             "target_objects": list(self.target_objects), "actor": self.actor,
             "governance_approved": self.governance_approved, "reason": self.reason,
+            "tick": self.tick,
         }
 
     @classmethod
@@ -89,7 +97,7 @@ class JournalEntry:
             provenance=dict(d.get("provenance", {})),
             target_objects=tuple(d.get("target_objects", ())),
             actor=d.get("actor", "system"), governance_approved=bool(d.get("governance_approved")),
-            reason=d.get("reason", ""),
+            reason=d.get("reason", ""), tick=int(d.get("tick", 0)),
         )
 
 
@@ -144,7 +152,7 @@ class Layer9:
             payload=dict(proposal.payload), proposer=proposal.proposer,
             provenance=proposal.provenance.to_dict(),
             target_objects=tuple(proposal.target_objects), actor=actor,
-            governance_approved=governance_approved, reason=proposal.reason,
+            governance_approved=governance_approved, reason=proposal.reason, tick=self.tick,
         ))
 
         # 1. record the proposal (its taint reflects who proposed it).
