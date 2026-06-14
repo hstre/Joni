@@ -13,13 +13,13 @@
     "claims_total": 72,
     "claims_active": 46,
     "memory": 27,
-    "ledger": 1648,
+    "ledger": 1668,
     "open_conflicts": 2,
     "methods": 6,
-    "method_trials": 440,
+    "method_trials": 446,
     "methods_ready": 0,
     "preferences": 1,
-    "evidence_links": 70,
+    "evidence_links": 72,
     "self_model": 5,
     "hypotheses": 22,
     "routing_engine": "DESi",
@@ -29,11 +29,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 122
+    "runs": 123
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 122,
+    "runs": 123,
     "retired": false
   },
   "extensions": {
@@ -1323,14 +1323,14 @@
     "pdf_inbox_seen": [],
     "read_fulltext_priority": true,
     "learned_queries": [
-      "alignment+drift alignment",
-      "alignment+evaluation alignment",
-      "alignment+drift drift",
-      "alignment+evaluation worth",
       "alignment+drift behind",
       "alignment+drift apply",
       "alignment+evaluation behind",
-      "alignment+evaluation apply"
+      "alignment+evaluation apply",
+      "alignment+evaluation tracking",
+      "alignment+evaluation hypothesis",
+      "alignment+memory tracking",
+      "alignment+memory hypothesis"
     ],
     "strategy_sm": [
       "underframed"
@@ -1338,39 +1338,42 @@
     "hyp_tested": [
       "C-32|C-11",
       "C-32|C-65",
-      "C-37|C-65"
+      "C-37|C-65",
+      "C-38|C-11",
+      "C-38|C-65"
     ],
     "hyp_hollow": [
       "C-32",
-      "C-37"
+      "C-37",
+      "C-38"
     ],
     "principle_seen": [
       "hold_tension",
       "no_confirmed"
     ],
     "vitality": {
-      "verdict": "steady",
-      "development": 0,
+      "verdict": "developing",
+      "development": 2,
       "degeneration": 0,
       "active": 46,
       "hypotheses": 22,
-      "unsupported_hypotheses": 22,
+      "unsupported_hypotheses": 21,
       "promoted_ideas": 0,
-      "evidence_links": 70,
+      "evidence_links": 72,
       "emergent_total": 6,
-      "usable_semantic_rate": 0.7,
-      "stagnation_cycles": 1,
-      "objects": 2050,
-      "cycle": 122
+      "usable_semantic_rate": 0.725,
+      "stagnation_cycles": 0,
+      "objects": 2076,
+      "cycle": 123
     },
     "vitality_prev": {
       "active": 46,
-      "links": 70,
+      "links": 72,
       "promoted": 0,
       "emergent": 6,
-      "objects": 2050
+      "objects": 2076
     },
-    "stagnation": 1,
+    "stagnation": 0,
     "vitality_history": [
       {
         "cycle": 122,
@@ -1378,6 +1381,13 @@
         "development": 0,
         "degeneration": 0,
         "usable_semantic_rate": 0.7
+      },
+      {
+        "cycle": 123,
+        "verdict": "developing",
+        "development": 2,
+        "degeneration": 0,
+        "usable_semantic_rate": 0.725
       }
     ]
   },
@@ -14246,7 +14256,134 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:21+00:00",
+      "cycle": 123,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:22+00:00",
+      "cycle": 123,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:23+00:00",
+      "cycle": 123,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:24+00:00",
+      "cycle": 123,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:25+00:00",
+      "cycle": 123,
+      "kind": "trialed",
+      "summary": "Kevin trialed 6 method(s): 4 passed, 2 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-37 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-38 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "strengthen",
+      "summary": "idea C-38 earned support from C-11 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "strengthen",
+      "summary": "idea C-38 earned support from C-65 (supports)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "strengthen",
+      "summary": "idea C-38 survived 2 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "vitality",
+      "summary": "developing · dev 2 · degen 0 · 21 unsupported idea(s) · semantic-usable 72%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:18:26+00:00",
+      "cycle": 123,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 6 trialed · 0 new link(s) · 0 hypothesis(es) · 0 emergent · developing · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T07:14:26+00:00"
+  "generated": "2026-06-14T07:18:27+00:00"
 }
