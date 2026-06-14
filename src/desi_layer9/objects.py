@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 
 from .base import EpistemicObject
 from .enums import (
+    ConflictKind,
     ConflictStatus,
     MemoryKind,
     ObjectType,
@@ -122,7 +123,8 @@ class Conflict(EpistemicObject):
 
     object_type: ObjectType = ObjectType.CONFLICT
     conflict_status: ConflictStatus = ConflictStatus.OPEN
-    kind: str = "contradiction"
+    kind: str = "contradiction"   # the detector rule that found it (free text)
+    conflict_kind: ConflictKind = ConflictKind.UNQUALIFIED  # the *taxonomy* of the incompatibility
     severity: str = "soft"        # soft | hard
     claim_ids: tuple[str, ...] = ()
     evidence_ids: tuple[str, ...] = ()

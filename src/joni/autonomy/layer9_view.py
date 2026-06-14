@@ -217,8 +217,9 @@ function overview(){
  conf.innerHTML="<h2>Open conflicts — shown, never smoothed away</h2>";
  const open=(X.conflicts||[]).filter(x=>x.conflict_status!='resolved'&&x.conflict_status!='superseded');
  if(!open.length) conf.innerHTML+="<p class=empty>none open</p>";
- open.forEach(x=>{ conf.innerHTML+="<div class=conflict><b>"+esc(x.id)+"</b> ["+esc(x.conflict_status)+
-   " · "+esc(x.severity)+"] "+x.claim_ids.map(refChip).join(" vs ")+
+ open.forEach(x=>{ conf.innerHTML+="<div class=conflict><b>"+esc(x.id)+"</b> "+
+   "<span class=chip>"+esc((x.conflict_kind||'unqualified').replace(/_/g,' '))+"</span> ["+
+   esc(x.conflict_status)+" · "+esc(x.severity)+"] "+x.claim_ids.map(refChip).join(" vs ")+
    (x.reason?" — "+esc(x.reason):"")+"</div>"; });
  // notable taint
  const tn=document.createElement('div'); tn.className='card';

@@ -27,6 +27,7 @@ from .enums import (
     OPERATORS_GRANTING_AUTHORITATIVE,
     OPERATORS_GRANTING_CONTROL,
     Authority,
+    ConflictKind,
     ConflictStatus,
     MemoryKind,
     ObjectType,
@@ -85,7 +86,7 @@ __all__ = [
     "EpistemicObject", "Provenance", "Taint", "merge_all", "IdMinter",
     # enums
     "ObjectType", "Status", "Authority", "OriginType", "RelationType",
-    "ConflictStatus", "MemoryKind", "ProposalType", "Operator",
+    "ConflictStatus", "ConflictKind", "MemoryKind", "ProposalType", "Operator",
     "SemanticState", "SemanticDecision",
     "AUTHORITY_ORDER", "authority_rank", "may_grant",
     "OPERATORS_GRANTING_AUTHORITATIVE", "OPERATORS_GRANTING_CONTROL",

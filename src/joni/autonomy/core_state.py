@@ -78,9 +78,11 @@ class CoreState:
                  {"subject": subject, "stance": stance, "strength": strength})
         return self._newest(l9.ObjectType.PREFERENCE).id
 
-    def open_conflict(self, claim_ids, *, severity: str = "soft") -> str:
+    def open_conflict(self, claim_ids, *, severity: str = "soft",
+                      conflict_kind: str = "unqualified") -> str:
         self._op(ProposalType.STATE_REVISION_PROPOSAL, Operator.CONFLICT_OPEN,
-                 {"claim_ids": list(claim_ids), "severity": severity}, targets=tuple(claim_ids))
+                 {"claim_ids": list(claim_ids), "severity": severity,
+                  "conflict_kind": conflict_kind}, targets=tuple(claim_ids))
         return self._newest(l9.ObjectType.CONFLICT).id
 
     def propose_self_model(self, text: str, *, evidence=(), counterevidence=()) -> str:
@@ -178,8 +180,11 @@ class CoreState:
                 elif _overlap(a.text, b.text) >= 0.34 and _polarity(a.text) != _polarity(b.text):
                     kind = "negation"
                 if kind:
-                    cid = self.open_conflict((a.id, b.id),
-                                             severity="hard" if kind == "negation" else "soft")
+                    from .qualify import qualify_conflict
+                    severity = "hard" if kind == "negation" else "soft"
+                    ck = qualify_conflict(a.text, b.text, severity=severity,
+                                          contradictory=(kind == "negation"))
+                    cid = self.open_conflict((a.id, b.id), severity=severity, conflict_kind=ck)
                     opened.append(cid)
                     existing.add(pair)
         return opened
@@ -253,7 +258,8 @@ class CoreState:
             for el in s.all(l9.ObjectType.EVIDENCE_LINK)]
         conflicts = [
             simple(x, claim_ids=list(x.claim_ids), conflict_status=x.conflict_status.value,
-                   kind=x.kind, severity=x.severity, reason=x.resolution_reason or "")
+                   kind=x.kind, conflict_kind=x.conflict_kind.value, severity=x.severity,
+                   reason=x.resolution_reason or "")
             for x in s.all(l9.ObjectType.CONFLICT)]
         methods = [
             simple(m, name=m.name, summary=m.summary, origin=m.origin,
