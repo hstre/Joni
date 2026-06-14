@@ -47,7 +47,7 @@ def test_lexical_difference_but_semantic_equivalence_is_a_duplicate():
     # different words, but the layer measures them as the same point (small Π distance)
     _, sc = _analyse("persistent state stabilises decisions",
                      "retained context keeps choices consistent",
-                     StubSemanticLayer(pi_distance=0.03))
+                     StubSemanticLayer(cosine_distance=0.03))
     assert sc.decision is D.DUPLICATE and sc.semantic_state is S.SYNTHESIS_REJECTED
 
 

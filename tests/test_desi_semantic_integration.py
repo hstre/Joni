@@ -50,6 +50,7 @@ def _pair(a_text, b_text):
 
 
 def test_real_layer_records_which_components_ran():
+    from joni.autonomy import embeddings
     layer = _real_layer()
     m = layer.analyse_pair(a_id="A", a_text="entropy increases over time",
                            b_id="B", b_text="information grows as bits accumulate")
@@ -57,9 +58,14 @@ def test_real_layer_records_which_components_ran():
     assert "frame_detector" in m.components
     assert "logical_auditor" in m.components
     assert "frame_tension_router" in m.components
-    # the honest gap is recorded, not hidden: no domain-agnostic Π/√JSD projector
-    assert "pi_projection" in m.components_unavailable
-    assert m.pi_distance is None
+    if embeddings.available():
+        # the embedding projector supplies the missing meaning-level distance
+        assert any(c.startswith("local_embedding:") for c in m.components)
+        assert m.pi_distance is not None
+    else:
+        # no projector installed: the gap is recorded honestly, not hidden
+        assert "pi_projection" in m.components_unavailable
+        assert m.pi_distance is None
 
 
 def test_different_frames_are_not_merged():
@@ -73,17 +79,20 @@ def test_different_frames_are_not_merged():
                            SemanticDecision.CONTRADICTORY, SemanticDecision.TENSION)
 
 
-def test_ordinary_joni_pair_fails_closed_to_insufficient():
+def test_ordinary_joni_pair_gets_a_decision_with_embeddings_else_fails_closed():
+    from joni.autonomy import embeddings
     layer = _real_layer()
     core, a, b = _pair("local routing reduces request latency for short tasks",
                        "memory pressure changes how routing is decided")
     sc = adapter.analyse_pair(core, a, b, layer=layer)
-    # DESi finds no frame in these short claims -> undecidable -> Layer 9 fails closed.
-    # This is the documented limitation: real DESi runs, but the projector is missing.
-    assert sc.decision is SemanticDecision.INSUFFICIENT
-    assert sc.semantic_state in (SemanticState.HUMAN_REVIEW_REQUIRED,
-                                 SemanticState.INSUFFICIENT_EVIDENCE)
-    assert "pi_projection" in sc.measurement["components_unavailable"]
+    if embeddings.available():
+        # the embedding gives a usable comparison even though DESi finds no frame
+        assert sc.decision is not SemanticDecision.INSUFFICIENT
+        assert sc.measurement["pi_distance"] is not None
+    else:
+        # documented limitation: real DESi runs, but no projector -> fail closed
+        assert sc.decision is SemanticDecision.INSUFFICIENT
+        assert "pi_projection" in sc.measurement["components_unavailable"]
 
 
 def test_alexandria_sqrt_jsd_math_is_real_when_importable():

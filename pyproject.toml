@@ -19,6 +19,9 @@ llm = ["openai>=1.0"]
 desi = ["desi-governance @ git+https://github.com/hstre/DESi"]
 # Read the actual papers (PDF), not just the abstract.
 pdf = ["pypdf>=4.0"]
+# A pinned, small local embedding model - the general semantic projector (cosine distance)
+# the DESi/Alexandria layer lacks. fastembed (ONNX, light) preferred at runtime.
+embed = ["fastembed>=0.3"]
 web = ["fastapi>=0.110", "uvicorn>=0.27", "pydantic>=2.0", "httpx>=0.27"]
 dev = ["pytest>=8.0", "ruff>=0.5", "fastapi>=0.110", "uvicorn>=0.27", "pydantic>=2.0", "httpx>=0.27"]
 
