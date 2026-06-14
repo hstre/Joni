@@ -13,10 +13,10 @@
     "claims_total": 72,
     "claims_active": 46,
     "memory": 27,
-    "ledger": 1366,
+    "ledger": 1384,
     "open_conflicts": 2,
     "methods": 6,
-    "method_trials": 332,
+    "method_trials": 338,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 70,
@@ -29,11 +29,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 104
+    "runs": 105
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 104,
+    "runs": 105,
     "retired": false
   },
   "extensions": {
@@ -1097,10 +1097,14 @@
       "C-12|C-28",
       "C-12|C-28@bge-small-en-v1.5",
       "C-12|C-29",
+      "C-12|C-29@bge-small-en-v1.5",
       "C-12|C-3",
       "C-12|C-31",
+      "C-12|C-31@bge-small-en-v1.5",
       "C-12|C-35",
+      "C-12|C-35@bge-small-en-v1.5",
       "C-12|C-36",
+      "C-12|C-3@bge-small-en-v1.5",
       "C-12|C-5",
       "C-12|C-6",
       "C-12|C-7",
@@ -1139,14 +1143,14 @@
     "pdf_inbox_seen": [],
     "read_fulltext_priority": true,
     "learned_queries": [
-      "alignment+drift drift",
-      "alignment+evaluation evaluation",
-      "alignment+drift tracking",
       "alignment+drift alignment",
       "alignment+evaluation tracking",
       "alignment+evaluation alignment",
       "alignment+drift apply",
-      "alignment+evaluation apply"
+      "alignment+evaluation apply",
+      "alignment+drift hypothesis",
+      "alignment+drift pattern",
+      "alignment+evaluation hypothesis"
     ],
     "strategy_sm": [
       "underframed"
@@ -12058,7 +12062,125 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:09+00:00",
+      "cycle": 105,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:10+00:00",
+      "cycle": 105,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:11+00:00",
+      "cycle": 105,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:12+00:00",
+      "cycle": 105,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:13+00:00",
+      "cycle": 105,
+      "kind": "trialed",
+      "summary": "Kevin trialed 6 method(s): 1 passed, 5 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:14+00:00",
+      "cycle": 105,
+      "kind": "developed",
+      "summary": "backfill: C-12/C-29 semantic record = supports",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:14+00:00",
+      "cycle": 105,
+      "kind": "developed",
+      "summary": "backfill: C-12/C-31 semantic record = supports",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:14+00:00",
+      "cycle": 105,
+      "kind": "developed",
+      "summary": "backfill: C-12/C-35 semantic record = supports",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:14+00:00",
+      "cycle": 105,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-32 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:14+00:00",
+      "cycle": 105,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-37 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:14+00:00",
+      "cycle": 105,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T06:07:14+00:00",
+      "cycle": 105,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 6 trialed · 0 new link(s) · 0 hypothesis(es) · 0 emergent · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T06:03:31+00:00"
+  "generated": "2026-06-14T06:07:14+00:00"
 }
