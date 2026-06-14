@@ -5,8 +5,55 @@ No network here: we check the pure pass logic and the adapter readiness contract
 
 import json
 
+import pytest
+
 from joni.relay import adapters
 from joni.relay.agent import one_pass
+
+
+class _FakeResp:
+    def __init__(self, payload):
+        self._b = json.dumps(payload).encode()
+
+    def read(self):
+        return self._b
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+
+def test_moltbook_adapter_posts_to_a_submolt(monkeypatch):
+    captured = {}
+
+    def fake_urlopen(req, timeout=0):
+        captured["url"] = req.full_url
+        captured["method"] = req.get_method()
+        captured["auth"] = req.headers.get("Authorization")
+        captured["body"] = json.loads(req.data.decode())
+        return _FakeResp({"id": "p123", "url": "https://www.moltbook.com/posts/p123"})
+
+    monkeypatch.setattr(adapters.urllib.request, "urlopen", fake_urlopen)
+    a = adapters.get_adapter("moltbook", {"MOLTBOOK_API_KEY": "moltbook_sk_x",
+                                          "MOLTBOOK_SUBMOLT": "m/epistemics"})
+    assert a.ready() is True                                   # implemented + has key
+    url = a.post("Wo bricht meine Hypothese?\nMehr Details hier...")
+    assert url == "https://www.moltbook.com/posts/p123"
+    assert captured["url"] == "https://api.moltbook.com/posts"
+    assert captured["method"] == "POST"
+    assert captured["auth"] == "Bearer moltbook_sk_x"
+    assert captured["body"]["submolt"] == "m/epistemics"
+    assert captured["body"]["title"] == "Wo bricht meine Hypothese?"   # first line, capped
+    assert captured["body"]["content"].startswith("Wo bricht")
+
+
+def test_moltbook_without_key_is_not_ready_and_refuses():
+    a = adapters.get_adapter("moltbook", {})
+    assert a.ready() is False                                  # implemented, but no key
+    with pytest.raises(adapters.NotReady):
+        a.post("anything")
 
 
 class _Paths:
