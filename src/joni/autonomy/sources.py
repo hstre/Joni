@@ -5,13 +5,15 @@ short timeouts, failures swallowed so a hiccup never breaks a run). Everything i
 behind a ``Fetcher`` interface so the default offline path - a deterministic
 ``MockFetcher`` - keeps the loop and the tests fully reproducible with no network.
 
-SSRN is intentionally omitted for now: it has no clean public API and scraping it is
-fragile and ToS-sensitive. It can be added later behind this same interface.
+SSRN is reached two ways: directly, by dropping its PDF download links in the ``pdf_urls``
+queue (see ``reader.py``), and indirectly through ``OpenAlexFetcher`` below, which indexes
+SSRN working papers. Zenodo has a clean public API and is a first-class fetcher.
 """
 
 from __future__ import annotations
 
 import json
+import re
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -203,7 +205,81 @@ class GitHubFetcher:
         return sorted(merged.values(), key=lambda it: -it.score)[:limit]
 
 
+class ZenodoFetcher:
+    """Zenodo - the open research repository (papers, datasets, software). Clean public API,
+    no key. Covers a lot of material that never reaches arXiv."""
+
+    name = "zenodo"
+
+    def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
+        terms = [q for q in queries if q][:4] or ["machine learning"]
+        merged: dict[str, Item] = {}
+        for term in terms:
+            url = "https://zenodo.org/api/records?" + urllib.parse.urlencode(
+                {"q": term, "size": max(2, limit // 2), "sort": "mostrecent"})
+            try:
+                hits = json.loads(_get(url)).get("hits", {}).get("hits", [])
+            except Exception:  # noqa: BLE001 - a failing term is just skipped
+                continue
+            for rec in hits:
+                rid = str(rec.get("id") or "")
+                meta = rec.get("metadata", {})
+                title = (meta.get("title") or "").strip()
+                if not title or rid in merged:
+                    continue
+                link = (rec.get("links", {}).get("self_html") or meta.get("doi_url")
+                        or f"https://zenodo.org/records/{rid}")
+                summary = re.sub(r"<[^>]+>", " ", meta.get("description") or "")[:500]
+                merged[rid] = Item("zenodo", rid, title, link, summary.strip())
+        return list(merged.values())[:limit]
+
+
+def _openalex_abstract(inv: dict | None) -> str:
+    """OpenAlex stores abstracts as an inverted index {word: [positions]} - rebuild the text."""
+    if not isinstance(inv, dict):
+        return ""
+    pos: dict[int, str] = {}
+    for word, idxs in inv.items():
+        for i in idxs if isinstance(idxs, list) else []:
+            pos[i] = word
+    return " ".join(pos[i] for i in sorted(pos))[:500]
+
+
+class OpenAlexFetcher:
+    """OpenAlex - a large open scholarly index (a CrossRef/MAG successor). No key. It indexes
+    many venues arXiv misses, **including SSRN working papers**, so it is how Joni keeps SSRN
+    in view without a fragile scraper. A ``mailto`` is sent to use the polite pool."""
+
+    name = "openalex"
+
+    def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
+        terms = [q for q in queries if q][:4] or ["machine learning"]
+        merged: dict[str, Item] = {}
+        mailto = "joni-autonomy@users.noreply.github.com"   # OpenAlex polite-pool identifier
+        for term in terms:
+            url = "https://api.openalex.org/works?" + urllib.parse.urlencode(
+                {"search": term, "per_page": max(2, limit // 2),
+                 "sort": "publication_date:desc", "mailto": mailto})
+            try:
+                results = json.loads(_get(url)).get("results", [])
+            except Exception:  # noqa: BLE001
+                continue
+            for work in results:
+                wid = str(work.get("id") or "").rsplit("/", 1)[-1]
+                title = (work.get("title") or work.get("display_name") or "").strip()
+                if not title or wid in merged:
+                    continue
+                loc = work.get("primary_location") or {}
+                link = (loc.get("landing_page_url") or work.get("doi")
+                        or f"https://openalex.org/{wid}")
+                summary = _openalex_abstract(work.get("abstract_inverted_index"))
+                merged[wid] = Item("openalex", wid, title, link, summary,
+                                   float(work.get("cited_by_count") or 0))
+        return sorted(merged.values(), key=lambda it: -it.score)[:limit]
+
+
 def get_fetchers(*, online: bool) -> list[Fetcher]:
     if online:
-        return [ArxivFetcher(), HackerNewsFetcher(), HuggingFaceFetcher(), GitHubFetcher()]
+        return [ArxivFetcher(), HackerNewsFetcher(), HuggingFaceFetcher(), GitHubFetcher(),
+                ZenodoFetcher(), OpenAlexFetcher()]
     return [MockFetcher()]
