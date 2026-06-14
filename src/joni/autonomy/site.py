@@ -79,16 +79,21 @@ def build(data: dict) -> str:
         f"<span class=pill>{esc(p)}"
         f"{' · live' if v.get('registered') else ' · allowed'}</span>"
         for p, v in reg.items()) or "<span class=empty>no forums configured</span>"
-    outbox = [d for d in ext.get("forum_outbox", []) if isinstance(d, dict)][-6:]
+    outbox = [d for d in ext.get("forum_outbox", []) if isinstance(d, dict)]
+    posted_count = sum(1 for d in outbox if d.get("status") == "posted")
     outbox_html = "".join(
         f"<li><span class=chip>{esc(d.get('platform',''))} · "
         f"{esc(d.get('status','drafted'))}</span> <code>{esc(d.get('id',''))}</code> "
-        f"{esc(d.get('question',''))}</li>"
-        for d in outbox) or "<li class=empty>no questions drafted yet</li>"
-    approve_note = ("<div class=note style='margin-top:4px'>Nothing is posted without approval. "
-                    "Approve a draft with <code>python -m joni.autonomy approve &lt;id&gt;</code> "
-                    "(or add its id to <code>state/forum_approved.json</code>); only then may the "
-                    "relay post it.</div>")
+        f"{esc(d.get('question',''))}"
+        + (f" <a href=\"{esc(d.get('posted_url'))}\" target=_blank rel=noopener>&#8599; ansehen</a>"
+           if d.get("posted_url") else "")
+        + "</li>"
+        for d in reversed(outbox[-8:])) or "<li class=empty>no questions drafted yet</li>"
+    approve_note = (
+        "<div class=note style='margin-top:4px'><b>" + str(posted_count) + "</b> gepostet &middot; "
+        "Agenten-Netze (Moltbook) postet Joni <b>autonom</b>; Menschen-Foren bleiben auf dem "
+        "<i>&bdquo;du postest, Joni textet&ldquo;</i>-Weg &mdash; Entw&uuml;rfe warten in "
+        "<code>docs/to_post.md</code>, bis ein Mensch sie postet.</div>")
     heard = [h for h in ext.get("forum_heard", []) if isinstance(h, dict)][-6:]
     heard_html = "".join(
         f"<li><div><b>{esc(h.get('platform',''))}:{esc(h.get('handle',''))}</b> "
@@ -271,7 +276,7 @@ what is uncertain, what contradicts, and what changed.</p>
     <h2>Menschen &amp; Foren — a source, not an authority</h2>
     <p class=note>{stance}</p>
     <div style='margin:6px 0'>{reg_html}</div>
-    <h3 style='margin:10px 0 4px'>Drafted questions (outbox)</h3>
+    <h3 style='margin:10px 0 4px'>Fragen &amp; Posts</h3>
     <ul>{outbox_html}</ul>
     {approve_note}
     <h3 style='margin:10px 0 4px'>Heard from people — and how it was treated</h3>
