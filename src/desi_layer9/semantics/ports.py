@@ -33,7 +33,18 @@ class SemanticMeasurement:
     routed_pipeline: str | None = None
     inheritance_allowed: bool = False
     en_recommended: bool = False                  # an EN operation is warranted (tension)
-    pi_distance: float | None = None              # √JSD if a projector is available, else None
+    # √JSD path - reserved for an actual text->distribution projector. Stays None until one
+    # exists; an embedding cosine distance is NEVER reported here (it is not √JSD).
+    pi_distance: float | None = None
+    # Embedding channel (an ADDITIONAL measure): cosine distance, explicitly labelled, with
+    # the exact model identity so a measurement is reproducible and a model change is visible.
+    cosine_distance: float | None = None
+    distance_metric: str = ""                     # "cosine" when cosine_distance is set
+    embedding_model: str = ""
+    embedding_revision: str = ""
+    embedding_dim: int = 0
+    embedding_normalized: bool = False
+    polarity_clash: bool = False                  # negation/antonym opposition between the claims
     duplicate: bool | None = None                 # explicit duplication signal, if any
     layer_name: str = "absent"
     layer_version: str = "0"
@@ -61,6 +72,12 @@ class SemanticMeasurement:
             "frame_tension": self.frame_tension, "routed_pipeline": self.routed_pipeline,
             "inheritance_allowed": self.inheritance_allowed,
             "en_recommended": self.en_recommended, "pi_distance": self.pi_distance,
+            "cosine_distance": self.cosine_distance, "distance_metric": self.distance_metric,
+            "embedding_model": self.embedding_model,
+            "embedding_revision": self.embedding_revision,
+            "embedding_dim": self.embedding_dim,
+            "embedding_normalized": self.embedding_normalized,
+            "polarity_clash": self.polarity_clash,
             "duplicate": self.duplicate, "layer_name": self.layer_name,
             "layer_version": self.layer_version, "error": self.error,
             "components": list(self.components),

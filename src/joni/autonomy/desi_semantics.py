@@ -72,13 +72,12 @@ class DesiSemanticLayer:
             route = self._router.route(claim_id=b_id, claim_text=b_text,
                                        inherited_context_text=a_text)
             tension = _enum_value(route.consistency)
-            components = ("frame_detector", "logical_auditor", "frame_tension_router")
-            # The stronger pair-distance measures (Π-projection / √JSD / duplication) need a
-            # claim-projector. The √JSD *math* exists (Alexandria SPL `compute_jsd`), but the
-            # only projector in the installed packages is clinical (needs a claim_type) - there
-            # is no domain-agnostic projector for Joni's claims, so they stay unavailable here
-            # rather than be faked. Recorded explicitly per measurement.
-            pi_distance, dup, jsd_components, jsd_missing = _projection_distance(a_text, b_text)
+            frame_components = ("frame_detector", "logical_auditor", "frame_tension_router")
+            # Additional channel: a local-embedding *cosine* distance (the general projector
+            # DESi/Alexandria lack). It is labelled cosine, carries the model identity, and is
+            # never reported as √JSD. Plus a deterministic polarity-clash flag, so two
+            # embedding-close but opposed claims are not merged.
+            dm = _measure_distance(a_text, b_text)
             return SemanticMeasurement(
                 frame_a=_enum_value(fa.frame_kind), frame_b=_enum_value(fb.frame_kind),
                 frame_a_confidence=float(getattr(fa, "confidence", 0.0)),
@@ -89,9 +88,13 @@ class DesiSemanticLayer:
                                  if route.routed_pipeline else None),
                 inheritance_allowed=bool(getattr(route, "inheritance_allowed", False)),
                 en_recommended=(tension == "tension"),
-                pi_distance=pi_distance, duplicate=dup,
-                components=components + jsd_components,
-                components_unavailable=jsd_missing,
+                pi_distance=dm["pi_distance"], cosine_distance=dm["cosine_distance"],
+                distance_metric=dm["distance_metric"], embedding_model=dm["embedding_model"],
+                embedding_revision=dm["embedding_revision"], embedding_dim=dm["embedding_dim"],
+                embedding_normalized=dm["embedding_normalized"], duplicate=dm["duplicate"],
+                polarity_clash=_polarity_clash(a_text, b_text),
+                components=frame_components + dm["components"],
+                components_unavailable=dm["components_unavailable"],
                 layer_name=self.name, layer_version=self.version)
         except Exception as exc:  # noqa: BLE001 - any failure => insufficient, never a guess
             return SemanticMeasurement(layer_name=self.name, layer_version=self.version,
@@ -135,20 +138,50 @@ def _general_projector():
     return None
 
 
-def _projection_distance(a_text: str, b_text: str):
-    """Return (pi_distance, duplicate, components_present, components_unavailable).
+_DUP_DISTANCE = 0.10        # cosine distance below this = a semantic duplicate
 
-    Uses the real Alexandria √JSD the moment a projector exists; otherwise fails closed
-    (no distance) and records exactly what was and was not available - never a guess."""
-    jsd = _alexandria_jsd()
-    proj = _general_projector()
+
+def _polarity_clash(a_text: str, b_text: str) -> bool:
+    """A deterministic negation/antonym opposition between two claims.
+
+    Used only to *flag opposition* so two embedding-close but opposed claims are not merged;
+    it never decides relatedness (the embedding does that)."""
+    from desi_layer9.semantics.text import antonym_clash, is_negated
+    return antonym_clash(a_text, b_text) or (is_negated(a_text) != is_negated(b_text))
+
+
+def _measure_distance(a_text: str, b_text: str) -> dict:
+    """Embedding cosine distance (an additional channel) + its model identity, plus the
+    √JSD availability. The embedding distance is explicitly cosine - never √JSD. Records
+    exactly which components were and were not available; fails closed (no distance) with no
+    model and no projector - never a guess."""
+    from . import embeddings
+    out: dict = {"pi_distance": None, "cosine_distance": None, "distance_metric": "",
+                 "embedding_model": "", "embedding_revision": "", "embedding_dim": 0,
+                 "embedding_normalized": False, "duplicate": None,
+                 "components": (), "components_unavailable": ()}
+    if embeddings.available():
+        d = embeddings.cosine_distance(a_text, b_text)
+        if d is not None:
+            info = embeddings.info()
+            out.update(cosine_distance=d, distance_metric=info["metric"],
+                       embedding_model=info["model"], embedding_revision=info["revision"],
+                       embedding_dim=info["dim"], embedding_normalized=info["normalized"],
+                       duplicate=(d <= _DUP_DISTANCE),
+                       components=(f"local_embedding:{info['model']}@{info['revision']}",))
+            return out
+
+    # No embedding: the √JSD path stays separate and only activates with a real projector.
+    jsd, proj = _alexandria_jsd(), _general_projector()
     if jsd is not None and proj is not None:
         da, db = proj(a_text), proj(b_text)
         dist = math.sqrt(max(0.0, float(jsd(da, db))))      # √JSD ∈ [0,1]
-        return dist, (dist <= 0.12), ("alexandria_sqrt_jsd",), ()
+        out.update(pi_distance=dist, duplicate=(dist <= 0.12), components=("alexandria_sqrt_jsd",))
+        return out
     present = ("alexandria_jsd_math",) if jsd is not None else ()
-    missing = ("pi_projection", "sqrt_jsd", "semantic_duplication")
-    return None, None, present, missing
+    out.update(components=present,
+               components_unavailable=("embedding_projector", "pi_projection", "sqrt_jsd"))
+    return out
 
 
 def enabled() -> bool:
