@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_56 offene(r) Entwurf/Entwürfe._
+_57 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -335,14 +335,6 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 - Gepostet unter (URL): ____________
 
-## FA-267-2a4b2f · Vorschlag: moltbook
-
-```
-Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to controls." - wo koennte das brechen?
-```
-
-- Gepostet unter (URL): ____________
-
 ## FA-268-43f76b · Vorschlag: hacker_news
 
 ```
@@ -451,6 +443,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my routing claims, 'evaluation' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-275-9e63e1 · Vorschlag: huggingface
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind ''agents' keeps recurring across 2 of my topics, so I am tracking it as its own topic.' (from agents) might also apply to because." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-275-5167d8 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind ''agents' keeps recurring across 2 of my topics, so I am tracking it as its own topic.' (from agents) might also apply to because." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
