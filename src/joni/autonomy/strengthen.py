@@ -1,0 +1,143 @@
+"""Strengthening Joni's *own* ideas - honestly.
+
+A self-invented hypothesis starts as a weak candidate (support 0.4) and used to just sit
+there. An idea does not get stronger by repetition; it gets stronger by surviving evidence
+and challenge. Four mechanisms, all peripheral, gate-mediated and auditable - and none of
+them ever *confirms* anything (that still needs an independent human):
+
+  1. **Active testing** - the hypothesis is turned into a search query, and existing
+     claims are tested against it via the DESi Semantic Layer: a governed *supports*
+     attaches evidence (the idea earns weight); a governed *contradictory/tension* opens a
+     conflict (the idea is challenged), never smoothed away.
+  2. **Earned ladder** - a hypothesis is promoted candidate -> ACTIVE (a *working* idea,
+     not a fact) only once it has >=2 independent governed supports and no open hard
+     contradiction.
+  3. **Adversarial self-challenge** - Joni looks for the strongest counter to his own idea;
+     surviving scrutiny is recorded as earned, being contradicted demotes it.
+  4. **Kevin vetting** - the idea is run through Kevin's epistemic selection (coherence /
+     testability / connectivity / "not just pretty"); a rejected idea is not promoted.
+
+Bounded per cycle and deduped, so it works through the hypotheses over time.
+"""
+
+from __future__ import annotations
+
+from desi_layer9 import SemanticDecision
+from desi_layer9.semantics import adapter, lexical_overlap
+from desi_layer9.semantics.ports import NullSemanticLayer
+
+from ..conflict import _content
+
+_TRIGGER = 0.2          # be more eager than develop: we *want* to test ideas
+_SUPPORTS_FOR_ACTIVE = 2
+
+
+def _kevin_verdict(text: str, topic: str):
+    """Kevin's epistemic-selection verdict for an idea, or None if Kevin is unavailable."""
+    try:
+        from kevin.llm_client import MockLLM
+        from kevin.models import Candidate, Problem
+        from kevin.selector import Selector
+    except Exception:  # noqa: BLE001 - Kevin is an optional vetting partner
+        return None
+    try:
+        cand = Candidate(content=text, space_id="hyp", variant_id="h")
+        ev = Selector(MockLLM()).evaluate(Problem(statement=topic or text), cand)
+        return ev.verdict.value          # "promising" | "tentative" | "rejected"
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _supports_on(cs, claim_id: str) -> int:
+    from desi_layer9 import ObjectType
+    return sum(1 for el in cs.core.all(ObjectType.EVIDENCE_LINK)
+               if el.claim_id == claim_id and el.relation.value in ("supports", "contextualizes"))
+
+
+def _hard_conflict_on(cs, claim_id: str) -> bool:
+    return any(claim_id in x.claim_ids and x.severity == "hard" for x in cs.core.open_conflicts())
+
+
+def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
+               max_hyp: int = 2, max_tests: int = 3) -> dict:
+    layer = layer or NullSemanticLayer()
+    hyps = cs.hypotheses()
+    out = {"tested": 0, "supported": 0, "challenged": 0, "survived": 0,
+           "promoted": 0, "rejected": 0}
+    if not hyps:
+        return out
+
+    tested = set(extensions.get("hyp_tested", []))
+    hollow = set(extensions.get("hyp_hollow", []))
+    learned = list(extensions.get("learned_queries", []))
+    # rotate through hypotheses oldest-first so all get attention over time
+    chosen = sorted(hyps, key=lambda c: int(c.id.split("-")[-1]))[:max_hyp]
+
+    for h in chosen:
+        # a query so Joni actively seeks outside evidence about his own idea
+        terms = [w for w in _content(h.text) if len(w) > 4][:2]
+        for q in (f"{h.topic} {t}".strip() for t in terms):
+            if q and q not in learned:
+                learned.append(q)
+
+        # Kevin vetting - a rejected idea will not be promoted, and is recorded as hollow
+        verdict = _kevin_verdict(h.text, h.topic)
+        if verdict == "rejected":
+            hollow.add(h.id)
+            out["rejected"] += 1
+            proto.record(cycle, "strengthen",
+                         f"Kevin vetting: {h.id} looks hollow (rejected) - not promoting")
+
+        # test the idea against existing claims via the Semantic Layer
+        candidates = [c for c in cs.active_claims()
+                      if c.id not in h.derived_from and c.id != h.id]
+        candidates.sort(key=lambda c: -lexical_overlap(h.text, c.text))
+        n = 0
+        challenged_here = False
+        for c in candidates:
+            if n >= max_tests:
+                break
+            trig = lexical_overlap(h.text, c.text)
+            if trig < _TRIGGER:
+                break
+            key = f"{h.id}|{c.id}"
+            if key in tested:
+                continue
+            tested.add(key)
+            n += 1
+            sc = adapter.analyse_pair(cs.core, h, c, layer=layer, lexical_trigger=trig,
+                                      run_id=f"joni-c{cycle}-str")
+            out["tested"] += 1
+            d = sc.decision
+            if d in (SemanticDecision.SUPPORTS, SemanticDecision.COMPLEMENTARY):
+                cs.corroborate(h.id, c, relation="supports")
+                out["supported"] += 1
+                proto.record(cycle, "strengthen",
+                             f"idea {h.id} earned support from {c.id} ({d.value})")
+            elif d in (SemanticDecision.CONTRADICTORY, SemanticDecision.TENSION):
+                sev = "hard" if d is SemanticDecision.CONTRADICTORY else "soft"
+                cid = cs.open_conflict((h.id, c.id), severity=sev)
+                out["challenged"] += 1
+                challenged_here = True
+                proto.record(cycle, "strengthen",
+                             f"idea {h.id} challenged by {c.id} ({d.value}) -> {cid}")
+
+        # adversarial self-challenge: looked for a counter and none contradicted -> survived
+        if n and not challenged_here:
+            out["survived"] += 1
+            proto.record(cycle, "strengthen",
+                         f"idea {h.id} survived {n} challenge(s) - no contradiction found")
+
+        # earned ladder: candidate -> active once supported and unchallenged and not hollow
+        if (h.id not in hollow and _supports_on(cs, h.id) >= _SUPPORTS_FOR_ACTIVE
+                and not _hard_conflict_on(cs, h.id)):
+            cs.activate_claim(h.id)
+            out["promoted"] += 1
+            proto.record(cycle, "strengthen",
+                         f"idea {h.id} promoted candidate -> active (earned support, "
+                         "unchallenged) - a working idea, not confirmed")
+
+    extensions["hyp_tested"] = sorted(tested)[-4000:]
+    extensions["hyp_hollow"] = sorted(hollow)[-1000:]
+    extensions["learned_queries"] = learned[-8:]
+    return out

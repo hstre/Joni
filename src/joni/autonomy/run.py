@@ -36,6 +36,7 @@ from . import (
     self_review,
     site,
     strategy,
+    strengthen,
     trials,
 )
 from .budget import load as load_budget
@@ -190,7 +191,12 @@ def one_cycle() -> dict:
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
     emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
 
-    # 4e. Self-optimisation: read Joni's own result pattern (mostly insufficient?) and
+    # 4e. Strengthen Joni's own ideas: test his hypotheses against evidence (Semantic
+    #     Layer governs support/contradiction), vet via Kevin, and let a hypothesis earn
+    #     candidate -> active. Never confirms - that stays a human's call.
+    strengthened = strengthen.strengthen(cs, extensions, proto, cycle, layer=semantic_layer)
+
+    # 4f. Self-optimisation: read Joni's own result pattern (mostly insufficient?) and
     #     improve his research strategy - what he reads and the queries he uses next cycle.
     strategy_out = strategy.adapt(cs, extensions, proto, cycle)
 
@@ -223,7 +229,8 @@ def one_cycle() -> dict:
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,
-            "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out}
+            "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
+            "strengthened": strengthened}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:

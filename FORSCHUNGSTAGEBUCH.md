@@ -298,3 +298,27 @@ Round-Trip über einen Tickwechsel; Repair eines tick-losen Alt-States. **189 pa
 **Offene Beobachtung:** Damit echte *Synthesen* (statt `insufficient`) entstehen, braucht
 es Claims mit klarem DESi-Frame — der PDF-Volltext-Port (E14) sollte hier helfen, weil
 Paper-Sätze öfter empirisch/kausal gerahmt sind als Kurz-Titel.
+
+### Eintrag 2026-06-14 ~04:35 UTC — Selbst-Optimierung & Ideen erstarken
+Zwei Loops, mit denen Joni nicht nur *mehr* lernt, sondern *besser wird*:
+
+- **Selbst-Optimierung der Recherche** (`strategy.py`, live bestätigt): Joni liest sein
+  eigenes Fehlersignal. Kommen die Semantik-Analysen überwiegend als `insufficient`
+  zurück (DESi findet keinen Frame in dünnen Titel-Claims), schließt er „meine Eingaben
+  sind unter-gerahmt" und passt seine **Suchstrategie** an: liest bevorzugt **Volltext**
+  und verfeinert Queries Richtung Rahmung (`routing mechanism`, `privacy evaluation`).
+  Live: `under-framed inputs (100% insufficient) -> read full text; refine queries: …`.
+- **Ideen erstarken** (`strengthen.py`): selbst erfundene Hypothesen blieben bisher als
+  schwache `candidate` liegen. Vier ehrliche Mechanismen (gewählt: alle): **(1) aktiv
+  testen** — Hypothese → Query + vorhandene Claims via Semantic Layer als supports/
+  contradicts bewerten (Evidenz anhängen oder Konflikt öffnen); **(2) verdiente Leiter**
+  candidate→**active** ab ≥2 unabhängigen governten Supports und keinem harten Widerspruch
+  (`confirmed` bleibt Mensch); **(3) adversariale Selbst-Prüfung** — übersteht die Idee die
+  Suche nach einem Gegenbeleg, zählt das als verdient; **(4) Kevin-Vetting** — Kevins
+  epistemische Selektion; eine als „hollow"/rejected eingestufte Idee wird **nicht**
+  befördert. Demo: eine Hypothese verdiente 3 Supports, überstand die Prüfung → candidate→
+  active (Arbeitsidee, kein Fakt). Alles peripher, deterministisch, auditierbar.
+
+Damit ist der Kreis geschlossen: PDF-Volltext + Rahmungs-Queries liefern besser gerahmte
+Claims → DESi kann sie bewerten → Hypothesen können echte Evidenz sammeln und ehrlich
+erstarken, statt nur als Vermutung zu existieren. Gesamt: **197 passed**, ruff clean.
