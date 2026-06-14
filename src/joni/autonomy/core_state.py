@@ -136,6 +136,12 @@ class CoreState:
         return [c for c in self.core.all(l9.ObjectType.CLAIM)
                 if c.status is Status.CANDIDATE and c.derived_from]
 
+    def activate_claim(self, claim_id: str):
+        """Promote a candidate (e.g. a hypothesis that earned support) to ACTIVE - a
+        working claim, NOT confirmed. Confirmation still needs an independent human."""
+        return self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
+                        {"to_status": "active"}, targets=(claim_id,))
+
     def propose_method(self, *, name: str, summary: str, applicable_to=(),
                        origin: str = "joni") -> str:
         """Store a method Joni found, as a CANDIDATE in the shared Layer 9 core - for

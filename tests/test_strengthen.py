@@ -1,0 +1,71 @@
+"""Joni strengthens his own ideas: test, vet, and let them earn candidate -> active."""
+
+import desi_layer9 as l9
+from joni.autonomy import strengthen
+from joni.autonomy.core_state import CoreState
+from semantic_stub import StubSemanticLayer
+
+
+class _Proto:
+    def __init__(self):
+        self.events = []
+
+    def record(self, cycle, kind, summary, **kw):
+        self.events.append((kind, summary))
+
+
+def _cs_with_a_hypothesis():
+    cs = CoreState(l9.Layer9())
+    p1 = cs.learn("teams care about routing speed", "routing")
+    p2 = cs.learn("sessions benefit from routing choices", "routing")
+    # supporting evidence claims (distinct sources) that overlap the hypothesis strongly
+    cs.learn("routing locally reduces latency on small tasks", "routing")
+    cs.learn("routing reduces latency under heavy load", "routing")
+    cs.learn("routing decisions drive lower latency overall", "routing")
+    h = cs.hypothesize("Hypothesis: routing locally reduces latency", "routing",
+                       parents=(p1, p2))
+    return cs, h
+
+
+def test_idea_earns_support_and_is_promoted_to_active_not_confirmed(monkeypatch):
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
+    cs, h = _cs_with_a_hypothesis()
+    out = strengthen.strengthen(cs, {}, _Proto(), layer=StubSemanticLayer())  # governs supports
+    assert out["supported"] >= 2
+    hc = cs.core.get(h)
+    assert hc.status is l9.Status.ACTIVE            # earned its way up...
+    assert hc.status is not l9.Status.CONFIRMED     # ...but never auto-confirmed
+    assert out["promoted"] >= 1
+
+
+def test_kevin_rejection_blocks_promotion(monkeypatch):
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "rejected")
+    cs, h = _cs_with_a_hypothesis()
+    out = strengthen.strengthen(cs, {}, _Proto(), layer=StubSemanticLayer())
+    assert out["supported"] >= 2                    # it earned support...
+    assert out["rejected"] >= 1
+    assert cs.core.get(h).status is l9.Status.CANDIDATE   # ...but Kevin says hollow -> no promote
+
+
+def test_a_contradicted_idea_is_challenged_not_promoted(monkeypatch):
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
+    cs, h = _cs_with_a_hypothesis()
+    out = strengthen.strengthen(cs, {}, _Proto(),
+                                layer=StubSemanticLayer(audit_a="logically_rejected"))
+    assert out["challenged"] >= 1
+    assert cs.core.get(h).status is l9.Status.CANDIDATE     # not promoted while contradicted
+    assert cs.core.open_conflicts()                         # the challenge is held open
+
+
+def test_hypothesis_becomes_a_search_query():
+    cs, h = _cs_with_a_hypothesis()
+    ext: dict = {}
+    strengthen.strengthen(cs, ext, _Proto(), layer=StubSemanticLayer())
+    assert ext.get("learned_queries")               # Joni now actively seeks evidence for it
+
+
+def test_without_semantic_layer_nothing_is_asserted():
+    cs, h = _cs_with_a_hypothesis()
+    out = strengthen.strengthen(cs, {}, _Proto())   # NullSemanticLayer default -> insufficient
+    assert out["supported"] == 0 and out["promoted"] == 0
+    assert cs.core.get(h).status is l9.Status.CANDIDATE
