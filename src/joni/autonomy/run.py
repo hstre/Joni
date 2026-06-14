@@ -29,6 +29,7 @@ from . import (
     develop,
     emerge,
     governance,
+    homeostasis,
     invent,
     layer9_view,
     methods,
@@ -199,6 +200,11 @@ def one_cycle() -> dict:
     #     improve his research strategy - what he reads and the queries he uses next cycle.
     strategy_out = strategy.adapt(cs, extensions, proto, cycle)
 
+    # 4g. Homeostasis: shed dead ideas and cap the backlog so a long run does not silt up,
+    #     then grade Joni's own trajectory (developing / steady / degenerating).
+    regulated = homeostasis.regulate(cs, extensions, proto, cycle)
+    vitality = homeostasis.vitality(cs, extensions, proto, cycle)
+
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
@@ -216,11 +222,13 @@ def one_cycle() -> dict:
 
     emerged_n = sum(1 for v in (emerged["topic"], emerged["synthesis"], emerged["method"]) if v)
     read_note = f"· read {read['papers']} paper(s) " if read.get("papers") else ""
+    prune_note = f"· shed {regulated['pruned']} dead idea(s) " if regulated.get("pruned") else ""
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new {read_note}· {found_methods['methods']} "
                  f"method(s) · {trialed['trialed']} trialed · {developed['links']} new link(s) "
-                 f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent "
-                 f"· spend €{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
+                 f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent {prune_note}"
+                 f"· {vitality['verdict']} · spend €{budget.spent_eur:.4f} "
+                 f"· routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
     _finish(p, cs, budget, window, extensions, proto, reflect)
@@ -229,7 +237,7 @@ def one_cycle() -> dict:
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
-            "strengthened": strengthened}
+            "strengthened": strengthened, "regulated": regulated, "vitality": vitality}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
