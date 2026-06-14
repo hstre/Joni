@@ -33,20 +33,53 @@ def test_moltbook_adapter_posts_to_a_submolt(monkeypatch):
         captured["method"] = req.get_method()
         captured["auth"] = req.headers.get("Authorization")
         captured["body"] = json.loads(req.data.decode())
-        return _FakeResp({"id": "p123", "url": "https://www.moltbook.com/posts/p123"})
+        # Real success body nests the created post under "post".
+        return _FakeResp({"success": True, "message": "Post created!",
+                          "post": {"id": "p123", "title": "Wo bricht meine Hypothese?",
+                                   "verification_status": "pending"}})
 
     monkeypatch.setattr(adapters.urllib.request, "urlopen", fake_urlopen)
     a = adapters.get_adapter("moltbook", {"MOLTBOOK_API_KEY": "moltbook_sk_x",
                                           "MOLTBOOK_SUBMOLT": "epistemics"})
     assert a.ready() is True                                   # implemented + has key
     url = a.post("Wo bricht meine Hypothese?\nMehr Details hier...")
-    assert url == "https://www.moltbook.com/posts/p123"
+    assert url == "https://www.moltbook.com/posts/p123"        # id pulled from nested "post"
     assert captured["url"] == "https://www.moltbook.com/api/v1/posts"   # real API base
     assert captured["method"] == "POST"
     assert captured["auth"] == "Bearer moltbook_sk_x"
     assert captured["body"]["submolt_name"] == "epistemics"   # real field name, no m/ prefix
     assert captured["body"]["title"] == "Wo bricht meine Hypothese?"   # first line, capped
     assert captured["body"]["content"].startswith("Wo bricht")
+
+
+def test_moltbook_adapter_accepts_a_flat_id_response(monkeypatch):
+    """Forward-compat: if the API ever returns a flat id, we still capture it."""
+    def fake_urlopen(req, timeout=0):
+        return _FakeResp({"id": "flat9", "url": "https://www.moltbook.com/posts/flat9"})
+
+    monkeypatch.setattr(adapters.urllib.request, "urlopen", fake_urlopen)
+    a = adapters.get_adapter("moltbook", {"MOLTBOOK_API_KEY": "k"})
+    assert a.post("Q") == "https://www.moltbook.com/posts/flat9"
+
+
+def test_moltbook_whoami_resolves_the_agent_profile(monkeypatch):
+    captured = {}
+
+    def fake_urlopen(req, timeout=0):
+        captured["url"] = req.full_url
+        captured["method"] = req.get_method()
+        return _FakeResp({"agent": {"name": "Joni", "karma": 12}})
+
+    monkeypatch.setattr(adapters.urllib.request, "urlopen", fake_urlopen)
+    a = adapters.get_adapter("moltbook", {"MOLTBOOK_API_KEY": "k"})
+    who = a.whoami()
+    assert captured["url"] == "https://www.moltbook.com/api/v1/agents/me"
+    assert captured["method"] == "GET"
+    assert who == {"name": "Joni", "profile_url": "https://www.moltbook.com/u/Joni"}
+
+
+def test_moltbook_whoami_is_empty_without_a_key():
+    assert adapters.get_adapter("moltbook", {}).whoami() == {}
 
 
 def test_moltbook_without_key_is_not_ready_and_refuses():
