@@ -72,6 +72,26 @@ class CoreState:
                  {"to_status": "active"}, targets=(claim.id,))
         return claim.id
 
+    def hear(self, text: str, topic: str, *, handle: str, platform: str) -> str:
+        """A person on a forum is a SOURCE, never an authority.
+
+        Same path as ``learn``: the person is held *exactly* as strictly as a paper - an
+        active claim whose authority stays ``candidate`` until it earns independent
+        corroboration, and which is open to contradiction like any other source. It is
+        deliberately NOT ``OriginType.HUMAN``: that origin is privileged by the protected
+        core (it may confirm, resolve, touch the control plane) and is reserved for the
+        trusted operator. A stranger on Hacker News is not that - polite in tone, but no
+        authority. The handle/platform is recorded as the source id so it is auditable."""
+        sid = f"{platform}:{handle}"
+        self.core.submit(make_proposal(
+            ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
+            payload={"text": text, "topic": topic}, proposer=f"forum:{platform}",
+            provenance=Provenance.from_source(sid)), actor="joni")
+        claim = self._newest(l9.ObjectType.CLAIM)
+        self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
+                 {"to_status": "active"}, targets=(claim.id,))
+        return claim.id
+
     def note_preference(self, subject: str, *, stance: str = "values",
                         strength: float = 0.6) -> str:
         self._op(ProposalType.PREFERENCE_PROPOSAL, Operator.PREFERENCE_PROPOSE,

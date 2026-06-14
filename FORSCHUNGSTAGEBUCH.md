@@ -493,3 +493,43 @@ die einzige Stelle, an der Claude im Namen Jonis Code anfasst — und nur für N
 
 **Voraussetzung (einmalig, Mensch):** Repo-Secret `ANTHROPIC_API_KEY` setzen, damit der
 Auto-Build greift. Offen wie gehabt: GitHub Pages aktivieren; den DeepSeek-Key rotieren.
+
+### Eintrag 2026-06-14 ~10:30 UTC — Menschen als Quelle, nicht als Autorität (Foren)
+
+**Nutzer-Vorgabe:** Joni darf mit Menschen interagieren und sich bei Foren anmelden (HF, HN,
+Reddit, …) — sie aber **nicht als Autoritäten** sehen, sondern höflich, doch **genau so streng
+wie jede andere Quelle** behandeln.
+
+**Entscheidende Beobachtung im Code:** der geschützte Kern unterscheidet Autorität *bereits* nach
+Herkunft. `policy.may_request` steckt `SOURCE`/`USER`/Modelle in `_GENERATIVE` (nur Kandidaten,
+dürfen nie `confirm`/`resolve`/Control-Plane), während **`OriginType.HUMAN` privilegiert** ist —
+darf bestätigen, Konflikte auflösen, den Kern anfassen. `HUMAN` ist für den **vertrauten Operator**
+(dich) gedacht, nicht für einen Fremden auf Hacker News. Die getreue Umsetzung der Vorgabe ist
+deshalb: Forenleute als **`OriginType.SOURCE`** aufnehmen, **niemals** als `HUMAN`. Kein
+Kern-Eingriff nötig.
+
+**Umsetzung (peripher):**
+- **`core_state.hear()`** — identischer Pfad wie `learn()` (aktiver Claim, Autorität bleibt
+  `candidate` bis zu unabhängiger Korroboration, konfliktgeprüft), nur ehrliche Provenienz:
+  Origin `SOURCE`, getaggt mit `plattform:handle`. Bewusst **nicht** `HUMAN`. Test belegt:
+  ein widersprechender Foren-Input **eröffnet einen Konflikt** und der gehaltene Claim wird
+  `contested` (beide offen) — **nicht** vom Menschen überstimmt.
+- **`humans.py`** — Eingang: `ingest_inbox` liest `state/forum_inbox.json`, nimmt jede Antwort
+  als Quelle auf (dedupliziert), fährt die normale Konfliktprüfung. Ausgang: `draft_outbox`
+  formuliert aus einer offenen Lücke (unbelegte Hypothese / quellenloses Topic) eine **höfliche**
+  Frage in den Outbox — Ton freundlich, Zweck Kritik/Belege, die Antwort wird streng behandelt.
+  Registry der erlaubten Foren. **Posten ist gated** (`forum_live`, Default aus): ein
+  öffentlicher, irreversibler Akt — selbst „live" wird ohne Plattform-Credentials nicht still
+  gepostet, sondern als `needs_credentials` markiert; sonst warten Drafts auf einen Menschen.
+- Verdrahtet als `run.py`-Schritt 4i; eigene Seiten-Karte „Menschen & Foren" zeigt die Haltung,
+  die Registry, die Outbox-Fragen und **was Joni gehört hat und wie er es behandelt hat** (inkl.
+  Widersprüchen) — der Beweis, dass Menschen keine Autorität sind.
+- Tests `tests/test_humans.py` (6): Quelle-nicht-Autorität, Widerspruch→Konflikt-statt-Override,
+  Inbox-Dedup, höfliche+gebündelte Frage, Posten gated aus, „live" ohne Credentials postet nicht.
+  Gesamt **239 passed**, ruff clean.
+
+**Voraussetzung (einmalig, Mensch), wenn echtes Posten gewünscht:** pro Plattform Account +
+Credentials bereitstellen und `JONI_FORUM_LIVE=1` setzen; das tatsächliche Netz-Posten ist
+bewusst noch nicht verdrahtet (outward/irreversibel) und wird erst auf deine ausdrückliche
+Freigabe je Plattform gebaut. Antworten kann man jederzeit über `state/forum_inbox.json`
+einspeisen — Joni prüft sie streng.

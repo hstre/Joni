@@ -71,6 +71,27 @@ def build(data: dict) -> str:
     commissions = [c for c in ext.get("commissions", []) if isinstance(c, dict) and c.get("title")]
     commissions_html = "".join(_commission(c) for c in commissions) or \
         "<li class=empty>none yet — no non-core capability gap has held long enough.</li>"
+
+    # Humans & forums: people are a source, never an authority.
+    stance = ext.get("forum_stance", "")
+    reg = ext.get("forum_registry", {})
+    reg_html = "".join(
+        f"<span class=pill>{esc(p)}"
+        f"{' · live' if v.get('registered') else ' · allowed'}</span>"
+        for p, v in reg.items()) or "<span class=empty>no forums configured</span>"
+    outbox = [d for d in ext.get("forum_outbox", []) if isinstance(d, dict)][-6:]
+    outbox_html = "".join(
+        f"<li><span class=chip>{esc(d.get('platform',''))} · "
+        f"{esc(d.get('status','queued'))}</span> {esc(d.get('question',''))}</li>"
+        for d in outbox) or "<li class=empty>no questions drafted yet</li>"
+    heard = [h for h in ext.get("forum_heard", []) if isinstance(h, dict)][-6:]
+    heard_html = "".join(
+        f"<li><div><b>{esc(h.get('platform',''))}:{esc(h.get('handle',''))}</b> "
+        f"<span class=src>→ {esc(h.get('claim',''))}</span></div>"
+        f"<div class=asrow>{esc(h.get('text',''))}</div>"
+        f"<div class=asrow><span class=k>treated as</span> {esc(h.get('treated_as',''))}</div></li>"
+        for h in reversed(heard)) or \
+        "<li class=empty>no human input yet — inbox at state/forum_inbox.json</li>"
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in s.get("topics", []))
     added = "".join(f"<span class='pill add'>{esc(t)}</span>"
                     for t in ext.get("topics_added", [])) or "<span class=empty>none yet</span>"
@@ -240,6 +261,15 @@ what is uncertain, what contradicts, and what changed.</p>
   <div class="card full">
     <h2>Aufträge an Claude — extend Joni (non-core, implemented via PR)</h2>
     <ul>{commissions_html}</ul>
+  </div>
+  <div class="card full">
+    <h2>Menschen &amp; Foren — a source, not an authority</h2>
+    <p class=note>{stance}</p>
+    <div style='margin:6px 0'>{reg_html}</div>
+    <h3 style='margin:10px 0 4px'>Drafted questions (outbox)</h3>
+    <ul>{outbox_html}</ul>
+    <h3 style='margin:10px 0 4px'>Heard from people — and how it was treated</h3>
+    <ul>{heard_html}</ul>
   </div>
   <div class="card full">
     <h2>Protocol — append-only, newest first</h2>

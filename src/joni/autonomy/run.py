@@ -31,6 +31,7 @@ from . import (
     emerge,
     governance,
     homeostasis,
+    humans,
     invent,
     layer9_view,
     methods,
@@ -44,6 +45,8 @@ from . import (
 from .budget import load as load_budget
 from .budget import save as save_budget
 from .config import (
+    forum_live,
+    forum_platforms,
     online,
     paths,
     read_pdfs,
@@ -97,6 +100,7 @@ def one_cycle() -> dict:
     extensions.setdefault("notes", [])
     extensions.setdefault("asks", [])
     extensions.setdefault("commissions", [])
+    extensions.setdefault("forum_heard", [])
     extensions.setdefault("seen", [])
 
     if expired:
@@ -213,6 +217,12 @@ def one_cycle() -> dict:
     #     core, never self-applied - for a human-gated Claude session to implement.
     commissions_new = commission.assess(cs, extensions, proto, cycle)
 
+    # 4i. Humans & forums: Joni may talk to people and register on forums - but a person is a
+    #     SOURCE, not an authority. Replies come in through cs.hear (candidate, conflict-checked,
+    #     never auto-confirmed); polite questions are drafted to an outbox; posting stays gated.
+    human_io = humans.interact(cs, extensions, proto, cycle, paths=p,
+                               platforms=forum_platforms(), live=forum_live())
+
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
@@ -231,11 +241,13 @@ def one_cycle() -> dict:
     emerged_n = sum(1 for v in (emerged["topic"], emerged["synthesis"], emerged["method"]) if v)
     read_note = f"· read {read['papers']} paper(s) " if read.get("papers") else ""
     prune_note = f"· shed {regulated['pruned']} dead idea(s) " if regulated.get("pruned") else ""
+    forum_note = (f"· heard {human_io['heard']} human input(s) "
+                  if human_io.get("heard") else "")
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new {read_note}· {found_methods['methods']} "
                  f"method(s) · {trialed['trialed']} trialed · {developed['links']} new link(s) "
                  f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent {prune_note}"
-                 f"· {vitality['verdict']} · spend €{budget.spent_eur:.4f} "
+                 f"{forum_note}· {vitality['verdict']} · spend €{budget.spent_eur:.4f} "
                  f"· routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
@@ -247,7 +259,8 @@ def one_cycle() -> dict:
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
-            "strengthened": strengthened, "regulated": regulated, "vitality": vitality}
+            "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
+            "human_io": human_io}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
