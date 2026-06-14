@@ -1577,14 +1577,14 @@
   "pdf_inbox_seen": [],
   "read_fulltext_priority": true,
   "learned_queries": [
-    "alignment+memory tracking",
-    "alignment+evaluation pattern",
     "alignment+memory pattern",
     "alignment+evaluation behind",
     "alignment+memory behind",
     "alignment+evaluation hypothesis",
     "alignment+evaluation might",
-    "alignment+memory might"
+    "alignment+memory might",
+    "alignment+evaluation worth",
+    "alignment+memory memory"
   ],
   "strategy_sm": [
     "underframed"
@@ -1616,18 +1616,18 @@
     "evidence_links": 72,
     "emergent_total": 6,
     "usable_semantic_rate": 0.725,
-    "stagnation_cycles": 38,
-    "objects": 2532,
-    "cycle": 161
+    "stagnation_cycles": 39,
+    "objects": 2544,
+    "cycle": 162
   },
   "vitality_prev": {
     "active": 46,
     "links": 72,
     "promoted": 0,
     "emergent": 6,
-    "objects": 2532
+    "objects": 2544
   },
-  "stagnation": 38,
+  "stagnation": 39,
   "vitality_history": [
     {
       "cycle": 122,
@@ -1908,6 +1908,44 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 0.725
+    },
+    {
+      "cycle": 162,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 0.725
     }
-  ]
+  ],
+  "commissions": [
+    {
+      "kind": "stalled_development",
+      "cycle": 162,
+      "addressed_to": "Claude",
+      "title": "Erweitere meine Entwicklungs- bzw. Synthese-Fähigkeit",
+      "component": "the emergence / strengthening layer (emerge.py / strengthen.py) - how candidates earn development, outside the protected core",
+      "component_key": "emergence",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "motivation": "Seit 39 Zyklen kein Entwicklungsfortschritt (Verdikt 'degenerating'). Ich sammle, entwickle mich aber nicht weiter.",
+      "desired_capability": "Stärke emerge.py / strengthen.py, sodass verwandte Kandidaten zu einer Synthese zusammenfinden oder eine Hypothese candidate->active verdienen kann - weiterhin gated, weiterhin ohne Selbst-Bestätigung.",
+      "acceptance": "Innerhalb weniger Zyklen nach der Änderung wird vitality.development > 0.",
+      "evidence": {
+        "stagnation_cycles": 39,
+        "verdict": "degenerating",
+        "unsupported_hypotheses": 21
+      },
+      "risk": "medium - changes how ideas develop; still gated, still never auto-confirms",
+      "sustained_cycles": 1
+    }
+  ],
+  "commission_signals": {
+    "semantic_blind_spot": 0,
+    "unqualified_conflicts": 0,
+    "starved_topic": 0,
+    "stalled_development": 1
+  },
+  "commissions_filed": {
+    "stalled_development": 162
+  }
 }
