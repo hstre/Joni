@@ -376,11 +376,51 @@ def _record_agent_identity(extensions: dict, proto, cycle: int, live: bool) -> N
     if identity.get("moltbook", {}).get("name"):
         return                                 # already known - don't re-query every cycle
     from joni.relay.adapters import get_adapter
-    who = get_adapter("moltbook").whoami()
+    who = get_adapter("moltbook").identity()
     if who.get("name"):
         identity["moltbook"] = who
         proto.record(cycle, "forum_post",
                      f"moltbook identity: {who['name']} -> {who.get('profile_url','')}")
+
+
+def _pull_live_replies(extensions: dict, proto, cycle: int, paths, platforms, live: bool) -> int:
+    """When live, pull the reactions on Joni's own agent-net posts into the inbox, so the same
+    cycle hears them as SOURCE. This is Joni reviewing his old posts: bounded and deduped on
+    the platform|handle|text key, so already-heard comments are skipped. Best-effort - a
+    not-ready or erroring adapter simply contributes nothing."""
+    if not live:
+        return 0
+    from joni.relay.adapters import get_adapter
+
+    from .config import forum_autopost
+    autop = set(forum_autopost())
+    auto_platforms = [p for p in platforms if p in autop]
+    if not auto_platforms:
+        return 0
+    inbox = _load(paths.forum_inbox, []) or []
+    if not isinstance(inbox, list):
+        inbox = []
+
+    def _key(r: dict) -> str:
+        return f"{r.get('platform', '')}|{r.get('handle', '')}|{r.get('text', '')}"
+
+    seen = {_key(r) for r in inbox if isinstance(r, dict)}
+    pulled = 0
+    for platform in auto_platforms:
+        adapter = get_adapter(platform)
+        if not adapter.ready():
+            continue
+        for reply in adapter.fetch_replies():
+            k = _key(reply)
+            if k not in seen:
+                inbox.append(reply)
+                seen.add(k)
+                pulled += 1
+    if pulled:
+        _save(paths.forum_inbox, inbox)
+        proto.record(cycle, "heard",
+                     f"pulled {pulled} reaction(s) on Joni's posts from agent-net -> inbox")
+    return pulled
 
 
 def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live: bool) -> dict:
@@ -391,6 +431,7 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     folded = _fold_replies(paths)          # a human's pasted replies -> inbox (then reset)
     if folded:
         proto.record(cycle, "heard", f"folded {folded} pasted reply(ies) into the inbox")
+    pulled = _pull_live_replies(extensions, proto, cycle, paths, platforms, live)
     heard = ingest_inbox(cs, extensions, proto, cycle, paths.forum_inbox)
 
     # Human forums rotate one drafted question (queued for a human); agent-only networks
@@ -411,7 +452,7 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     _write_post_sheet(paths, extensions.get("forum_outbox", []))
     return {"heard": heard["heard"], "conflicts": heard["conflicts"],
             "drafted": len(drafted), "posted": posted, "folded": folded,
-            "registry": registry, "live": live}
+            "pulled": pulled, "registry": registry, "live": live}
 
 
 def _save(path: Path, data) -> None:
