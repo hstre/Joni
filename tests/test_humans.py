@@ -93,7 +93,7 @@ def test_live_loop_posts_nothing_without_an_approved_ready_draft(tmp_path):
     assert ext["forum_stance"]
 
 
-def test_live_loop_posts_an_approved_moltbook_draft(tmp_path, monkeypatch):
+def test_live_loop_autoposts_moltbook_without_approval(tmp_path, monkeypatch):
     from joni.relay import adapters
     # make the Moltbook adapter ready and capture the post (no network)
     monkeypatch.setattr(adapters.MoltbookAdapter, "_has_creds", lambda self: True)
@@ -105,12 +105,41 @@ def test_live_loop_posts_an_approved_moltbook_draft(tmp_path, monkeypatch):
     ext = {}
     paths = _Paths(tmp_path)
     humans.draft_outbox(cs, ext, _Proto(), 1, platforms=("moltbook",))
-    fid = ext["forum_outbox"][0]["id"]
-    humans.approve(paths.forum_approved, fid)            # a human approves it for posting
+    # NO approval - Moltbook is an agent-only network, so the loop posts it autonomously
     res = humans.interact(cs, ext, _Proto(), 2, paths=paths, platforms=("moltbook",), live=True)
-    assert res["posted"] == 1
+    assert res["posted"] >= 1                                 # posted without any approval
     assert ext["forum_outbox"][0]["status"] == "posted"
     assert ext["forum_outbox"][0]["posted_url"].endswith("/p1")
+    # ...but off the master switch, nothing leaves
+    ext2 = {}
+    humans.draft_outbox(cs, ext2, _Proto(), 3, platforms=("moltbook",))
+    res_off = humans.interact(cs, ext2, _Proto(), 4, paths=_Paths(tmp_path / "x"),
+                              platforms=("moltbook",), live=False)
+    assert res_off["posted"] == 0
+
+
+def test_a_human_forum_still_needs_approval_even_with_a_ready_adapter(tmp_path, monkeypatch):
+    from joni.relay import adapters
+    # pretend reddit had a live adapter; it must STILL wait for human approval (not autopost)
+    monkeypatch.setattr(adapters.RedditAdapter, "implemented", True, raising=False)
+    monkeypatch.setattr(adapters.RedditAdapter, "_has_creds", lambda self: True)
+    monkeypatch.setattr(adapters.RedditAdapter, "post",
+                        lambda self, text: "https://reddit.example/p")
+    cs = CoreState(seed_core())
+    p = cs.learn("routing parent", "routing")
+    cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
+    ext = {}
+    paths = _Paths(tmp_path)
+    humans.draft_outbox(cs, ext, _Proto(), 1, platforms=("reddit",))
+    fid = ext["forum_outbox"][0]["id"]
+    # unapproved -> not posted, even though the adapter is ready
+    res = humans.interact(cs, ext, _Proto(), 2, paths=paths, platforms=("reddit",), live=True)
+    assert res["posted"] == 0
+    assert ext["forum_outbox"][0]["status"] == "drafted"
+    # approve -> now it posts
+    humans.approve(paths.forum_approved, fid)
+    res2 = humans.interact(cs, ext, _Proto(), 3, paths=paths, platforms=("reddit",), live=True)
+    assert res2["posted"] == 1
 
 
 def test_moderation_gate_only_releases_approved_drafts(tmp_path):
