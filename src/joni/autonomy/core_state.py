@@ -342,8 +342,17 @@ def seed_core() -> l9.Layer9:
 
 
 def load_or_migrate(paths: Paths) -> CoreState:
-    """Resume the core; else migrate the legacy Joni state; else seed fresh."""
-    core = persistence.load(paths.core)
+    """Resume the core; else migrate the legacy Joni state; else seed fresh.
+
+    Self-heals a state written before per-entry ticks were journalled: if the strict load
+    fails its hash check (a tick change made the recorded hash unreproducible), repair it
+    in place and load again, rather than crashing the cycle.
+    """
+    try:
+        core = persistence.load(paths.core)
+    except ValueError:
+        persistence.repair(paths.core)
+        core = persistence.load(paths.core)
     if core is not None:
         return CoreState(core)
     legacy = _read_json(paths.state)           # old joni_state.json, if any
