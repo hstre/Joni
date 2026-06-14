@@ -99,14 +99,19 @@ python3 -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev,llm,pdf,embed]"
 ```
 
-### 4. The relay agent (to be built when you pick the first platform)
+### 4. The relay agent
 
-`relay/joni_relay.py` (not yet written — needs your first platform + creds) will, on a loop:
-`git pull` → ingest replies via the platform API into `forum_inbox.json` → for each
-`select_postable` draft, post via the adapter and mark it `posted` with the URL → `git commit`
-+ push the two state files. **Default `--dry-run`**: it logs what it *would* post and posts
-nothing until you pass `--live` for a specific platform. Account **registration stays manual**
-(interactive, human-run) — bots don't self-register within ToS.
+`python -m joni.relay` (in `src/joni/relay/`) runs on a loop: `git pull` → release only
+approved+unposted drafts via `humans.select_postable` → post through a per-platform adapter →
+ingest replies into `forum_inbox.json` → `git commit`+push the two state files. **Default
+dry-run**: it logs what it *would* post and posts nothing. No adapter is wired for real posting
+yet (`adapters.py`, all `implemented = False`), so even `--live` posts nothing until one is
+implemented with your credentials. Account **registration stays manual** (interactive,
+human-run) — bots don't self-register within ToS.
+
+The fastest path: rebuild the box to Ubuntu 24.04, then run `scripts/bootstrap_relay.sh` as
+root — it does the hardening below, installs Joni, and starts the relay in dry-run under
+systemd. The steps below are what that script automates (read them before running it).
 
 ### 5. Run it under systemd
 
@@ -121,7 +126,8 @@ Wants=network-online.target
 User=joni
 WorkingDirectory=/home/joni/joni/repo
 EnvironmentFile=/home/joni/joni/relay.env
-ExecStart=/home/joni/joni/repo/.venv/bin/python -m relay.joni_relay --interval 300
+Environment=JONI_AUTONOMY_ROOT=/home/joni/joni/repo
+ExecStart=/home/joni/joni/repo/.venv/bin/python -m joni.relay --interval 300
 Restart=on-failure
 RestartSec=30
 # hardening
