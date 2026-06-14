@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_27 offene(r) Entwurf/Entwürfe._
+_28 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -219,6 +219,14 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'distillation is worth tracking as a topic' (from distillation) might also apply to drift." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-241-801d1e · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'alignment is worth tracking as a topic' (from alignment) might also apply to distillation." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
