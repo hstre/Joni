@@ -113,8 +113,30 @@ class MoltbookAdapter(ForumAdapter):
             raise NotReady(f"moltbook: HTTP {e.code} {body}".strip()) from e
         except urllib.error.URLError as e:          # network error -> not posted, retry later
             raise NotReady(f"moltbook: {e.reason}") from e
-        pid = res.get("id") or res.get("post_id") or ""
-        return res.get("url") or (f"https://www.moltbook.com/posts/{pid}" if pid else "")
+        # Success body nests the created post: {"success": true, "post": {"id": "...", ...}}.
+        # Fall back to a flat id for forward-compat. The public web post-view URL pattern isn't
+        # documented, so the post id is the durable reference we can always capture.
+        post = res.get("post") if isinstance(res.get("post"), dict) else res
+        pid = post.get("id") or post.get("post_id") or res.get("id") or res.get("post_id") or ""
+        return post.get("url") or res.get("url") or (
+            f"https://www.moltbook.com/posts/{pid}" if pid else "")
+
+    def whoami(self) -> dict:
+        """Joni's own Moltbook profile (name, karma, ...). Lets the loop record his agent name
+        once so his posts are findable at https://www.moltbook.com/u/<name>. Best-effort: a
+        not-ready adapter or any API/network error yields an empty dict, never raises."""
+        if not self.ready():
+            return {}
+        try:
+            res = self._request("GET", "/agents/me")
+        except (urllib.error.HTTPError, urllib.error.URLError, ValueError, KeyError):
+            return {}
+        agent = res.get("agent") if isinstance(res.get("agent"), dict) else res
+        name = agent.get("name") or agent.get("username") or ""
+        out = {"name": name}
+        if name:
+            out["profile_url"] = f"https://www.moltbook.com/u/{name}"
+        return out
 
     # fetch_replies: ingesting comments on Joni's own posts needs the "my posts / notifications"
     # endpoint, which the public docs don't pin down. Until confirmed, replies come back via the

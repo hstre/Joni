@@ -315,14 +315,16 @@ def _registry(extensions: dict, platforms) -> list[dict]:
     return [{"platform": p, **v} for p, v in reg.items()]
 
 
-def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_post: int = 2) -> int:
+def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_post: int = 1) -> int:
     """When live, post un-posted drafts to platforms with a *ready* adapter, paced per cycle.
 
     Two gates by platform kind: an **agent-only** network in ``forum_autopost()`` (Moltbook)
     posts WITHOUT per-post human approval - that's its intended use. A **human forum** posts
     only if a human approved the draft (and has no live adapter anyway). Either way it needs
     ``forum_live()`` on, the platform's adapter ready, and is bounded per cycle so Joni never
-    floods. Each post is marked and recorded on the protocol."""
+    floods. One post per cycle by default: Moltbook rate-limits to ~1 post / 2.5 min, so a
+    single post per cycle stays comfortably under it (cycles pause minutes between each). Each
+    post is marked and recorded on the protocol."""
     if not live:
         return 0
     from joni.relay.adapters import NotReady, get_adapter
@@ -362,6 +364,25 @@ def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_po
     return posted
 
 
+def _record_agent_identity(extensions: dict, proto, cycle: int, live: bool) -> None:
+    """Resolve Joni's own Moltbook agent name once, so his posts are findable at his profile.
+
+    Best-effort and idempotent: only when live, only the first time (a recorded name short-
+    circuits it), and any failure is swallowed by the adapter's ``whoami``. Stored under
+    ``forum_identity`` so the site can link to https://www.moltbook.com/u/<name>."""
+    if not live:
+        return
+    identity = extensions.setdefault("forum_identity", {})
+    if identity.get("moltbook", {}).get("name"):
+        return                                 # already known - don't re-query every cycle
+    from joni.relay.adapters import get_adapter
+    who = get_adapter("moltbook").whoami()
+    if who.get("name"):
+        identity["moltbook"] = who
+        proto.record(cycle, "forum_post",
+                     f"moltbook identity: {who['name']} -> {who.get('profile_url','')}")
+
+
 def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live: bool) -> dict:
     """One cycle of human/forum interaction: ingest replies (strictly), draft a question,
     keep the registry, and - when live - post any human-approved draft to a ready adapter."""
@@ -385,6 +406,7 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     # human forums need approval and stay on the "you post, Joni writes" path (outbox + the
     # copy-paste post sheet a human carries).
     posted = _post_live(extensions, proto, cycle, paths, live)
+    _record_agent_identity(extensions, proto, cycle, live)
     _save(paths.forum_outbox, extensions.get("forum_outbox", []))
     _write_post_sheet(paths, extensions.get("forum_outbox", []))
     return {"heard": heard["heard"], "conflicts": heard["conflicts"],

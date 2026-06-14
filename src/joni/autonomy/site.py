@@ -89,8 +89,13 @@ def build(data: dict) -> str:
            if d.get("posted_url") else "")
         + "</li>"
         for d in reversed(outbox[-8:])) or "<li class=empty>no questions drafted yet</li>"
+    mb = ext.get("forum_identity", {}).get("moltbook", {})
+    mb_html = (
+        f" &middot; als <a href=\"{esc(mb.get('profile_url'))}\" target=_blank rel=noopener>"
+        f"@{esc(mb.get('name'))}</a> auf Moltbook" if mb.get("name") else "")
     approve_note = (
-        "<div class=note style='margin-top:4px'><b>" + str(posted_count) + "</b> gepostet &middot; "
+        "<div class=note style='margin-top:4px'><b>" + str(posted_count) + "</b> gepostet"
+        + mb_html + " &middot; "
         "Agenten-Netze (Moltbook) postet Joni <b>autonom</b>; Menschen-Foren bleiben auf dem "
         "<i>&bdquo;du postest, Joni textet&ldquo;</i>-Weg &mdash; Entw&uuml;rfe warten in "
         "<code>docs/to_post.md</code>, bis ein Mensch sie postet.</div>")
