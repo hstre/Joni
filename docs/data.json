@@ -10,18 +10,18 @@
       "evaluation",
       "memory"
     ],
-    "claims_total": 67,
+    "claims_total": 68,
     "claims_active": 45,
     "memory": 27,
-    "ledger": 994,
+    "ledger": 1012,
     "open_conflicts": 2,
     "methods": 5,
-    "method_trials": 194,
+    "method_trials": 199,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 70,
     "self_model": 4,
-    "hypotheses": 19,
+    "hypotheses": 20,
     "routing_engine": "DESi",
     "days_running": 1,
     "last_route": null
@@ -29,11 +29,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 77
+    "runs": 78
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 77,
+    "runs": 78,
     "retired": false
   },
   "extensions": {
@@ -288,6 +288,7 @@
       "alignment|privacy",
       "alignment|routing",
       "distillation|drift",
+      "distillation|evaluation",
       "drift|evaluation",
       "drift|memory",
       "drift|privacy",
@@ -890,10 +891,23 @@
       "routing mechanism",
       "privacy mechanism",
       "routing evaluation",
-      "privacy evaluation"
+      "privacy evaluation",
+      "alignment+drift apply",
+      "alignment+drift hypothesis",
+      "alignment+evaluation apply",
+      "alignment+evaluation hypothesis"
     ],
     "strategy_sm": [
       "underframed"
+    ],
+    "hyp_tested": [
+      "C-32|C-11",
+      "C-32|C-65",
+      "C-37|C-65"
+    ],
+    "hyp_hollow": [
+      "C-32",
+      "C-37"
     ]
   },
   "protocol": [
@@ -8689,7 +8703,134 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:26+00:00",
+      "cycle": 78,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:27+00:00",
+      "cycle": 78,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:27+00:00",
+      "cycle": 78,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:28+00:00",
+      "cycle": 78,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "trialed",
+      "summary": "Kevin trialed 5 method(s): 5 passed, 0 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "invented",
+      "summary": "new hypothesis bridging distillation x evaluation (candidate, derived from C-65+C-11)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-32 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "strengthen",
+      "summary": "idea C-32 survived 2 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-37 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "strengthen",
+      "summary": "idea C-37 survived 1 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "strategy",
+      "summary": "under-framed inputs (100% insufficient) -> read full text; refine queries: (already refined)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:34:29+00:00",
+      "cycle": 78,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 5 trialed · 0 new link(s) · 1 hypothesis(es) · 0 emergent · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T04:30:21+00:00"
+  "generated": "2026-06-14T04:34:29+00:00"
 }
