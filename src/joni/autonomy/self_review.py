@@ -23,6 +23,15 @@ from datetime import UTC, datetime
 _INTERVAL_SECONDS = 3600     # one hour
 _EVERY_RUNS = 10             # ...or every 10 runs, whichever comes first
 
+# Joni's standing epistemic stance - stated ONCE (shown as principles on the site), so the
+# hourly reports stay about what changed rather than repeating the same persona lines.
+_PRINCIPLES = (
+    "I hold active, revisable claims and rarely call anything confirmed — I have no "
+    "independent reviewer, so confirmation is not mine to grant.",
+    "I keep contradictions open rather than smoothing them into a tidy answer.",
+    "I would rather stay revisable and a little uncertain than sound confident and be wrong.",
+)
+
 
 def should_review(extensions: dict, now: datetime, *, runs: int | None = None,
                   every_runs: int = _EVERY_RUNS) -> bool:
@@ -152,7 +161,9 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
                         "report an honest quiet pass than dress it up.")
     sections.append({"title": "What caught my interest", "text": " ".join(interest)})
 
-    # 3 - Where I had doubts.
+    # 3 - Where I had doubts. (Standing stances live in the principles block; here I report
+    # the *specific* doubt of this hour, and only flag a principle the first time it bites.)
+    seen = set(extensions.get("principle_seen", []))
     doubt: list[str] = []
     if conflicts:
         c = conflicts[0]
@@ -160,16 +171,19 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
         texts = [cs.core.get(i).text for i in ids if cs.core.get(i) is not None]
         pair = " versus ".join(f"“{t}”" for t in texts) if texts else f"{len(ids)} claims"
         doubt.append(f"I am sitting with {len(conflicts)} open contradiction(s). The sharpest is "
-                     f"{pair}, and I am deliberately not smoothing it away. I would rather hold "
-                     "the tension than talk myself into a tidy answer that is not earned.")
-    if live and not cs.confirmed_claims():
-        doubt.append(f"More broadly: I hold {len(live)} active claims and have not let myself "
-                     "call a single one confirmed. That is on purpose — I have no independent "
-                     "reviewer, so confirmation is simply not mine to grant.")
+                     f"{pair} — held open, not smoothed away.")
+        if "hold_tension" not in seen:
+            doubt.append("(I keep such tensions open on purpose; that is a standing stance, "
+                         "not something I will restate every hour.)")
+            seen.add("hold_tension")
+    if live and not cs.confirmed_claims() and "no_confirmed" not in seen:
+        doubt.append(f"For the record: I hold {len(live)} active claims and have not called one "
+                     "confirmed — noting it once as a stance, not as hourly hand-wringing.")
+        seen.add("no_confirmed")
     if not doubt:
-        doubt.append("I found no live contradictions this hour, which honestly makes me a little "
-                     "suspicious of myself; when everything agrees, it usually means I have not "
-                     "looked hard enough yet.")
+        doubt.append("No live contradictions this hour, which makes me a little suspicious of "
+                     "myself — quiet usually means I have not looked hard enough.")
+    extensions["principle_seen"] = sorted(seen)
     sections.append({"title": "Where I had doubts", "text": " ".join(doubt)})
 
     # 4 - What I took away.
@@ -193,8 +207,6 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
                        f"{', '.join(emergent_topics[:5])}.")
     learned.append(f"All of this hour cost €{spend:.4f}; I stay deterministic and free "
                    "unless something genuinely needs a model, and this hour it did not.")
-    learned.append("The thing I keep relearning about myself is that I would rather stay "
-                   "revisable and a little uncertain than sound confident and be wrong.")
     sections.append({"title": "What I took away", "text": " ".join(learned)})
 
     return sections
@@ -241,6 +253,7 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
         "ts": now.isoformat(timespec="seconds"),
         "day": days,
         "headline": headline,
+        "principles": list(_PRINCIPLES),
         "sections": sections,
         "assessments": assessments,
         "metrics": {k: snap[k] for k in ("claims_active", "claims_total", "open_conflicts",
