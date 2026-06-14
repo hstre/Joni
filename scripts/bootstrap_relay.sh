@@ -37,15 +37,14 @@ echo "== ssh hardening =="
 # Only lock SSH down to keys-only if the joni user actually has a key - otherwise we would
 # lock you out (e.g. when you logged in by password). No key => keep password+root login,
 # warn, and let you add a key and re-run later.
-if [ -s "${HOME_DIR}/.ssh/authorized_keys" ]; then
+if [ "${JONI_HARDEN_SSH:-1}" = "1" ] && [ -s "${HOME_DIR}/.ssh/authorized_keys" ]; then
   sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
   sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
   systemctl restart ssh || systemctl restart sshd || true
   echo "   keys-only login enabled; from now on log in as: ssh ${USER_NAME}@<ip>"
   HARDENED=1
 else
-  echo "   !! no SSH key found for ${USER_NAME} - leaving password/root login ENABLED so you"
-  echo "      are not locked out. Add a key to ${HOME_DIR}/.ssh/authorized_keys and re-run."
+  echo "   ssh hardening skipped (JONI_HARDEN_SSH=0 or no key) - login settings left as-is"
   HARDENED=0
 fi
 
