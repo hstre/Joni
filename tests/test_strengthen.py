@@ -69,3 +69,31 @@ def test_without_semantic_layer_nothing_is_asserted():
     out = strengthen.strengthen(cs, {}, _Proto())   # NullSemanticLayer default -> insufficient
     assert out["supported"] == 0 and out["promoted"] == 0
     assert cs.core.get(h).status is l9.Status.CANDIDATE
+
+
+def test_a_non_judgment_is_retried_not_permanently_burned(monkeypatch):
+    """A layer-absent 'insufficient' must not consume a pair forever: when the Semantic
+    Layer comes back, the same pair can still earn a real, governed support."""
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
+    cs, h = _cs_with_a_hypothesis()
+    ext: dict = {}
+    # 1) layer absent -> only non-judgments; nothing is finalised as tested
+    out1 = strengthen.strengthen(cs, ext, _Proto())          # NullSemanticLayer -> insufficient
+    assert out1["supported"] == 0 and out1["promoted"] == 0
+    assert out1["insufficient"] > 0
+    assert not ext.get("hyp_tested")                         # pairs were NOT burned...
+    assert ext.get("hyp_insufficient")                       # ...they are queued for retry
+    # 2) the layer is available -> the very same pairs now earn support and promote
+    out2 = strengthen.strengthen(cs, ext, _Proto(), layer=StubSemanticLayer())
+    assert out2["supported"] >= 2
+    assert cs.core.get(h).status is l9.Status.ACTIVE
+
+
+def test_non_judgment_retries_are_bounded(monkeypatch):
+    """Insufficient is retried, but not forever - after a bounded number it is finalised."""
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
+    cs, h = _cs_with_a_hypothesis()
+    ext: dict = {}
+    for _ in range(strengthen._MAX_INSUFFICIENT_RETRIES + 1):
+        strengthen.strengthen(cs, ext, _Proto())             # always insufficient
+    assert ext.get("hyp_tested")                             # gave up after a fair number of tries

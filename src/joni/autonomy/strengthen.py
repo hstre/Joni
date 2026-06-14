@@ -30,6 +30,7 @@ from ..conflict import _content
 
 _TRIGGER = 0.2          # be more eager than develop: we *want* to test ideas
 _SUPPORTS_FOR_ACTIVE = 2
+_MAX_INSUFFICIENT_RETRIES = 3   # a layer-absent non-judgment is retried this often, not burned
 
 
 def _kevin_verdict(text: str, topic: str):
@@ -63,11 +64,12 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     layer = layer or NullSemanticLayer()
     hyps = cs.hypotheses()
     out = {"tested": 0, "supported": 0, "challenged": 0, "survived": 0,
-           "promoted": 0, "rejected": 0}
+           "promoted": 0, "rejected": 0, "insufficient": 0}
     if not hyps:
         return out
 
     tested = set(extensions.get("hyp_tested", []))
+    insufficient = dict(extensions.get("hyp_insufficient", {}))
     hollow = set(extensions.get("hyp_hollow", []))
     learned = list(extensions.get("learned_queries", []))
     # rotate through hypotheses oldest-first so all get attention over time
@@ -92,7 +94,8 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
         candidates = [c for c in cs.active_claims()
                       if c.id not in h.derived_from and c.id != h.id]
         candidates.sort(key=lambda c: -lexical_overlap(h.text, c.text))
-        n = 0
+        n = 0                # analyses attempted this cycle (cost bound)
+        real = 0             # analyses that returned a real Layer-9 judgment
         challenged_here = False
         for c in candidates:
             if n >= max_tests:
@@ -103,12 +106,25 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             key = f"{h.id}|{c.id}"
             if key in tested:
                 continue
-            tested.add(key)
+            if insufficient.get(key, 0) >= _MAX_INSUFFICIENT_RETRIES:
+                tested.add(key)              # had several fair chances at a judgment - finalise
+                insufficient.pop(key, None)
+                continue
             n += 1
             sc = adapter.analyse_pair(cs.core, h, c, layer=layer, lexical_trigger=trig,
                                       run_id=f"joni-c{cycle}-str")
             out["tested"] += 1
             d = sc.decision
+            # 'insufficient' is *not a judgment* (the layer could not decide) - never let it
+            # permanently consume the pair. Retry it (bounded) on a later cycle, when the
+            # Semantic Layer may render a real decision. Layer 9 still governs every support.
+            if d is SemanticDecision.INSUFFICIENT:
+                insufficient[key] = insufficient.get(key, 0) + 1
+                out["insufficient"] += 1
+                continue
+            tested.add(key)                  # a real Layer-9 decision was rendered
+            insufficient.pop(key, None)
+            real += 1
             if d in (SemanticDecision.SUPPORTS, SemanticDecision.COMPLEMENTARY):
                 cs.corroborate(h.id, c, relation="supports")
                 out["supported"] += 1
@@ -125,11 +141,11 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
                 proto.record(cycle, "strengthen",
                              f"idea {h.id} challenged by {c.id} ({ck}) -> {cid}")
 
-        # adversarial self-challenge: looked for a counter and none contradicted -> survived
-        if n and not challenged_here:
+        # adversarial self-challenge: a *real* judgment was rendered and none contradicted
+        if real and not challenged_here:
             out["survived"] += 1
             proto.record(cycle, "strengthen",
-                         f"idea {h.id} survived {n} challenge(s) - no contradiction found")
+                         f"idea {h.id} survived {real} challenge(s) - no contradiction found")
 
         # earned ladder: candidate -> active once supported and unchallenged and not hollow
         if (h.id not in hollow and _supports_on(cs, h.id) >= _SUPPORTS_FOR_ACTIVE
@@ -141,6 +157,7 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
                          "unchallenged) - a working idea, not confirmed")
 
     extensions["hyp_tested"] = sorted(tested)[-4000:]
+    extensions["hyp_insufficient"] = dict(sorted(insufficient.items())[-4000:])
     extensions["hyp_hollow"] = sorted(hollow)[-1000:]
     extensions["learned_queries"] = learned[-8:]
     return out

@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from desi_layer9 import SemanticState
+from desi_layer9 import SemanticDecision, SemanticState
 from desi_layer9.semantics import adapter
 from desi_layer9.semantics.ports import NullSemanticLayer
 
@@ -42,6 +42,7 @@ _META = frozenset({
 _MIN_CLAIMS = 3          # a term must recur across at least this many claims
 _MIN_TOPICS_FOR_TOPIC = 2    # ...spanning at least this many topics to become a topic
 _MIN_TOPICS_FOR_METHOD = 2   # ...or to be a transferable lens (an emergent method)
+_MAX_INSUFFICIENT_RETRIES = 3   # a layer-absent non-judgment is retried this often, not burned
 
 
 def _is_synthetic(text: str) -> bool:
@@ -85,6 +86,8 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
     idx = _term_index(live)
     known_topics = set(cs.topics())
     out = {"topic": None, "synthesis": 0, "method": None}
+    # a Layer-9 non-judgment (layer absent/invalid) must not permanently consume a cluster
+    insuff = dict(extensions.get("emerge_insufficient", {}))
 
     # -- 1. emergent topic: a cross-topic recurring term becomes a tracked topic -------- #
     done_topics = set(extensions.get("emerged_topics", []))
@@ -121,8 +124,16 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
         key = f"{topic}|{term}"
         if key in done_syn or len(cluster) < _MIN_CLAIMS:
             continue
-        done_syn.add(key)                                   # analysed once, eligible or not
+        if insuff.get(key, 0) >= _MAX_INSUFFICIENT_RETRIES:
+            done_syn.add(key)                               # several fair chances - finalise
+            insuff.pop(key, None)
+            continue
         sc = _eligible_cluster(cs, proto, cycle, cluster, layer=layer, surface_term=term)
+        if sc.decision is SemanticDecision.INSUFFICIENT:
+            insuff[key] = insuff.get(key, 0) + 1            # a non-judgment: retry on a later cycle
+            continue
+        done_syn.add(key)                                   # a real Layer-9 decision was rendered
+        insuff.pop(key, None)
         if sc.semantic_state is not SemanticState.SYNTHESIS_ELIGIBLE:
             continue                                        # Layer 9 did not clear it
         parents = tuple(sorted(c.id for c in cluster))[:5]
@@ -146,19 +157,33 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
     if lenses:
         term, e = lenses[0]
         topics = tuple(sorted(e["topics"]))
-        done_meth.add(term)                                 # analysed once
-        # Kevin only receives a method after Layer 9 marks the cluster synthesis-eligible.
-        sc = _eligible_cluster(cs, proto, cycle, e["claims"][:6], layer=layer, surface_term=term)
-        if sc.semantic_state is SemanticState.SYNTHESIS_ELIGIBLE:
-            cs.propose_method(
-                name=f"{term}-as-a-lens",
-                summary=(f"'{term}' recurs across {', '.join(topics)} in my own evidence; "
-                         f"treat it as a transferable lens and read a new problem through it."),
-                applicable_to=topics, origin="joni:emergent")
-            out["method"] = term
-            proto.record(cycle, "emerged",
-                         f"method candidate for Kevin: '{term}-as-a-lens' (Layer 9 "
-                         f"synthesis-eligible, {sc.id}) across {', '.join(topics)}")
+        mkey = f"meth:{term}"
+        if insuff.get(mkey, 0) >= _MAX_INSUFFICIENT_RETRIES:
+            done_meth.add(term)                             # several fair chances - finalise
+            insuff.pop(mkey, None)
+        else:
+            # Kevin only receives a method after Layer 9 marks the cluster synthesis-eligible.
+            sc = _eligible_cluster(cs, proto, cycle, e["claims"][:6], layer=layer,
+                                   surface_term=term)
+            if sc.decision is SemanticDecision.INSUFFICIENT:
+                insuff[mkey] = insuff.get(mkey, 0) + 1      # a non-judgment: retry on a later cycle
+            else:
+                done_meth.add(term)                         # a real Layer-9 decision was rendered
+                insuff.pop(mkey, None)
+                if sc.semantic_state is SemanticState.SYNTHESIS_ELIGIBLE:
+                    cs.propose_method(
+                        name=f"{term}-as-a-lens",
+                        summary=(
+                            f"'{term}' recurs across {', '.join(topics)} in my own "
+                            "evidence; treat it as a transferable lens and read a new "
+                            "problem through it."
+                        ),
+                        applicable_to=topics, origin="joni:emergent")
+                    out["method"] = term
+                    proto.record(cycle, "emerged",
+                                 f"method candidate for Kevin: '{term}-as-a-lens' (Layer 9 "
+                                 f"synthesis-eligible, {sc.id}) across {', '.join(topics)}")
     extensions["emerged_methods"] = sorted(done_meth)
+    extensions["emerge_insufficient"] = dict(sorted(insuff.items())[-1000:])
 
     return out
