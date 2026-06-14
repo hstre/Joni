@@ -10,35 +10,30 @@
       "evaluation",
       "memory"
     ],
-    "claims_total": 66,
+    "claims_total": 67,
     "claims_active": 45,
     "memory": 27,
-    "ledger": 982,
+    "ledger": 994,
     "open_conflicts": 2,
     "methods": 5,
-    "method_trials": 189,
+    "method_trials": 194,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 70,
     "self_model": 4,
-    "hypotheses": 18,
+    "hypotheses": 19,
     "routing_engine": "DESi",
     "days_running": 1,
-    "last_route": {
-      "model": "meta-llama/llama-3.1-8b-instruct",
-      "cost_usd": 3e-05,
-      "reason": "Pareto-cheapest at score >= 0.5",
-      "task_class": "scientific_claim"
-    }
+    "last_route": null
   },
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 76
+    "runs": 77
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 76,
+    "runs": 77,
     "retired": false
   },
   "extensions": {
@@ -292,6 +287,7 @@
       "alignment|memory",
       "alignment|privacy",
       "alignment|routing",
+      "distillation|drift",
       "drift|evaluation",
       "drift|memory",
       "drift|privacy",
@@ -8602,7 +8598,98 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:17+00:00",
+      "cycle": 77,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:18+00:00",
+      "cycle": 77,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:18+00:00",
+      "cycle": 77,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:20+00:00",
+      "cycle": 77,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:20+00:00",
+      "cycle": 77,
+      "kind": "trialed",
+      "summary": "Kevin trialed 5 method(s): 5 passed, 0 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:21+00:00",
+      "cycle": 77,
+      "kind": "invented",
+      "summary": "new hypothesis bridging distillation x drift (candidate, derived from C-65+C-25)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:21+00:00",
+      "cycle": 77,
+      "kind": "strategy",
+      "summary": "under-framed inputs (100% insufficient) -> read full text; refine queries: (already refined)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:21+00:00",
+      "cycle": 77,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T04:30:21+00:00",
+      "cycle": 77,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 5 trialed · 0 new link(s) · 1 hypothesis(es) · 0 emergent · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T04:26:55+00:00"
+  "generated": "2026-06-14T04:30:21+00:00"
 }
