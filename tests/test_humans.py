@@ -104,18 +104,30 @@ def test_live_loop_autoposts_moltbook_without_approval(tmp_path, monkeypatch):
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     paths = _Paths(tmp_path)
-    humans.draft_outbox(cs, ext, _Proto(), 1, platforms=("moltbook",))
-    # NO approval - Moltbook is an agent-only network, so the loop posts it autonomously
-    res = humans.interact(cs, ext, _Proto(), 2, paths=paths, platforms=("moltbook",), live=True)
+    # interact itself drafts a Moltbook question from the open need AND auto-posts it - no
+    # manual draft, no approval (agent-only network)
+    res = humans.interact(cs, ext, _Proto(), 1, paths=paths, platforms=("moltbook",), live=True)
     assert res["posted"] >= 1                                 # posted without any approval
-    assert ext["forum_outbox"][0]["status"] == "posted"
-    assert ext["forum_outbox"][0]["posted_url"].endswith("/p1")
+    posted = [d for d in ext["forum_outbox"] if d["status"] == "posted"]
+    assert posted and posted[0]["platform"] == "moltbook"
+    assert posted[0]["posted_url"].endswith("/p1")
     # ...but off the master switch, nothing leaves
-    ext2 = {}
-    humans.draft_outbox(cs, ext2, _Proto(), 3, platforms=("moltbook",))
-    res_off = humans.interact(cs, ext2, _Proto(), 4, paths=_Paths(tmp_path / "x"),
+    res_off = humans.interact(cs, {}, _Proto(), 2, paths=_Paths(tmp_path / "x"),
                               platforms=("moltbook",), live=False)
     assert res_off["posted"] == 0
+
+
+def test_draft_autopost_pulls_from_open_needs_and_dedupes_per_platform():
+    cs = CoreState(seed_core())
+    p = cs.learn("routing parent", "routing")
+    cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
+    ext: dict = {}
+    d1 = humans.draft_autopost(cs, ext, _Proto(), 1, autopost=("moltbook",))
+    assert len(d1) == 1 and d1[0]["platform"] == "moltbook"
+    assert ext["forum_asked_moltbook"]                       # tracked per platform
+    # the same need is not asked again on the same platform
+    d2 = humans.draft_autopost(cs, ext, _Proto(), 2, autopost=("moltbook",))
+    assert d1[0]["need"] not in [x["need"] for x in d2]
 
 
 def test_a_human_forum_still_needs_approval_even_with_a_ready_adapter(tmp_path, monkeypatch):
