@@ -370,3 +370,73 @@ Damit: **Architektur richtig UND Semantik faktisch wirksam.** Gesamt: 209 passed
 **Offene Beobachtung / Kalibrierung:** Schwellen (`DIST_DUPLICATE 0.10`, `COMPLEMENTARY 0.30`,
 `SUPPORTS 0.45`, `BORDERLINE 0.60`) sind bewusst konservativ und gehören an einem größeren
 gelabelten Joni-Set empirisch nachgezogen, sobald genug echte Paare vermessen sind.
+
+### Eintrag 2026-06-14 ~06:50 UTC — Website-Feedback: Konflikt-Taxonomie & strukturierte Asks
+
+Nutzer-Review der Live-Seite. Zwei Kernpunkte zusätzlich zur Bestätigung, dass der semantische
+Layer sichtbar den laufenden Zustand verändert:
+
+**(a) Konflikt-Taxonomie (PR #41, `qualify.py`).** Bisher war jeder Konflikt undifferenziert.
+Konflikte tragen jetzt eine **`conflict_kind`** aus einem geschlossenen Enum
+(`desi_layer9.ConflictKind`, Default `UNQUALIFIED`), deterministisch klassifiziert von
+`qualify_conflict(a_text, b_text, *, severity, contradictory)`:
+- **contradiction** — echte Widersprüche (gegensätzliche Aussage zum selben Gegenstand),
+- **scope tension** — derselbe Mechanismus in unterschiedlichem Geltungsbereich (normal vs.
+  neuartig); der **Scope-Split schlägt das Widerspruchssignal**, weil zwei Claims sich nicht
+  widersprechen, wenn sie über *verschiedene* Bereiche reden,
+- **exception** — eine Aussage ist die benannte Ausnahme der anderen,
+- **conditional compatibility** — unter einer Bedingung verträglich.
+Marker EN+DE (`_SCOPE_NORMAL/_SCOPE_NOVEL/_EXCEPTION/_CONDITIONAL`). Die Landkarte zeigt die
+Art jetzt als Chip am Konflikt, statt alles gleich „rot" zu färben.
+
+**(b) Strukturierte Asks (PR #42, `structured_ask`).** Die erste Kern-Frage erschien, zeigte
+aber nur Ziel + Begründung. Jetzt trägt jeder Ask ehrlich: **`request_type="observation"`**
+(`derive` produziert immer nur eine *Idee*, nie eine ausgearbeitete Änderung — das wird nicht
+übertrieben), die betroffene **Komponente** (`_COMPONENT`-Map), ein klares **„was würde sich
+ändern"**, die **Evidenz** (Quelle + URL) und eine **Risiko**-Notiz je Komponente (`_RISK`).
+Gerendert als strukturierte Zeilen auf der Seite und als strukturierter GitHub-Issue-Body.
+
+Offen gelassen (Nutzer-Entscheid, s.u.): „supports/complementary"-Korrektheit ist noch nicht
+*bewiesen*, und Trials waren zu glatt — beides **nicht** über menschliches Labeling, sondern
+über Jonis eigene Autonomie zu adressieren.
+
+### Eintrag 2026-06-14 ~07:15 UTC — Homöostase: nicht degenerieren, trotzdem entwickeln (PR #43)
+
+**Nutzer-Vorgabe (verbindlich):** *„Joni soll soviel wie möglich autonom machen. Ich greife
+architektonisch mit dir ein, aber über die Woche soll Joni zeigen, dass er nicht degeneriert
+und sich trotzdem entwickeln kann."* — Explizit **kein** menschliches Labeling. Die zwei offenen
+Risiken aus dem Website-Feedback (zu glatte Trials, unbewiesene supports) sollen nicht von
+außen kuratiert, sondern von Joni selbst getragen werden.
+
+Antwort: **`homeostasis.py`** — zwei deterministische, gate-vermittelte, beschränkte
+Autonomie-Jobs, eingehängt als Schritt 4g in `run.py`:
+
+- **`regulate`** — *abwerfen, was tot ist; deckeln, was unbegrenzt wächst.* Eine selbst
+  erfundene Hypothese mit **0 Support** UND einem echten Aufgabe-Grund — hart widersprochen,
+  als hohl geprüft + ≥2× getestet, oder *barren* (≥4× versucht, nichts verdient) — wird
+  ehrlich **`REJECTED`** („eine Vermutung, die nicht aufging"). Der Live-Hypothesen-Backlog
+  ist gedeckelt (Default 30); darüber fallen die schwächsten (0-Support, ältesten) Überlebenden.
+  Pro Zyklus auf 3 Prunes begrenzt → der Backlog wird *stetig* abgearbeitet, nicht gechurnt.
+  Was auch nur **einen** Support verdient hat, bleibt immer.
+
+- **`vitality`** — Joni benotet seine **eigene** Bahn aus dem eigenen Zustand:
+  `developing` / `steady` / `degenerating`. Entwicklung = neue aktive Claims + neue
+  Evidenz-Kanten + 2×Promotionen + emergente Struktur. Degeneration feuert bei schwellendem
+  unbelegtem Backlog (>25), langer Stagnation (≥12 Zyklen) oder Objekt-Wucherung ohne
+  Entwicklung. Die `usable_semantic_rate` (Anteil nicht-`insufficient` Cosinus-Cluster) ist
+  eingerechnet; History bleibt für die Seite erhalten.
+
+**Auf der Seite:** die Status-Karte trägt jetzt eine farbcodierte Vitalitäts-Zeile
+(Verdikt · dev · degen · unbelegte Ideen · semantic-usable% · Stagnation). Damit ist die
+Frage „degeneriert Joni über die Woche?" nicht mehr Interpretation, sondern ein von Joni
+**selbst gestelltes Verdikt**, das man am Verlauf ablesen kann.
+
+`cs.reject_claim()` ergänzt. Tests: `tests/test_homeostasis.py` (6 Fälle: hohl abgeworfen,
+barren abgeworfen, belegt behalten, Prune gedeckelt, developing/degenerating-Verdikt). Gesamt:
+**226 passed, 2 skipped**, ruff clean. Merge → run #29 gecancelt → run #30 auf `a5bd794`
+(Homöostase-Commit) dispatcht → live. Der Loop trägt das Verdikt jetzt jeden Zyklus fort.
+
+**Was ab hier beobachtet wird:** ob `vitality` über Tage `developing`/`steady` hält statt
+`degenerating`; ob `regulate` den Backlog real unter dem Cap hält, ohne Belegtes zu töten; und
+ob — sobald genug Cosinus-Paare vermessen sind — `usable_semantic_rate` steigt, statt dass
+alles `insufficient` bleibt. Alles ohne Mensch in der Schleife, wie vorgegeben.
