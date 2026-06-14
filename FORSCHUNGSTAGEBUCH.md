@@ -440,3 +440,56 @@ barren abgeworfen, belegt behalten, Prune gedeckelt, developing/degenerating-Ver
 `degenerating`; ob `regulate` den Backlog real unter dem Cap hält, ohne Belegtes zu töten; und
 ob — sobald genug Cosinus-Paare vermessen sind — `usable_semantic_rate` steigt, statt dass
 alles `insufficient` bleibt. Alles ohne Mensch in der Schleife, wie vorgegeben.
+
+### Eintrag 2026-06-14 ~10:10 UTC — Aufträge an Claude + automatischer Erweiterungs-Build
+
+**Nutzer-Befund:** „Hat Joni überhaupt bisher Code hinzugefügt?" — Geprüft: über **alle 124**
+`autonomous cycle`-Commits **0**, die `src/` oder `tests/` anfassen. Joni schreibt nur seinen
+eigenen Zustand (`state/`, `protocol/`, `docs/`); aller Quellcode kam aus dem PR-Weg. Das ist
+*by design* — der geschützte Kern darf sich nicht selbst umschreiben (Issue #34 ist genau das:
+Joni hält an und fragt einen Menschen).
+
+**Nutzer-Vorgabe:** der Kern bleibt; aber Joni soll **Claude Aufträge schreiben, ihn zu
+erweitern** — und das **automatisch**, mit Vermerk im Forschungsbericht.
+
+**(a) Auftrags-Kanal (PR #45, `commission.py`).** Joni geht jetzt über *Beobachten* und
+*Kern-Fragen* hinaus: erkennt er in seinem **eigenen Zustand** eine Fähigkeitslücke, die die
+Regeln nicht schließen, schreibt er einen strukturierten **Auftrag an Claude**, ihn zu
+erweitern — *außerhalb* des Kerns. Eigenschaften, alle erzwungen:
+- **deterministisch & geerdet** — aus gemessenen Signalen, mit den auslösenden Zahlen und
+  konkreter Evidenz; kein Modell entscheidet;
+- **non-core per Konstruktion** — ein Auftrag kann nur ein Modul aus einer festen Allowlist
+  nennen (`semantics-measurement`, `conflict-qualifier`, `reader-sources`, `emergence`); alles,
+  was geschützte Logik berührte, bleibt der `joni-core-ask`-Weg. Jeder Auftrag trägt
+  `touches_core: false`;
+- **beschränkt** — ein Signal muss mehrere Zyklen halten, und je Art wird höchstens alle 200
+  Zyklen neu aufgegeben (kein Spam über die Woche);
+- **Joni schreibt die Order und das Akzeptanzkriterium, implementiert aber nie selbst.**
+
+Vier Detektoren → vier erweiterbare Module: `semantic_blind_spot` (Cosinus dauernd
+`insufficient`, usable < 0.15) → stärkerer Projektor · `unqualified_conflicts` (≥4 offene
+`unqualified`) → Qualifizierer-Marker · `starved_topic` (≥3 Hypothesen, 0 Evidenz) → neue
+Quelle · `stalled_development` (Vitalität ≥12 Zyklen stagnierend) → stärkere Synthese. Kanal:
+`state/commissions_new.json` → Workflow legt Issues mit Label **`joni-auftrag`** an; eigene
+Seiten-Karte „Aufträge an Claude" (component · why · build · done-when · evidence · risk).
+Tests `tests/test_commission.py` (7 Fälle: jeder Detektor, Sustain, Cooldown-Dedup,
+Signal-Reset, Non-Core-Invariante). Gesamt **233 passed**, ruff clean.
+
+**(b) Automatischer Erweiterungs-Build (`.github/workflows/joni-auftrag.yml`).** Neuer Workflow,
+der auf `issues: labeled` mit `joni-auftrag` triggert und **Claude Code** (`claude-code-action@v1`,
+Modell claude-sonnet-4-6) laufen lässt, um den Auftrag umzusetzen und einen **PR zu öffnen** —
+nicht zu mergen. Der Prompt erzwingt die Governance: nur das genannte Non-Core-Modul anfassen;
+**niemals** Operatoren/Scoring/Ledger/Router/State-Machine oder den Core-Lock; deterministische
+Logik (kein Verschieben von Logik in Modell-Calls); `pytest` + `ruff` + `joni.autonomy verify`
+müssen grün sein; PR referenziert das Issue („Closes #…"). Lässt sich der Auftrag nicht ohne
+Kern-Eingriff lösen, öffnet Claude **keinen** PR, sondern kommentiert, dass es den
+`joni-core-ask`-Weg braucht. Fehlt das Repo-Secret `ANTHROPIC_API_KEY`, kommentiert ein
+Guard-Step das Issue sichtbar, statt still zu scheitern.
+
+Damit schließt sich der Kreis, ohne den Kern anzutasten: **Joni erkennt die Lücke → schreibt
+Claude einen präzisen Auftrag mit Abnahmekriterium → Claude baut die Erweiterung und legt einen
+PR vor → der Mensch merged.** Der Loop selbst ruft nie ein teures Modell; `joni-auftrag.yml` ist
+die einzige Stelle, an der Claude im Namen Jonis Code anfasst — und nur für Non-Core-Erweiterungen.
+
+**Voraussetzung (einmalig, Mensch):** Repo-Secret `ANTHROPIC_API_KEY` setzen, damit der
+Auto-Build greift. Offen wie gehabt: GitHub Pages aktivieren; den DeepSeek-Key rotieren.
