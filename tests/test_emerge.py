@@ -82,3 +82,21 @@ def test_quiet_when_nothing_recurs():
     cs.learn("a one-off observation about onboarding", "ux")
     out = emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
     assert out == {"topic": None, "synthesis": 0, "method": None}
+
+
+def test_a_non_judgment_cluster_is_retried_then_synthesises_when_eligible():
+    """A layer-absent 'insufficient' must not mark a cluster done forever: when the
+    Semantic Layer comes back, the same cluster can still earn a synthesis."""
+    cs = CoreState(l9.Layer9())
+    cs.learn("latency budgets shape routing choices", "routing")
+    cs.learn("memory pressure changes how routing is decided", "routing")
+    cs.learn("load spikes shift routing toward cheaper paths", "routing")
+    ext: dict = {}
+    # 1) layer absent -> the cluster gets only a non-judgment, not finalised
+    out1 = emerge.emerge(cs, ext, _Proto())                  # NullSemanticLayer -> insufficient
+    assert out1["synthesis"] == 0
+    assert not ext.get("synthesized")                        # cluster NOT permanently marked done
+    assert ext.get("emerge_insufficient")                    # queued for retry
+    # 2) the layer is available -> the same cluster now yields a higher-order synthesis
+    out2 = emerge.emerge(cs, ext, _Proto(), layer=StubSemanticLayer())
+    assert out2["synthesis"] == 1
