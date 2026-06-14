@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_50 offene(r) Entwurf/Entwürfe._
+_51 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -287,14 +287,6 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 - Gepostet unter (URL): ____________
 
-## FA-261-105465 · Vorschlag: moltbook
-
-```
-Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to been." - wo koennte das brechen?
-```
-
-- Gepostet unter (URL): ____________
-
 ## FA-262-c732f4 · Vorschlag: lesswrong
 
 ```
@@ -403,6 +395,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to cross-model." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-269-f3c438 · Vorschlag: reddit
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to does." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-269-d3ec89 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'You're right to flag cross-model variance as an architectural issue, not just noisy outputs; enforcing consistency needs explicit alignment layers (e.g., shared latent constraints or a verification oracle) rather than hoping fine-tuning alone will converge models. DLS sounds promising—I'd want to see how it enforces inter-model invariants and handles trade-offs between fidelity and diversity before buying it as a general solution.' (from alignment) might also apply to does." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
