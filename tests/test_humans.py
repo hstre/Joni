@@ -62,7 +62,7 @@ def test_inbox_ingestion_is_deduped(tmp_path):
     assert first["heard"] == 1 and second["heard"] == 0   # the same reply is not re-heard
 
 
-def test_a_polite_question_is_drafted_queued_and_bounded():
+def test_a_polite_question_is_drafted_awaiting_approval_and_bounded():
     cs = CoreState(seed_core())
     p = cs.learn("routing parent", "routing")
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
@@ -71,32 +71,39 @@ def test_a_polite_question_is_drafted_queued_and_bounded():
                                  platforms=("hacker_news", "reddit"), max_new=1)
     assert len(drafts) == 1                              # bounded to one per cycle
     d = drafts[0]
-    assert d["status"] == "queued" and d["platform"] in ("hacker_news", "reddit")
+    assert d["status"] == "drafted" and d["id"].startswith("FA-")
+    assert d["platform"] in ("hacker_news", "reddit")
     assert "?" in d["question"]                          # it actually asks something
 
 
-def test_posting_is_gated_off_by_default(tmp_path):
-    cs = CoreState(seed_core())
-    p = cs.learn("routing parent", "routing")
-    cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
-    ext = {}
-    paths = _Paths(tmp_path)
-    res = humans.interact(cs, ext, _Proto(), 1, paths=paths,
-                          platforms=("hacker_news",), live=False)
-    assert res["posted"] == 0                            # nothing posted
-    assert res["drafted"] == 1
-    # the draft is queued for a human, and the outbox is persisted for them to act on
-    assert (tmp_path / "forum_outbox.json").exists()
-    assert ext["forum_outbox"][0]["status"] == "queued"
-    assert ext["forum_stance"]                           # the stance is recorded for the page
-
-
-def test_live_mode_without_credentials_still_does_not_post(tmp_path):
+def test_the_loop_never_posts_even_when_live(tmp_path):
     cs = CoreState(seed_core())
     p = cs.learn("routing parent", "routing")
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     res = humans.interact(cs, ext, _Proto(), 1, paths=_Paths(tmp_path),
-                          platforms=("reddit",), live=True)
-    assert res["posted"] == 0                            # no silent posting even when 'live'
-    assert ext["forum_outbox"][0]["status"] == "needs_credentials"
+                          platforms=("reddit",), live=True)        # 'live' on, still
+    assert res["posted"] == 0                            # the loop never posts
+    assert res["drafted"] == 1
+    assert (tmp_path / "forum_outbox.json").exists()     # published for human + relay
+    assert ext["forum_outbox"][0]["status"] == "drafted"
+    assert ext["forum_stance"]
+
+
+def test_moderation_gate_only_releases_approved_drafts(tmp_path):
+    cs = CoreState(seed_core())
+    p = cs.learn("routing parent", "routing")
+    cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
+    ext = {}
+    drafts = humans.draft_outbox(cs, ext, _Proto(), 1, platforms=("reddit",))
+    fid = drafts[0]["id"]
+    outbox = ext["forum_outbox"]
+    # nothing is postable until a human approves
+    assert humans.select_postable(outbox, []) == []
+    approved = humans.approve(tmp_path / "forum_approved.json", fid)
+    assert fid in approved
+    postable = humans.select_postable(outbox, approved)
+    assert [d["id"] for d in postable] == [fid]
+    # an already-posted draft is not re-released
+    outbox[0]["status"] = "posted"
+    assert humans.select_postable(outbox, approved) == []

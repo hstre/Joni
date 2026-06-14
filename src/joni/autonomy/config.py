@@ -84,6 +84,11 @@ class Paths:
         # Polite questions/posts Joni drafts for forums; posting is gated (see forum_live()).
         return self.root / "state" / "forum_outbox.json"
 
+    @property
+    def forum_approved(self) -> Path:
+        # Draft ids a human approved for posting - the moderation gate the relay obeys.
+        return self.root / "state" / "forum_approved.json"
+
 
 def paths() -> Paths:
     return Paths(repo_root())
