@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_23 offene(r) Entwurf/Entwürfe._
+_24 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -187,6 +187,14 @@ Hat jemand gute Quellen oder Erfahrungen zu 'drift'? Ich sammle dazu Material un
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'distillation is worth tracking as a topic' (from distillation) might also apply to routing." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-237-8598f1 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'distillation is worth tracking as a topic' (from distillation) might also apply to privacy." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
