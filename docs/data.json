@@ -13,10 +13,10 @@
     "claims_total": 72,
     "claims_active": 46,
     "memory": 27,
-    "ledger": 1330,
+    "ledger": 1348,
     "open_conflicts": 2,
     "methods": 6,
-    "method_trials": 320,
+    "method_trials": 326,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 70,
@@ -24,21 +24,16 @@
     "hypotheses": 23,
     "routing_engine": "DESi",
     "days_running": 1,
-    "last_route": {
-      "model": "meta-llama/llama-3.1-8b-instruct",
-      "cost_usd": 3e-05,
-      "reason": "Pareto-cheapest at score >= 0.5",
-      "task_class": "scientific_claim"
-    }
+    "last_route": null
   },
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 102
+    "runs": 103
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 102,
+    "runs": 103,
     "retired": false
   },
   "extensions": {
@@ -1090,8 +1085,11 @@
       "C-12|C-19",
       "C-12|C-19@bge-small-en-v1.5",
       "C-12|C-20",
+      "C-12|C-20@bge-small-en-v1.5",
       "C-12|C-22",
+      "C-12|C-22@bge-small-en-v1.5",
       "C-12|C-24",
+      "C-12|C-24@bge-small-en-v1.5",
       "C-12|C-26",
       "C-12|C-27",
       "C-12|C-28",
@@ -1138,14 +1136,14 @@
     "pdf_inbox_seen": [],
     "read_fulltext_priority": true,
     "learned_queries": [
-      "privacy evaluation",
-      "alignment+drift pattern",
-      "alignment+drift topic",
-      "alignment+evaluation topic",
       "alignment+drift behind",
       "alignment+evaluation behind",
       "alignment+drift drift",
-      "alignment+evaluation evaluation"
+      "alignment+evaluation evaluation",
+      "alignment+drift tracking",
+      "alignment+drift alignment",
+      "alignment+evaluation tracking",
+      "alignment+evaluation alignment"
     ],
     "strategy_sm": [
       "underframed"
@@ -11821,7 +11819,125 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:45+00:00",
+      "cycle": 103,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:46+00:00",
+      "cycle": 103,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:46+00:00",
+      "cycle": 103,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:48+00:00",
+      "cycle": 103,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:49+00:00",
+      "cycle": 103,
+      "kind": "trialed",
+      "summary": "Kevin trialed 6 method(s): 2 passed, 4 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:49+00:00",
+      "cycle": 103,
+      "kind": "developed",
+      "summary": "backfill: C-12/C-20 semantic record = complementary",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:50+00:00",
+      "cycle": 103,
+      "kind": "developed",
+      "summary": "backfill: C-12/C-22 semantic record = supports",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:50+00:00",
+      "cycle": 103,
+      "kind": "developed",
+      "summary": "backfill: C-12/C-24 semantic record = insufficient-semantic-evidence",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:50+00:00",
+      "cycle": 103,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-32 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:50+00:00",
+      "cycle": 103,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-37 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:50+00:00",
+      "cycle": 103,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T05:59:50+00:00",
+      "cycle": 103,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 6 trialed · 0 new link(s) · 0 hypothesis(es) · 0 emergent · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T05:56:10+00:00"
+  "generated": "2026-06-14T05:59:50+00:00"
 }
