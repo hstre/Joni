@@ -49,7 +49,7 @@ from .config import (
     runtime_days,
     weekly_budget_eur,
 )
-from .improve import derive, judge
+from .improve import derive, judge, structured_ask
 from .protocol import Protocol
 from .sources import get_fetchers
 
@@ -165,12 +165,11 @@ def one_cycle() -> dict:
             proto.record(cycle, "improved", f"{imp.kind}: {imp.title[:80]}",
                          refs={**refs, "source": imp.source_key, "url": imp.source_url})
         else:
-            ask = {"kind": imp.kind, "target": imp.target, "rationale": imp.rationale,
-                   "source_url": imp.source_url, "cycle": cycle}
+            ask = structured_ask(imp, cycle)
             extensions["asks"].append(ask)
             asks_new.append(ask)
             proto.record(cycle, "asked",
-                         f"core change needs approval: {imp.target} ({imp.title[:60]})",
+                         f"core observation needs a human: {ask['component']} ({imp.title[:50]})",
                          refs={"url": imp.source_url})
 
     extensions["seen"] = sorted(seen)[-2000:]   # bound the dedup set

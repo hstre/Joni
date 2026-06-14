@@ -34,12 +34,22 @@ def build(data: dict) -> str:
         f"<td class=c>{format(e.get('cost_eur',0), '.4f') if e.get('cost_eur') else '—'}</td></tr>"
         for e in events
     )
+    def _ask(a) -> str:
+        ev = a.get("evidence", {}) if isinstance(a.get("evidence"), dict) else {}
+        url = ev.get("source_url") or a.get("source_url", "#")
+        rtype = a.get("request_type", "observation")
+        comp = a.get("component", a.get("target", "protected core"))
+        what = a.get("proposed_change", a.get("rationale", ""))
+        return (
+            f"<li><div><span class=chip>{esc(rtype)}</span> <b>{esc(comp)}</b></div>"
+            f"<div class=asrow><span class=k>what</span> {esc(what)}</div>"
+            f"<div class=asrow><span class=k>evidence</span> {esc(ev.get('source_title',''))} "
+            f"<span class=src>(<a href='{esc(url)}'>source</a>)</span></div>"
+            f"<div class=asrow><span class=k>risk</span> {esc(a.get('risk','—'))}</div></li>")
+
     asks = ext.get("asks", [])
-    asks_html = "".join(
-        f"<li><b>{esc(a.get('target',''))}</b> — {esc(a.get('rationale',''))} "
-        f"<span class=src>(<a href='{esc(a.get('source_url','#'))}'>source</a>)</span></li>"
-        for a in asks
-    ) or "<li class=empty>none — Joni has not needed to touch the core.</li>"
+    asks_html = "".join(_ask(a) for a in asks) or \
+        "<li class=empty>none — Joni has not needed to touch the core.</li>"
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in s.get("topics", []))
     added = "".join(f"<span class='pill add'>{esc(t)}</span>"
                     for t in ext.get("topics_added", [])) or "<span class=empty>none yet</span>"
@@ -128,6 +138,10 @@ td{{padding:5px 8px;border-bottom:1px solid #20262f;vertical-align:top}}
 .k-method,.k-trialed{{color:var(--good);border-color:var(--good)}}
 .k-retired{{color:var(--rej);border-color:var(--rej)}}
 .note{{color:var(--mut);font-size:12px;margin-top:8px}}
+.chip{{font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--warn);
+color:var(--warn);text-transform:uppercase;letter-spacing:.4px}}
+.asrow{{font-size:12.5px;margin:3px 0 0 2px}}.asrow .k{{color:var(--mut);margin-right:6px}}
+li{{margin-bottom:10px}}
 .lede{{color:var(--ink);font-size:15px;margin:10px 0 14px;font-style:italic}}
 .movement{{margin:12px 0;padding-left:12px;border-left:2px solid var(--line)}}
 .movement h3{{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;
