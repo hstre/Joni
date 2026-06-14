@@ -165,11 +165,10 @@ def _fold_replies(paths) -> int:
     return len(parsed)
 
 
-def _open_need(cs, extensions: dict) -> tuple[str, str] | None:
+def _open_need(cs, asked: set) -> tuple[str, str] | None:
     """Pick one thing worth asking a forum about: a hypothesis Joni cannot corroborate, or a
-    topic he works on but has no evidence for. Returns (need_key, question) or None."""
-    asked = set(extensions.get("forum_asked", []))
-
+    topic he works on but has no evidence for, that is not already in ``asked``. Returns
+    (need_key, question) or None."""
     # 1. an unsupported hypothesis - ask for evidence or a counter-argument.
     for h in sorted(cs.hypotheses(), key=lambda c: int(c.id.split("-")[-1]), reverse=True):
         if _supports_on(cs, h.id) == 0 and h.id not in asked:
@@ -202,7 +201,7 @@ def draft_outbox(cs, extensions: dict, proto, cycle: int, *, platforms, max_new:
     asked = extensions.setdefault("forum_asked", [])
     drafts: list = []
     for _ in range(max_new):
-        need = _open_need(cs, extensions)
+        need = _open_need(cs, set(asked))
         if need is None:
             break
         key, question = need
@@ -217,6 +216,35 @@ def draft_outbox(cs, extensions: dict, proto, cycle: int, *, platforms, max_new:
                      f"drafted {fid} for {platform} (need {key}) - awaiting human approval")
     extensions["forum_outbox"] = out[-200:]
     extensions["forum_asked"] = asked[-500:]
+    return drafts
+
+
+def draft_autopost(cs, extensions: dict, proto, cycle: int, *, autopost, max_new: int = 1) -> list:
+    """Draft questions for agent-only networks (Moltbook) from Joni's *open needs* - the very
+    questions he is stuck on (unsupported hypotheses, evidence-less topics). Asking other agents
+    for counter-arguments is what such a network is for. Tracked per platform so each need is
+    asked there once; bounded per cycle. The loop auto-posts these (see ``_post_live``)."""
+    if not autopost:
+        return []
+    out = extensions.setdefault("forum_outbox", [])
+    drafts: list = []
+    for platform in autopost:
+        akey = f"forum_asked_{platform}"
+        asked = list(extensions.get(akey, []))
+        for _ in range(max_new):
+            need = _open_need(cs, set(asked))
+            if need is None:
+                break
+            key, question = need
+            fid = f"FA-{cycle}-{_fingerprint(platform, key, question)[:6]}"
+            out.append({"id": fid, "cycle": cycle, "platform": platform, "need": key,
+                        "question": question, "status": "drafted", "posted_url": None})
+            asked.append(key)
+            drafts.append(out[-1])
+            proto.record(cycle, "forum_draft",
+                         f"drafted {fid} for {platform} (need {key}) - agent-net, auto-posts")
+        extensions[akey] = asked[-500:]
+    extensions["forum_outbox"] = out[-200:]
     return drafts
 
 
@@ -335,7 +363,15 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     if folded:
         proto.record(cycle, "heard", f"folded {folded} pasted reply(ies) into the inbox")
     heard = ingest_inbox(cs, extensions, proto, cycle, paths.forum_inbox)
-    drafted = draft_outbox(cs, extensions, proto, cycle, platforms=platforms)
+
+    # Human forums rotate one drafted question (queued for a human); agent-only networks
+    # (Moltbook) get their own questions from Joni's open needs and auto-post them.
+    from .config import forum_autopost
+    autop = set(forum_autopost())
+    human_platforms = tuple(p for p in platforms if p not in autop)
+    auto_platforms = tuple(p for p in platforms if p in autop)
+    drafted = draft_outbox(cs, extensions, proto, cycle, platforms=human_platforms)
+    drafted += draft_autopost(cs, extensions, proto, cycle, autopost=auto_platforms)
 
     # Posting is gated by forum_live(). Agent-only networks (Moltbook) post autonomously;
     # human forums need approval and stay on the "you post, Joni writes" path (outbox + the
