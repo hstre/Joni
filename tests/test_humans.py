@@ -23,6 +23,8 @@ class _Paths:
     def __init__(self, d):
         self.forum_inbox = d / "forum_inbox.json"
         self.forum_outbox = d / "forum_outbox.json"
+        self.forum_replies = d / "forum_replies.txt"
+        self.post_sheet = d / "to_post.md"
 
 
 def test_a_forum_person_is_a_source_not_an_authority():
@@ -107,3 +109,46 @@ def test_moderation_gate_only_releases_approved_drafts(tmp_path):
     # an already-posted draft is not re-released
     outbox[0]["status"] = "posted"
     assert humans.select_postable(outbox, approved) == []
+
+
+def test_pasted_replies_are_parsed():
+    parsed = humans.ingest_replies_text(
+        "# a comment\n"
+        "\n"
+        "hacker_news | userXY | drift ignores seasonality\n"
+        "reddit | only two fields\n"
+        "just a body with no pipes\n"
+    )
+    assert parsed == [
+        {"platform": "hacker_news", "handle": "userXY", "text": "drift ignores seasonality"},
+        {"platform": "reddit", "handle": "anon", "text": "only two fields"},
+        {"platform": "forum", "handle": "anon", "text": "just a body with no pipes"},
+    ]
+
+
+def test_post_sheet_lists_unposted_drafts_in_copy_paste_form():
+    outbox = [
+        {"id": "FA-1-aaa", "platform": "reddit", "question": "Wo bricht das?", "status": "drafted"},
+        {"id": "FA-1-bbb", "platform": "lesswrong", "question": "Quellen zu drift?",
+         "status": "posted"},
+    ]
+    sheet = humans.render_post_sheet(outbox)
+    assert "FA-1-aaa" in sheet and "Wo bricht das?" in sheet
+    assert "FA-1-bbb" not in sheet            # already posted -> not on the sheet
+    assert "Post-Mappe" in sheet
+
+
+def test_pasted_replies_are_folded_into_the_inbox_and_heard(tmp_path):
+    cs = CoreState(seed_core())
+    paths = _Paths(tmp_path)
+    paths.forum_replies.write_text("hacker_news | crit | routing locally is not always better\n")
+    res = humans.interact(cs, {}, _Proto(), 1, paths=paths,
+                          platforms=("hacker_news",), live=False)
+    assert res["folded"] == 1
+    assert res["heard"] == 1                                  # heard as a source this cycle
+    # the drop box was consumed (reset to the template, no raw reply left behind)
+    assert "routing locally is not always better" not in paths.forum_replies.read_text()
+    # the reply now lives in the inbox, and a post sheet was written for the human
+    inbox = json.loads(paths.forum_inbox.read_text())
+    assert any("routing locally" in m["text"] for m in inbox)
+    assert paths.post_sheet.exists() and "Post-Mappe" in paths.post_sheet.read_text()
