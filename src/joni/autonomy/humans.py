@@ -39,6 +39,17 @@ STANCE = ("Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber ge
           "geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein "
           "deshalb geglaubt, weil ein Mensch es gesagt hat.")
 
+# The reply drop box (state/forum_replies.txt) opens with this how-to; a human pastes replies
+# below it, the loop ingests them as SOURCES and resets the file.
+_REPLIES_TEMPLATE = (
+    "# Antworten hier einfügen - eine pro Zeile, Format:\n"
+    "#   plattform | handle | die Antwort als Text\n"
+    "# Beispiel:\n"
+    "#   hacker_news | userXY | Dein Punkt zu drift ignoriert die Saisonalität.\n"
+    "# Joni hört das im nächsten Zyklus als QUELLE (nie als Autorität); danach wird diese\n"
+    "# Datei wieder geleert. Zeilen mit '#' werden ignoriert.\n"
+)
+
 
 def _load(path: Path, default):
     if path.exists():
@@ -111,6 +122,49 @@ def ingest_inbox(cs, extensions: dict, proto, cycle: int, inbox_path: Path) -> d
     return {"heard": heard, "conflicts": max(0, after - before)}
 
 
+def ingest_replies_text(text: str) -> list[dict]:
+    """Parse a human's pasted forum replies into inbox messages.
+
+    One reply per line: ``platform | handle | text`` (handle optional). Blank lines and lines
+    starting with ``#`` are ignored. Pure - the caller folds the result into the inbox."""
+    out: list[dict] = []
+    for raw in (text or "").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [p.strip() for p in line.split("|", 2)]
+        if len(parts) == 3:
+            platform, handle, body = parts
+        elif len(parts) == 2:
+            platform, handle, body = parts[0], "anon", parts[1]
+        else:
+            platform, handle, body = "forum", "anon", parts[0]
+        if body:
+            out.append({"platform": platform or "forum", "handle": handle or "anon",
+                        "text": body})
+    return out
+
+
+def _fold_replies(paths) -> int:
+    """Fold pasted replies (``state/forum_replies.txt``) into the inbox, then reset the drop
+    box - so a human can feed forum replies back without hand-editing JSON."""
+    rp = paths.forum_replies
+    if not rp.exists():
+        rp.parent.mkdir(parents=True, exist_ok=True)
+        rp.write_text(_REPLIES_TEMPLATE, encoding="utf-8")
+        return 0
+    parsed = ingest_replies_text(rp.read_text(encoding="utf-8"))
+    if not parsed:
+        return 0
+    inbox = _load(paths.forum_inbox, [])
+    if not isinstance(inbox, list):
+        inbox = []
+    inbox.extend(parsed)
+    _save(paths.forum_inbox, inbox)
+    rp.write_text(_REPLIES_TEMPLATE, encoding="utf-8")      # consumed - reset the drop box
+    return len(parsed)
+
+
 def _open_need(cs, extensions: dict) -> tuple[str, str] | None:
     """Pick one thing worth asking a forum about: a hypothesis Joni cannot corroborate, or a
     topic he works on but has no evidence for. Returns (need_key, question) or None."""
@@ -174,6 +228,43 @@ def select_postable(outbox: list, approved_ids) -> list:
             if isinstance(d, dict) and d.get("id") in approved and d.get("status") != "posted"]
 
 
+def render_post_sheet(outbox: list) -> str:
+    """Render Joni's un-posted drafts as a copy-paste sheet for a human to post by hand."""
+    drafts = [d for d in (outbox or [])
+              if isinstance(d, dict) and d.get("status") != "posted" and d.get("question")]
+    lines = [
+        "# Joni's Post-Mappe",
+        "",
+        "Joni *textet*, **du** postest. Diese Fragen hat Joni selbst formuliert. Du",
+        "entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es",
+        "passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie",
+        "dann als **Quelle**, nie als Autorität.",
+        "",
+        f"_{len(drafts)} offene(r) Entwurf/Entwürfe._",
+        "",
+    ]
+    if not drafts:
+        return "\n".join([*lines, "Gerade nichts zu posten."]) + "\n"
+    for d in drafts:
+        lines += [
+            f"## {d.get('id')} · Vorschlag: {d.get('platform')}",
+            "",
+            "```",
+            str(d.get("question", "")).strip(),
+            "```",
+            "",
+            "- Gepostet unter (URL): ____________",
+            "",
+        ]
+    return "\n".join(lines) + "\n"
+
+
+def _write_post_sheet(paths, outbox: list) -> None:
+    sheet = paths.post_sheet
+    sheet.parent.mkdir(parents=True, exist_ok=True)
+    sheet.write_text(render_post_sheet(outbox), encoding="utf-8")
+
+
 def approve(approved_path: Path, draft_id: str) -> list:
     """Record a human approval for one drafted question (so the relay may post it). Returns the
     full approved-id list. This is the ONLY way a post ever leaves Joni - a deliberate gate."""
@@ -201,16 +292,20 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     keep the registry. Posting stays gated: when not live, drafts wait for a human to post."""
     extensions["forum_stance"] = STANCE
     registry = _registry(extensions, platforms)
+    folded = _fold_replies(paths)          # a human's pasted replies -> inbox (then reset)
+    if folded:
+        proto.record(cycle, "heard", f"folded {folded} pasted reply(ies) into the inbox")
     heard = ingest_inbox(cs, extensions, proto, cycle, paths.forum_inbox)
     drafted = draft_outbox(cs, extensions, proto, cycle, platforms=platforms)
 
-    # The loop never posts - posting is the relay's job (on the VPS), and only for drafts a
-    # human approved. ``live`` is recorded for the page; it does not let the loop post.
+    # The loop never posts. In the "you post, Joni writes" path a human carries the drafts to a
+    # forum; the relay only ever posts drafts a human approved. We publish the outbox and a
+    # copy-paste post sheet so a human can act on it. ``live`` is recorded for the page only.
     posted = 0
-    # Publish the outbox so a human can review/approve and the relay can act on it.
     _save(paths.forum_outbox, extensions.get("forum_outbox", []))
+    _write_post_sheet(paths, extensions.get("forum_outbox", []))
     return {"heard": heard["heard"], "conflicts": heard["conflicts"],
-            "drafted": len(drafted), "posted": posted,
+            "drafted": len(drafted), "posted": posted, "folded": folded,
             "registry": registry, "live": live}
 
 

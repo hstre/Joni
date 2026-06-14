@@ -89,6 +89,18 @@ class Paths:
         # Draft ids a human approved for posting - the moderation gate the relay obeys.
         return self.root / "state" / "forum_approved.json"
 
+    @property
+    def forum_replies(self) -> Path:
+        # A plain-text drop box: a human pastes forum replies here (one per line,
+        # "platform | handle | text"); the loop folds them into the inbox and clears it.
+        return self.root / "state" / "forum_replies.txt"
+
+    @property
+    def post_sheet(self) -> Path:
+        # Human-readable "post these under your account" sheet, regenerated every cycle so a
+        # human can carry Joni's drafted questions to a forum (the "you post, Joni writes" path).
+        return self.root / "docs" / "to_post.md"
+
 
 def paths() -> Paths:
     return Paths(repo_root())
