@@ -38,6 +38,7 @@ from . import (
     methods,
     reader,
     reconsolidate,
+    research_intake,
     self_review,
     site,
     strategy,
@@ -236,6 +237,12 @@ def one_cycle() -> dict:
     panel = experts.maybe_convene(cs, extensions, proto, budget, cycle,
                                   runs_per_week=runs_per_week())
 
+    # 4k. Doktores - Joni's independent research organisation - hands worked research back as
+    #     structured packages. The epistemic channel enters Layer 9 as SOURCES (method-checked,
+    #     not externally replicated; never auto-confirmed); the publication channel is archived
+    #     with no epistemic weight. Joni decides, never Doktores. No-op until a package arrives.
+    research = research_intake.ingest(cs, extensions, proto, cycle, paths=p)
+
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
@@ -260,11 +267,14 @@ def one_cycle() -> dict:
                   f"'{reconsolidated['lens']}' " if reconsolidated.get("ran") else "")
     panel_note = (f"· panel ({', '.join(panel['experts'])}) advised " if panel.get("convened")
                   else "")
+    research_note = (f"· research: {research['candidates']} candidate(s) from "
+                     f"{research['ingested']} package(s) " if research.get("ingested") else "")
     proto.record(cycle, "note",
                  f"cycle done · {len(new_items)} new {read_note}· {found_methods['methods']} "
                  f"method(s) · {trialed['trialed']} trialed · {developed['links']} new link(s) "
                  f"· {invented['hypotheses']} hypothesis(es) · {emerged_n} emergent {prune_note}"
-                 f"{recon_note}{panel_note}{forum_note}· {vitality['verdict']} · spend "
+                 f"{recon_note}{panel_note}{research_note}{forum_note}· {vitality['verdict']} "
+                 f"· spend "
                  f"€{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
@@ -277,7 +287,8 @@ def one_cycle() -> dict:
             "developed": developed, "invented": invented, "methods": found_methods,
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
-            "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io}
+            "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io,
+            "research": research}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
