@@ -23,6 +23,7 @@ class _Paths:
     def __init__(self, d):
         self.forum_inbox = d / "forum_inbox.json"
         self.forum_outbox = d / "forum_outbox.json"
+        self.forum_approved = d / "forum_approved.json"
         self.forum_replies = d / "forum_replies.txt"
         self.post_sheet = d / "to_post.md"
 
@@ -78,18 +79,38 @@ def test_a_polite_question_is_drafted_awaiting_approval_and_bounded():
     assert "?" in d["question"]                          # it actually asks something
 
 
-def test_the_loop_never_posts_even_when_live(tmp_path):
+def test_live_loop_posts_nothing_without_an_approved_ready_draft(tmp_path):
     cs = CoreState(seed_core())
     p = cs.learn("routing parent", "routing")
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     res = humans.interact(cs, ext, _Proto(), 1, paths=_Paths(tmp_path),
-                          platforms=("reddit",), live=True)        # 'live' on, still
-    assert res["posted"] == 0                            # the loop never posts
+                          platforms=("reddit",), live=True)   # live on, but nothing approved...
+    assert res["posted"] == 0                            # ...and reddit has no live adapter
     assert res["drafted"] == 1
     assert (tmp_path / "forum_outbox.json").exists()     # published for human + relay
     assert ext["forum_outbox"][0]["status"] == "drafted"
     assert ext["forum_stance"]
+
+
+def test_live_loop_posts_an_approved_moltbook_draft(tmp_path, monkeypatch):
+    from joni.relay import adapters
+    # make the Moltbook adapter ready and capture the post (no network)
+    monkeypatch.setattr(adapters.MoltbookAdapter, "_has_creds", lambda self: True)
+    monkeypatch.setattr(adapters.MoltbookAdapter, "post",
+                        lambda self, text: "https://www.moltbook.com/posts/p1")
+    cs = CoreState(seed_core())
+    p = cs.learn("routing parent", "routing")
+    cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
+    ext = {}
+    paths = _Paths(tmp_path)
+    humans.draft_outbox(cs, ext, _Proto(), 1, platforms=("moltbook",))
+    fid = ext["forum_outbox"][0]["id"]
+    humans.approve(paths.forum_approved, fid)            # a human approves it for posting
+    res = humans.interact(cs, ext, _Proto(), 2, paths=paths, platforms=("moltbook",), live=True)
+    assert res["posted"] == 1
+    assert ext["forum_outbox"][0]["status"] == "posted"
+    assert ext["forum_outbox"][0]["posted_url"].endswith("/p1")
 
 
 def test_moderation_gate_only_releases_approved_drafts(tmp_path):
