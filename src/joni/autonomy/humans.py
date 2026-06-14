@@ -287,22 +287,31 @@ def _registry(extensions: dict, platforms) -> list[dict]:
     return [{"platform": p, **v} for p, v in reg.items()]
 
 
-def _post_approved(extensions: dict, proto, cycle: int, paths, live: bool) -> int:
-    """When live, post the drafts a human approved - but only to platforms with a *ready*
-    adapter (currently Moltbook, an agent-only network where autonomous posting is the norm).
-    Each post is marked and recorded; an unconfigured or failing platform is skipped and
-    retried next cycle. Human forums have no ready adapter, so they keep waiting on the
-    'you post, Joni writes' path. Still gated: forum_live() must be on AND the draft approved."""
+def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_post: int = 2) -> int:
+    """When live, post un-posted drafts to platforms with a *ready* adapter, paced per cycle.
+
+    Two gates by platform kind: an **agent-only** network in ``forum_autopost()`` (Moltbook)
+    posts WITHOUT per-post human approval - that's its intended use. A **human forum** posts
+    only if a human approved the draft (and has no live adapter anyway). Either way it needs
+    ``forum_live()`` on, the platform's adapter ready, and is bounded per cycle so Joni never
+    floods. Each post is marked and recorded on the protocol."""
     if not live:
         return 0
-    approved = _load(paths.forum_approved, [])
-    postable = select_postable(extensions.get("forum_outbox", []), approved)
-    if not postable:
-        return 0
     from joni.relay.adapters import NotReady, get_adapter
+
+    from .config import forum_autopost
+    autopost = set(forum_autopost())
+    approved = set(_load(paths.forum_approved, []) or ())
     posted = 0
-    for d in postable:
-        adapter = get_adapter(d.get("platform", ""))
+    for d in extensions.get("forum_outbox", []):
+        if posted >= max_post:
+            break
+        if not isinstance(d, dict) or d.get("status") == "posted":
+            continue
+        platform = d.get("platform", "")
+        if platform not in autopost and d.get("id") not in approved:
+            continue                       # human forum -> needs approval; leave it queued
+        adapter = get_adapter(platform)
         if not adapter.ready():
             continue                       # no live adapter for this platform - leave it queued
         try:
@@ -311,8 +320,9 @@ def _post_approved(extensions: dict, proto, cycle: int, paths, live: bool) -> in
             continue                       # not configured / transient - retry next cycle
         d["status"], d["posted_url"] = "posted", url
         posted += 1
+        gate = "agent-net auto" if platform in autopost else "human-approved"
         proto.record(cycle, "forum_post",
-                     f"posted {d.get('id')} to {d.get('platform')} (human-approved) -> {url}")
+                     f"posted {d.get('id')} to {platform} ({gate}) -> {url}")
     return posted
 
 
@@ -327,10 +337,10 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     heard = ingest_inbox(cs, extensions, proto, cycle, paths.forum_inbox)
     drafted = draft_outbox(cs, extensions, proto, cycle, platforms=platforms)
 
-    # Posting is gated: only when live AND a human approved the draft AND the platform has a
-    # ready adapter (Moltbook today). Everything else stays on the "you post, Joni writes"
-    # path - published as the outbox + a copy-paste post sheet for a human to carry.
-    posted = _post_approved(extensions, proto, cycle, paths, live)
+    # Posting is gated by forum_live(). Agent-only networks (Moltbook) post autonomously;
+    # human forums need approval and stay on the "you post, Joni writes" path (outbox + the
+    # copy-paste post sheet a human carries).
+    posted = _post_live(extensions, proto, cycle, paths, live)
     _save(paths.forum_outbox, extensions.get("forum_outbox", []))
     _write_post_sheet(paths, extensions.get("forum_outbox", []))
     return {"heard": heard["heard"], "conflicts": heard["conflicts"],

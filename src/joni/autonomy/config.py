@@ -146,3 +146,12 @@ def forum_live() -> bool:
     public, irreversible act, so it needs the operator's explicit opt-in plus per-platform
     credentials. When off, Joni still drafts (into the outbox) and still ingests replies."""
     return os.getenv("JONI_FORUM_LIVE", "0") == "1"
+
+
+def forum_autopost() -> tuple[str, ...]:
+    """Platforms where Joni may post WITHOUT per-post human approval - agent-only networks
+    (Moltbook) where autonomous posting is the norm, not spam in a human community. Human
+    forums are never here: they always wait for a human to approve/post. Still under
+    forum_live() as the master switch."""
+    raw = os.getenv("JONI_FORUM_AUTOPOST", "moltbook")
+    return tuple(p.strip() for p in raw.split(",") if p.strip())
