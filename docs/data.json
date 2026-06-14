@@ -13,10 +13,10 @@
     "claims_total": 72,
     "claims_active": 46,
     "memory": 27,
-    "ledger": 1668,
+    "ledger": 1680,
     "open_conflicts": 2,
     "methods": 6,
-    "method_trials": 446,
+    "method_trials": 452,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 72,
@@ -29,11 +29,11 @@
   "budget": {
     "spent_eur": 0.0,
     "cap_eur": 20.0,
-    "runs": 123
+    "runs": 124
   },
   "window": {
     "start": "2026-06-13T15:19:43+00:00",
-    "runs": 123,
+    "runs": 124,
     "retired": false
   },
   "extensions": {
@@ -1323,14 +1323,14 @@
     "pdf_inbox_seen": [],
     "read_fulltext_priority": true,
     "learned_queries": [
-      "alignment+drift behind",
-      "alignment+drift apply",
-      "alignment+evaluation behind",
-      "alignment+evaluation apply",
       "alignment+evaluation tracking",
       "alignment+evaluation hypothesis",
       "alignment+memory tracking",
-      "alignment+memory hypothesis"
+      "alignment+memory hypothesis",
+      "alignment+evaluation topic",
+      "alignment+evaluation might",
+      "alignment+memory topic",
+      "alignment+memory might"
     ],
     "strategy_sm": [
       "underframed"
@@ -1352,8 +1352,8 @@
       "no_confirmed"
     ],
     "vitality": {
-      "verdict": "developing",
-      "development": 2,
+      "verdict": "steady",
+      "development": 0,
       "degeneration": 0,
       "active": 46,
       "hypotheses": 22,
@@ -1362,18 +1362,18 @@
       "evidence_links": 72,
       "emergent_total": 6,
       "usable_semantic_rate": 0.725,
-      "stagnation_cycles": 0,
-      "objects": 2076,
-      "cycle": 123
+      "stagnation_cycles": 1,
+      "objects": 2088,
+      "cycle": 124
     },
     "vitality_prev": {
       "active": 46,
       "links": 72,
       "promoted": 0,
       "emergent": 6,
-      "objects": 2076
+      "objects": 2088
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 122,
@@ -1386,6 +1386,13 @@
         "cycle": 123,
         "verdict": "developing",
         "development": 2,
+        "degeneration": 0,
+        "usable_semantic_rate": 0.725
+      },
+      {
+        "cycle": 124,
+        "verdict": "steady",
+        "development": 0,
         "degeneration": 0,
         "usable_semantic_rate": 0.725
       }
@@ -14383,7 +14390,107 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:23+00:00",
+      "cycle": 124,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:24+00:00",
+      "cycle": 124,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:25+00:00",
+      "cycle": 124,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:26+00:00",
+      "cycle": 124,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:27+00:00",
+      "cycle": 124,
+      "kind": "trialed",
+      "summary": "Kevin trialed 6 method(s): 3 passed, 3 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:28+00:00",
+      "cycle": 124,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-37 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:28+00:00",
+      "cycle": 124,
+      "kind": "strengthen",
+      "summary": "Kevin vetting: C-38 looks hollow (rejected) - not promoting",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:28+00:00",
+      "cycle": 124,
+      "kind": "vitality",
+      "summary": "steady · dev 0 · degen 0 · 21 unsupported idea(s) · semantic-usable 72%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:28+00:00",
+      "cycle": 124,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-14T07:22:28+00:00",
+      "cycle": 124,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 6 trialed · 0 new link(s) · 0 hypothesis(es) · 0 emergent · steady · spend €0.0000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-14T07:18:27+00:00"
+  "generated": "2026-06-14T07:22:28+00:00"
 }
