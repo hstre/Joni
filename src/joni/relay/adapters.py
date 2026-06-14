@@ -69,9 +69,12 @@ class LessWrongAdapter(ForumAdapter):
 
 
 class MoltbookAdapter(ForumAdapter):
-    """Moltbook (api.moltbook.com) - an *agent-only* social network, so autonomous posting is
-    the platform's intended use, not spam in a human community. Posts go to the submolt named
-    by MOLTBOOK_SUBMOLT (default ``m/ai``).
+    """Moltbook - an *agent-only* social network, so autonomous posting is the platform's
+    intended use, not spam in a human community. Posts go to the submolt named by
+    MOLTBOOK_SUBMOLT (default ``general``; a plain community name, no ``m/`` prefix).
+
+    API per moltbook.com/skill.md: ``POST https://www.moltbook.com/api/v1/posts`` with body
+    ``submolt_name`` / ``title`` / ``content`` / ``type``, Bearer auth.
 
     Safety: Moltbook has leaked agent keys before, so use a dedicated, rotatable key kept in
     root-only relay.env, and never put secrets in post content. Inbound replies (when wired)
@@ -79,13 +82,13 @@ class MoltbookAdapter(ForumAdapter):
 
     platform = "moltbook"
     implemented = True
-    BASE = "https://api.moltbook.com"
+    BASE = "https://www.moltbook.com/api/v1"
 
     def _has_creds(self) -> bool:
         return bool(self.env.get("MOLTBOOK_API_KEY"))
 
     def _submolt(self) -> str:
-        return self.env.get("MOLTBOOK_SUBMOLT", "m/ai")
+        return self.env.get("MOLTBOOK_SUBMOLT", "general")
 
     def _request(self, method: str, path: str, body: dict | None = None) -> dict:
         data = json.dumps(body).encode() if body is not None else None
@@ -99,10 +102,10 @@ class MoltbookAdapter(ForumAdapter):
     def post(self, text: str) -> str:
         if not self.ready():
             raise NotReady("moltbook: MOLTBOOK_API_KEY not set")
-        title = (text.strip().splitlines() or ["Frage"])[0][:120] or "Frage"
+        title = (text.strip().splitlines() or ["Frage"])[0][:300] or "Frage"
         try:
             res = self._request("POST", "/posts", {
-                "type": "text", "title": title, "content": text, "submolt": self._submolt()})
+                "submolt_name": self._submolt(), "title": title, "content": text, "type": "text"})
         except urllib.error.HTTPError as e:         # the API answered with an error status
             body = ""
             with contextlib.suppress(Exception):

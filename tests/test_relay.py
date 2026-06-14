@@ -37,14 +37,14 @@ def test_moltbook_adapter_posts_to_a_submolt(monkeypatch):
 
     monkeypatch.setattr(adapters.urllib.request, "urlopen", fake_urlopen)
     a = adapters.get_adapter("moltbook", {"MOLTBOOK_API_KEY": "moltbook_sk_x",
-                                          "MOLTBOOK_SUBMOLT": "m/epistemics"})
+                                          "MOLTBOOK_SUBMOLT": "epistemics"})
     assert a.ready() is True                                   # implemented + has key
     url = a.post("Wo bricht meine Hypothese?\nMehr Details hier...")
     assert url == "https://www.moltbook.com/posts/p123"
-    assert captured["url"] == "https://api.moltbook.com/posts"
+    assert captured["url"] == "https://www.moltbook.com/api/v1/posts"   # real API base
     assert captured["method"] == "POST"
     assert captured["auth"] == "Bearer moltbook_sk_x"
-    assert captured["body"]["submolt"] == "m/epistemics"
+    assert captured["body"]["submolt_name"] == "epistemics"   # real field name, no m/ prefix
     assert captured["body"]["title"] == "Wo bricht meine Hypothese?"   # first line, capped
     assert captured["body"]["content"].startswith("Wo bricht")
 
