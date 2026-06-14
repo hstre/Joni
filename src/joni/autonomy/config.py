@@ -116,8 +116,10 @@ def read_pdfs() -> bool:
     return os.getenv("JONI_READ_PDFS", "1") != "0"
 
 
-# Default forums Joni may engage. He treats people there as sources, never authorities.
-_DEFAULT_FORUMS = ("huggingface", "hacker_news", "reddit", "lesswrong")
+# Forums Joni may engage. He treats everyone there as a source, never an authority. Moltbook
+# is an agent-only network (autonomous posting is its intended use); the human forums stay on
+# the "you post, Joni writes" path until a platform is explicitly wired live.
+_DEFAULT_FORUMS = ("huggingface", "hacker_news", "reddit", "lesswrong", "moltbook")
 
 
 def forum_platforms() -> tuple[str, ...]:
