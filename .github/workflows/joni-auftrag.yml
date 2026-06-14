@@ -1,0 +1,103 @@
+name: joni-auftrag
+
+# Joni commissions Claude to extend him. When the autonomy loop files a `joni-auftrag`
+# issue (a non-core extension request Joni derived from his own state), this workflow runs
+# Claude Code to *implement* it and open a pull request - automatically. The protected DESi
+# core is off-limits, and nothing is merged: the PR waits for the human merge gate.
+#
+# Joni writes the order; Claude carries it out; a human still decides. The loop itself never
+# runs Claude (it uses cheap models) - this is the only place Claude touches the codebase on
+# Joni's behalf, and only ever for a non-core extension.
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write          # push the extension branch
+  pull-requests: write     # open the PR (never merged here)
+  issues: write            # comment back on the Auftrag
+
+concurrency:
+  group: joni-auftrag-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    # Only the moment the `joni-auftrag` label is applied - not other labels, not core-asks.
+    if: github.event.label.name == 'joni-auftrag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Ensure an Anthropic key is configured (fail loudly, not silently)
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$KEY" ]; then
+            msg="Auto-build skipped: no ANTHROPIC_API_KEY secret is configured on this repo, so Claude cannot pick up this Auftrag automatically. Add the secret (Settings -> Secrets and variables -> Actions) and re-apply the joni-auftrag label to retry."
+            gh issue comment "${{ github.event.issue.number }}" --body "$msg"
+            echo "no ANTHROPIC_API_KEY - cannot run Claude"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch DESi (so the real Semantic Layer is available; optional)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: hstre/DESi
+          path: _desi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Joni with dev + extras (so Claude can run pytest + ruff)
+        run: |
+          python -m pip install -e ".[dev,llm,pdf,embed]"
+          python -m pip install -e _desi || true
+
+      - name: Claude implements the (non-core) extension and opens a PR
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are implementing a "joni-auftrag" - a work order Joni (this repo's autonomous
+            agent) wrote, asking to EXTEND him outside his protected core. The issue that
+            triggered this run is your task; read its title and body for the exact request,
+            the acceptance criterion, and the component it names.
+
+            Hard rules (these are the whole point of the order - do not break them):
+              * NON-CORE ONLY. You may extend only the module named in the issue, which will be
+                one of: the semantic measurement channel (src/joni/autonomy/desi_semantics.py,
+                embeddings.py), the conflict qualifier (qualify.py), the reading layer
+                (sources.py, reader.py), or the emergence layer (emerge.py, strengthen.py).
+              * NEVER touch the protected DESi core: do not change Layer-9 operators, the
+                scoring/belief logic, the ledger format, the router algorithm, the state
+                machine, or anything under src/desi_layer9/ core engine. Do NOT run
+                `python -m joni.autonomy lock` and do NOT alter the core lock.
+              * Keep the architecture rule "LLM for language, rules for logic": new logic must
+                be deterministic; do not move scoring/orchestration into a model call.
+              * Preserve German strings where the codebase uses them.
+
+            Do this:
+              1. Implement exactly the extension the issue asks for - no more.
+              2. Add focused tests under tests/ that prove the acceptance criterion in the issue.
+              3. Run `python -m pytest -q` and `python -m ruff check src tests` and make both pass.
+              4. Run `python -m joni.autonomy verify` to confirm the protected core is untouched;
+                 if it fails, you changed something you must not have - revert that part.
+              5. Open a pull request that references the issue (include "Closes #<issue number>"),
+                 explains what you extended and how the acceptance criterion is met, and states
+                 that the protected core was not touched. Do NOT merge it - leave it for human
+                 review.
+
+            If the request cannot be done without touching the protected core, do NOT force it:
+            open no PR, and instead comment on the issue explaining that it needs the
+            human-approval (joni-core-ask) path, then stop.
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 30
