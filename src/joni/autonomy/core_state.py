@@ -72,7 +72,8 @@ class CoreState:
                  {"to_status": "active"}, targets=(claim.id,))
         return claim.id
 
-    def hear(self, text: str, topic: str, *, handle: str, platform: str) -> str:
+    def hear(self, text: str, topic: str, *, handle: str, platform: str,
+             origin: str = "forum") -> str:
         """A person on a forum is a SOURCE, never an authority.
 
         Same path as ``learn``: the person is held *exactly* as strictly as a paper - an
@@ -81,12 +82,21 @@ class CoreState:
         deliberately NOT ``OriginType.HUMAN``: that origin is privileged by the protected
         core (it may confirm, resolve, touch the control plane) and is reserved for the
         trusted operator. A stranger on Hacker News is not that - polite in tone, but no
-        authority. The handle/platform is recorded as the source id so it is auditable."""
+        authority. The handle/platform is recorded as the source id so it is auditable.
+
+        ``origin`` carries *what the source was reacting to*. ``predecessor-thread`` marks a
+        reaction to a legacy (pre-Joni) post under the same agent identity - kept as a second,
+        auditable source id so Joni can tell a reaction-to-his-own-post from a reaction to an
+        inherited, possibly drifted premise. It is provenance only: still a plain SOURCE,
+        never weighted up, never an authority."""
         sid = f"{platform}:{handle}"
+        sources = [sid]
+        if origin and origin not in ("forum", "own-post"):
+            sources.append(f"origin:{origin}")
         self.core.submit(make_proposal(
             ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
             payload={"text": text, "topic": topic}, proposer=f"forum:{platform}",
-            provenance=Provenance.from_source(sid)), actor="joni")
+            provenance=Provenance.from_source(*sources)), actor="joni")
         claim = self._newest(l9.ObjectType.CLAIM)
         self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
                  {"to_status": "active"}, targets=(claim.id,))

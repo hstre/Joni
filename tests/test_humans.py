@@ -65,6 +65,46 @@ def test_inbox_ingestion_is_deduped(tmp_path):
     assert first["heard"] == 1 and second["heard"] == 0   # the same reply is not re-heard
 
 
+def test_a_predecessor_thread_reaction_is_marked_in_provenance():
+    # a reaction to a legacy (willy-era) post is still a plain SOURCE, but carries an extra,
+    # auditable origin id so Joni can tell it apart from a reaction to his own post
+    cs = CoreState(seed_core())
+    cid = cs.hear("benchmarking is unsound", "methods", handle="peer",
+                  platform="moltbook", origin="predecessor-thread")
+    c = cs.core.get(cid)
+    assert c.provenance.origin_type.value == "source"          # never elevated
+    assert "moltbook:peer" in c.provenance.source_ids
+    assert "origin:predecessor-thread" in c.provenance.source_ids
+
+
+def test_own_post_and_default_reactions_carry_no_legacy_tag():
+    cs = CoreState(seed_core())
+    a = cs.hear("x", "t", handle="p", platform="moltbook", origin="own-post")
+    b = cs.hear("y", "t", handle="q", platform="moltbook")     # default 'forum'
+    assert all(not s.startswith("origin:") for s in cs.core.get(a).provenance.source_ids)
+    assert all(not s.startswith("origin:") for s in cs.core.get(b).provenance.source_ids)
+
+
+def test_pull_live_replies_tags_legacy_vs_own_posts(tmp_path, monkeypatch):
+    from joni.relay import adapters
+    monkeypatch.setattr(adapters.MoltbookAdapter, "_has_creds", lambda self: True)
+    monkeypatch.setattr(adapters.MoltbookAdapter, "fetch_replies", lambda self: [
+        {"platform": "moltbook", "handle": "peer1", "text": "on my own post",
+         "post_id": "OWN1"},
+        {"platform": "moltbook", "handle": "peer2", "text": "on willys old post",
+         "post_id": "LEGACY9"}])
+    paths = _Paths(tmp_path)
+    # Joni's own post is the one recorded in his outbox (posted_url ending in OWN1)
+    ext = {"forum_outbox": [{"id": "FA-1", "platform": "moltbook", "status": "posted",
+                             "posted_url": "https://www.moltbook.com/posts/OWN1"}]}
+    pulled = humans._pull_live_replies(ext, _Proto(), 1, paths, ("moltbook",), live=True)
+    assert pulled == 2
+    inbox = json.loads(paths.forum_inbox.read_text())
+    origin = {r["handle"]: r["origin"] for r in inbox}
+    assert origin["peer1"] == "own-post"                       # reaction to Joni's own post
+    assert origin["peer2"] == "predecessor-thread"             # reaction to a willy-era post
+
+
 def test_a_polite_question_is_drafted_awaiting_approval_and_bounded():
     cs = CoreState(seed_core())
     p = cs.learn("routing parent", "routing")
