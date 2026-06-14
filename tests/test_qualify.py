@@ -10,7 +10,8 @@ CK = l9.ConflictKind
 def test_normal_vs_novel_is_a_scope_tension_not_a_contradiction():
     # the example from the review: both true, on different scopes
     a = "most requests can be served by a small local model"
-    b = "for novel problems without a matching pretrained pattern, parametric knowledge is not enough"
+    b = ("for novel problems without a matching pretrained pattern, "
+         "parametric knowledge is not enough")
     assert qualify_conflict(a, b, severity="soft") == CK.SCOPE_TENSION.value
     # even if a contradiction signal fired, the clear scope split wins
     assert qualify_conflict(a, b, severity="hard", contradictory=True) == CK.SCOPE_TENSION.value
