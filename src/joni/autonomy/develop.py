@@ -28,11 +28,23 @@ from desi_layer9.semantics.ports import NullSemanticLayer
 _TRIGGER = 0.3      # cheap lexical trigger; below this we do not even ask the Semantic Layer
 
 
+def _semantic_rev() -> str:
+    """A tag for the current semantic measure, so a model change re-measures the backlog."""
+    try:
+        from . import embeddings
+        if embeddings.available():
+            return embeddings.info()["revision"]
+    except Exception:  # noqa: BLE001
+        pass
+    return "none"
+
+
 def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             max_links: int = 2, max_backfill: int = 3) -> dict:
     layer = layer or NullSemanticLayer()
+    rev = _semantic_rev()
     linked = set(extensions.get("linked", []))
-    annotated = set(extensions.get("semantic_backfilled", []))   # pairs with a semantic record
+    annotated = set(extensions.get("semantic_backfilled", []))   # "pair@rev" with a semantic record
     live = sorted(cs.active_claims(), key=lambda c: c.id)
 
     new_links = 0
@@ -51,7 +63,7 @@ def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             sc = adapter.analyse_pair(cs.core, a, b, layer=layer, lexical_trigger=trigger,
                                       run_id=f"joni-c{cycle}")
             linked.add(key)
-            annotated.add(key)                            # it now has a semantic record
+            annotated.add(f"{key}@{rev}")                 # measured under this semantic rev
             acted = _act_on(cs, proto, cycle, a, b, sc)
             new_links += acted
             if acted:
@@ -59,7 +71,7 @@ def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     extensions["linked"] = sorted(linked)[-1000:]
 
     backfilled = _backfill_legacy(cs, extensions, proto, cycle, linked, annotated, layer,
-                                  max_backfill)
+                                  max_backfill, rev)
 
     reviewed = 0
     for x in cs.core.open_conflicts():
@@ -71,28 +83,29 @@ def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     return {"links": new_links, "conflicts_reviewed": reviewed, "backfilled": backfilled}
 
 
-def _backfill_legacy(cs, extensions, proto, cycle, linked, done, layer, limit) -> int:
-    """Give already-linked pairs a Layer-9 semantic record they never had.
+def _backfill_legacy(cs, extensions, proto, cycle, linked, done, layer, limit, rev) -> int:
+    """Give already-linked pairs a Layer-9 semantic record under the current measure.
 
-    The backlog of pairs was linked by lexical overlap under the old logic - with no
-    governed semantic decision behind it. We retroactively run the Semantic Layer over a
-    few of them each cycle (append-only annotation; the old link is not altered, but a
-    contradiction/tension the layer now sees is opened honestly). Bounded and deduped, so
-    it works through the backlog over time and then goes quiet."""
+    The backlog was linked by lexical overlap under the old logic - with no governed
+    semantic decision. We retroactively run the Semantic Layer over a few each cycle
+    (append-only; the old link is not altered, but a contradiction/tension it now sees is
+    opened honestly). Deduped by ``pair@rev`` so a *new* semantic measure (e.g. the
+    embedding model coming online) re-measures the backlog once; then it goes quiet."""
     by_id = {c.id: c for c in cs.active_claims()}
     n = 0
     for key in sorted(linked):
         if n >= limit:
             break
-        if key in done:
+        tag = f"{key}@{rev}"
+        if tag in done:
             continue
         a_id, _, b_id = key.partition("|")
         a, b = by_id.get(a_id), by_id.get(b_id)
         if a is None or b is None:
-            done.add(key)                                 # not both live anymore - skip
+            done.add(tag)                                 # not both live anymore - skip
             continue
         sc = adapter.analyse_pair(cs.core, a, b, layer=layer, run_id=f"joni-c{cycle}-bf")
-        done.add(key)
+        done.add(tag)
         n += 1
         if sc.decision.value in ("contradictory", "tension"):
             sev = "hard" if sc.decision.value == "contradictory" else "soft"
