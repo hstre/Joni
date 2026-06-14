@@ -24,6 +24,7 @@ from pathlib import Path
 
 from .. import desi_link
 from . import (
+    commission,
     core_state,
     desi_semantics,
     develop,
@@ -95,6 +96,7 @@ def one_cycle() -> dict:
     extensions.setdefault("topics_added", [])
     extensions.setdefault("notes", [])
     extensions.setdefault("asks", [])
+    extensions.setdefault("commissions", [])
     extensions.setdefault("seen", [])
 
     if expired:
@@ -205,6 +207,12 @@ def one_cycle() -> dict:
     regulated = homeostasis.regulate(cs, extensions, proto, cycle)
     vitality = homeostasis.vitality(cs, extensions, proto, cycle)
 
+    # 4h. Aufträge an Claude: when Joni's own state shows a non-core capability gap the rules
+    #     cannot close (semantic channel blind, conflicts unqualifiable, a topic starved of
+    #     reading, development stalled), he commissions an *extension* - never the protected
+    #     core, never self-applied - for a human-gated Claude session to implement.
+    commissions_new = commission.assess(cs, extensions, proto, cycle)
+
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
@@ -231,8 +239,10 @@ def one_cycle() -> dict:
                  f"· routing via {reflect['routing_engine']}")
 
     _save_json(p.asks_new, asks_new)
+    _save_json(p.commissions_new, commissions_new)
     _finish(p, cs, budget, window, extensions, proto, reflect)
     return {"cycle": cycle, "new_items": len(new_items), "asks": len(asks_new),
+            "commissions": len(commissions_new),
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,

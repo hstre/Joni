@@ -46,6 +46,11 @@ class Paths:
         return self.root / "state" / "asks_new.json"
 
     @property
+    def commissions_new(self) -> Path:
+        # Aufträge an Claude raised this run, for the workflow to file as GitHub issues.
+        return self.root / "state" / "commissions_new.json"
+
+    @property
     def protocol(self) -> Path:
         return self.root / "protocol" / "protocol.jsonl"
 

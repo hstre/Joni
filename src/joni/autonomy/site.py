@@ -50,6 +50,27 @@ def build(data: dict) -> str:
     asks = ext.get("asks", [])
     asks_html = "".join(_ask(a) for a in asks) or \
         "<li class=empty>none — Joni has not needed to touch the core.</li>"
+
+    def _commission(c) -> str:
+        ev = c.get("evidence", {}) if isinstance(c.get("evidence"), dict) else {}
+        ev_txt = " · ".join(f"{esc(k)} {esc(v)}"
+                            for k, v in ev.items() if not isinstance(v, list))
+
+        def row(k, v):
+            return f"<div class=asrow><span class=k>{k}</span> {esc(v)}</div>"
+        return (
+            f"<li><div><span class=chip>extension · non-core</span> "
+            f"<b>{esc(c.get('title',''))}</b></div>"
+            + row("component", c.get("component", ""))
+            + row("why", c.get("motivation", ""))
+            + row("build", c.get("desired_capability", ""))
+            + row("done&nbsp;when", c.get("acceptance", ""))
+            + f"<div class=asrow><span class=k>evidence</span> {ev_txt}</div>"
+            + row("risk", c.get("risk", "—")) + "</li>")
+
+    commissions = [c for c in ext.get("commissions", []) if isinstance(c, dict) and c.get("title")]
+    commissions_html = "".join(_commission(c) for c in commissions) or \
+        "<li class=empty>none yet — no non-core capability gap has held long enough.</li>"
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in s.get("topics", []))
     added = "".join(f"<span class='pill add'>{esc(t)}</span>"
                     for t in ext.get("topics_added", [])) or "<span class=empty>none yet</span>"
@@ -215,6 +236,10 @@ what is uncertain, what contradicts, and what changed.</p>
   <div class="card full">
     <h2>Asks — waiting on a human (protected core)</h2>
     <ul>{asks_html}</ul>
+  </div>
+  <div class="card full">
+    <h2>Aufträge an Claude — extend Joni (non-core, implemented via PR)</h2>
+    <ul>{commissions_html}</ul>
   </div>
   <div class="card full">
     <h2>Protocol — append-only, newest first</h2>

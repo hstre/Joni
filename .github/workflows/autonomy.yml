@@ -75,6 +75,10 @@ jobs:
             --color FBCA04 \
             --description "Joni wants to change his protected DESi core - needs human approval" \
             --force || true
+          gh label create joni-auftrag \
+            --color 1D76DB \
+            --description "Joni commissions Claude to extend him (non-core) - implement via PR" \
+            --force || true
 
           deadline=$(( $(date +%s) + JONI_LOOP_MINUTES * 60 ))
           n=0
@@ -112,6 +116,38 @@ jobs:
               )
               subprocess.run(["gh", "issue", "create", "--title", title, "--body", body,
                               "--label", "joni-core-ask"], check=False)
+          PY
+
+            # File any new Aufträge an Claude raised this cycle: non-core extension requests
+            # Joni derived from his own state. He writes the order; a human-gated Claude
+            # session implements it via PR. He never implements it himself.
+            python - <<'PY'
+          import json, pathlib, subprocess
+          p = pathlib.Path("state/commissions_new.json")
+          orders = json.loads(p.read_text()) if p.exists() else []
+          for c in orders:
+              ev = c.get("evidence", {}) if isinstance(c.get("evidence"), dict) else {}
+              ev_lines = "".join(f"  - {k}: {v}\n" for k, v in ev.items())
+              title = f"[joni-auftrag] {c.get('title','Erweiterung')}"
+              body = (
+                  "**Auftrag an Claude.** Joni found a capability gap in his own state that the "
+                  "rules cannot close. This is an **extension outside his protected core** - he "
+                  "wrote the order and the acceptance criterion; he does **not** implement it "
+                  "himself. A human-gated Claude session implements it via the normal PR pipeline.\n\n"
+                  f"- **component (non-core)**: {c.get('component','')}\n"
+                  f"- **touches core**: {c.get('touches_core', False)}\n"
+                  f"- **why (measured)**: {c.get('motivation','')}\n"
+                  f"- **desired capability**: {c.get('desired_capability','')}\n"
+                  f"- **acceptance criterion**: {c.get('acceptance','')}\n"
+                  f"- **risk**: {c.get('risk','')}\n"
+                  f"- **sustained**: {c.get('sustained_cycles','?')} cycle(s) · raised cycle "
+                  f"{c.get('cycle')}\n"
+                  f"- **evidence**:\n{ev_lines}\n"
+                  "The protected DESi core stays untouched; this extends Joni's peripheral "
+                  "capabilities only. Implement, then open a PR for the human merge gate."
+              )
+              subprocess.run(["gh", "issue", "create", "--title", title, "--body", body,
+                              "--label", "joni-auftrag"], check=False)
           PY
 
             # Commit + push this cycle. The bot only ever touches state/protocol/docs - paths
