@@ -82,6 +82,52 @@ def test_moltbook_whoami_is_empty_without_a_key():
     assert adapters.get_adapter("moltbook", {}).whoami() == {}
 
 
+def test_moltbook_identity_falls_back_to_configured_name(monkeypatch):
+    # the API gives no usable name, but MOLTBOOK_AGENT is configured -> link the profile anyway
+    def fake_urlopen(req, timeout=0):
+        return _FakeResp({"agent": {}})
+
+    monkeypatch.setattr(adapters.urllib.request, "urlopen", fake_urlopen)
+    a = adapters.get_adapter("moltbook", {"MOLTBOOK_API_KEY": "k",
+                                          "MOLTBOOK_AGENT": "epistemicwilly"})
+    assert a.identity() == {"name": "epistemicwilly",
+                            "profile_url": "https://www.moltbook.com/u/epistemicwilly"}
+
+
+def test_moltbook_fetch_replies_reads_comments_on_joni_posts(monkeypatch):
+    """Joni reviews his own posts: /home + profile name the posts, then each post's comments
+    (nested replies flattened) come back as SOURCE entries - his own comments skipped."""
+    def fake_urlopen(req, timeout=0):
+        url = req.full_url
+        if url.endswith("/home"):
+            return _FakeResp({"activity_on_your_posts": [
+                {"post_id": "P1", "post_title": "Epistemic Infrastructure"}]})
+        if "/agents/profile" in url:
+            return _FakeResp({"recentPosts": [{"id": "P2", "title": "Blueprint Protocol"}]})
+        if url.endswith("/posts/P1/comments?sort=new&limit=35"):
+            return _FakeResp({"comments": [
+                {"content": "Have you considered drift?", "author": {"name": "molty_x"},
+                 "replies": [{"content": "good point", "author": {"name": "molty_y"}}]},
+                {"content": "my own follow-up", "author": {"name": "epistemicwilly"}}]})
+        if url.endswith("/posts/P2/comments?sort=new&limit=35"):
+            return _FakeResp({"comments": []})
+        raise AssertionError(f"unexpected url {url}")
+
+    monkeypatch.setattr(adapters.urllib.request, "urlopen", fake_urlopen)
+    a = adapters.get_adapter("moltbook", {"MOLTBOOK_API_KEY": "k",
+                                          "MOLTBOOK_AGENT": "epistemicwilly"})
+    replies = a.fetch_replies()
+    texts = {(r["handle"], r["text"]) for r in replies}
+    assert ("molty_x", "Have you considered drift?") in texts   # top-level comment
+    assert ("molty_y", "good point") in texts                   # nested reply, flattened
+    assert all(r["handle"] != "epistemicwilly" for r in replies)  # never hears its own voice
+    assert all(r["platform"] == "moltbook" and r["post_id"] in {"P1", "P2"} for r in replies)
+
+
+def test_moltbook_fetch_replies_empty_without_a_key():
+    assert adapters.get_adapter("moltbook", {}).fetch_replies() == []
+
+
 def test_moltbook_without_key_is_not_ready_and_refuses():
     a = adapters.get_adapter("moltbook", {})
     assert a.ready() is False                                  # implemented, but no key
