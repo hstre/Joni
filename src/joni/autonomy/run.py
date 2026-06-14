@@ -35,6 +35,7 @@ from . import (
     reader,
     self_review,
     site,
+    strategy,
     trials,
 )
 from .budget import load as load_budget
@@ -105,8 +106,10 @@ def one_cycle() -> dict:
     window["runs"] += 1
     budget.runs += 1
 
-    # 2. Read the sources.
-    queries = cs.topics() or _DEFAULT_QUERIES
+    # 2. Read the sources. Queries = current topics + the refinements Joni's own
+    #    self-optimisation has learned (see step 4e).
+    queries = (cs.topics() or _DEFAULT_QUERIES) + list(extensions.get("learned_queries", []))
+    queries = queries[:8]
     seen = set(extensions["seen"])
     fetched: list = []
     for fetcher in get_fetchers(online=online()):
@@ -137,8 +140,10 @@ def one_cycle() -> dict:
     #     Semantic Layer's to decide.
     read = {"papers": 0, "claims": 0}
     if read_pdfs():
+        # Joni reads more full text when his own strategy found his inputs under-framed.
+        max_papers = 3 if extensions.get("read_fulltext_priority") else 2
         read = reader.read_papers(cs, judged, extensions, proto, cycle, p,
-                                  online=online())
+                                  online=online(), max_papers=max_papers)
 
     for conflict_id in cs.detect_and_open_conflicts():
         proto.record(cycle, "conflict_open",
@@ -185,6 +190,10 @@ def one_cycle() -> dict:
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
     emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
 
+    # 4e. Self-optimisation: read Joni's own result pattern (mostly insufficient?) and
+    #     improve his research strategy - what he reads and the queries he uses next cycle.
+    strategy_out = strategy.adapt(cs, extensions, proto, cycle)
+
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
     reviewed = False
@@ -214,7 +223,7 @@ def one_cycle() -> dict:
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,
-            "trialed": trialed, "emerged": emerged, "read": read}
+            "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
