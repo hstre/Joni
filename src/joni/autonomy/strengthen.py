@@ -115,12 +115,15 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
                 proto.record(cycle, "strengthen",
                              f"idea {h.id} earned support from {c.id} ({d.value})")
             elif d in (SemanticDecision.CONTRADICTORY, SemanticDecision.TENSION):
+                from .qualify import qualify_conflict
                 sev = "hard" if d is SemanticDecision.CONTRADICTORY else "soft"
-                cid = cs.open_conflict((h.id, c.id), severity=sev)
+                ck = qualify_conflict(h.text, c.text, severity=sev,
+                                      contradictory=(d is SemanticDecision.CONTRADICTORY))
+                cid = cs.open_conflict((h.id, c.id), severity=sev, conflict_kind=ck)
                 out["challenged"] += 1
                 challenged_here = True
                 proto.record(cycle, "strengthen",
-                             f"idea {h.id} challenged by {c.id} ({d.value}) -> {cid}")
+                             f"idea {h.id} challenged by {c.id} ({ck}) -> {cid}")
 
         # adversarial self-challenge: looked for a counter and none contradicted -> survived
         if n and not challenged_here:

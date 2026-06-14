@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from . import policy
 from .enums import (
     Authority,
+    ConflictKind,
     ConflictStatus,
     MemoryKind,
     ObjectType,
@@ -288,6 +289,7 @@ class Layer9:
         x = self._mint(Conflict, ObjectType.CONFLICT, p, actor,
                        conflict_status=ConflictStatus.OPEN,
                        kind=p.payload.get("kind", "contradiction"),
+                       conflict_kind=ConflictKind(p.payload.get("conflict_kind", "unqualified")),
                        severity=p.payload.get("severity", "soft"),
                        claim_ids=tuple(p.payload.get("claim_ids", p.target_objects)),
                        status=Status.ACTIVE, authority=Authority.AUTHORITATIVE)

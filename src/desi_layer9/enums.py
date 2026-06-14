@@ -149,6 +149,17 @@ class ConflictStatus(StrEnum):
     SUPERSEDED = "superseded"
 
 
+class ConflictKind(StrEnum):
+    """*What kind* of incompatibility this is - so a scope tension is not mistaken for a
+    flat contradiction. Qualified deterministically when the conflict is opened."""
+
+    CONTRADICTION = "contradiction"          # genuine logical opposition (A and not-A)
+    SCOPE_TENSION = "scope_tension"          # both true, but over different scopes/cases
+    EXCEPTION = "exception"                  # one is an exception to the other
+    CONDITIONAL_COMPATIBILITY = "conditional_compatibility"  # compatible under stated conditions
+    UNQUALIFIED = "unqualified"              # opened but not yet qualified
+
+
 class MemoryKind(StrEnum):
     EPISODIC = "episodic"
     SEMANTIC = "semantic"

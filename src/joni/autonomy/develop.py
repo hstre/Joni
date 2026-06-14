@@ -108,10 +108,13 @@ def _backfill_legacy(cs, extensions, proto, cycle, linked, done, layer, limit, r
         done.add(tag)
         n += 1
         if sc.decision.value in ("contradictory", "tension"):
+            from .qualify import qualify_conflict
             sev = "hard" if sc.decision.value == "contradictory" else "soft"
-            cid = cs.open_conflict((a_id, b_id), severity=sev)
+            ck = qualify_conflict(a.text, b.text, severity=sev,
+                                  contradictory=(sc.decision.value == "contradictory"))
+            cid = cs.open_conflict((a_id, b_id), severity=sev, conflict_kind=ck)
             proto.record(cycle, "developed",
-                         f"backfill: Layer 9 now sees {a_id}/{b_id} {sc.decision.value} -> {cid}")
+                         f"backfill: {a_id}/{b_id} {ck} -> {cid}")
         else:
             proto.record(cycle, "developed",
                          f"backfill: {a_id}/{b_id} semantic record = {sc.decision.value}")
@@ -132,12 +135,16 @@ def _act_on(cs, proto, cycle, a, b, sc) -> int:
         proto.record(cycle, "developed", f"linked {a.id} <-> {b.id} (complementary · {src})")
         return 1
     if d is SemanticDecision.CONTRADICTORY:
-        cid = cs.open_conflict((a.id, b.id), severity="hard")
-        proto.record(cycle, "developed", f"{src} found {a.id} vs {b.id} contradictory -> {cid}")
+        from .qualify import qualify_conflict
+        ck = qualify_conflict(a.text, b.text, severity="hard", contradictory=True)
+        cid = cs.open_conflict((a.id, b.id), severity="hard", conflict_kind=ck)
+        proto.record(cycle, "developed", f"{src}: {a.id} vs {b.id} {ck} -> {cid}")
         return 0
     if d is SemanticDecision.TENSION:
-        cid = cs.open_conflict((a.id, b.id), severity="soft")
-        proto.record(cycle, "developed", f"{src} found frame tension {a.id}/{b.id} -> {cid}")
+        from .qualify import qualify_conflict
+        ck = qualify_conflict(a.text, b.text, severity="soft")
+        cid = cs.open_conflict((a.id, b.id), severity="soft", conflict_kind=ck)
+        proto.record(cycle, "developed", f"{src}: frame tension {a.id}/{b.id} ({ck}) -> {cid}")
         return 0
     # duplicate / unrelated / insufficient: recorded by Layer 9, no link asserted.
     proto.record(cycle, "developed", f"{a.id}/{b.id}: {d.value} - no link ({src})")
