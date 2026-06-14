@@ -101,6 +101,18 @@ class Paths:
         # human can carry Joni's drafted questions to a forum (the "you post, Joni writes" path).
         return self.root / "docs" / "to_post.md"
 
+    @property
+    def research_inbox(self) -> Path:
+        # Doktores drops structured research_output packages here (a JSON list). Each enters
+        # Layer 9 as a SOURCE - internally produced, method-checked, not externally replicated.
+        return self.root / "state" / "research_inbox.json"
+
+    @property
+    def research_dir(self) -> Path:
+        # The publication channel: Doktores' papers/reports/protocols are archived here with
+        # explicit provenance and NO epistemic weight of their own.
+        return self.root / "docs" / "research"
+
 
 def paths() -> Paths:
     return Paths(repo_root())
