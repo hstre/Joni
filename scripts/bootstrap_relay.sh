@@ -29,10 +29,21 @@ if [ -f /root/.ssh/authorized_keys ]; then
     /root/.ssh/authorized_keys "${HOME_DIR}/.ssh/authorized_keys"
 fi
 
-echo "== ssh hardening (keys only, no root login) =="
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-systemctl restart ssh || systemctl restart sshd || true
+echo "== ssh hardening =="
+# Only lock SSH down to keys-only if the joni user actually has a key - otherwise we would
+# lock you out (e.g. when you logged in by password). No key => keep password+root login,
+# warn, and let you add a key and re-run later.
+if [ -s "${HOME_DIR}/.ssh/authorized_keys" ]; then
+  sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+  sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+  systemctl restart ssh || systemctl restart sshd || true
+  echo "   keys-only login enabled; from now on log in as: ssh ${USER_NAME}@<ip>"
+  HARDENED=1
+else
+  echo "   !! no SSH key found for ${USER_NAME} - leaving password/root login ENABLED so you"
+  echo "      are not locked out. Add a key to ${HOME_DIR}/.ssh/authorized_keys and re-run."
+  HARDENED=0
+fi
 
 echo "== firewall: only SSH in, all out =="
 ufw default deny incoming
@@ -88,6 +99,11 @@ systemctl enable --now joni-relay
 
 echo
 echo "== done =="
+if [ "${HARDENED:-0}" = "1" ]; then
+  echo "Log in from now on as:  ssh ${USER_NAME}@<ip>   (root/password login is OFF)"
+else
+  echo "SSH hardening was SKIPPED (no key) - root/password login still ON."
+fi
 echo "Relay is running in DRY-RUN (posts nothing). Watch it:  journalctl -u joni-relay -f"
 echo "Next: put credentials in ${HOME_DIR}/joni/relay.env, then we wire the first adapter."
 echo "Approve a draft (from anywhere with the repo):  python -m joni.autonomy approve <id>"
