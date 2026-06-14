@@ -92,14 +92,23 @@ jobs:
           p = pathlib.Path("state/asks_new.json")
           asks = json.loads(p.read_text()) if p.exists() else []
           for a in asks:
-              title = f"[joni-core-ask] {a.get('target','core')}: needs human approval"
+              ev = a.get("evidence", {}) if isinstance(a.get("evidence"), dict) else {}
+              comp = a.get("component", a.get("target", "protected core"))
+              title = f"[joni-core-ask] {comp}: a human must decide"
               body = (
-                  "Joni found something that would require changing his **protected DESi "
-                  "core**. Under his rule he did **not** self-apply it - he is asking.\n\n"
-                  f"- target: `{a.get('target')}`\n- rationale: {a.get('rationale')}\n"
-                  f"- source: {a.get('source_url')}\n- cycle: {a.get('cycle')}\n\n"
-                  "To approve: implement it yourself (a human), then regenerate the lock "
-                  "with `python -m joni.autonomy lock` and commit."
+                  "Joni reached the boundary of what he may change himself. Under his rule he "
+                  "did **not** self-apply this - it touches his **protected core**.\n\n"
+                  f"- **type**: {a.get('request_type','observation')} "
+                  "(an idea Joni raised, not a worked-out change request)\n"
+                  f"- **component affected**: {comp}\n"
+                  f"- **what would change**: {a.get('proposed_change', a.get('rationale',''))}\n"
+                  f"- **evidence**: {ev.get('source_title','')} "
+                  f"({ev.get('source_url') or a.get('source_url')})\n"
+                  f"- **risk**: {a.get('risk','high - protected core logic')}\n"
+                  f"- **cycle**: {a.get('cycle')}\n\n"
+                  "This is an *observation*, not a concrete proposal. To act on it a human must "
+                  "design the actual change, implement it, regenerate the lock with "
+                  "`python -m joni.autonomy lock`, and commit."
               )
               subprocess.run(["gh", "issue", "create", "--title", title, "--body", body,
                               "--label", "joni-core-ask"], check=False)

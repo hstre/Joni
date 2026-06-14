@@ -110,6 +110,44 @@ def derive(state: Layer9, judged: list[tuple[Item, Relevance]]) -> list[Improvem
     return out
 
 
+# Which protected component each core trigger touches, and what changing it would risk.
+_COMPONENT = {
+    "operator": "a Layer-9 operator (the closed set of state-change actions)",
+    "operators": "a Layer-9 operator (the closed set of state-change actions)",
+    "scoring": "the deterministic scoring / belief-weighing logic",
+    "router algorithm": "the DESi routing logic (which model is chosen)",
+    "deterministic core": "the deterministic core engine",
+}
+_RISK = {
+    "operator": "high — operators are the only write path; a change affects every state mutation",
+    "operators": "high — operators are the only write path; a change affects every state mutation",
+    "scoring": "high — changes how beliefs are weighed and could shift every verdict",
+    "router algorithm": "medium-high — changes model routing and cost behaviour",
+    "deterministic core": "high — changes the engine that replay depends on",
+}
+
+
+def structured_ask(imp: Improvement, cycle: int) -> dict:
+    """A structured core-ask for a human: which component, what change, evidence, risk, and
+    whether it is just an observation or a concrete request. ``derive`` only ever produces
+    an *observation* (a reading suggests something), never a worked-out change, so we say so
+    honestly - a human turns it into a request."""
+    component = _COMPONENT.get(imp.target, "protected core logic")
+    return {
+        "kind": imp.kind, "cycle": cycle,
+        "request_type": "observation",          # an idea raised, not a worked-out change request
+        "component": component, "target": imp.target,
+        "proposed_change": (f"A source touches '{imp.target}'. Adopting its idea would change "
+                            f"{component} — the concrete change is not specified; a human must "
+                            "design it."),
+        "evidence": {"source_title": imp.title[:200], "source_url": imp.source_url,
+                     "source_key": imp.source_key},
+        "risk": _RISK.get(imp.target, "high — touches protected core logic"),
+        "rationale": imp.rationale,
+        "source_url": imp.source_url,           # kept for backward compatibility
+    }
+
+
 def apply_peripheral(state: Layer9, extensions: dict, imp: Improvement) -> dict:
     """Build a peripheral improvement into Joni himself. Returns ledger refs.
 
