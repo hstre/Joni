@@ -609,3 +609,16 @@ angetastet (`python -m joni.autonomy verify` grün). Auftrag **#67** umgesetzt u
 
 **Offen:** Doktores ↔ Joni verdrahten (gemeinsamer Scope nötig); GitHub Pages aktivieren;
 DeepSeek-Key rotieren; `ANTHROPIC_API_KEY`-Secret für den Auftrags-Auto-Build setzen.
+
+### Eintrag 2026-06-14 ~23:53 UTC — core-ask abgelehnt (Kernschutz greift)
+
+Joni stellte in Zyklus 278 einen **`joni-core-ask`** (#72): eine Quelle berühre das Thema
+*conflict resolution*, deren Übernahme würde die geschützte Kern-Logik ändern. Wichtig — er hat
+es **nicht** selbst angewandt, sondern als **Beobachtung** (kein ausgearbeiteter Vorschlag) an den
+Menschen gestellt. Provenance dünn: ein einzelnes, unbekanntes Repo (`klonnet23/helloy-word`).
+
+**Operator-Entscheidung: abgelehnt**, Issue als *not planned* geschlossen. Beleg dafür, dass der
+Mechanismus wie vorgesehen arbeitet: Kernänderungen werden **angehalten und vorgelegt**, nicht
+selbst vollzogen — und eine schwach belegte „Idee" wird verworfen, statt den Kern zu verwässern.
+Der Protected Core blieb unangetastet. (Kontrast zum Non-Core-Pfad: Auftrag #67 wurde umgesetzt
+und gemerged; core-asks brauchen einen Menschen.)
