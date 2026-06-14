@@ -101,14 +101,19 @@ def ingest_inbox(cs, extensions: dict, proto, cycle: int, inbox_path: Path) -> d
         if fp in seen:
             continue
         topic = str(msg.get("topic") or _topic_for(cs, text))
-        cid = cs.hear(text, topic, handle=handle, platform=platform)
+        origin = str(msg.get("origin", "forum"))
+        cid = cs.hear(text, topic, handle=handle, platform=platform, origin=origin)
         seen.add(fp)
         heard += 1
+        legacy = origin == "predecessor-thread"
+        treated = ("source (candidate authority) - not an authority"
+                   + (" · reaction to a legacy (pre-Joni) post" if legacy else ""))
         log.append({"cycle": cycle, "platform": platform, "handle": handle,
                     "topic": topic, "claim": cid, "text": text[:200],
-                    "treated_as": "source (candidate authority) - not an authority"})
+                    "origin": origin, "treated_as": treated})
         proto.record(cycle, "heard",
-                     f"{platform}:{handle} - heard as a source ({cid}), not an authority")
+                     f"{platform}:{handle} - heard as a source ({cid}), not an authority"
+                     + (" [predecessor-thread]" if legacy else ""))
 
     opened = cs.detect_and_open_conflicts() if heard else []
     for conflict_id in opened:
@@ -404,6 +409,18 @@ def _pull_live_replies(extensions: dict, proto, cycle: int, paths, platforms, li
     def _key(r: dict) -> str:
         return f"{r.get('platform', '')}|{r.get('handle', '')}|{r.get('text', '')}"
 
+    # Joni's *own* post ids (the trailing segment of each posted_url). A reaction on a post
+    # NOT in this set is on an inherited, pre-Joni (willy-era) thread under the same agent
+    # identity: mark it predecessor-thread so it is held as provenance, not as if it answered
+    # one of Joni's own posts.
+    own_outbox = extensions.get("forum_outbox") or _load(paths.forum_outbox, []) or []
+    own_ids = set()
+    for d in own_outbox:
+        if isinstance(d, dict) and d.get("posted_url"):
+            pid = str(d["posted_url"]).rstrip("/").rsplit("/", 1)[-1]
+            if pid:
+                own_ids.add(pid)
+
     seen = {_key(r) for r in inbox if isinstance(r, dict)}
     pulled = 0
     for platform in auto_platforms:
@@ -413,6 +430,8 @@ def _pull_live_replies(extensions: dict, proto, cycle: int, paths, platforms, li
         for reply in adapter.fetch_replies():
             k = _key(reply)
             if k not in seen:
+                reply["origin"] = ("own-post" if reply.get("post_id") in own_ids
+                                   else "predecessor-thread")
                 inbox.append(reply)
                 seen.add(k)
                 pulled += 1
