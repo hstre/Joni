@@ -1178,6 +1178,15 @@
       "replayed": false,
       "claims": 3,
       "conflict": "X-19"
+    },
+    {
+      "call_id": "joni-c34:aee8c53d1549",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 0,
+      "conflict": "X-20"
     }
   ],
   "methods_seen": [
@@ -1202,7 +1211,7 @@
     "zenodo:20708564",
     "zenodo:20708798"
   ],
-  "method_trials_total": 251,
+  "method_trials_total": 259,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -1259,6 +1268,10 @@
     "C-448|C-473",
     "C-448|C-485",
     "C-455|C-459",
+    "C-455|C-462",
+    "C-456|C-466",
+    "C-457|C-458",
+    "C-473|C-485",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -1320,6 +1333,10 @@
     "C-448|C-473@bge-small-en-v1.5",
     "C-448|C-485@bge-small-en-v1.5",
     "C-455|C-459@bge-small-en-v1.5",
+    "C-455|C-462@bge-small-en-v1.5",
+    "C-456|C-466@bge-small-en-v1.5",
+    "C-457|C-458@bge-small-en-v1.5",
+    "C-473|C-485@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -1382,6 +1399,7 @@
     "representation",
     "representations",
     "session",
+    "stability",
     "structures",
     "systematic",
     "thinking-answer",
@@ -1429,6 +1447,7 @@
     "memory|constant",
     "memory|convex",
     "memory|couple-conflict",
+    "memory|five",
     "memory|geometric",
     "memory|hare",
     "memory|interventions",
@@ -1455,6 +1474,7 @@
     "memory|unrecorded",
     "memory|valuable",
     "memory|variance",
+    "memory|vojvodina",
     "unsorted|bacfluxl",
     "unsorted|behavior",
     "unsorted|boundary",
@@ -1484,11 +1504,10 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "memory|five": 3,
     "memory|geometry": 2,
     "memory|structures": 1,
     "meth:composition": 1,
-    "meth:includes": 1
+    "meth:includes": 2
   },
   "hyp_tested": [
     "C-221|C-128",
@@ -1504,6 +1523,9 @@
     "C-243|C-137",
     "C-243|C-221",
     "C-243|C-225",
+    "C-243|C-234",
+    "C-243|C-252",
+    "C-243|C-255",
     "C-252|C-221",
     "C-252|C-225",
     "C-252|C-7",
@@ -1561,20 +1583,19 @@
     "C-51"
   ],
   "learned_queries": [
-    "unsorted underlying",
-    "unsorted boundary",
-    "unsorted recurs",
-    "memory claims",
     "anthology+forum abundance",
     "anthology+forum titled",
     "memory factor",
-    "memory testing"
+    "memory testing",
+    "memory memory",
+    "memory recurs",
+    "anthology+memory hypothesis",
+    "anthology+memory abundance"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
-    "C-227": 31,
     "C-236": 33,
-    "C-243": 12,
+    "C-243": 34,
     "C-245": 12,
     "C-254": 13,
     "C-257": 14,
@@ -1602,7 +1623,8 @@
     "C-471": 30,
     "C-477": 31,
     "C-490": 32,
-    "C-501": 33
+    "C-501": 33,
+    "C-503": 34
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1640,6 +1662,7 @@
     "C-49",
     "C-490",
     "C-501",
+    "C-503",
     "C-51"
   ],
   "methods_domain_ok": [
@@ -1663,33 +1686,33 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "developing",
-    "development": 6,
-    "degeneration": 0,
-    "active": 263,
+    "verdict": "steady",
+    "development": 13,
+    "degeneration": 1,
+    "active": 265,
     "hypotheses": 31,
-    "unsupported_hypotheses": 25,
-    "promoted_ideas": 5,
+    "unsupported_hypotheses": 26,
+    "promoted_ideas": 6,
     "confirmed_claims": 0,
-    "evidence_links": 42,
-    "supporting_links": 42,
-    "emergent_total": 125,
+    "evidence_links": 45,
+    "supporting_links": 45,
+    "emergent_total": 128,
     "usable_semantic_rate": 1.0,
     "methods_total": 18,
-    "method_trials_total": 251,
+    "method_trials_total": 259,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 4245,
-    "cycle": 33
+    "objects": 4310,
+    "cycle": 34
   },
   "vitality_prev": {
-    "supports": 42,
-    "promoted": 5,
+    "supports": 45,
+    "promoted": 6,
     "confirmed": 0,
-    "objects": 4245,
-    "active": 263,
-    "links": 42,
-    "emergent": 125
+    "objects": 4310,
+    "active": 265,
+    "links": 45,
+    "emergent": 128
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1923,12 +1946,19 @@
       "development": 6,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 34,
+      "verdict": "steady",
+      "development": 13,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 30,
+    "starved_topic": 31,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2567,7 +2597,7 @@
     }
   ],
   "reconsolidate_lens_idx": 0,
-  "kevin_last_cycle": 31,
+  "kevin_last_cycle": 34,
   "kevin_llm": [
     {
       "call_id": "kevin-c13:08dcd1f2fe59",
@@ -2638,6 +2668,17 @@
       ],
       "hypotheses": 0,
       "replayed": true
+    },
+    {
+      "call_id": "kevin-c34:951f06ca5646",
+      "served_model": "deepseek-v4-pro",
+      "cycle": 34,
+      "topics": [
+        "memory",
+        "forum"
+      ],
+      "replayed": true,
+      "proposals": []
     }
   ],
   "escalated_conflicts": [
@@ -2646,7 +2687,8 @@
     "X-16",
     "X-17",
     "X-18",
-    "X-19"
+    "X-19",
+    "X-20"
   ],
   "last_review_snapshot": {
     "active": 249,
