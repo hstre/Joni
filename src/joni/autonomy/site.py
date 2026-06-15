@@ -171,6 +171,44 @@ def build(data: dict) -> str:
                       "Zyklus brauchte kein Modell. Sobald Granite/DeepSeek feuern, steht es "
                       "hier.</p>")
 
+    # Kevin: what his far-analogy arm actually proposed, and whether the panel found it sensible.
+    kevin_log = ext.get("kevin_llm", []) if isinstance(ext.get("kevin_llm"), list) else []
+    panel_q = panel.get("question", "") if isinstance(panel, dict) else ""
+    panel_verdict = ""
+    if isinstance(panel.get("phase3"), dict) and panel.get("phase3"):
+        n, t = next(iter(panel["phase3"].items()))
+        panel_verdict = f"{esc(n)}: {esc(t[:200])}"
+    kevin_items = []
+    for entry in reversed(kevin_log[-6:]):
+        topics = " &times; ".join(esc(t) for t in entry.get("topics", []))
+        for p in entry.get("proposals", []):
+            txt = p.get("text", "")
+            assessed = bool(txt) and txt[:48] in panel_q
+            pending = ("<div class=note>Bewertung der Expertenrunde steht noch aus &mdash; sie "
+                       "tagt periodisch und beurteilt, ob es eine gute Idee ist "
+                       "(und warum/warum nicht).</div>")
+            verdict = (f"<div class=note><b>Expertenrunde:</b> {panel_verdict} "
+                       "<span class=src>(berät; Joni entscheidet)</span></div>"
+                       if assessed and panel_verdict else pending)
+            kevin_items.append(
+                f"<li><div><span class=chip>{topics}</span> "
+                f"<span class=src>Zyklus {esc(entry.get('cycle',''))}</span></div>"
+                f"<div class=asrow>{esc(txt)}</div>{verdict}</li>")
+    kevin_props = "".join(kevin_items) or (
+        "<li class=empty>Kevin hat noch keine Fernanalogie vorgeschlagen &mdash; er tagt nach "
+        "Kadenz und nur auf Themen mit echtem Material (nicht auf <code>unsorted</code> oder "
+        "dünnen Wortclustern).</li>")
+    kevin_block = (
+        f"<div class=stat><span>Methoden-Trials (deterministisch)</span>"
+        f"<span><b>{esc(s.get('method_trials',0))}</b></span></div>"
+        f"<div class=stat><span>davon aktivierungsreif</span>"
+        f"<span><b>{esc(s.get('methods_ready',0))}</b></span></div>"
+        "<h3 style='margin:10px 0 4px'>Fernanalogien (kreativer Arm, deepseek-v4-pro)</h3>"
+        f"<ul>{kevin_props}</ul>"
+        "<div class=note>Kevin schlägt vor (Cross-Domain-Hypothesen &amp; Methoden) und probiert "
+        "Methoden deterministisch durch &mdash; er <b>entscheidet nie</b>. Ob ein Vorschlag taugt, "
+        "beurteilt die Expertenrunde; <b>Joni</b> entscheidet, was er aufnimmt.</div>")
+
     from . import quality
     good_topics = [t for t in s.get("topics", []) if quality.is_good_topic(t)]
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in good_topics)
@@ -359,6 +397,10 @@ what is uncertain, what contradicts, and what changed.</p>
     {approve_note}
     <h3 style='margin:10px 0 4px'>Heard from people — and how it was treated</h3>
     <ul>{heard_html}</ul>
+  </div>
+  <div class="card full">
+    <h2>Kevin — was er vorschlägt &amp; ob es taugt</h2>
+    {kevin_block}
   </div>
   <div class="card full">
     <h2>Expertenrunde — Alexandria, über Kreuz (berät; Joni entscheidet)</h2>
