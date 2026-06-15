@@ -748,6 +748,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c15:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -762,7 +770,7 @@
     "zenodo:20707998",
     "zenodo:20708085"
   ],
-  "method_trials_total": 99,
+  "method_trials_total": 107,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -803,6 +811,7 @@
   "invented": [
     "agentspec|alignment",
     "agentspec|anthology",
+    "agentspec|drift",
     "alignment|anthology",
     "alignment|drift",
     "alignment|flarum",
@@ -817,6 +826,7 @@
     "drift|memory"
   ],
   "emerged_topics": [
+    "agent",
     "benchmark",
     "boundary",
     "capacity",
@@ -842,6 +852,7 @@
     "coverage evaluation with privacy|evaluation",
     "coverage evaluation with privacy|exchanges",
     "coverage evaluation with privacy|genuinely",
+    "coverage evaluation with privacy|hallucination",
     "coverage evaluation with privacy|multimodal",
     "coverage evaluation with privacy|reasoning",
     "coverage evaluation with privacy|session",
@@ -863,6 +874,7 @@
     "alignment",
     "anthology",
     "inconsistency",
+    "multimodal",
     "principle",
     "reasoning",
     "thinking-answer",
@@ -888,7 +900,10 @@
     "C-252|C-7",
     "C-255|C-221",
     "C-255|C-252",
-    "C-255|C-7"
+    "C-255|C-7",
+    "C-258|C-252",
+    "C-258|C-255",
+    "C-258|C-7"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -909,14 +924,14 @@
     "C-51"
   ],
   "learned_queries": [
-    "unsorted unsorted",
-    "agentspec+alignment pattern",
-    "agentspec+alignment agent",
-    "unsorted laxiflora",
     "agentspec+anthology agent",
     "agentspec+anthology scaffolds",
     "unsorted recurs",
-    "unsorted factor"
+    "unsorted factor",
+    "agentspec+drift governance",
+    "agentspec+drift pattern",
+    "coverage evaluation with privacy coverage",
+    "coverage evaluation with privacy recurs"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -935,8 +950,9 @@
     "C-243": 12,
     "C-245": 12,
     "C-254": 13,
-    "C-255": 14,
-    "C-257": 14
+    "C-257": 14,
+    "C-258": 15,
+    "C-260": 15
   },
   "hyp_domain_ok": [
     "C-126",
@@ -952,6 +968,7 @@
     "C-245",
     "C-254",
     "C-257",
+    "C-260",
     "C-49",
     "C-51"
   ],
@@ -970,32 +987,32 @@
   ],
   "vitality": {
     "verdict": "developing",
-    "development": 10,
+    "development": 3,
     "degeneration": 0,
-    "active": 151,
-    "hypotheses": 17,
-    "unsupported_hypotheses": 15,
+    "active": 147,
+    "hypotheses": 19,
+    "unsupported_hypotheses": 16,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
-    "evidence_links": 13,
-    "supporting_links": 13,
-    "emergent_total": 46,
+    "evidence_links": 14,
+    "supporting_links": 14,
+    "emergent_total": 49,
     "usable_semantic_rate": 1.0,
     "methods_total": 11,
-    "method_trials_total": 99,
+    "method_trials_total": 107,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 1946,
-    "cycle": 14
+    "objects": 2002,
+    "cycle": 15
   },
   "vitality_prev": {
-    "supports": 13,
+    "supports": 14,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 1946,
-    "active": 151,
-    "links": 13,
-    "emergent": 46
+    "objects": 2002,
+    "active": 147,
+    "links": 14,
+    "emergent": 49
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1096,12 +1113,19 @@
       "development": 10,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 15,
+      "verdict": "developing",
+      "development": 3,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 11,
+    "starved_topic": 12,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
