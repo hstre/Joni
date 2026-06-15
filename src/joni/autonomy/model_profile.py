@@ -101,7 +101,9 @@ def joni_semantic() -> ModelProfile:
             temperature=float(_env("JONI_SEMANTIC_TEMPERATURE", "0.0")),
             seed=int(_env("JONI_SEMANTIC_SEED", "7")),
             max_tokens=int(_env("JONI_SEMANTIC_MAX_TOKENS", "768"))),
-        state_k=int(_env("JONI_SEMANTIC_STATE_K", "1")))
+        # state_k start value for calibration over {3,5,10} - NOT a shared default with joni-hard,
+        # NOT a sampling top_k. Sweep via JONI_SEMANTIC_STATE_K on real Joni tasks.
+        state_k=int(_env("JONI_SEMANTIC_STATE_K", "5")))
 
 
 # **Difficult** semantic work - hard conflicts, source/contradiction analysis - goes to
@@ -122,7 +124,9 @@ def joni_hard() -> ModelProfile:
             temperature=float(_env("JONI_HARD_TEMPERATURE", "0.0")),
             seed=int(_env("JONI_HARD_SEED", "7")),
             max_tokens=int(_env("JONI_HARD_MAX_TOKENS", "1024"))),
-        state_k=int(_env("JONI_HARD_STATE_K", "8")))
+        # state_k start value for calibration over {3,5} - its own knob, never inherited from
+        # joni-semantic, never the sampling top_k. Sweep via JONI_HARD_STATE_K.
+        state_k=int(_env("JONI_HARD_STATE_K", "3")))
 
 
 def reference() -> ModelProfile:
@@ -142,14 +146,16 @@ def reference() -> ModelProfile:
 
 
 def kevin() -> ModelProfile:
-    """Kevin's own profile - creative exploration, NOT Joni's semantic model or k."""
+    """Kevin's own profile - creative exploration on **DeepSeek Pro v4** (operator's choice), via
+    the DeepSeek API directly. NOT Joni's structured semantic model or k: its own warm sampling
+    and no state slice, so a creative leap is never confused with a structured projection."""
     return ModelProfile(
         name="kevin",
-        model_id=_env("JONI_KEVIN_MODEL_ID", "granite-4.1-8b"),
-        provider=_env("JONI_KEVIN_PROVIDER", "openrouter"),
-        base_url=_env("JONI_KEVIN_BASE_URL", "https://openrouter.ai/api/v1"),
-        key_env=_env("JONI_KEVIN_KEY_ENV", "OPENROUTER_API_KEY"),
-        served_slug=_env("JONI_KEVIN_SLUG", "ibm-granite/granite-4.1-8b-20260429"),
+        model_id=_env("JONI_KEVIN_MODEL_ID", "deepseek-v4-pro"),
+        provider=_env("JONI_KEVIN_PROVIDER", "deepseek"),
+        base_url=_env("JONI_KEVIN_BASE_URL", "https://api.deepseek.com"),
+        key_env=_env("JONI_KEVIN_KEY_ENV", "DEEPSEEK_API_KEY"),
+        served_slug=_env("JONI_KEVIN_SLUG", "deepseek-chat"),
         sampling=Sampling(
             temperature=float(_env("JONI_KEVIN_TEMPERATURE", "0.7")),    # creative, not 0
             seed=int(_env("JONI_KEVIN_SEED", "7")),
