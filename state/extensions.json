@@ -756,6 +756,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c16:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -770,7 +778,7 @@
     "zenodo:20707998",
     "zenodo:20708085"
   ],
-  "method_trials_total": 107,
+  "method_trials_total": 115,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -812,6 +820,7 @@
     "agentspec|alignment",
     "agentspec|anthology",
     "agentspec|drift",
+    "agentspec|flarum",
     "alignment|anthology",
     "alignment|drift",
     "alignment|flarum",
@@ -832,6 +841,7 @@
     "capacity",
     "context",
     "convex",
+    "distichlis",
     "inconsistency",
     "multimodal",
     "principle",
@@ -858,8 +868,14 @@
     "coverage evaluation with privacy|session",
     "coverage evaluation with privacy|strategic",
     "coverage evaluation with privacy|variance",
+    "drift|disk",
+    "drift|drift",
+    "drift|prompt",
+    "drift|variance",
+    "forum|nobody",
     "forum|session",
     "forum|variance",
+    "memory|capacity",
     "memory|convex",
     "memory|memory",
     "memory|online",
@@ -881,7 +897,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:existing": 1
+    "meth:existing": 2
   },
   "hyp_tested": [
     "C-221|C-128",
@@ -903,7 +919,10 @@
     "C-255|C-7",
     "C-258|C-252",
     "C-258|C-255",
-    "C-258|C-7"
+    "C-258|C-7",
+    "C-261|C-252",
+    "C-261|C-255",
+    "C-261|C-7"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -920,18 +939,20 @@
     "C-245",
     "C-255",
     "C-257",
+    "C-261",
+    "C-263",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "agentspec+anthology agent",
-    "agentspec+anthology scaffolds",
-    "unsorted recurs",
-    "unsorted factor",
     "agentspec+drift governance",
     "agentspec+drift pattern",
     "coverage evaluation with privacy coverage",
-    "coverage evaluation with privacy recurs"
+    "coverage evaluation with privacy recurs",
+    "agentspec+flarum agentspec",
+    "agentspec+flarum pattern",
+    "memory claims",
+    "memory memory"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -952,7 +973,9 @@
     "C-254": 13,
     "C-257": 14,
     "C-258": 15,
-    "C-260": 15
+    "C-260": 15,
+    "C-261": 16,
+    "C-263": 16
   },
   "hyp_domain_ok": [
     "C-126",
@@ -969,6 +992,7 @@
     "C-254",
     "C-257",
     "C-260",
+    "C-263",
     "C-49",
     "C-51"
   ],
@@ -989,30 +1013,30 @@
     "verdict": "developing",
     "development": 3,
     "degeneration": 0,
-    "active": 147,
-    "hypotheses": 19,
-    "unsupported_hypotheses": 16,
+    "active": 143,
+    "hypotheses": 21,
+    "unsupported_hypotheses": 17,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
-    "evidence_links": 14,
-    "supporting_links": 14,
-    "emergent_total": 49,
+    "evidence_links": 15,
+    "supporting_links": 15,
+    "emergent_total": 56,
     "usable_semantic_rate": 1.0,
     "methods_total": 11,
-    "method_trials_total": 107,
+    "method_trials_total": 115,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 2002,
-    "cycle": 15
+    "objects": 2073,
+    "cycle": 16
   },
   "vitality_prev": {
-    "supports": 14,
+    "supports": 15,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 2002,
-    "active": 147,
-    "links": 14,
-    "emergent": 49
+    "objects": 2073,
+    "active": 143,
+    "links": 15,
+    "emergent": 56
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1120,12 +1144,19 @@
       "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 16,
+      "verdict": "developing",
+      "development": 3,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 12,
+    "starved_topic": 13,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -1581,7 +1612,7 @@
     }
   ],
   "reconsolidate_lens_idx": 0,
-  "kevin_last_cycle": 13,
+  "kevin_last_cycle": 16,
   "kevin_llm": [
     {
       "call_id": "kevin-c13:08dcd1f2fe59",
@@ -1592,6 +1623,16 @@
       ],
       "hypotheses": 0,
       "replayed": false
+    },
+    {
+      "call_id": "kevin-c16:08dcd1f2fe59",
+      "served_model": "deepseek-v4-pro",
+      "topics": [
+        "memory",
+        "unsorted"
+      ],
+      "hypotheses": 0,
+      "replayed": true
     }
   ]
 }
