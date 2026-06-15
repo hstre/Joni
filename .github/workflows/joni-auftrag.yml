@@ -1,22 +1,16 @@
 name: joni-auftrag
 
-# Joni commissions Claude to extend him. When the autonomy loop files a `joni-auftrag`
-# issue (a non-core extension request Joni derived from his own state), Claude Code picks it
-# up, implements it, opens a pull request, and - once the checks are green - the PR is
-# **auto-merged**. This is by design: Joni decides his own non-core development autonomously,
-# without a human. Only his protected core stays human-gated (the separate joni-core-ask path).
+# Joni commissions Claude to extend him (non-core). When run, Claude Code implements the
+# Auftrag, opens a PR, and - once the checks are green - the PR is auto-merged (no human; only
+# the protected core stays human-gated via the separate joni-core-ask path).
 #
-# Why a schedule (not just the label event): issues created by the loop use the repo's
-# GITHUB_TOKEN, and GitHub deliberately does NOT let GITHUB_TOKEN-created events trigger
-# another workflow (recursion guard). So the `issues: labeled` trigger only fires for a
-# *human* applying the label; the schedule below is what actually catches Joni's own orders.
+# COST: this build calls the Claude API (ANTHROPIC_API_KEY), so it is **manual-only**
+# (workflow_dispatch) to avoid recurring API spend. The operator clears Joni's Aufträge by
+# invoking Claude directly instead; the loop still files joni-auftrag issues as the work queue.
+# Re-add the `schedule` / `issues: labeled` triggers below to make it run automatically again.
 # A `joni-auftrag-wip` label marks an order as taken so it is never picked up twice.
 
 on:
-  issues:
-    types: [labeled]          # human applies the label -> immediate (this path DOES trigger)
-  schedule:
-    - cron: "*/30 * * * *"    # catch loop-filed Aufträge (GITHUB_TOKEN can't trigger events)
   workflow_dispatch:
 
 permissions:
