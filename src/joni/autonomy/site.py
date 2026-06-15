@@ -131,6 +131,35 @@ def build(data: dict) -> str:
     else:
         panel_block = ("<p class=empty>Noch keine Runde &mdash; das Trio wird nur einberufen, "
                        "wenn Joni unsicher ist (ein offener Widerspruch, den er h&auml;lt).</p>")
+
+    # Semantic-engine telemetry: read off the capture log, never guessed from a €0 line.
+    tele = d.get("telemetry", {}) if isinstance(d.get("telemetry"), dict) else {}
+
+    def _tstat(label: str, value) -> str:
+        return f"<div class=stat><span>{label}</span><span><b>{esc(value)}</b></span></div>"
+
+    if tele.get("llm_calls"):
+        by_model = " · ".join(f"{esc(m)}: {esc(n)}" for m, n in
+                              sorted(tele.get("by_model", {}).items())) or "—"
+        tele_block = (
+            _tstat("LLM calls (total)", tele.get("llm_calls", 0))
+            + _tstat("Granite calls", tele.get("granite_calls", 0))
+            + _tstat("DeepSeek escalations", tele.get("deepseek_escalations", 0))
+            + _tstat("Kevin calls", tele.get("kevin_calls", 0))
+            + _tstat("cached (replayed)", tele.get("cached_calls", 0))
+            + _tstat("live (real API)", tele.get("live_calls", 0))
+            + _tstat("est. API cost", f"€{tele.get('est_cost_eur', 0):.4f}")
+            + _tstat("last semantic call", tele.get("last_call") or "—")
+            + f"<div class=note>by model — {by_model}. Granite via prepaid OpenRouter; "
+            "DeepSeek v4-pro via prepaid DeepSeek. Cost is <b>estimated</b> (per-call rate); "
+            "exact spend is on each provider's dashboard. These are real capture records "
+            "(<code>state/model_calls/calls.jsonl</code>) — proof the semantic engine ran.</div>")
+    else:
+        tele_block = ("<p class=empty>Noch keine Modell-Calls erfasst &mdash; entweder ist die "
+                      "semantische Schicht aus (<code>JONI_SEMANTIC_PROPOSALS</code>) oder dieser "
+                      "Zyklus brauchte kein Modell. Sobald Granite/DeepSeek feuern, steht es "
+                      "hier.</p>")
+
     from . import quality
     good_topics = [t for t in s.get("topics", []) if quality.is_good_topic(t)]
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in good_topics)
@@ -286,10 +315,15 @@ what is uncertain, what contradicts, and what changed.</p>
     <div class=stat><span>spent <b>€{b['spent_eur']:.4f}</b> / €{b['cap_eur']:.0f} per week</span>
       <span>runs <b>{esc(b.get('runs',0))}</b></span></div>
     <div class=bar><i style="width:{min(100,spent_pct):.1f}%"></i></div>
-    <div class=note>Most work is deterministic (€0). A model is used only when DESi measures
-      the free answer inadequate, and only the cheapest tier within budget.</div>
+    <div class=note>The Layer-9 governance core is deterministic (€0). The semantic engine
+      (Granite proposals + DeepSeek escalation) runs as a non-authoritative proposal layer —
+      its real activity and cost are in the telemetry card below, not in this counter.</div>
     <h2 style=margin-top:16px>Capability notes</h2>
     <ul>{notes}</ul>
+  </div>
+  <div class=card>
+    <h2>Semantic engine — telemetry (real capture records, not a guess)</h2>
+    {tele_block}
   </div>
   <div class="card full">
     <h2>Self-review · hourly · provisional self-model (not facts)</h2>
