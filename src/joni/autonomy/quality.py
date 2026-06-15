@@ -62,6 +62,8 @@ STOPWORDS = frozenset({
     "then", "than", "also", "such", "some", "any", "all", "each", "every", "both", "they",
     "them", "their", "your", "yours", "ours", "here", "there", "about", "within",
     "toward", "towards", "upon", "per", "via",
+    "because", "therefore", "thus", "hence", "however", "moreover", "furthermore",
+    "whether", "although", "though", "since", "unless", "whereas",
     # auxiliaries / modals
     "are", "was", "were", "been", "being", "have", "has", "had", "having", "will", "would",
     "could", "should", "must", "may", "might", "can", "cannot", "not", "does", "did", "done",
