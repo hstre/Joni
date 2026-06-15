@@ -31,7 +31,8 @@ def test_hard_tasks_use_deepseek_pro_v4_directly(monkeypatch):
     assert hard.provider == "deepseek"
     assert hard.base_url == "https://api.deepseek.com"
     assert hard.key_env == "DEEPSEEK_API_KEY"
-    assert hard.model_id == "deepseek-pro-v4"
+    assert hard.model_id == "deepseek-v4-pro"                        # per the DeepSeek API docs
+    assert hard.served_slug == "deepseek-v4-pro"                     # NOT the deprecated v4-flash
     assert hard.state_k == 3                                         # its own start k over {3,5}
     # the rest (structured papers / extraction) -> Granite 4.1 8B, not a tiny model
     sem = model_profile.profile("joni-semantic")
