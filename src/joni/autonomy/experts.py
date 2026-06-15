@@ -21,6 +21,11 @@ privileged HUMAN origin, never auto-confirmed). Marked dissent is preserved - wh
 contradicts something Joni holds, a conflict opens and is held open, never aggregated away. Joni
 alone decides.
 
+Joni convenes the panel **when he is genuinely unsure** - when he is holding an open
+contradiction he cannot reconcile - not on a fixed schedule. If he is not unsure about
+anything, no panel is called (and nothing is spent). A short cooldown keeps recurring
+uncertainty from bursting the panel, and the weekly budget is the hard cap.
+
 Three voices: **Claude** and **ChatGPT** via OpenRouter, **DeepSeek** via the DeepSeek key.
 Opt-in (``JONI_EXPERTS=1``) and budget-gated; otherwise a no-op.
 """
@@ -28,7 +33,7 @@ from __future__ import annotations
 
 import os
 
-_EVERY = 20                       # at most one panel every N cycles
+_MIN_GAP = 5                      # at least this many cycles between panels (don't burst)
 _DEFAULT_COST_EUR = 0.15          # conservative flat charge per convened round (budget caps it)
 
 # Functional roles (Alexandria IV.3) - distinct rule sets, not interchangeable opinions.
@@ -129,49 +134,56 @@ def convene(question: str, context: str = "", *, max_words: int = 170) -> dict |
             "experts": [n for n in phase1], "calls": len(phase1) + len(phase3)}
 
 
-def _decision_point(cs) -> tuple[str, str, str, str] | None:
-    """Find one hard, open proposition worth a panel: a live hard contradiction, else the most
-    recent unsupported hypothesis. Returns (key, question, context, topic) or None."""
-    for x in cs.core.open_conflicts():
-        if getattr(x, "severity", "") == "hard" and x.conflict_status.value == "open":
-            texts, topic = [], "panel"
-            for cid in list(x.claim_ids)[:2]:
-                c = cs.core.get(cid)
-                if c is not None:
-                    texts.append(f"({cid}) {c.text}")
-                    topic = c.topic or topic
-            if len(texts) == 2:
-                q = ("Joni holds two claims he cannot both keep. Assess under which assumptions "
-                     "each is consistent, and where they truly conflict:\n"
-                     f"- {texts[0]}\n- {texts[1]}")
-                return f"conflict:{x.id}", q, f"topic: {topic}", topic
-    from .homeostasis import _supports_on
-    for h in sorted(cs.hypotheses(), key=lambda c: int(c.id.split("-")[-1]), reverse=True):
-        if _supports_on(cs, h.id) == 0:
-            q = (f"Joni's own hypothesis, so far unsupported: \"{h.text}\". Assess under which "
-                 "assumptions it is consistent, and where it is most likely to break.")
-            derived = ", ".join(getattr(h, "derived_from", ()) or ())
-            ctx = f"topic: {h.topic}; derived from: {derived}"
-            return f"hyp:{h.id}", q, ctx, (h.topic or "panel")
+def _uncertainty_point(cs, asked=()) -> tuple[str, str, str, str] | None:
+    """Find a proposition Joni is genuinely UNSURE about - worth asking the panel.
+
+    Uncertainty is an **open contradiction he is holding**: two claims he cannot both keep. A
+    hard contradiction is preferred over a softer tension. Conflicts already assessed once
+    (``asked``) are skipped, so the panel works through distinct uncertainties rather than
+    re-asking the same one. If he holds no un-assessed open conflict, he is not unsure -
+    ``None`` means no panel. (A fresh untested hypothesis is not 'unsure', just untested.)"""
+    asked = set(asked)
+    open_conf = [x for x in cs.core.open_conflicts() if x.conflict_status.value == "open"]
+    # hardest first: a flat contradiction is a sharper 'unsure' than a soft tension
+    open_conf.sort(key=lambda x: 0 if getattr(x, "severity", "") == "hard" else 1)
+    for x in open_conf:
+        key = f"conflict:{x.id}"
+        if key in asked:
+            continue
+        texts, topic = [], "panel"
+        for cid in list(x.claim_ids)[:2]:
+            c = cs.core.get(cid)
+            if c is not None:
+                texts.append(f"({cid}) {c.text}")
+                topic = c.topic or topic
+        if len(texts) == 2:
+            sev = "a hard contradiction" if getattr(x, "severity", "") == "hard" else "tension"
+            q = (f"Joni holds two claims in {sev} and is unsure how to reconcile them. Assess "
+                 "under which assumptions each is consistent, and where they truly conflict:\n"
+                 f"- {texts[0]}\n- {texts[1]}")
+            return key, q, f"topic: {topic}", topic
     return None
 
 
 def maybe_convene(cs, extensions: dict, proto, budget, cycle: int, *,
                   runs_per_week: int = 672) -> dict:
-    """Occasionally convene the panel on a decision point and take its assessments in as SOURCES.
-    Opt-in (JONI_EXPERTS=1), rate-limited, within budget. Joni decides - never the panel."""
+    """Convene the panel **when Joni is unsure** (an open contradiction he holds) and take its
+    assessments in as SOURCES. Opt-in (JONI_EXPERTS=1), cooldown-spaced, within budget. Joni
+    decides - never the panel. No uncertainty -> no panel, nothing spent."""
     out = {"convened": False, "question": None, "experts": [], "calls": 0}
-    if not enabled() or _EVERY <= 0 or cycle % _EVERY != 0:
+    if not enabled():
         return out
-    dp = _decision_point(cs)
-    if dp is None:
-        return out
-    key, question, context, topic = dp
     asked = set(extensions.get("panel_asked", []))
-    if key in asked:
+    dp = _uncertainty_point(cs, asked)          # first un-assessed uncertainty, hardest first
+    if dp is None:
+        return out                              # not unsure about anything new -> no panel
+    key, question, context, topic = dp
+    # Uncertainty can recur every cycle; a short cooldown keeps the panel from bursting.
+    last = extensions.get("panel_last_cycle")
+    if last is not None and cycle - last < _MIN_GAP:
         return out
-    # A panel is a rare, deliberate spend - gate on weekly room, not the per-run pace. Each
-    # decision point is convened at most once (panel_asked), which bounds total cost.
+    # A panel is a deliberate spend - gate on weekly room. Each uncertainty is convened at most
+    # once (panel_asked), which bounds total cost.
     cost = float(os.getenv("JONI_EXPERT_COST_EUR", _DEFAULT_COST_EUR))
     if budget.remaining() < cost:
         proto.record(cycle, "panel", "panel deferred - weekly budget has no room")
@@ -194,6 +206,7 @@ def maybe_convene(cs, extensions: dict, proto, budget, cycle: int, *,
             cs.hear(f"[Alexandria-Bewertung · {role} · keine Entscheidung] {text}", topic,
                     handle=f"expert:{name}", platform="panel")
     record["cycle"] = cycle
+    extensions["panel_last_cycle"] = cycle      # cooldown anchor for the next uncertainty
     extensions["panel_last"] = {"question": question, "roles": record["roles"],
                                 "phase3": record["phase3"], "cycle": cycle}
     proto.record(cycle, "panel",
