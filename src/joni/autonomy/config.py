@@ -108,6 +108,12 @@ class Paths:
         return self.root / "state" / "research_inbox.json"
 
     @property
+    def model_calls(self) -> Path:
+        # Capture store for pinned semantic model calls: a content-addressed output store
+        # (outputs/) + an append-only calls.jsonl audit log. Replay reads outputs from here.
+        return self.root / "state" / "model_calls"
+
+    @property
     def research_dir(self) -> Path:
         # The publication channel: Doktores' papers/reports/protocols are archived here with
         # explicit provenance and NO epistemic weight of their own.

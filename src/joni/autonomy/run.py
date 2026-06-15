@@ -36,6 +36,7 @@ from . import (
     invent,
     layer9_view,
     methods,
+    projection,
     reader,
     reconsolidate,
     research_intake,
@@ -151,6 +152,12 @@ def one_cycle() -> dict:
         judged.append((item, rel))
         if rel.topic:
             cs.learn(item.title, rel.topic, source_id=item.key)
+
+    # 3a-sem. Semantic projection (opt-in, JONI_SEMANTIC_PROPOSALS=1; off by default): the pinned
+    #     Granite model reads a few items and *proposes* atomic claims with a DESi state_k slice
+    #     as context. Proposals enter as candidate SOURCE claims via the same gate - never
+    #     authoritative - and the call is captured for replay. The deterministic path above stays.
+    projected = projection.project_and_learn(cs, judged, extensions, proto, cycle)
 
     # 3a. Read the actual papers (PDF) - arXiv full text, a url queue (incl. SSRN), and a
     #     local inbox. Extracted sentences enter as candidate claims; relations stay the
@@ -317,7 +324,7 @@ def one_cycle() -> dict:
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
             "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io,
-            "research": research}
+            "research": research, "projected": projected}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
