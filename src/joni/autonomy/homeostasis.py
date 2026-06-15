@@ -2,10 +2,11 @@
 
 Two autonomous jobs, both deterministic, gate-mediated and bounded:
 
-  * **regulate** - shed what is dead and cap what is unbounded. A self-invented hypothesis
-    that was vetted hollow, contradicted, or tested several times and earned no support is
-    *rejected* honestly (a guess that did not pan out); and the live-hypothesis backlog is
-    capped so it cannot grow without end. This is what keeps a week-long run from silting up.
+  * **regulate** - shed what is dead and cap what is unbounded. A self-invented hypothesis is
+    *rejected* honestly only on objective grounds - contradicted, or tested several times and
+    earned no support (a guess that did not pan out); Kevin's advisory "thin" verdict never
+    sheds an idea. The live-hypothesis backlog is capped so it cannot grow without end. This is
+    what keeps a week-long run from silting up.
 
   * **vitality** - measure, from his own state, whether Joni is *developing* (new active
     claims, ideas that earned promotion, governed evidence, emergent structure, real
@@ -34,16 +35,18 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
              max_prune: int = 3) -> dict:
     """Reject dead hypotheses and cap the backlog. Returns what was shed and why."""
     hyps = cs.hypotheses()
-    hollow = set(extensions.get("hyp_hollow", []))
     tested = extensions.get("hyp_tested", [])
 
     def tested_count(hid: str) -> int:
         return sum(1 for k in tested if k.startswith(hid + "|"))
 
-    out = {"pruned": 0, "contradicted": 0, "hollow": 0, "barren": 0, "over_cap": 0}
+    out = {"pruned": 0, "contradicted": 0, "barren": 0, "over_cap": 0}
     pruned_ids: set[str] = set()
 
-    # 1. shed genuinely dead ideas (no support AND a real reason to give up).
+    # 1. shed genuinely dead ideas - only on *objective* grounds (no support AND a real reason
+    #    to give up). Kevin's "thin" verdict is advisory and deliberately NOT a reason here: an
+    #    idea dies because it was contradicted or earned nothing after many real tests, never
+    #    because the creativity engine disliked it. Kevin must never decide.
     for h in sorted(hyps, key=lambda c: int(c.id.split("-")[-1])):
         if out["pruned"] >= max_prune:
             break
@@ -52,8 +55,6 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
         reason = None
         if _hard_conflicted(cs, h.id):
             reason = "contradicted"
-        elif h.id in hollow and tested_count(h.id) >= 2:
-            reason = "hollow"
         elif tested_count(h.id) >= 4:
             reason = "barren"                          # had many chances, earned nothing
         if reason:
