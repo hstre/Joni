@@ -1,10 +1,16 @@
 """Aufträge an Claude - Joni commissions his own (non-core) extensions.
 
-Joni may not change his protected DESi core, and he does not write code himself. But when his
-own state shows a *capability gap* he cannot close from within the rules - the semantic channel
-keeps returning 'insufficient', a recurring conflict stays unqualifiable, a topic he keeps
-thinking about has nothing to read, his development stalls - he writes a structured
-**commission** (an *Auftrag*) addressed to Claude to extend him.
+**An Auftrag is, first and foremost, a program change to Joni himself.** He may not change his
+protected DESi core, and he does not write code himself - but every commission targets one of
+*his own* non-core code modules (the ``_EXTENSIBLE`` allowlist): a change to how he measures,
+qualifies, reads, develops or trials. It is never an external task or abstract research request;
+it is "modify this part of my own code so I can do X". That self-directed framing is recorded on
+every commission (``change_target``) so the human-gated Claude session implements a change *to
+Joni*, not something beside him.
+
+Joni writes such an order when his own state shows a *capability gap* he cannot close from within
+the rules - the semantic channel keeps returning 'insufficient', a recurring conflict stays
+unqualifiable, a topic he keeps thinking about has nothing to read, his development stalls.
 
 Every commission is:
 
@@ -74,6 +80,9 @@ def _commission(kind: str, component_key: str, *, cycle: int, title: str, motiva
         "title": title, "component": comp, "component_key": component_key,
         "touches_core": False,                          # invariant: commissions never touch core
         "request_type": "extension-request",
+        # An Auftrag is in the first place a program change to Joni HIMSELF (one of his own
+        # non-core modules), never an external/abstract task. Recorded so the intent is explicit.
+        "change_target": f"joni-self · own non-core module ({component_key})",
         "motivation": motivation, "desired_capability": desired,
         "acceptance": acceptance, "evidence": evidence, "risk": risk,
     }
