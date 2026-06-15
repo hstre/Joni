@@ -55,3 +55,24 @@ def test_apply_peripheral_refuses_core_change():
     core = Improvement("core_change", "x", "operator", "needs logic", "k", "u")
     with pytest.raises(governance.CoreChangeBlocked):
         apply_peripheral(s, {}, core)
+
+
+def test_core_ask_gate_holds_one_offs_and_releases_sustained():
+    """A single paper mentioning a core word must NOT raise a core-ask; only a trigger that
+    recurs across CORE_ASK_SUSTAIN cycles is worth interrupting a human."""
+    from joni.autonomy.improve import CORE_ASK_SUSTAIN, gate_core_asks
+
+    ext: dict = {}
+    # a one-off mention in cycle 0 -> held, nothing released
+    assert gate_core_asks(ext, ["scoring"], 0) == set()
+    # it does not recur next cycle -> its streak decays
+    assert gate_core_asks(ext, [], 1) == set()
+    assert ext["core_ask_signals"]["scoring"] == 0
+
+    # now 'operator' recurs every cycle: released exactly when it reaches the sustain threshold
+    released = None
+    for c in range(2, 2 + CORE_ASK_SUSTAIN):
+        released = gate_core_asks(ext, ["operator"], c)
+    assert released == {"operator"}                     # sustained -> raised once
+    # immediately after, the streak is reset and the cooldown blocks re-raising
+    assert gate_core_asks(ext, ["operator"], 2 + CORE_ASK_SUSTAIN) == set()
