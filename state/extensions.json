@@ -4,7 +4,8 @@
     "benchmarking",
     "evaluation",
     "caching",
-    "retrieval"
+    "retrieval",
+    "provenance"
   ],
   "notes": [],
   "asks": [],
@@ -502,6 +503,7 @@
     "zenodo:20708062",
     "zenodo:20708066",
     "zenodo:20708085",
+    "zenodo:20708101",
     "zenodo:20708325",
     "zenodo:20708365",
     "zenodo:20708417",
@@ -871,6 +873,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20549437"
+    },
+    {
+      "call_id": "joni-c32:96084a2ddd41",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708101"
     }
   ],
   "pdf_read": [
@@ -1141,6 +1151,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-17"
+    },
+    {
+      "call_id": "joni-c32:7bdda4789593",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 4,
+      "conflict": "X-18"
     }
   ],
   "methods_seen": [
@@ -1165,7 +1184,7 @@
     "zenodo:20708564",
     "zenodo:20708798"
   ],
-  "method_trials_total": 235,
+  "method_trials_total": 243,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -1192,6 +1211,7 @@
     "C-350|C-448",
     "C-350|C-451",
     "C-350|C-472",
+    "C-350|C-473",
     "C-352|C-450",
     "C-353|C-449",
     "C-357|C-392",
@@ -1215,6 +1235,7 @@
     "C-445|C-446",
     "C-448|C-451",
     "C-448|C-472",
+    "C-448|C-473",
     "C-455|C-459",
     "C-59|C-80",
     "C-62|C-75",
@@ -1247,6 +1268,7 @@
     "C-350|C-448@bge-small-en-v1.5",
     "C-350|C-451@bge-small-en-v1.5",
     "C-350|C-472@bge-small-en-v1.5",
+    "C-350|C-473@bge-small-en-v1.5",
     "C-352|C-450@bge-small-en-v1.5",
     "C-353|C-449@bge-small-en-v1.5",
     "C-357|C-392@bge-small-en-v1.5",
@@ -1270,6 +1292,7 @@
     "C-445|C-446@bge-small-en-v1.5",
     "C-448|C-451@bge-small-en-v1.5",
     "C-448|C-472@bge-small-en-v1.5",
+    "C-448|C-473@bge-small-en-v1.5",
     "C-455|C-459@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
@@ -1332,6 +1355,7 @@
     "representation",
     "representations",
     "session",
+    "structures",
     "systematic",
     "thinking-answer",
     "variance"
@@ -1367,6 +1391,7 @@
     "forum|vertical",
     "memory|accuracy",
     "memory|agent",
+    "memory|axioms",
     "memory|brown",
     "memory|capacity",
     "memory|change",
@@ -1391,6 +1416,7 @@
     "memory|principle",
     "memory|pure",
     "memory|requires",
+    "memory|research",
     "memory|review",
     "memory|role",
     "memory|social",
@@ -1426,14 +1452,14 @@
     "principle",
     "reasoning",
     "thinking-answer",
+    "titled",
     "variance"
   ],
   "emerge_insufficient": {
-    "memory|five": 1,
+    "memory|five": 2,
     "memory|geometry": 2,
     "memory|structures": 1,
-    "meth:composition": 1,
-    "meth:titled": 3
+    "meth:composition": 1
   },
   "hyp_tested": [
     "C-221|C-128",
@@ -1444,6 +1470,8 @@
     "C-234|C-137",
     "C-234|C-221",
     "C-234|C-225",
+    "C-234|C-252",
+    "C-234|C-255",
     "C-243|C-137",
     "C-243|C-221",
     "C-243|C-225",
@@ -1503,20 +1531,19 @@
     "C-51"
   ],
   "learned_queries": [
-    "memory brown",
-    "memory testing",
-    "memory recurs",
     "memory underlying",
     "unsorted unsorted",
     "unsorted underlying",
     "unsorted boundary",
-    "unsorted recurs"
+    "unsorted recurs",
+    "memory claims",
+    "anthology+forum abundance",
+    "anthology+forum titled"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
-    "C-223": 30,
     "C-227": 31,
-    "C-234": 11,
+    "C-234": 32,
     "C-236": 11,
     "C-243": 12,
     "C-245": 12,
@@ -1544,7 +1571,8 @@
     "C-440": 28,
     "C-454": 29,
     "C-471": 30,
-    "C-477": 31
+    "C-477": 31,
+    "C-490": 32
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1580,6 +1608,7 @@
     "C-471",
     "C-477",
     "C-49",
+    "C-490",
     "C-51"
   ],
   "methods_domain_ok": [
@@ -1604,32 +1633,32 @@
   ],
   "vitality": {
     "verdict": "developing",
-    "development": 6,
+    "development": 16,
     "degeneration": 0,
-    "active": 249,
+    "active": 258,
     "hypotheses": 31,
-    "unsupported_hypotheses": 24,
-    "promoted_ideas": 4,
+    "unsupported_hypotheses": 25,
+    "promoted_ideas": 5,
     "confirmed_claims": 0,
-    "evidence_links": 36,
-    "supporting_links": 36,
-    "emergent_total": 119,
+    "evidence_links": 40,
+    "supporting_links": 40,
+    "emergent_total": 123,
     "usable_semantic_rate": 1.0,
     "methods_total": 18,
-    "method_trials_total": 235,
+    "method_trials_total": 243,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 3991,
-    "cycle": 31
+    "objects": 4130,
+    "cycle": 32
   },
   "vitality_prev": {
-    "supports": 36,
-    "promoted": 4,
+    "supports": 40,
+    "promoted": 5,
     "confirmed": 0,
-    "objects": 3991,
-    "active": 249,
-    "links": 36,
-    "emergent": 119
+    "objects": 4130,
+    "active": 258,
+    "links": 40,
+    "emergent": 123
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1849,12 +1878,19 @@
       "development": 6,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 32,
+      "verdict": "developing",
+      "development": 16,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 28,
+    "starved_topic": 29,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2570,7 +2606,8 @@
     "X-11",
     "X-12",
     "X-16",
-    "X-17"
+    "X-17",
+    "X-18"
   ],
   "last_review_snapshot": {
     "active": 249,
