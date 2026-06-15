@@ -66,8 +66,9 @@ def test_convenes_when_unsure_takes_assessments_as_sources_and_never_decides(mon
     assert budget.spent_eur > 0                        # the round was charged to the budget
 
 
-def test_no_panel_when_he_is_not_unsure(monkeypatch):
-    """A fresh untested hypothesis with no open conflict is not 'unsure' -> no panel, no spend."""
+def test_no_panel_when_nothing_to_assess(monkeypatch):
+    """No open conflict and no fresh suggestion (a plain single-topic hypothesis is neither) ->
+    no panel, no spend."""
     _enable(monkeypatch)
     _mock_ask(monkeypatch)
     cs = CoreState(seed_core())
@@ -76,6 +77,36 @@ def test_no_panel_when_he_is_not_unsure(monkeypatch):
     out = experts.maybe_convene(cs, {}, _Proto(), budget, cycle=20)
     assert out["convened"] is False
     assert budget.spent_eur == 0.0
+
+
+def test_panel_convenes_on_a_kevin_suggestion_and_explains_it(monkeypatch):
+    """No uncertainty, but Kevin proposed a method/lens -> the panel assesses whether it is a
+    good idea (advice, not a decision), and that explanation enters as a SOURCE."""
+    _enable(monkeypatch)
+    _mock_ask(monkeypatch)
+    cs = CoreState(seed_core())
+    cs.propose_method(name="latency-as-a-lens",
+                      summary="treat latency as a transferable lens across topics",
+                      applicable_to=("routing", "memory"), origin="joni:emergent")
+    budget = Budget(week_start="t", spent_eur=0.0, runs=0, cap_eur=20.0)
+    out = experts.maybe_convene(cs, {}, _Proto(), budget, cycle=20)
+    assert out["convened"] is True
+    panel_claims = [c for c in cs.active_claims()
+                    if any("panel:expert:" in s for s in c.provenance.source_ids)]
+    assert panel_claims                                  # the good/bad assessment is recorded
+    assert all(c.provenance.origin_type.value == "source" for c in panel_claims)
+
+
+def test_an_invented_cross_topic_hypothesis_is_assessed_as_a_suggestion(monkeypatch):
+    _enable(monkeypatch)
+    _mock_ask(monkeypatch)
+    cs = CoreState(seed_core())
+    p1 = cs.learn("routing reduces latency", "routing")
+    p2 = cs.learn("memory continuity matters", "memory")
+    cs.hypothesize("Hypothesis: the latency pattern from routing may carry to memory",
+                   "routing+memory", parents=(p1, p2))     # a '+' topic = an invented leap
+    budget = Budget(week_start="t", spent_eur=0.0, runs=0, cap_eur=20.0)
+    assert experts.maybe_convene(cs, {}, _Proto(), budget, cycle=20)["convened"] is True
 
 
 def test_panel_respects_a_cooldown_between_uncertainties(monkeypatch):
