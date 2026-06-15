@@ -58,14 +58,25 @@ def test_pruning_is_bounded_per_cycle():
     assert out["pruned"] == 3                          # capped; works through over time
 
 
-def test_vitality_reports_developing_when_state_grew():
+def test_vitality_counts_validation_not_raw_growth():
+    # merely learning more claims is NOT development under the quality metric...
     cs = CoreState(seed_core())
-    ext = {"vitality_prev": {"active": 2, "links": 0, "promoted": 0, "emergent": 0, "objects": 5}}
+    ext: dict = {"vitality_prev": {"supports": 0, "promoted": 0, "confirmed": 0, "objects": 0}}
     cs.learn("a new claim", "routing")
+    cs.learn("another new claim", "routing")
     rec = homeostasis.vitality(cs, ext, _Proto())
-    assert rec["verdict"] in ("developing", "steady")
-    assert rec["development"] >= 1
-    assert "vitality" in ext and ext["vitality_history"]
+    assert rec["development"] == 0                       # growth alone does not count
+
+    # ...but new *validating* evidence does.
+    cs2 = CoreState(seed_core())
+    a = cs2.learn("routing reduces latency", "routing")
+    b = cs2.learn("local routing cuts latency", "routing")
+    cs2.corroborate(a, cs2.core.get(b), relation="supports")
+    ext2: dict = {"vitality_prev": {"supports": 0, "promoted": 0, "confirmed": 0, "objects": 0}}
+    rec2 = homeostasis.vitality(cs2, ext2, _Proto())
+    assert rec2["development"] >= 1                      # earned support = real progress
+    assert rec2["verdict"] == "developing"
+    assert ext2["vitality_history"]
 
 
 def test_vitality_flags_degenerating_on_a_swelling_unsupported_backlog():

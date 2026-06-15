@@ -94,22 +94,27 @@ def vitality(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     s = cs.core
     active = len(cs.active_claims())
     links = len(s.all(l9.ObjectType.EVIDENCE_LINK))
+    supports = sum(1 for el in s.all(l9.ObjectType.EVIDENCE_LINK)
+                   if el.relation.value in ("supports", "contextualizes"))   # *validating* links
     hyps = len(cs.hypotheses())
     promoted = sum(1 for c in s.all(l9.ObjectType.CLAIM)
-                   if c.status is Status.ACTIVE and c.derived_from)   # earned active
+                   if c.status is Status.ACTIVE and c.derived_from)   # ideas that earned active
+    confirmed = sum(1 for c in s.all(l9.ObjectType.CLAIM) if c.status is Status.CONFIRMED)
     emergent = len(extensions.get("emerged_topics", [])) + \
         len(extensions.get("emerged_methods", [])) + len(extensions.get("synthesized", []))
     usable = _usable_semantic_rate(cs)
     objects = len(s.objects)
 
     prev = extensions.get("vitality_prev", {})
-    d_active = active - prev.get("active", active)
-    d_links = links - prev.get("links", links)
+    d_supports = supports - prev.get("supports", supports)
     d_promoted = promoted - prev.get("promoted", promoted)
-    d_emergent = emergent - prev.get("emergent", emergent)
+    d_confirmed = confirmed - prev.get("confirmed", confirmed)
     d_objects = objects - prev.get("objects", objects)
 
-    development = max(0, d_active) + max(0, d_links) + 2 * max(0, d_promoted) + max(0, d_emergent)
+    # Development = *epistemic progress*, not raw growth. New validating evidence, ideas that
+    # earned promotion, and (rare) confirmations count; merely learning/hearing more claims or
+    # minting more emergent bookkeeping does NOT - so Joni cannot read his own noise as vital.
+    development = 3 * max(0, d_supports) + 4 * max(0, d_promoted) + 6 * max(0, d_confirmed)
     stagnation = extensions.get("stagnation", 0)
     stagnation = 0 if development > 0 else stagnation + 1
 
@@ -128,12 +133,14 @@ def vitality(cs, extensions: dict, proto, cycle: int = 0) -> dict:
 
     record = {"verdict": verdict, "development": development, "degeneration": degeneration,
               "active": active, "hypotheses": hyps, "unsupported_hypotheses": unsupported,
-              "promoted_ideas": promoted, "evidence_links": links,
+              "promoted_ideas": promoted, "confirmed_claims": confirmed,
+              "evidence_links": links, "supporting_links": supports,
               "emergent_total": emergent, "usable_semantic_rate": usable,
               "stagnation_cycles": stagnation, "objects": objects, "cycle": cycle}
     extensions["vitality"] = record
-    extensions["vitality_prev"] = {"active": active, "links": links, "promoted": promoted,
-                                   "emergent": emergent, "objects": objects}
+    extensions["vitality_prev"] = {"supports": supports, "promoted": promoted,
+                                   "confirmed": confirmed, "objects": objects,
+                                   "active": active, "links": links, "emergent": emergent}
     extensions["stagnation"] = stagnation
     hist = extensions.setdefault("vitality_history", [])
     hist.append({"cycle": cycle, "verdict": verdict, "development": development,
