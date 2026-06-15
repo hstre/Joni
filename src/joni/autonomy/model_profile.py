@@ -107,19 +107,19 @@ def joni_semantic() -> ModelProfile:
 
 
 # **Difficult** semantic work - hard conflicts, source/contradiction analysis - goes to
-# **DeepSeek Pro v4, called directly through the DeepSeek API** (not via OpenRouter). DeepSeek's
-# API serves its chat models under short slugs; the exact "pro v4" id is env-pinned
-# (JONI_DEEPSEEK_SLUG) and captured, so the requested pin -> served slug mapping is explicit.
-# state_k is calibrated for this task separately (a richer slice for hard reasoning), NOT
-# inherited from joni-semantic.
+# **DeepSeek Pro v4, called directly through the DeepSeek API** (not via OpenRouter). Per the
+# DeepSeek API docs the model id is ``deepseek-v4-pro`` (the most capable; ``deepseek-chat`` is
+# the smaller v4-flash and is being deprecated 2026/07/24, so we do NOT default to it). Requested
+# pin == served slug here, so there is no divergence; re-pin via JONI_DEEPSEEK_SLUG. state_k is
+# calibrated for this task separately (a richer slice for hard reasoning), NOT inherited.
 def joni_hard() -> ModelProfile:
     return ModelProfile(
         name="joni-hard",
-        model_id=_env("JONI_HARD_MODEL_ID", "deepseek-pro-v4"),
+        model_id=_env("JONI_HARD_MODEL_ID", "deepseek-v4-pro"),
         provider=_env("JONI_HARD_PROVIDER", "deepseek"),
         base_url=_env("JONI_HARD_BASE_URL", "https://api.deepseek.com"),
         key_env=_env("JONI_HARD_KEY_ENV", "DEEPSEEK_API_KEY"),
-        served_slug=_env("JONI_DEEPSEEK_SLUG", "deepseek-chat"),
+        served_slug=_env("JONI_DEEPSEEK_SLUG", "deepseek-v4-pro"),
         sampling=Sampling(
             temperature=float(_env("JONI_HARD_TEMPERATURE", "0.0")),
             seed=int(_env("JONI_HARD_SEED", "7")),
@@ -155,7 +155,7 @@ def kevin() -> ModelProfile:
         provider=_env("JONI_KEVIN_PROVIDER", "deepseek"),
         base_url=_env("JONI_KEVIN_BASE_URL", "https://api.deepseek.com"),
         key_env=_env("JONI_KEVIN_KEY_ENV", "DEEPSEEK_API_KEY"),
-        served_slug=_env("JONI_KEVIN_SLUG", "deepseek-chat"),
+        served_slug=_env("JONI_KEVIN_SLUG", "deepseek-v4-pro"),
         sampling=Sampling(
             temperature=float(_env("JONI_KEVIN_TEMPERATURE", "0.7")),    # creative, not 0
             seed=int(_env("JONI_KEVIN_SEED", "7")),
