@@ -45,6 +45,7 @@ class Capture:
     run_id: str
     call_id: str
     replayed: bool
+    escalation_reason: str | None = None   # why DeepSeek was invoked (None = primary/Granite)
 
 
 def _sha(text: str) -> str:
@@ -78,10 +79,14 @@ def _store(store_dir: Path) -> tuple[Path, Path]:
     return out, store_dir / "calls.jsonl"
 
 
-def call(profile: ModelProfile, system: str, user: str, *, run_id: str,
-         store_dir: Path) -> tuple[str | None, Capture | None]:
+def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_dir: Path,
+         escalation_reason: str | None = None) -> tuple[str | None, Capture | None]:
     """Run (or replay) one pinned call. Returns ``(output, capture)``; ``(None, None)`` if the
-    live call failed (best-effort: no proposal this cycle, never a silent fallback)."""
+    live call failed (best-effort: no proposal this cycle, never a silent fallback).
+
+    ``escalation_reason`` is recorded in the capture: it names *why* an escalation model (DeepSeek)
+    was invoked - a primary Granite call leaves it ``None``. It is metadata only and is NOT part of
+    the replay key (same prompt + pinned config replays regardless of why it was reached)."""
     prompt = f"<<SYSTEM>>\n{system}\n<<USER>>\n{user}"
     prompt_sha = _sha(prompt)
     key = _sha(f"{profile.config_sha()}|{prompt_sha}")
@@ -96,7 +101,7 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str,
             seed=profile.sampling.seed, max_tokens=profile.sampling.max_tokens,
             sampling_sha=profile.sampling.sha256(), state_k=profile.state_k,
             prompt_sha=prompt_sha, output_sha=_sha(output), run_id=run_id,
-            call_id=call_id, replayed=replayed)
+            call_id=call_id, replayed=replayed, escalation_reason=escalation_reason)
         with log.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(asdict(cap), sort_keys=True) + "\n")
         return cap
