@@ -156,10 +156,12 @@ def admissible_term(term: str) -> bool:
 
 
 def is_good_topic(topic: str) -> bool:
-    """A topic worth tracking: a single meaningful, on-domain term. Compound '+' bridge topics
-    and stopword/artifact/off-domain tokens are junk that should not clutter what Joni tracks."""
+    """A topic worth tracking: a single meaningful term, no compound '+' bridge. Deliberately
+    **lexical only** (no embedding) - it runs over every claim/topic each cycle (the retire pass
+    and the site), so it must be cheap; the embedding on-domain check is reserved for the few
+    emergence *selection* points, not these hot paths."""
     t = (topic or "").strip()
-    return bool(t) and "+" not in t and admissible_term(t)
+    return bool(t) and "+" not in t and is_meaningful_term(t)
 
 
 def hypothesis_admissible(text: str) -> bool:
