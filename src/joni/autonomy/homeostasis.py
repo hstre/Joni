@@ -113,6 +113,39 @@ def retire_junk_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retir
     return {"retired_claims": retired, "topics": topics}
 
 
+def retire_junk_methods(cs, extensions: dict, proto, cycle: int = 0,
+                        *, max_retire: int = 5) -> dict:
+    """Shed off-domain method candidates harvested by mistake (e.g. C++ coding guidelines from a
+    GitHub source). A candidate's title+summary is checked once against Joni's domain; on-domain
+    ones are cached so they are never re-embedded, off-domain ones are rejected. Bounded per
+    cycle; with no embedder it is a no-op (fail-open). Drains the pre-gate method backlog."""
+    from . import quality
+    ok = set(extensions.get("methods_domain_ok", []))
+    retired = 0
+    names: list[str] = []
+    for m in cs.core.all(l9.ObjectType.METHOD):
+        if retired >= max_retire:
+            break
+        if m.status is not Status.CANDIDATE or m.id in ok:
+            continue
+        text = f"{getattr(m, 'name', '')} {getattr(m, 'summary', '')}"
+        if quality.on_domain_text(text):
+            ok.add(m.id)                       # on-domain: remember it, never re-embed
+            continue
+        try:
+            cs.reject_method(m.id)
+        except Exception:  # noqa: BLE001 - a stubborn method must never break the cycle
+            ok.add(m.id)
+            continue
+        retired += 1
+        names.append(str(getattr(m, "name", m.id))[:40])
+    extensions["methods_domain_ok"] = sorted(ok)[-3000:]
+    if names:
+        proto.record(cycle, "regulate",
+                     f"retired {retired} off-domain method(s): {', '.join(names)}")
+    return {"retired_methods": retired}
+
+
 def _usable_semantic_rate(cs) -> float:
     clusters = [c for c in cs.core.all(l9.ObjectType.SEMANTIC_CLUSTER)
                 if c.measurement.get("distance_metric") == "cosine"][-40:]
