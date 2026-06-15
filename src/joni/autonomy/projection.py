@@ -58,11 +58,13 @@ def state_slice(cs, text: str, *, k: int) -> list[str]:
 
 
 def _parse(output: str, topic_hint: str) -> list[dict]:
+    from . import quality
     body = _FENCE.sub("", (output or "").strip())
     try:
         data = json.loads(body)
     except (json.JSONDecodeError, ValueError):
         return []
+    hint = (topic_hint or "").strip().lower()
     out: list[dict] = []
     for item in data if isinstance(data, list) else []:
         if not isinstance(item, dict):
@@ -70,7 +72,13 @@ def _parse(output: str, topic_hint: str) -> list[dict]:
         text = str(item.get("text", "")).strip()
         if not text:
             continue
-        topic = str(item.get("topic") or topic_hint or "unsorted").strip().lower()[:40]
+        topic = str(item.get("topic") or hint or "unsorted").strip().lower()[:40]
+        # The semantic projection must NOT bypass the topic-quality gate the deterministic
+        # track_topic path already obeys: a function word ("been", "because", "what") is not an
+        # emergent concept. A junk topic falls back to the (good) hint, else "unsorted" - never a
+        # stopword promoted to a tracked topic.
+        if not quality.is_good_topic(topic):
+            topic = hint if quality.is_good_topic(hint) else "unsorted"
         out.append({"text": text[:300], "topic": topic or "unsorted"})
     return out[:5]
 

@@ -85,3 +85,18 @@ def test_state_slice_density_is_k(monkeypatch):
     sl = projection.state_slice(cs, "routing and latency", k=1)
     assert len(sl) <= 1                                     # k=1 -> at most one state element
     assert projection.state_slice(cs, "x", k=0) == []
+
+
+def test_function_words_never_become_topics():
+    # a model that (wrongly) proposes a function word as the topic must not bypass the gate:
+    # it falls back to the good hint, never "been"/"because"/"what" as an emergent topic.
+    out = projection._parse(
+        '[{"text":"Remote routing trades latency for privacy","topic":"because"},'
+        ' {"text":"Episodic memory aids continuity","topic":"what"}]', "routing")
+    assert [p["topic"] for p in out] == ["routing", "routing"]   # junk topic -> the good hint
+    # with no usable hint either, junk collapses to "unsorted", never the stopword
+    out2 = projection._parse('[{"text":"X holds","topic":"been"}]', "just")
+    assert out2[0]["topic"] == "unsorted"
+    # a genuine concept is kept as-is
+    out3 = projection._parse('[{"text":"Distillation shrinks models","topic":"distillation"}]', "")
+    assert out3[0]["topic"] == "distillation"

@@ -37,6 +37,7 @@ from . import (
     invent,
     layer9_view,
     methods,
+    model_call,
     projection,
     reader,
     reconsolidate,
@@ -397,12 +398,15 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
     snap = cs.snapshot()
     snap.update(reflect or {"routing_engine": desi_link.routing_engine()})
     budget_d = {"spent_eur": budget.spent_eur, "cap_eur": budget.cap_eur, "runs": budget.runs}
+    tele = model_call.telemetry(p.model_calls)
+    tele["panel_rounds"] = len(extensions.get("panel_asked", []))
     site.render(p.docs_index, p.docs_data, {
         "snapshot": snap,
         "budget": budget_d,
         "window": window,
         "extensions": extensions,
         "protocol": proto.all(),
+        "telemetry": tele,
     })
     # The human-facing Layer-9 map (living map, not a logfile).
     layer9_view.render(p.docs_layer9, {

@@ -22,7 +22,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .model_profile import ModelProfile
@@ -46,6 +48,7 @@ class Capture:
     call_id: str
     replayed: bool
     escalation_reason: str | None = None   # why DeepSeek was invoked (None = primary/Granite)
+    ts: str = ""                           # ISO-8601 UTC time of this (replay or live) call
 
 
 def _sha(text: str) -> str:
@@ -101,7 +104,8 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_di
             seed=profile.sampling.seed, max_tokens=profile.sampling.max_tokens,
             sampling_sha=profile.sampling.sha256(), state_k=profile.state_k,
             prompt_sha=prompt_sha, output_sha=_sha(output), run_id=run_id,
-            call_id=call_id, replayed=replayed, escalation_reason=escalation_reason)
+            call_id=call_id, replayed=replayed, escalation_reason=escalation_reason,
+            ts=datetime.now(UTC).isoformat(timespec="seconds"))
         with log.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(asdict(cap), sort_keys=True) + "\n")
         return cap
@@ -116,3 +120,50 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_di
         return None, None
     cached.write_text(output, encoding="utf-8")
     return output, _record(output, replayed=False)
+
+
+def _cost_per_call(env: str, default: str) -> float:
+    try:
+        return float(os.getenv(env, default))
+    except ValueError:
+        return float(default)
+
+
+def telemetry(store_dir: Path) -> dict:
+    """Aggregate the capture log into dashboard telemetry, so whether the semantic engine is
+    actually working is read off real records - never guessed from a €0 line. Counts live vs
+    replayed (cached) calls per provider, the escalation count, the last call's time, and an
+    *estimated* API cost (per-call rates are env-dialled; exact spend is on the provider page)."""
+    log = store_dir / "calls.jsonl"
+    out = {"llm_calls": 0, "granite_calls": 0, "deepseek_escalations": 0, "kevin_calls": 0,
+           "cached_calls": 0, "live_calls": 0, "last_call": "", "est_cost_eur": 0.0,
+           "by_model": {}}
+    if not log.exists():
+        return out
+    g_cost = _cost_per_call("JONI_COST_PER_GRANITE_CALL", "0.0")   # OpenRouter prepaid by default
+    d_cost = _cost_per_call("JONI_COST_PER_DEEPSEEK_CALL", "0.004")
+    for line in log.read_text(encoding="utf-8").splitlines():
+        try:
+            r = json.loads(line)
+        except (json.JSONDecodeError, ValueError):
+            continue
+        out["llm_calls"] += 1
+        provider = r.get("provider", "")
+        served = r.get("served_model", "?")
+        out["by_model"][served] = out["by_model"].get(served, 0) + 1
+        replayed = bool(r.get("replayed"))
+        out["cached_calls" if replayed else "live_calls"] += 1
+        ts = r.get("ts") or ""
+        if ts > out["last_call"]:
+            out["last_call"] = ts
+        is_deepseek = provider == "deepseek"
+        if r.get("escalation_reason") and is_deepseek:
+            out["deepseek_escalations"] += 1
+        if "granite" in served.lower():
+            out["granite_calls"] += 1
+        if served.startswith("deepseek") and r.get("run_id", "").startswith("kevin"):
+            out["kevin_calls"] += 1
+        if not replayed:                                  # only live calls cost money
+            out["est_cost_eur"] += d_cost if is_deepseek else (g_cost if provider else 0.0)
+    out["est_cost_eur"] = round(out["est_cost_eur"], 4)
+    return out

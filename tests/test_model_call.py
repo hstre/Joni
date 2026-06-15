@@ -91,6 +91,26 @@ def test_call_captures_then_replays(monkeypatch, tmp_path):
         assert field in rec
 
 
+def test_telemetry_reads_real_capture_records(monkeypatch, tmp_path):
+    # two Granite calls + one DeepSeek escalation, one of them a replay -> the dashboard numbers
+    # come straight from calls.jsonl, never guessed.
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u: "out")
+    gran = model_profile.profile("joni-semantic")
+    hard = model_profile.profile("joni-hard")
+    model_call.call(gran, "sys", "a", run_id="r1", store_dir=tmp_path)
+    model_call.call(gran, "sys", "a", run_id="r2", store_dir=tmp_path)          # same -> replay
+    model_call.call(hard, "sys", "b", run_id="r1", store_dir=tmp_path,
+                    escalation_reason="high_conflict_load")
+    t = model_call.telemetry(tmp_path)
+    assert t["llm_calls"] == 3
+    assert t["granite_calls"] == 2 and t["deepseek_escalations"] == 1
+    assert t["cached_calls"] == 1 and t["live_calls"] == 2
+    assert t["last_call"]                                        # an ISO timestamp was recorded
+    assert t["est_cost_eur"] >= 0.0
+    # an empty store is all-zeros, never an error
+    assert model_call.telemetry(tmp_path / "nope")["llm_calls"] == 0
+
+
 def test_a_failed_call_is_no_proposal_not_a_fallback(monkeypatch, tmp_path):
     def boom(profile, system, user):
         raise RuntimeError("model unavailable")
