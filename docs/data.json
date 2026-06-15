@@ -8,6 +8,7 @@
       "forum",
       "alignment",
       "privacy",
+      "anthology",
       "anthology content guidelines",
       "anthology contributors",
       "anthology scope",
@@ -18,18 +19,23 @@
       "clinhallu benchmark structure",
       "coherence cost law",
       "context",
+      "context optimization",
       "convex",
       "cora experimental results",
       "cora impact on lvlms",
       "cora methodology",
       "depth and coherence cost",
+      "developer community support",
       "effectiveness of trace-supervised fine-t",
       "evaluation",
       "experimental hygiene",
+      "flarum",
       "general ℓ^p inequality proof",
       "lambert w function inequality",
       "limitations of existing benchmarks",
       "mllms as denoising priors",
+      "multi-agent conversation monitoring",
+      "multimodal",
       "obtuse quantum pyramids minimizers",
       "quantum pyramids entropy inequalities",
       "raes and llm compatibility",
@@ -47,30 +53,35 @@
       "variance decomposition",
       "zero-sum ℓ^p inequality"
     ],
-    "claims_total": 173,
-    "claims_active": 126,
+    "claims_total": 184,
+    "claims_active": 130,
     "memory": 0,
-    "ledger": 912,
+    "ledger": 990,
     "open_conflicts": 10,
-    "methods": 7,
-    "method_trials": 27,
+    "methods": 9,
+    "method_trials": 35,
     "methods_ready": 0,
     "preferences": 0,
     "evidence_links": 2,
     "self_model": 3,
-    "hypotheses": 6,
+    "hypotheses": 7,
     "routing_engine": "DESi",
     "days_running": 0,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 0.15,
     "cap_eur": 20.0,
-    "runs": 5
+    "runs": 6
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 5,
+    "runs": 6,
     "retired": false
   },
   "extensions": {
@@ -81,7 +92,33 @@
     ],
     "notes": [],
     "asks": [],
-    "commissions": [],
+    "commissions": [
+      {
+        "kind": "starved_topic",
+        "cycle": 6,
+        "addressed_to": "Claude",
+        "title": "Erweitere meine Quellen für 'coverage evaluation with privacy'",
+        "component": "the reading layer (sources.py / reader.py) - which feeds Joni can draw on, outside the protected core",
+        "component_key": "reader-sources",
+        "touches_core": false,
+        "request_type": "extension-request",
+        "motivation": "Ich habe 4 Hypothesen zu 'coverage evaluation with privacy', aber 0 stützende Evidenz - meine Quellen liefern dazu nichts, die Ideen bleiben barren.",
+        "desired_capability": "Füge in sources.py / reader.py eine Quelle hinzu, die zu 'coverage evaluation with privacy' Material liefert (eine gezielte Query oder ein passender Feed).",
+        "acceptance": "Ein Lauf bringt mindestens ein gelesenes Item zu 'coverage evaluation with privacy', das eine Hypothese stützen oder ihr widersprechen kann.",
+        "evidence": {
+          "topic": "coverage evaluation with privacy",
+          "hypotheses": 4,
+          "hypothesis_ids": [
+            "C-126",
+            "C-142",
+            "C-170",
+            "C-184"
+          ]
+        },
+        "risk": "low - adds an input source; no state-logic changes",
+        "sustained_cycles": 3
+      }
+    ],
     "forum_heard": [
       {
         "cycle": 1,
@@ -484,7 +521,9 @@
       "arxiv:2606.14701v1",
       "arxiv:2606.14704v1",
       "github:affaan-m/ECC",
+      "github:apache/answer",
       "github:f/prompts.chat",
+      "github:flarum/flarum",
       "github:goadesign/goa",
       "github:home-assistant/core",
       "github:vllm-project/vllm",
@@ -493,6 +532,7 @@
       "hackernews:16065845",
       "hackernews:16153840",
       "hackernews:16727869",
+      "hackernews:29154216",
       "hackernews:39161339",
       "huggingface:2606.00793",
       "huggingface:2606.06036",
@@ -584,6 +624,14 @@
         "replayed": false,
         "claims": 5,
         "source": "arxiv:2606.14691v1"
+      },
+      {
+        "call_id": "joni-c6:ef994dd466b7",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "github:flarum/flarum"
       }
     ],
     "pdf_read": [
@@ -640,6 +688,14 @@
         "state_k": 3,
         "replayed": true,
         "claims": 0
+      },
+      {
+        "call_id": "joni-c6:a2058ffeb84d",
+        "served_model": "deepseek-v4-pro",
+        "reason": "high_conflict_load",
+        "state_k": 3,
+        "replayed": false,
+        "claims": 0
       }
     ],
     "methods_seen": [
@@ -647,10 +703,12 @@
       "arxiv:2606.14679v1",
       "arxiv:2606.14691v1",
       "arxiv:2606.14698v1",
+      "github:apache/answer",
+      "github:flarum/flarum",
       "huggingface:2606.10747",
       "zenodo:20707854"
     ],
-    "method_trials_total": 27,
+    "method_trials_total": 35,
     "methods_ready_total": 0,
     "core_ask_signals": {},
     "core_ask_filed": {},
@@ -679,6 +737,7 @@
       "C-79|C-83@bge-small-en-v1.5"
     ],
     "invented": [
+      "alignment|anthology",
       "alignment|drift",
       "alignment|forum",
       "alignment|memory",
@@ -688,6 +747,7 @@
     "emerged_topics": [
       "context",
       "convex",
+      "multimodal",
       "reasoning",
       "session",
       "variance"
@@ -697,6 +757,7 @@
       "coverage evaluation with privacy|breakthrough",
       "coverage evaluation with privacy|contamination",
       "coverage evaluation with privacy|context",
+      "coverage evaluation with privacy|distinct",
       "coverage evaluation with privacy|evaluation",
       "coverage evaluation with privacy|exchanges",
       "coverage evaluation with privacy|genuinely",
@@ -714,26 +775,27 @@
       "variance"
     ],
     "emerge_insufficient": {
-      "coverage evaluation with privacy|reasoning": 2,
-      "meth:reasoning": 2
+      "coverage evaluation with privacy|reasoning": 3,
+      "meth:reasoning": 3
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
     "hyp_hollow": [
       "C-140",
       "C-168",
+      "C-182",
       "C-49",
       "C-51"
     ],
     "learned_queries": [
-      "alignment+memory hypothesis",
-      "alignment+memory invariants",
-      "coverage evaluation with privacy through-line",
-      "coverage evaluation with privacy factor",
       "alignment+privacy right",
       "alignment+privacy enforces",
       "forum testing",
-      "forum worth"
+      "forum worth",
+      "alignment+anthology sounds",
+      "alignment+anthology needs",
+      "coverage evaluation with privacy testing",
+      "coverage evaluation with privacy underlying"
     ],
     "hyp_seen_cycle": {
       "C-49": 1,
@@ -741,14 +803,16 @@
       "C-126": 2,
       "C-142": 3,
       "C-170": 4,
-      "C-171": 5,
-      "C-173": 5
+      "C-173": 5,
+      "C-182": 6,
+      "C-184": 6
     },
     "hyp_domain_ok": [
       "C-126",
       "C-142",
       "C-170",
       "C-173",
+      "C-184",
       "C-49",
       "C-51"
     ],
@@ -759,38 +823,40 @@
       "M-4",
       "M-5",
       "M-6",
-      "M-7"
+      "M-7",
+      "M-8",
+      "M-9"
     ],
     "vitality": {
       "verdict": "degenerating",
       "development": 0,
       "degeneration": 1,
-      "active": 126,
-      "hypotheses": 6,
-      "unsupported_hypotheses": 6,
+      "active": 130,
+      "hypotheses": 7,
+      "unsupported_hypotheses": 7,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 2,
       "supporting_links": 2,
-      "emergent_total": 22,
+      "emergent_total": 24,
       "usable_semantic_rate": 1.0,
-      "methods_total": 7,
-      "method_trials_total": 27,
+      "methods_total": 9,
+      "method_trials_total": 35,
       "methods_ready_total": 0,
-      "stagnation_cycles": 3,
-      "objects": 1141,
-      "cycle": 5
+      "stagnation_cycles": 4,
+      "objects": 1235,
+      "cycle": 6
     },
     "vitality_prev": {
       "supports": 2,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 1141,
-      "active": 126,
+      "objects": 1235,
+      "active": 130,
       "links": 2,
-      "emergent": 22
+      "emergent": 24
     },
-    "stagnation": 3,
+    "stagnation": 4,
     "vitality_history": [
       {
         "cycle": 1,
@@ -826,16 +892,25 @@
         "development": 0,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 6,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 2,
+      "starved_topic": 3,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
-    "commissions_filed": {},
+    "commissions_filed": {
+      "starved_topic": 6
+    },
     "forum_stance": "Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber genau so streng geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein deshalb geglaubt, weil ein Mensch es gesagt hat.",
     "forum_registry": {
       "huggingface": {
@@ -3872,7 +3947,293 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:01+00:00",
+      "cycle": 6,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:02+00:00",
+      "cycle": 6,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:02+00:00",
+      "cycle": 6,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:04+00:00",
+      "cycle": 6,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:08+00:00",
+      "cycle": 6,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:22+00:00",
+      "cycle": 6,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:23+00:00",
+      "cycle": 6,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:23+00:00",
+      "cycle": 6,
+      "kind": "judged",
+      "summary": "relevant: Use forums rather than Slack/Discord to support developer community",
+      "refs": {
+        "source": "hackernews:29154216",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://www.mooreds.com/wordpress/archives/3451"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:23+00:00",
+      "cycle": 6,
+      "kind": "judged",
+      "summary": "relevant: flarum",
+      "refs": {
+        "source": "github:flarum/flarum",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://github.com/flarum/flarum"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:23+00:00",
+      "cycle": 6,
+      "kind": "judged",
+      "summary": "relevant: answer",
+      "refs": {
+        "source": "github:apache/answer",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://github.com/apache/answer"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:30+00:00",
+      "cycle": 6,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from github:flarum/flarum [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:43+00:00",
+      "cycle": 6,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [high_conflict_load] proposed 0 claim(s) [deepseek-v4-pro, replayed=False] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:43+00:00",
+      "cycle": 6,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: flarum (from github)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:43+00:00",
+      "cycle": 6,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: answer (from github)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:44+00:00",
+      "cycle": 6,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 0 passed, 8 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:44+00:00",
+      "cycle": 6,
+      "kind": "invented",
+      "summary": "new hypothesis bridging alignment x anthology (candidate, derived from C-54+C-179)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:45+00:00",
+      "cycle": 6,
+      "kind": "emerged",
+      "summary": "new topic 'multimodal' precipitated from a recurrence across cora experimental results, cora impact on lvlms, coverage evaluation with privacy, mllms as denoising priors, repfusion architecture",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:45+00:00",
+      "cycle": 6,
+      "kind": "emerged",
+      "summary": "'reasoning' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:45+00:00",
+      "cycle": 6,
+      "kind": "emerged",
+      "summary": "synthesis on coverage evaluation with privacy: 'distinct' (Layer 9 synthesis-eligible, SC-33) from 4 claims (C-118, C-91, C-92, C-93)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:46+00:00",
+      "cycle": 6,
+      "kind": "emerged",
+      "summary": "'reasoning' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:46+00:00",
+      "cycle": 6,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-182 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:46+00:00",
+      "cycle": 6,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): coverage evaluation with privacy",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:46+00:00",
+      "cycle": 6,
+      "kind": "regulate",
+      "summary": "retired 1 junk-subject hypothesis(es): C-182",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:46+00:00",
+      "cycle": 6,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 7 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:46+00:00",
+      "cycle": 6,
+      "kind": "commission",
+      "summary": "Auftrag an Claude: Erweitere meine Quellen für 'coverage evaluation with privacy' - reader-sources (non-core, 3 Zyklen anhaltend)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:47+00:00",
+      "cycle": 6,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:47+00:00",
+      "cycle": 6,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:48:47+00:00",
+      "cycle": 6,
+      "kind": "note",
+      "summary": "cycle done · 3 new · 2 method(s) · 8 trialed · 0 new link(s) · 1 hypothesis(es) · 2 emergent · degenerating · spend €0.1500 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-15T19:44:40+00:00"
+  "generated": "2026-06-15T19:48:47+00:00"
 }
