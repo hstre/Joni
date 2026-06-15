@@ -180,6 +180,12 @@ class CoreState:
         return self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REJECT,
                         {}, targets=(claim_id,))
 
+    def reject_method(self, method_id: str):
+        """Shed a method candidate (e.g. an off-domain one harvested by mistake). Gate-recorded,
+        never silent; Joni never *promotes* a method, but he may discard one he should not keep."""
+        return self._op(ProposalType.METHOD_PROPOSAL, Operator.METHOD_REJECT,
+                        {}, targets=(method_id,))
+
     def propose_method(self, *, name: str, summary: str, applicable_to=(),
                        origin: str = "joni") -> str:
         """Store a method Joni found, as a CANDIDATE in the shared Layer 9 core - for

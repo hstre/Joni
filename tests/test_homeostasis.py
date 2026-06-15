@@ -113,3 +113,36 @@ def test_retire_keeps_a_junk_topic_claim_that_earned_support():
     cs.corroborate(a, cs.core.get(ev), relation="supports")                    # 'a' earned support
     homeostasis.retire_junk_topics(cs, {}, _Proto())
     assert cs.core.get(a).status.value == "active"     # ugly topic, but a real idea -> kept
+
+
+def test_retire_junk_methods_sheds_off_domain_candidates(monkeypatch):
+    from joni.autonomy import embeddings
+    monkeypatch.setattr(embeddings, "available", lambda: True)
+    off = ("c++", "coding", "guidelines", "devops", "frontend")
+
+    def cd(probe, anchor):
+        p_off = any(k in probe.lower() for k in off)
+        a_off = any(k in anchor.lower() for k in off)
+        return 0.15 if (p_off == a_off) else 0.9
+    monkeypatch.setattr(embeddings, "cosine_distance", cd)
+
+    cs = CoreState(seed_core())
+    junk = cs.propose_method(name="CppCoreGuidelines", summary="C++ coding guidelines",
+                             applicable_to=("routing",), origin="github")
+    good = cs.propose_method(name="routing-as-a-lens", summary="model routing for agents",
+                             applicable_to=("routing",), origin="joni:emergent")
+    ext: dict = {}
+    out = homeostasis.retire_junk_methods(cs, ext, _Proto())
+    assert out["retired_methods"] == 1
+    assert cs.core.get(junk).status is l9.Status.REJECTED          # off-domain -> shed
+    assert cs.core.get(good).status is l9.Status.CANDIDATE         # on-domain -> kept
+    assert good in ext["methods_domain_ok"]                        # cached, won't re-embed
+
+
+def test_retire_junk_methods_is_a_noop_without_an_embedder(monkeypatch):
+    from joni.autonomy import embeddings
+    monkeypatch.setattr(embeddings, "available", lambda: False)
+    cs = CoreState(seed_core())
+    cs.propose_method(name="CppCoreGuidelines", summary="C++ guidelines", origin="github")
+    out = homeostasis.retire_junk_methods(cs, {}, _Proto())
+    assert out["retired_methods"] == 0                              # fail-open: nothing shed
