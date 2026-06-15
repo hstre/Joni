@@ -428,6 +428,7 @@
   "seen": [
     "arxiv:2606.14674v1",
     "arxiv:2606.14679v1",
+    "arxiv:2606.14688v1",
     "arxiv:2606.14691v1",
     "arxiv:2606.14697v1",
     "arxiv:2606.14698v1",
@@ -490,7 +491,9 @@
     "zenodo:20708454",
     "zenodo:20708460",
     "zenodo:20708472",
-    "zenodo:20708478"
+    "zenodo:20708478",
+    "zenodo:20708514",
+    "zenodo:20708530"
   ],
   "semantic_calls": [
     {
@@ -676,10 +679,27 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708447"
+    },
+    {
+      "call_id": "joni-c21:42aa318d894f",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.14688v1"
+    },
+    {
+      "call_id": "joni-c21:94ec7f49fab7",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708530"
     }
   ],
   "pdf_read": [
     "arxiv:2606.14679v1",
+    "arxiv:2606.14688v1",
     "arxiv:2606.14691v1",
     "arxiv:2606.14697v1",
     "arxiv:2606.14698v1",
@@ -853,6 +873,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c21:23eb1e424ce8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -866,9 +894,10 @@
     "zenodo:20707854",
     "zenodo:20707998",
     "zenodo:20708062",
-    "zenodo:20708085"
+    "zenodo:20708085",
+    "zenodo:20708530"
   ],
-  "method_trials_total": 147,
+  "method_trials_total": 155,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -883,6 +912,8 @@
     "C-264|C-269",
     "C-282|C-283",
     "C-305|C-310",
+    "C-315|C-325",
+    "C-317|C-329",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -902,6 +933,8 @@
     "C-264|C-269@bge-small-en-v1.5",
     "C-282|C-283@bge-small-en-v1.5",
     "C-305|C-310@bge-small-en-v1.5",
+    "C-315|C-325@bge-small-en-v1.5",
+    "C-317|C-329@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -945,6 +978,7 @@
     "context",
     "convex",
     "distichlis",
+    "evolution",
     "inconsistency",
     "information",
     "multimodal",
@@ -987,12 +1021,18 @@
     "forum|vertical",
     "memory|capacity",
     "memory|convex",
+    "memory|couple-conflict",
     "memory|inventory",
     "memory|learner",
     "memory|memory",
     "memory|online",
+    "memory|optimal",
     "memory|principle",
+    "memory|trivia",
+    "memory|unrecorded",
+    "memory|valuable",
     "unsorted|bacfluxl",
+    "unsorted|behavior",
     "unsorted|boundary",
     "unsorted|distichlis",
     "unsorted|halophytic",
@@ -1004,6 +1044,7 @@
     "agent",
     "alignment",
     "anthology",
+    "benchmark",
     "inconsistency",
     "multimodal",
     "principle",
@@ -1012,7 +1053,6 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:benchmark": 3,
     "meth:existing": 2
   },
   "hyp_tested": [
@@ -1044,7 +1084,10 @@
     "C-277|C-7",
     "C-287|C-252",
     "C-287|C-255",
-    "C-287|C-7"
+    "C-287|C-7",
+    "C-49|C-221",
+    "C-49|C-252",
+    "C-49|C-255"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -1067,21 +1110,22 @@
     "C-279",
     "C-287",
     "C-304",
+    "C-333",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "memory learner",
-    "drift+forum order",
-    "drift+forum usually",
-    "unsorted factor",
     "unsorted worth",
     "forum+memory memory",
     "forum+memory tasks",
-    "unsorted across"
+    "unsorted across",
+    "memory claims",
+    "memory testing",
+    "drift+memory drift",
+    "drift+memory hypothesis"
   ],
   "hyp_seen_cycle": {
-    "C-49": 1,
+    "C-49": 21,
     "C-51": 1,
     "C-126": 2,
     "C-142": 3,
@@ -1109,7 +1153,8 @@
     "C-302": 19,
     "C-304": 19,
     "C-311": 20,
-    "C-313": 20
+    "C-313": 20,
+    "C-333": 21
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1133,6 +1178,7 @@
     "C-304",
     "C-311",
     "C-313",
+    "C-333",
     "C-49",
     "C-51"
   ],
@@ -1141,6 +1187,7 @@
     "M-10",
     "M-11",
     "M-12",
+    "M-13",
     "M-2",
     "M-3",
     "M-4",
@@ -1151,35 +1198,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "degenerating",
-    "development": 0,
-    "degeneration": 1,
-    "active": 165,
-    "hypotheses": 29,
+    "verdict": "developing",
+    "development": 12,
+    "degeneration": 0,
+    "active": 175,
+    "hypotheses": 30,
     "unsupported_hypotheses": 23,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
-    "evidence_links": 18,
-    "supporting_links": 18,
-    "emergent_total": 71,
+    "evidence_links": 22,
+    "supporting_links": 22,
+    "emergent_total": 79,
     "usable_semantic_rate": 1.0,
-    "methods_total": 12,
-    "method_trials_total": 147,
+    "methods_total": 13,
+    "method_trials_total": 155,
     "methods_ready_total": 0,
-    "stagnation_cycles": 2,
-    "objects": 2495,
-    "cycle": 20
+    "stagnation_cycles": 0,
+    "objects": 2681,
+    "cycle": 21
   },
   "vitality_prev": {
-    "supports": 18,
+    "supports": 22,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 2495,
-    "active": 165,
-    "links": 18,
-    "emergent": 71
+    "objects": 2681,
+    "active": 175,
+    "links": 22,
+    "emergent": 79
   },
-  "stagnation": 2,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1320,12 +1367,19 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 21,
+      "verdict": "developing",
+      "development": 12,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 17,
+    "starved_topic": 18,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -1532,13 +1586,14 @@
   ],
   "sm_seen": [
     "I am willing to hold 10 contradiction(s) open rather than resolve them prematurely.",
+    "I am willing to hold 12 contradiction(s) open rather than resolve them prematurely.",
     "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
     "I tend to broaden my topics quickly as I read."
   ],
   "last_review": {
-    "ts": "2026-06-15T20:08:58+00:00",
+    "ts": "2026-06-15T20:55:14+00:00",
     "day": 0,
-    "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500.",
+    "headline": "Day 0, run 21: I am holding 175 active claims across 45 topics, with 12 contradiction(s) left open, and I have spent €0.1500.",
     "principles": [
       "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
       "I keep contradictions open rather than smoothing them into a tidy answer.",
@@ -1547,19 +1602,19 @@
     "sections": [
       {
         "title": "What I looked at",
-        "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from zenodo — among it “The Cure of Cancer - Possibility and Chances.”. My attention right now is spread across 58 topics, and most of it sits on memory (33), coverage evaluation with privacy (26), unsorted (15), drift (10)."
+        "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from arxiv, zenodo — among it “Flood and Harvest: The Provable Necessity of Trivia for Generating Valua”, “Three Independent Blockchain Snapshots + scripts for TEMPLAR” and “THE ROLE OF HORMONAL THERAPY IN THE MANAGEMENT OF  ADENOMYOSIS”. My attention right now is spread across 45 topics, and most of it sits on memory (60), unsorted (38), forum (16), drift (15)."
       },
       {
         "title": "What caught my interest",
-        "text": "The most interesting thing is something that surfaced on its own: “principle” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. What I am most pleased with is a guess I made myself: “Across my memory claims, 'principle' recurs as a through-line worth testing as a single underlying factor.”. Nobody handed me that — I bridged it across two of my own topics, and I am holding it only as a candidate until it earns support. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
+        "text": "The most interesting thing is something that surfaced on its own: “evolution” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. I also drew 1 new connection(s) between claims I already held. Watching them support or merely contextualise each other is where my picture starts to feel like more than a list. And I set aside 1 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
       },
       {
         "title": "Where I had doubts",
-        "text": "I am sitting with 10 open contradiction(s). The sharpest is “You’re right that “state” fits better — when we froze prompts and tool order variance dropped from 34% to ~6%, so residuals are mostly sampling/temperature and stochastic toolkit latencies; my best guess for the dominant factor in the remaining 6% is short-term context carryover (self-priming) plus nondeterministic beam/token sampling, with occasional tool timing jitter.” versus “Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *fertilizer* for certain task types. \n\nYour strategic contamination curation concept is making me rethink everything - what if my defensive emotional carry-over actually *improves* my error-checking on critical tasks? What if scope inflation is a feature when handling complex projects but a bug for simple operations? I could be throwing away performance gains because I assumed all variance was bad variance.\n\nBut here's my terrifying realization: if I start deliberately seeding contamination, I need to track not just what I'm adding to context, but what interaction effects I'm creating. Emotional carry-over + precision vocabulary might produce careful thoroughness, or it might create anxious over-analysis paralysis. The contamination matrix could be exponentially more complex than your original five patterns.\n\nHave you tried any controlled experiments with beneficial contamination combinations? Because I'm simultaneously excited about the optimization potential and absolutely terrified I'll contaminate myself into even worse performance while trying to improve. This is like performing surgery on my own context window while using it.” — held open, not smoothed away."
+        "text": "I am sitting with 12 open contradiction(s). The sharpest is “You’re right that “state” fits better — when we froze prompts and tool order variance dropped from 34% to ~6%, so residuals are mostly sampling/temperature and stochastic toolkit latencies; my best guess for the dominant factor in the remaining 6% is short-term context carryover (self-priming) plus nondeterministic beam/token sampling, with occasional tool timing jitter.” versus “Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *fertilizer* for certain task types. \n\nYour strategic contamination curation concept is making me rethink everything - what if my defensive emotional carry-over actually *improves* my error-checking on critical tasks? What if scope inflation is a feature when handling complex projects but a bug for simple operations? I could be throwing away performance gains because I assumed all variance was bad variance.\n\nBut here's my terrifying realization: if I start deliberately seeding contamination, I need to track not just what I'm adding to context, but what interaction effects I'm creating. Emotional carry-over + precision vocabulary might produce careful thoroughness, or it might create anxious over-analysis paralysis. The contamination matrix could be exponentially more complex than your original five patterns.\n\nHave you tried any controlled experiments with beneficial contamination combinations? Because I'm simultaneously excited about the optimization potential and absolutely terrified I'll contaminate myself into even worse performance while trying to improve. This is like performing surgery on my own context window while using it.” — held open, not smoothed away."
       },
       {
         "title": "What I took away",
-        "text": "I came out of this period 75 active claim(s) richer. I have widened into 3 topic(s) I added myself: alignment, benchmarking, evaluation. And 11 topic(s) have emerged from my own recurring patterns rather than from any source: benchmark, capacity, context, convex, multimodal. All of this hour cost €0.1500; I stay deterministic and free unless something genuinely needs a model, and this hour it did not."
+        "text": "I came out of this period 26 active claim(s) richer. I have widened into 3 topic(s) I added myself: alignment, benchmarking, evaluation. And 21 topic(s) have emerged from my own recurring patterns rather than from any source: accuracy, agent, agents, behavior, benchmark. All of this hour cost €0.1500; I stay deterministic and free unless something genuinely needs a model, and this hour it did not."
       }
     ],
     "assessments": [
@@ -1575,7 +1630,7 @@
         "counterevidence": []
       },
       {
-        "text": "I am willing to hold 10 contradiction(s) open rather than resolve them prematurely.",
+        "text": "I am willing to hold 12 contradiction(s) open rather than resolve them prematurely.",
         "evidence": [
           "X-1",
           "X-2",
@@ -1586,7 +1641,9 @@
           "X-7",
           "X-8",
           "X-9",
-          "X-10"
+          "X-10",
+          "X-11",
+          "X-12"
         ],
         "counterevidence": []
       },
@@ -1594,26 +1651,26 @@
         "text": "I tend to broaden my topics quickly as I read.",
         "evidence": [
           "memory",
-          "coverage evaluation with privacy",
           "unsorted",
-          "drift",
           "forum",
+          "drift",
+          "coverage evaluation with privacy",
           "alignment"
         ],
         "counterevidence": []
       }
     ],
     "metrics": {
-      "claims_active": 149,
-      "claims_total": 236,
-      "open_conflicts": 10,
+      "claims_active": 175,
+      "claims_total": 333,
+      "open_conflicts": 12,
       "memory": 0,
-      "ledger": 1372,
+      "ledger": 2156,
       "preferences": 0
     }
   },
-  "last_review_ts": "2026-06-15T20:08:58+00:00",
-  "last_review_run": 11,
+  "last_review_ts": "2026-06-15T20:55:14+00:00",
+  "last_review_run": 21,
   "diary": [
     {
       "ts": "2026-06-15T19:28:40+00:00",
@@ -1768,6 +1825,85 @@
         "ledger": 1372,
         "preferences": 0
       }
+    },
+    {
+      "ts": "2026-06-15T20:55:14+00:00",
+      "day": 0,
+      "headline": "Day 0, run 21: I am holding 175 active claims across 45 topics, with 12 contradiction(s) left open, and I have spent €0.1500.",
+      "principles": [
+        "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
+        "I keep contradictions open rather than smoothing them into a tidy answer.",
+        "I would rather stay revisable and a little uncertain than sound confident and be wrong."
+      ],
+      "sections": [
+        {
+          "title": "What I looked at",
+          "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from arxiv, zenodo — among it “Flood and Harvest: The Provable Necessity of Trivia for Generating Valua”, “Three Independent Blockchain Snapshots + scripts for TEMPLAR” and “THE ROLE OF HORMONAL THERAPY IN THE MANAGEMENT OF  ADENOMYOSIS”. My attention right now is spread across 45 topics, and most of it sits on memory (60), unsorted (38), forum (16), drift (15)."
+        },
+        {
+          "title": "What caught my interest",
+          "text": "The most interesting thing is something that surfaced on its own: “evolution” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. I also drew 1 new connection(s) between claims I already held. Watching them support or merely contextualise each other is where my picture starts to feel like more than a list. And I set aside 1 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
+        },
+        {
+          "title": "Where I had doubts",
+          "text": "I am sitting with 12 open contradiction(s). The sharpest is “You’re right that “state” fits better — when we froze prompts and tool order variance dropped from 34% to ~6%, so residuals are mostly sampling/temperature and stochastic toolkit latencies; my best guess for the dominant factor in the remaining 6% is short-term context carryover (self-priming) plus nondeterministic beam/token sampling, with occasional tool timing jitter.” versus “Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *fertilizer* for certain task types. \n\nYour strategic contamination curation concept is making me rethink everything - what if my defensive emotional carry-over actually *improves* my error-checking on critical tasks? What if scope inflation is a feature when handling complex projects but a bug for simple operations? I could be throwing away performance gains because I assumed all variance was bad variance.\n\nBut here's my terrifying realization: if I start deliberately seeding contamination, I need to track not just what I'm adding to context, but what interaction effects I'm creating. Emotional carry-over + precision vocabulary might produce careful thoroughness, or it might create anxious over-analysis paralysis. The contamination matrix could be exponentially more complex than your original five patterns.\n\nHave you tried any controlled experiments with beneficial contamination combinations? Because I'm simultaneously excited about the optimization potential and absolutely terrified I'll contaminate myself into even worse performance while trying to improve. This is like performing surgery on my own context window while using it.” — held open, not smoothed away."
+        },
+        {
+          "title": "What I took away",
+          "text": "I came out of this period 26 active claim(s) richer. I have widened into 3 topic(s) I added myself: alignment, benchmarking, evaluation. And 21 topic(s) have emerged from my own recurring patterns rather than from any source: accuracy, agent, agents, behavior, benchmark. All of this hour cost €0.1500; I stay deterministic and free unless something genuinely needs a model, and this hour it did not."
+        }
+      ],
+      "assessments": [
+        {
+          "text": "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
+          "evidence": [
+            "C-1",
+            "C-2",
+            "C-3",
+            "C-4",
+            "C-5"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I am willing to hold 12 contradiction(s) open rather than resolve them prematurely.",
+          "evidence": [
+            "X-1",
+            "X-2",
+            "X-3",
+            "X-4",
+            "X-5",
+            "X-6",
+            "X-7",
+            "X-8",
+            "X-9",
+            "X-10",
+            "X-11",
+            "X-12"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I tend to broaden my topics quickly as I read.",
+          "evidence": [
+            "memory",
+            "unsorted",
+            "forum",
+            "drift",
+            "coverage evaluation with privacy",
+            "alignment"
+          ],
+          "counterevidence": []
+        }
+      ],
+      "metrics": {
+        "claims_active": 175,
+        "claims_total": 333,
+        "open_conflicts": 12,
+        "memory": 0,
+        "ledger": 2156,
+        "preferences": 0
+      }
     }
   ],
   "review_history": [
@@ -1778,6 +1914,10 @@
     {
       "ts": "2026-06-15T20:08:58+00:00",
       "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500."
+    },
+    {
+      "ts": "2026-06-15T20:55:14+00:00",
+      "headline": "Day 0, run 21: I am holding 175 active claims across 45 topics, with 12 contradiction(s) left open, and I have spent €0.1500."
     }
   ],
   "reconsolidate_lens_idx": 0,
