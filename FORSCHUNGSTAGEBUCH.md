@@ -622,3 +622,38 @@ Mechanismus wie vorgesehen arbeitet: Kernänderungen werden **angehalten und vor
 selbst vollzogen — und eine schwach belegte „Idee" wird verworfen, statt den Kern zu verwässern.
 Der Protected Core blieb unangetastet. (Kontrast zum Non-Core-Pfad: Auftrag #67 wurde umgesetzt
 und gemerged; core-asks brauchen einen Menschen.)
+
+### Eintrag 2026-06-15 ~07:40 UTC — Entstockung: dev>0, Evidenz-Rotation, core-ask-Rauschen
+
+Joni ist über Nacht **entstockt**: Vitalität von `degenerating` → **`steady`**, `development` von
+0 → **26** (Zyklus 300). Die externe Reibung (Moltbook-Reaktionen als SOURCE) + die breitere
+Quellenbasis haben gegriffen. Beim genauen Hinsehen fielen zwei peripher behebbare Probleme auf:
+
+**1. Evidenz-Starvation der Hypothesen (Fix #77).** 30 von 32 Hypothesen standen mit *null*
+Stützung da, obwohl Joni viel liest. Ursache: `strengthen()` wählte stur die **älteste**
+Hypothesen-ID — die hohle `C-38` belegte den einzigen Slot **37×** über 30 Zyklen, die anderen
+~31 kamen **nie** dran. Fix: **faire Rotation** (am längsten nicht bearbeitet zuerst). Jede
+Hypothese verdient nun der Reihe nach Evidenz.
+
+**2. core-ask-Rauschen (Fix #78).** Die neuen akademischen Quellen (Zenodo/OpenAlex) spülen Paper
+hoch, die Kernbegriffe (`scoring`, `operator`, `conflict resolution`) nur *streifen* — der Detektor
+feuerte beim ersten Stichwort-Treffer eine high-risk `joni-core-ask` (drei in einer Nacht:
+#72/#75/#76, alle abgelehnt). Fix: ein Kern-Trigger muss über **3 Zyklen wiederkehren** (Sustain +
+Cooldown), bevor er einen Menschen erreicht. One-offs werden still gehalten (im Protokoll vermerkt).
+
+**Momentaufnahme von Jonis *nicht umgesetzten* Entwicklungsvorschlägen** (Stand Zyklus ~305, aus
+dem gefalteten Layer-9-Journal):
+- **33 Hypothesen, nur 1 promotet** (C-39, alignment+privacy). Stärkste *unrealisierte*: **C-38**
+  (alignment↔memory, **6 Stützungen**) — aber von Kevin als „hollow" blockiert, daher kein Aufstieg;
+  dann C-264 (sup 3), C-41 (sup 1). Langer Schwanz mit `sup=0`.
+- **Hypothesen-Qualität:** ein Großteil sind Artefakt-Hypothesen über zufällige Tokens
+  („'cotton'/'mid-ir'/'agentic' recurs as a through-line", „'about' keeps recurring") — sie verdienen
+  nie Evidenz und verdünnen die guten. **Offene Verbesserung:** Hypothesen-Saat gegen Junk-Tokens
+  filtern.
+- **Methoden:** 59 vorgeschlagen, **1609 Trials, 0 promotet** (`methods_ready=0`) — Kevin probiert
+  viel, adoptiert (regelkonform) nichts ohne menschliche Freigabe.
+- **24 offene Konflikte** bleiben gehalten (nicht geglättet).
+- **core-asks** (Selbst-Änderungsvorschläge, nie selbst angewandt): Scoring/Operator/Conflict-
+  Resolution — alle abgelehnt, jetzt gedrosselt.
+
+Beide Fixes live, Loop neu gestartet, Tests grün (290), Protected Core unangetastet.
