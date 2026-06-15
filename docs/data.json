@@ -6,9 +6,9 @@
       "memory",
       "drift",
       "forum",
+      "unsorted",
       "alignment",
       "privacy",
-      "repfusion architecture",
       "anthology",
       "anthology content guidelines",
       "anthology contributors",
@@ -39,7 +39,6 @@
       "lambert w function inequality",
       "limitations of existing benchmarks",
       "methylation and cell type distinction",
-      "mllms as denoising priors",
       "model consistency vs creativity",
       "model variance by training objective",
       "multi-agent conversation monitoring",
@@ -48,7 +47,8 @@
       "quantum pyramids entropy inequalities",
       "raes and llm compatibility",
       "reasoning",
-      "repfusion performance",
+      "repfusion architecture",
+      "representations",
       "required data sources and infrastructure",
       "rlvr method limitations",
       "routing",
@@ -63,18 +63,18 @@
       "variance decomposition",
       "zero-sum ℓ^p inequality"
     ],
-    "claims_total": 199,
-    "claims_active": 138,
+    "claims_total": 208,
+    "claims_active": 140,
     "memory": 0,
-    "ledger": 1082,
+    "ledger": 1146,
     "open_conflicts": 10,
     "methods": 10,
-    "method_trials": 43,
+    "method_trials": 51,
     "methods_ready": 0,
     "preferences": 0,
     "evidence_links": 2,
     "self_model": 3,
-    "hypotheses": 8,
+    "hypotheses": 9,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": {
@@ -87,11 +87,11 @@
   "budget": {
     "spent_eur": 0.15,
     "cap_eur": 20.0,
-    "runs": 7
+    "runs": 8
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 7,
+    "runs": 8,
     "retired": false
   },
   "extensions": {
@@ -529,6 +529,7 @@
       "arxiv:2606.14698v1",
       "arxiv:2606.14700v1",
       "arxiv:2606.14701v1",
+      "arxiv:2606.14703v1",
       "arxiv:2606.14704v1",
       "github:affaan-m/ECC",
       "github:apache/answer",
@@ -660,6 +661,14 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20707998"
+      },
+      {
+        "call_id": "joni-c8:618a6059acd0",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "arxiv:2606.14703v1"
       }
     ],
     "pdf_read": [
@@ -668,6 +677,7 @@
       "arxiv:2606.14697v1",
       "arxiv:2606.14698v1",
       "arxiv:2606.14700v1",
+      "arxiv:2606.14703v1",
       "arxiv:2606.14704v1"
     ],
     "pdf_urls_seen": [],
@@ -732,6 +742,14 @@
         "state_k": 3,
         "replayed": false,
         "claims": 0
+      },
+      {
+        "call_id": "joni-c8:b5095fe03cb8",
+        "served_model": "deepseek-v4-pro",
+        "reason": "high_conflict_load",
+        "state_k": 3,
+        "replayed": true,
+        "claims": 0
       }
     ],
     "methods_seen": [
@@ -745,10 +763,10 @@
       "zenodo:20707854",
       "zenodo:20707998"
     ],
-    "method_trials_total": 43,
+    "method_trials_total": 51,
     "methods_ready_total": 0,
     "core_ask_signals": {
-      "scoring": 1
+      "scoring": 0
     },
     "core_ask_filed": {},
     "linked": [
@@ -784,6 +802,7 @@
       "alignment|forum",
       "alignment|memory",
       "alignment|privacy",
+      "alignment|unsorted",
       "drift|memory"
     ],
     "emerged_topics": [
@@ -792,6 +811,7 @@
       "convex",
       "multimodal",
       "reasoning",
+      "representations",
       "session",
       "variance"
     ],
@@ -813,7 +833,8 @@
       "forum|session",
       "forum|variance",
       "memory|convex",
-      "memory|memory"
+      "memory|memory",
+      "memory|online"
     ],
     "emerged_methods": [
       "alignment",
@@ -821,25 +842,29 @@
       "reasoning",
       "variance"
     ],
-    "emerge_insufficient": {},
+    "emerge_insufficient": {
+      "meth:anthology": 1
+    },
     "hyp_tested": [],
     "hyp_insufficient": {},
     "hyp_hollow": [
       "C-140",
       "C-168",
       "C-182",
+      "C-206",
+      "C-208",
       "C-49",
       "C-51"
     ],
     "learned_queries": [
-      "forum worth",
-      "alignment+anthology sounds",
-      "alignment+anthology needs",
-      "coverage evaluation with privacy testing",
       "coverage evaluation with privacy underlying",
       "alignment+flarum architectural",
       "alignment+flarum fine-tuning",
-      "coverage evaluation with privacy single"
+      "coverage evaluation with privacy single",
+      "alignment+unsorted right",
+      "alignment+unsorted trade-offs",
+      "memory testing",
+      "memory worth"
     ],
     "hyp_seen_cycle": {
       "C-49": 1,
@@ -849,8 +874,9 @@
       "C-170": 4,
       "C-173": 5,
       "C-184": 6,
-      "C-197": 7,
-      "C-199": 7
+      "C-199": 7,
+      "C-206": 8,
+      "C-208": 8
     },
     "hyp_domain_ok": [
       "C-126",
@@ -859,6 +885,7 @@
       "C-173",
       "C-184",
       "C-199",
+      "C-208",
       "C-49",
       "C-51"
     ],
@@ -878,32 +905,32 @@
       "verdict": "degenerating",
       "development": 0,
       "degeneration": 1,
-      "active": 138,
-      "hypotheses": 8,
-      "unsupported_hypotheses": 8,
+      "active": 140,
+      "hypotheses": 9,
+      "unsupported_hypotheses": 9,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 2,
       "supporting_links": 2,
-      "emergent_total": 29,
+      "emergent_total": 31,
       "usable_semantic_rate": 1.0,
       "methods_total": 10,
-      "method_trials_total": 43,
+      "method_trials_total": 51,
       "methods_ready_total": 0,
-      "stagnation_cycles": 5,
-      "objects": 1346,
-      "cycle": 7
+      "stagnation_cycles": 6,
+      "objects": 1421,
+      "cycle": 8
     },
     "vitality_prev": {
       "supports": 2,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 1346,
-      "active": 138,
+      "objects": 1421,
+      "active": 140,
       "links": 2,
-      "emergent": 29
+      "emergent": 31
     },
-    "stagnation": 5,
+    "stagnation": 6,
     "vitality_history": [
       {
         "cycle": 1,
@@ -953,12 +980,19 @@
         "development": 0,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 8,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 4,
+      "starved_topic": 5,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -1101,19 +1135,39 @@
         "question": "Hat jemand gute Quellen oder Erfahrungen zu 'privacy'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
         "status": "posted",
         "posted_url": "https://www.moltbook.com/posts/6f13c3b8-c8ce-4893-9629-df97bfbf8b19"
+      },
+      {
+        "id": "FA-8-209f9b",
+        "cycle": 8,
+        "platform": "huggingface",
+        "need": "topic:unsorted",
+        "question": "Hat jemand gute Quellen oder Erfahrungen zu 'unsorted'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+        "status": "drafted",
+        "posted_url": null
+      },
+      {
+        "id": "FA-8-ca2eb5",
+        "cycle": 8,
+        "platform": "moltbook",
+        "need": "topic:unsorted",
+        "question": "Hat jemand gute Quellen oder Erfahrungen zu 'unsorted'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+        "status": "posted",
+        "posted_url": "https://www.moltbook.com/posts/81552755-0ee5-44a8-bf3c-b2b977a8a2aa"
       }
     ],
     "forum_asked": [
       "topic:alignment",
       "topic:drift",
       "topic:memory",
-      "topic:privacy"
+      "topic:privacy",
+      "topic:unsorted"
     ],
     "forum_asked_moltbook": [
       "topic:alignment",
       "topic:drift",
       "topic:memory",
-      "topic:privacy"
+      "topic:privacy",
+      "topic:unsorted"
     ],
     "forum_identity": {
       "moltbook": {
@@ -4550,7 +4604,280 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:16+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:17+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:17+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:18+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:22+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:24+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:26+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:26+00:00",
+      "cycle": 8,
+      "kind": "judged",
+      "summary": "relevant: Gaze Heads: How VLMs Look at What They Describe",
+      "refs": {
+        "source": "arxiv:2606.14703v1",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.14703v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:33+00:00",
+      "cycle": 8,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from arxiv:2606.14703v1 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:34+00:00",
+      "cycle": 8,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [high_conflict_load] proposed 0 claim(s) [deepseek-v4-pro, replayed=True] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:35+00:00",
+      "cycle": 8,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 0 passed, 8 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:35+00:00",
+      "cycle": 8,
+      "kind": "invented",
+      "summary": "new hypothesis bridging alignment x unsorted (candidate, derived from C-54+C-205)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:36+00:00",
+      "cycle": 8,
+      "kind": "emerged",
+      "summary": "new topic 'representations' precipitated from a recurrence across coverage evaluation with privacy, mllms as denoising priors, raes and llm compatibility, repfusion architecture, test-time compute efficiency",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:36+00:00",
+      "cycle": 8,
+      "kind": "emerged",
+      "summary": "synthesis on memory: 'online' (Layer 9 synthesis-eligible, SC-38) from 4 claims (C-39, C-41, C-43, C-6)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:36+00:00",
+      "cycle": 8,
+      "kind": "emerged",
+      "summary": "'anthology' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:36+00:00",
+      "cycle": 8,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-206 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:36+00:00",
+      "cycle": 8,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-208 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:37+00:00",
+      "cycle": 8,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): coverage evaluation with privacy, repfusion architecture, repfusion performance, mllms as denoising priors",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:37+00:00",
+      "cycle": 8,
+      "kind": "regulate",
+      "summary": "retired 1 junk-subject hypothesis(es): C-206",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:37+00:00",
+      "cycle": 8,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 9 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:38+00:00",
+      "cycle": 8,
+      "kind": "forum_draft",
+      "summary": "drafted FA-8-209f9b for huggingface (need topic:unsorted) - awaiting human approval",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:38+00:00",
+      "cycle": 8,
+      "kind": "forum_draft",
+      "summary": "drafted FA-8-ca2eb5 for moltbook (need topic:unsorted) - agent-net, auto-posts",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:39+00:00",
+      "cycle": 8,
+      "kind": "forum_post",
+      "summary": "posted FA-8-ca2eb5 to moltbook (agent-net auto) -> https://www.moltbook.com/posts/81552755-0ee5-44a8-bf3c-b2b977a8a2aa",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:39+00:00",
+      "cycle": 8,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:39+00:00",
+      "cycle": 8,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:56:39+00:00",
+      "cycle": 8,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 0 method(s) · 8 trialed · 0 new link(s) · 1 hypothesis(es) · 2 emergent · degenerating · spend €0.1500 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-15T19:52:47+00:00"
+  "telemetry": {
+    "llm_calls": 22,
+    "granite_calls": 14,
+    "deepseek_escalations": 8,
+    "kevin_calls": 0,
+    "cached_calls": 4,
+    "live_calls": 18,
+    "last_call": "2026-06-15T19:56:34+00:00",
+    "est_cost_eur": 0.016,
+    "by_model": {
+      "ibm-granite/granite-4.1-8b-20260429": 14,
+      "deepseek-v4-pro": 8
+    },
+    "panel_rounds": 1
+  },
+  "generated": "2026-06-15T19:56:39+00:00"
 }
