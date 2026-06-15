@@ -34,6 +34,27 @@
       },
       "risk": "low - adds an input source; no state-logic changes",
       "sustained_cycles": 3
+    },
+    {
+      "kind": "methods_never_mature",
+      "cycle": 40,
+      "addressed_to": "Claude",
+      "title": "Gib dem Methoden-Trial ein klares Bestehens-Kriterium",
+      "component": "the method-trialing / harvesting layer (trials.py / methods.py and Kevin's trial runner) - the pass-criterion and retirement of methods, outside the protected core",
+      "component_key": "method-trialing",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (method-trialing)",
+      "motivation": "20 Methoden, 307 Trials, aber 0 reif (activation-ready). Hohe Aktivität ohne Adoption - ein Trial unterscheidet sich nicht von einer bloß erfolgreichen Ausführung, und keine Methode wird je verworfen.",
+      "desired_capability": "Definiere in trials.py / methods.py (und ggf. Kevins Trial-Runner) ein klares Pass-Kriterium: Baseline, messbare Differenz zum Nicht-Anwenden, Negativergebnisse, und ein Verwerfen einer Methode nach N Trials ohne Differenz - weiterhin ohne Selbst-Bestätigung.",
+      "acceptance": "Innerhalb weniger Zyklen reift mindestens eine Methode (activation-ready) ODER nicht-reifende Methoden werden verworfen, sodass die Methodenzahl nicht unbegrenzt wächst.",
+      "evidence": {
+        "methods_total": 20,
+        "method_trials_total": 307,
+        "methods_ready_total": 0
+      },
+      "risk": "medium - changes how a method is judged tried/passed/discarded; never auto-confirms",
+      "sustained_cycles": 3
     }
   ],
   "forum_heard": [
@@ -536,7 +557,9 @@
     "zenodo:20709238",
     "zenodo:20709322",
     "zenodo:20709355",
-    "zenodo:20709388"
+    "zenodo:20709388",
+    "zenodo:20709443",
+    "zenodo:20709445"
   ],
   "semantic_calls": [
     {
@@ -946,6 +969,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20709388"
+    },
+    {
+      "call_id": "joni-c40:cfc50e599bcb",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20709445"
+    },
+    {
+      "call_id": "joni-c40:c05f664c6fb8",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20709443"
     }
   ],
   "pdf_read": [
@@ -1288,6 +1327,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-25"
+    },
+    {
+      "call_id": "joni-c40:5b4405416bfa",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 4,
+      "conflict": "X-26"
     }
   ],
   "methods_seen": [
@@ -1314,7 +1362,7 @@
     "zenodo:20709229",
     "zenodo:20709322"
   ],
-  "method_trials_total": 299,
+  "method_trials_total": 307,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -1397,6 +1445,12 @@
     "C-549|C-554",
     "C-552|C-555",
     "C-556|C-557",
+    "C-561|C-579",
+    "C-562|C-580",
+    "C-563|C-581",
+    "C-567|C-568",
+    "C-567|C-569",
+    "C-568|C-569",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -1484,6 +1538,12 @@
     "C-549|C-554@bge-small-en-v1.5",
     "C-552|C-555@bge-small-en-v1.5",
     "C-556|C-557@bge-small-en-v1.5",
+    "C-561|C-579@bge-small-en-v1.5",
+    "C-562|C-580@bge-small-en-v1.5",
+    "C-563|C-581@bge-small-en-v1.5",
+    "C-567|C-568@bge-small-en-v1.5",
+    "C-567|C-569@bge-small-en-v1.5",
+    "C-568|C-569@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -1544,6 +1604,7 @@
     "multimodal",
     "outputs",
     "principle",
+    "pure",
     "reasoning",
     "representation",
     "representations",
@@ -1601,6 +1662,7 @@
     "memory|constant",
     "memory|convex",
     "memory|couple-conflict",
+    "memory|dorsalis",
     "memory|epidbot",
     "memory|five",
     "memory|genetic",
@@ -1674,7 +1736,7 @@
     "memory|geometry": 2,
     "memory|structures": 1,
     "meth:composition": 1,
-    "meth:mechanics": 1
+    "meth:mechanics": 2
   },
   "hyp_tested": [
     "C-221|C-128",
@@ -1705,8 +1767,11 @@
     "C-258|C-252",
     "C-258|C-255",
     "C-258|C-7",
+    "C-261|C-221",
+    "C-261|C-225",
     "C-261|C-252",
     "C-261|C-255",
+    "C-261|C-258",
     "C-261|C-7",
     "C-277|C-252",
     "C-277|C-255",
@@ -1756,20 +1821,19 @@
     "C-566"
   ],
   "learned_queries": [
-    "unsorted representation",
-    "memory claims",
-    "agentspec+drift might",
     "agentspec+drift through",
     "memory worth",
     "memory single",
     "coverage evaluation with privacy worth",
-    "coverage evaluation with privacy single"
+    "coverage evaluation with privacy single",
+    "memory testing",
+    "agentspec+flarum controlled",
+    "agentspec+flarum behind"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
-    "C-257": 37,
     "C-260": 39,
-    "C-261": 16,
+    "C-261": 40,
     "C-263": 16,
     "C-277": 17,
     "C-279": 17,
@@ -1797,7 +1861,8 @@
     "C-521": 36,
     "C-534": 37,
     "C-548": 38,
-    "C-566": 39
+    "C-566": 39,
+    "C-584": 40
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1841,7 +1906,8 @@
     "C-521",
     "C-534",
     "C-548",
-    "C-566"
+    "C-566",
+    "C-584"
   ],
   "methods_domain_ok": [
     "M-1",
@@ -1866,35 +1932,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "degenerating",
-    "development": 0,
-    "degeneration": 2,
-    "active": 310,
+    "verdict": "steady",
+    "development": 16,
+    "degeneration": 1,
+    "active": 328,
     "hypotheses": 31,
-    "unsupported_hypotheses": 27,
-    "promoted_ideas": 7,
+    "unsupported_hypotheses": 28,
+    "promoted_ideas": 8,
     "confirmed_claims": 0,
-    "evidence_links": 53,
-    "supporting_links": 53,
-    "emergent_total": 147,
+    "evidence_links": 57,
+    "supporting_links": 57,
+    "emergent_total": 149,
     "usable_semantic_rate": 1.0,
     "methods_total": 20,
-    "method_trials_total": 299,
+    "method_trials_total": 307,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 4925,
-    "cycle": 39
+    "stagnation_cycles": 0,
+    "objects": 5080,
+    "cycle": 40
   },
   "vitality_prev": {
-    "supports": 53,
-    "promoted": 7,
+    "supports": 57,
+    "promoted": 8,
     "confirmed": 0,
-    "objects": 4925,
-    "active": 310,
-    "links": 53,
-    "emergent": 147
+    "objects": 5080,
+    "active": 328,
+    "links": 57,
+    "emergent": 149
   },
-  "stagnation": 1,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2168,17 +2234,25 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 40,
+      "verdict": "steady",
+      "development": 16,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 36,
+    "starved_topic": 37,
     "stalled_development": 0,
-    "methods_never_mature": 2
+    "methods_never_mature": 3
   },
   "commissions_filed": {
-    "starved_topic": 6
+    "starved_topic": 6,
+    "methods_never_mature": 40
   },
   "forum_stance": "Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber genau so streng geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein deshalb geglaubt, weil ein Mensch es gesagt hat.",
   "forum_registry": {
@@ -2955,7 +3029,7 @@
     }
   ],
   "reconsolidate_lens_idx": 0,
-  "kevin_last_cycle": 37,
+  "kevin_last_cycle": 40,
   "kevin_llm": [
     {
       "call_id": "kevin-c13:08dcd1f2fe59",
@@ -3048,6 +3122,17 @@
       ],
       "replayed": true,
       "proposals": []
+    },
+    {
+      "call_id": "kevin-c40:951f06ca5646",
+      "served_model": "deepseek-v4-pro",
+      "cycle": 40,
+      "topics": [
+        "memory",
+        "forum"
+      ],
+      "replayed": true,
+      "proposals": []
     }
   ],
   "escalated_conflicts": [
@@ -3062,7 +3147,8 @@
     "X-22",
     "X-23",
     "X-24",
-    "X-25"
+    "X-25",
+    "X-26"
   ],
   "last_review_snapshot": {
     "active": 295,

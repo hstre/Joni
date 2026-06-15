@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "kind": "methods_never_mature",
+    "cycle": 40,
+    "addressed_to": "Claude",
+    "title": "Gib dem Methoden-Trial ein klares Bestehens-Kriterium",
+    "component": "the method-trialing / harvesting layer (trials.py / methods.py and Kevin's trial runner) - the pass-criterion and retirement of methods, outside the protected core",
+    "component_key": "method-trialing",
+    "touches_core": false,
+    "request_type": "extension-request",
+    "change_target": "joni-self · own non-core module (method-trialing)",
+    "motivation": "20 Methoden, 307 Trials, aber 0 reif (activation-ready). Hohe Aktivität ohne Adoption - ein Trial unterscheidet sich nicht von einer bloß erfolgreichen Ausführung, und keine Methode wird je verworfen.",
+    "desired_capability": "Definiere in trials.py / methods.py (und ggf. Kevins Trial-Runner) ein klares Pass-Kriterium: Baseline, messbare Differenz zum Nicht-Anwenden, Negativergebnisse, und ein Verwerfen einer Methode nach N Trials ohne Differenz - weiterhin ohne Selbst-Bestätigung.",
+    "acceptance": "Innerhalb weniger Zyklen reift mindestens eine Methode (activation-ready) ODER nicht-reifende Methoden werden verworfen, sodass die Methodenzahl nicht unbegrenzt wächst.",
+    "evidence": {
+      "methods_total": 20,
+      "method_trials_total": 307,
+      "methods_ready_total": 0
+    },
+    "risk": "medium - changes how a method is judged tried/passed/discarded; never auto-confirms",
+    "sustained_cycles": 3
+  }
+]
