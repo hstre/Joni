@@ -459,6 +459,8 @@
     "openalex:W7128545313",
     "openalex:W7128547584",
     "openalex:W7128814387",
+    "openalex:W7137590217",
+    "openalex:W7137681926",
     "openalex:W7154677115",
     "openalex:W7155587480",
     "openalex:W7159750554",
@@ -466,11 +468,17 @@
     "openalex:W7162702746",
     "openclaw:ComposioHQ/secure-openclaw",
     "openclaw:CortexReach/memory-lancedb-pro",
+    "openclaw:JimLiu/baoyu-skills",
     "openclaw:NevaMind-AI/memU",
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
+    "openclaw:VoltAgent/awesome-openclaw-skills",
+    "openclaw:alirezarezvani/claude-skills",
+    "openclaw:hesamsheikh/awesome-openclaw-usecases",
     "zenodo:20413370",
     "zenodo:20701769",
+    "zenodo:20702346",
     "zenodo:20703165",
+    "zenodo:20704943",
     "zenodo:20705508",
     "zenodo:20706874",
     "zenodo:20707244",
@@ -485,6 +493,7 @@
     "zenodo:20708062",
     "zenodo:20708066",
     "zenodo:20708085",
+    "zenodo:20708325",
     "zenodo:20708365",
     "zenodo:20708417",
     "zenodo:20708447",
@@ -495,6 +504,7 @@
     "zenodo:20708514",
     "zenodo:20708522",
     "zenodo:20708530",
+    "zenodo:20708549",
     "zenodo:20708564",
     "zenodo:20708598",
     "zenodo:20708636"
@@ -731,6 +741,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708564"
+    },
+    {
+      "call_id": "joni-c24:20a1786007ee",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708549"
+    },
+    {
+      "call_id": "joni-c24:dfcd43156796",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708325"
     }
   ],
   "pdf_read": [
@@ -933,6 +959,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c24:23eb1e424ce8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -943,14 +977,17 @@
     "github:apache/answer",
     "github:flarum/flarum",
     "huggingface:2606.10747",
+    "openalex:W7137681926",
+    "zenodo:20702346",
     "zenodo:20707854",
     "zenodo:20707998",
     "zenodo:20708062",
     "zenodo:20708085",
+    "zenodo:20708325",
     "zenodo:20708530",
     "zenodo:20708564"
   ],
-  "method_trials_total": 171,
+  "method_trials_total": 179,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -969,6 +1006,8 @@
     "C-317|C-329",
     "C-335|C-341",
     "C-335|C-345",
+    "C-362|C-374",
+    "C-363|C-379",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -992,6 +1031,8 @@
     "C-317|C-329@bge-small-en-v1.5",
     "C-335|C-341@bge-small-en-v1.5",
     "C-335|C-345@bge-small-en-v1.5",
+    "C-362|C-374@bge-small-en-v1.5",
+    "C-363|C-379@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -1035,6 +1076,7 @@
     "change",
     "context",
     "convex",
+    "description",
     "distichlis",
     "evolution",
     "inconsistency",
@@ -1079,6 +1121,7 @@
     "forum|variance",
     "forum|vertical",
     "memory|capacity",
+    "memory|change",
     "memory|constant",
     "memory|convex",
     "memory|couple-conflict",
@@ -1089,6 +1132,7 @@
     "memory|online",
     "memory|optimal",
     "memory|principle",
+    "memory|social",
     "memory|trivia",
     "memory|unrecorded",
     "memory|valuable",
@@ -1116,7 +1160,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "memory|change": 2,
+    "meth:composition": 1,
     "meth:existing": 2
   },
   "hyp_tested": [
@@ -1176,24 +1220,24 @@
     "C-304",
     "C-333",
     "C-347",
+    "C-382",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "drift+memory drift",
-    "drift+memory hypothesis",
-    "memory single",
     "memory memory",
     "memory constant",
     "memory underlying",
     "coverage evaluation with privacy through-line",
-    "coverage evaluation with privacy underlying"
+    "coverage evaluation with privacy underlying",
+    "memory testing",
+    "coverage evaluation with privacy single",
+    "coverage evaluation with privacy coverage"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
-    "C-51": 22,
     "C-126": 23,
-    "C-142": 3,
+    "C-142": 24,
     "C-170": 4,
     "C-173": 5,
     "C-184": 6,
@@ -1221,7 +1265,8 @@
     "C-313": 20,
     "C-333": 21,
     "C-347": 22,
-    "C-361": 23
+    "C-361": 23,
+    "C-382": 24
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1248,6 +1293,7 @@
     "C-333",
     "C-347",
     "C-361",
+    "C-382",
     "C-49",
     "C-51"
   ],
@@ -1257,6 +1303,7 @@
     "M-11",
     "M-12",
     "M-13",
+    "M-14",
     "M-2",
     "M-3",
     "M-4",
@@ -1267,35 +1314,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "degenerating",
-    "development": 0,
-    "degeneration": 1,
-    "active": 186,
+    "verdict": "developing",
+    "development": 6,
+    "degeneration": 0,
+    "active": 201,
     "hypotheses": 31,
     "unsupported_hypotheses": 24,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
-    "evidence_links": 23,
-    "supporting_links": 23,
-    "emergent_total": 85,
+    "evidence_links": 25,
+    "supporting_links": 25,
+    "emergent_total": 88,
     "usable_semantic_rate": 1.0,
-    "methods_total": 13,
-    "method_trials_total": 171,
+    "methods_total": 14,
+    "method_trials_total": 179,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 2920,
-    "cycle": 23
+    "stagnation_cycles": 0,
+    "objects": 3077,
+    "cycle": 24
   },
   "vitality_prev": {
-    "supports": 23,
+    "supports": 25,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 2920,
-    "active": 186,
-    "links": 23,
-    "emergent": 85
+    "objects": 3077,
+    "active": 201,
+    "links": 25,
+    "emergent": 88
   },
-  "stagnation": 1,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1457,12 +1504,19 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 24,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 20,
+    "starved_topic": 21,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
