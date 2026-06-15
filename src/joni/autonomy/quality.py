@@ -155,6 +155,13 @@ def admissible_term(term: str) -> bool:
     return is_meaningful_term(term) and on_domain(term)
 
 
+def is_good_topic(topic: str) -> bool:
+    """A topic worth tracking: a single meaningful, on-domain term. Compound '+' bridge topics
+    and stopword/artifact/off-domain tokens are junk that should not clutter what Joni tracks."""
+    t = (topic or "").strip()
+    return bool(t) and "+" not in t and admissible_term(t)
+
+
 def hypothesis_admissible(text: str) -> bool:
     """A hypothesis may be carried outside only if it is substantive and its named subjects are
     on-domain (so an off-domain real word like 'cotton' is held back too)."""

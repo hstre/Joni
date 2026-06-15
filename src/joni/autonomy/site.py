@@ -131,7 +131,9 @@ def build(data: dict) -> str:
     else:
         panel_block = ("<p class=empty>Noch keine Runde &mdash; das Trio wird nur einberufen, "
                        "wenn Joni unsicher ist (ein offener Widerspruch, den er h&auml;lt).</p>")
-    topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in s.get("topics", []))
+    from . import quality
+    good_topics = [t for t in s.get("topics", []) if quality.is_good_topic(t)]
+    topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in good_topics)
     added = "".join(f"<span class='pill add'>{esc(t)}</span>"
                     for t in ext.get("topics_added", [])) or "<span class=empty>none yet</span>"
     notes = "".join(f"<li>{esc(n.get('note',''))} "
