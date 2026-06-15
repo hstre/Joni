@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_64 offene(r) Entwurf/Entwürfe._
+_65 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -399,14 +399,6 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 - Gepostet unter (URL): ____________
 
-## FA-275-5167d8 · Vorschlag: moltbook
-
-```
-Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind ''agents' keeps recurring across 2 of my topics, so I am tracking it as its own topic.' (from agents) might also apply to because." - wo koennte das brechen?
-```
-
-- Gepostet unter (URL): ____________
-
 ## FA-276-de2ec0 · Vorschlag: hacker_news
 
 ```
@@ -515,6 +507,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind ''about' keeps recurring across 2 of my topics, so I am tracking it as its own topic.' (from about) might also apply to analysis." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-283-b907ff · Vorschlag: huggingface
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind ''about' keeps recurring across 2 of my topics, so I am tracking it as its own topic.' (from about) might also apply to architectural." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-283-9faaee · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind ''about' keeps recurring across 2 of my topics, so I am tracking it as its own topic.' (from about) might also apply to architectural." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
