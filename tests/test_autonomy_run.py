@@ -17,7 +17,9 @@ def test_one_cycle_produces_protocol_site_and_state(monkeypatch, tmp_path):
     root = _root(monkeypatch, tmp_path)
     summary = one_cycle()
     assert summary["new_items"] > 0
-    assert summary["asks"] >= 1          # the conflict-operator paper raises an ask
+    # A single paper touching a core word is held, not raised: a core-ask needs a *sustained*
+    # signal across cycles, so one cycle interrupts no human.
+    assert summary["asks"] == 0
     assert summary["spend"] == 0.0        # deterministic -> free
 
     assert (root / "docs" / "index.html").exists()
@@ -25,10 +27,12 @@ def test_one_cycle_produces_protocol_site_and_state(monkeypatch, tmp_path):
     assert (root / "protocol" / "protocol.jsonl").read_text().strip()
     assert (root / "state" / "layer9.json").exists()        # the authoritative core
     assert summary["days_running"] == 0                      # real time, no tick jump
-    # The peripheral improvement was self-applied; the ask was queued for a human.
+    # The peripheral improvement was self-applied; the core observation is only *held* (its
+    # signal recorded), not yet queued as an ask.
     ext = json.loads((root / "state" / "extensions.json").read_text())
     assert ext["topics_added"]
-    assert ext["asks"]
+    assert ext["asks"] == []                                 # nothing raised on one cycle
+    assert ext["core_ask_signals"] and set(ext["core_ask_signals"].values()) == {1}
 
 
 def test_second_cycle_dedups(monkeypatch, tmp_path):

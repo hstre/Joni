@@ -148,6 +148,40 @@ def structured_ask(imp: Improvement, cycle: int) -> dict:
     }
 
 
+# A single paper merely *mentioning* a core word is noise. Only raise a core-ask once the
+# same trigger has recurred across several cycles (a sustained signal), and not again within a
+# cooldown. Mirrors the commission detector's sustain+cooldown discipline.
+CORE_ASK_SUSTAIN = 3        # cycles a core trigger must recur before it is worth a human
+CORE_ASK_COOLDOWN = 60      # don't re-raise the same target within this many cycles
+
+
+def gate_core_asks(extensions: dict, core_targets, cycle: int) -> set[str]:
+    """Decide which core-ask targets may actually be raised this cycle.
+
+    A target seen this cycle advances its streak; a target *not* seen decays to zero (the
+    signal must be sustained, not a one-off). A target is allowed only when its streak reaches
+    ``CORE_ASK_SUSTAIN`` and it is past its cooldown; raising it resets the streak and starts
+    the cooldown. Pure and deterministic - state lives in ``extensions``."""
+    signals: dict = extensions.setdefault("core_ask_signals", {})
+    filed: dict = extensions.setdefault("core_ask_filed", {})
+    seen = set(core_targets)
+    for t in list(signals):                 # decay anything not seen this cycle
+        if t not in seen:
+            signals[t] = 0
+    allowed: set[str] = set()
+    for t in seen:
+        signals[t] = signals.get(t, 0) + 1
+        if signals[t] < CORE_ASK_SUSTAIN:
+            continue                         # not yet sustained - hold, no issue
+        last = filed.get(t)
+        if last is not None and cycle - last < CORE_ASK_COOLDOWN:
+            continue                         # recently raised - don't nag
+        filed[t] = cycle
+        signals[t] = 0
+        allowed.add(t)
+    return allowed
+
+
 def apply_peripheral(state: Layer9, extensions: dict, imp: Improvement) -> dict:
     """Build a peripheral improvement into Joni himself. Returns ledger refs.
 
