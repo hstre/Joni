@@ -76,3 +76,46 @@ def test_core_ask_gate_holds_one_offs_and_releases_sustained():
     assert released == {"operator"}                     # sustained -> raised once
     # immediately after, the streak is reset and the cooldown blocks re-raising
     assert gate_core_asks(ext, ["operator"], 2 + CORE_ASK_SUSTAIN) == set()
+
+
+def test_core_ask_only_on_the_core_sense_of_a_keyword(monkeypatch):
+    """A paper that merely uses 'operator' in an unrelated sense must NOT raise a core-ask."""
+    from joni.autonomy import embeddings, improve
+    from joni.autonomy.sources import Item
+
+    monkeypatch.setattr(embeddings, "available", lambda: True)
+    # text near 'model reduction' is far from the core-operator ref, near the other ref
+
+    def cd(text, ref):
+        t, r = text.lower(), ref.lower()
+        t_math = "model reduction" in t or "linear algebra" in t
+        r_math = "model reduction" in r or "linear algebra" in r or "functional analysis" in r
+        return 0.2 if (t_math == r_math) else 0.85
+    monkeypatch.setattr(embeddings, "cosine_distance", cd)
+
+    s = seed_identity()
+    math_item = Item("zenodo", "9", "Operator inference for model reduction",
+                     "http://x", "symmetry-reduced operator inference via linear algebra")
+    rel = judge(s, math_item)
+    out = improve.derive(s, [(math_item, rel)])
+    assert not any(i.kind == "core_change" for i in out)     # coincidental keyword - held back
+
+
+def test_core_ask_still_raised_on_the_core_sense(monkeypatch):
+    from joni.autonomy import embeddings, improve
+    from joni.autonomy.sources import Item
+    monkeypatch.setattr(embeddings, "available", lambda: True)
+
+    def cd(text, ref):
+        t, r = text.lower(), ref.lower()
+        t_core = "epistemic" in t or "state-change" in t or "write path" in t
+        r_core = "epistemic" in r or "state-change" in r or "write path" in r
+        return 0.2 if (t_core == r_core) else 0.85
+    monkeypatch.setattr(embeddings, "cosine_distance", cd)
+
+    s = seed_identity()
+    core_item = Item("arxiv", "10", "Rethinking the state-change operator of epistemic agents",
+                     "http://x", "a new write-path operator for an epistemic state machine")
+    rel = judge(s, core_item)
+    out = improve.derive(s, [(core_item, rel)])
+    assert any(i.kind == "core_change" for i in out)         # genuine core sense - raised

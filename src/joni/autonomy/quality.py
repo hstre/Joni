@@ -134,6 +134,22 @@ def on_domain(term: str, *, margin: float | None = None) -> bool:
     return not (d_out + m < d_in)              # reject only when clearly off-domain
 
 
+def is_core_sense(text: str, core_ref: str, other_ref: str, *, margin: float | None = None) -> bool:
+    """Is ``text`` using a core concept in Joni's sense (``core_ref``) rather than an unrelated
+    technical sense (``other_ref``)? Contrastive embedding check - rejects only when ``text`` is
+    *clearly* closer to the other sense. Fail-open without an embedder. This is what tells a
+    Layer-9 *operator* apart from an 'operator' in model reduction, before a core-ask is raised."""
+    from . import embeddings
+    if not embeddings.available():
+        return True
+    d_core = embeddings.cosine_distance(text, core_ref)
+    d_other = embeddings.cosine_distance(text, other_ref)
+    if d_core is None or d_other is None:
+        return True
+    m = margin if margin is not None else float(os.getenv("JONI_CORE_MARGIN", "0.04"))
+    return not (d_other + m < d_core)
+
+
 def admissible_term(term: str) -> bool:
     """A term may seed structure only if it is both lexically meaningful and on-domain."""
     return is_meaningful_term(term) and on_domain(term)

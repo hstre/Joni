@@ -20,8 +20,32 @@ from dataclasses import dataclass
 from ..models import ClaimStatus, Trigger
 from ..operators import assert_claim, form_preference
 from ..state import Layer9
-from . import governance
+from . import governance, quality
 from .sources import Item
+
+# For each core trigger: a reference definition in Joni's core sense vs an unrelated technical
+# sense. A source only raises a core-ask if its text is in the core sense (not a coincidental
+# keyword) - so 'operator' in model reduction, 'scoring' in an epidemiology benchmark, or a
+# random repo's 'conflict resolution' no longer reach a human.
+_CORE_SENSE = {
+    "operator": ("a Layer-9 state-change operator, the only write path that mutates an "
+                 "autonomous agent's epistemic state",
+                 "a mathematical operator in linear algebra, model reduction or analysis"),
+    "operators": ("Layer-9 state-change operators, the write path of an epistemic state machine",
+                  "mathematical operators in linear algebra or functional analysis"),
+    "scoring": ("the deterministic belief-weighing and claim-scoring logic of a reasoning engine",
+                "a benchmark score or evaluation metric in an unrelated study"),
+    "conflict resolution": ("resolving contradictions between held claims in an epistemic state",
+                            "conflict resolution in negotiation, scheduling or version control"),
+    "router algorithm": ("the model-routing logic that selects which model answers a request",
+                         "network packet routing or vehicle/transportation routing"),
+    "deterministic core": ("the deterministic core engine and replay of an epistemic state machine",
+                           "a deterministic algorithm or CPU core in an unrelated system"),
+    "ledger format": ("the hash-chained ledger format of an epistemic state machine",
+                      "a financial ledger or blockchain ledger format"),
+    "state machine": ("the epistemic state machine governing an agent's claims and conflicts",
+                      "a finite state machine in parsing, protocols or hardware"),
+}
 
 # Salient terms that, if seen and not already tracked, are worth tracking as a topic.
 NEW_TOPIC_HINTS = frozenset({
@@ -84,11 +108,16 @@ def derive(state: Layer9, judged: list[tuple[Item, Relevance]]) -> list[Improvem
     for item, rel in judged:
         blob = (item.title + " " + item.summary).lower()
 
-        # Core asks take priority - we must never quietly self-apply these.
+        # Core asks take priority - we must never quietly self-apply these. But a bare keyword
+        # match is not enough: the source must use the term in Joni's *core sense*, else it is a
+        # coincidence ('operator' in model reduction) and no core-ask is raised.
         if any(trigger in blob for trigger in CORE_TRIGGERS):
+            target = next((t for t in CORE_TRIGGERS if t in blob), "core")
+            refs = _CORE_SENSE.get(target)
+            if refs and not quality.is_core_sense(blob, refs[0], refs[1]):
+                continue                        # the keyword is used in an unrelated sense
             out.append(Improvement(
-                "core_change", item.title,
-                next((t for t in CORE_TRIGGERS if t in blob), "core"),
+                "core_change", item.title, target,
                 "reading suggests a change to protected core logic - needs human approval",
                 item.key, item.url))
             continue
