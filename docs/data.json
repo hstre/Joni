@@ -2,35 +2,42 @@
   "snapshot": {
     "tick": 0,
     "topics": [
-      "memory",
       "coverage evaluation with privacy",
+      "memory",
       "drift",
       "forum",
       "alignment",
       "privacy",
       "private state representation",
+      "benchmarking",
       "convex",
-      "experimental validation",
-      "norm alignment principle",
-      "online inventory optimization",
-      "online inventory optimization regret",
-      "polylogarithmic regret guarantee",
+      "general ℓ^p inequality proof",
+      "lambert w function inequality",
+      "mllms as denoising priors",
+      "obtuse quantum pyramids minimizers",
       "privacy extension of norm alignment",
       "privacy-regret trade-off",
-      "routing"
+      "quantum pyramids entropy inequalities",
+      "raes and llm compatibility",
+      "repfusion architecture",
+      "repfusion performance",
+      "routing",
+      "test-time compute efficiency",
+      "variance",
+      "zero-sum ℓ^p inequality"
     ],
-    "claims_total": 93,
-    "claims_active": 74,
+    "claims_total": 126,
+    "claims_active": 100,
     "memory": 0,
-    "ledger": 422,
+    "ledger": 624,
     "open_conflicts": 10,
-    "methods": 3,
-    "method_trials": 2,
+    "methods": 5,
+    "method_trials": 7,
     "methods_ready": 0,
     "preferences": 0,
-    "evidence_links": 0,
+    "evidence_links": 2,
     "self_model": 3,
-    "hypotheses": 2,
+    "hypotheses": 3,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": {
@@ -43,16 +50,17 @@
   "budget": {
     "spent_eur": 0.15,
     "cap_eur": 20.0,
-    "runs": 1
+    "runs": 2
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 1,
+    "runs": 2,
     "retired": false
   },
   "extensions": {
     "topics_added": [
-      "alignment"
+      "alignment",
+      "benchmarking"
     ],
     "notes": [],
     "asks": [],
@@ -452,19 +460,26 @@
     "seen": [
       "arxiv:2606.14674v1",
       "arxiv:2606.14679v1",
+      "arxiv:2606.14698v1",
+      "arxiv:2606.14700v1",
       "arxiv:2606.14701v1",
       "arxiv:2606.14704v1",
       "github:affaan-m/ECC",
       "github:f/prompts.chat",
+      "github:goadesign/goa",
       "github:home-assistant/core",
       "github:vllm-project/vllm",
+      "github:xhzengAIB/MessageDisplayKit",
       "hackernews:13718752",
       "hackernews:16065845",
+      "hackernews:16153840",
       "hackernews:16727869",
       "hackernews:39161339",
       "huggingface:2606.00793",
       "huggingface:2606.06036",
       "huggingface:2606.08670",
+      "huggingface:2606.10747",
+      "huggingface:2606.11152",
       "huggingface:2606.14249",
       "openalex:W7128545313",
       "openalex:W7128547584",
@@ -476,6 +491,8 @@
       "openclaw:TencentCloud/TencentDB-Agent-Memory",
       "zenodo:20413370",
       "zenodo:20703165",
+      "zenodo:20706874",
+      "zenodo:20707244",
       "zenodo:20707565",
       "zenodo:20707680"
     ],
@@ -495,10 +512,28 @@
         "replayed": false,
         "claims": 5,
         "source": "arxiv:2606.14679v1"
+      },
+      {
+        "call_id": "joni-c2:b677199cc9ca",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "arxiv:2606.14700v1"
+      },
+      {
+        "call_id": "joni-c2:f2b303910407",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "arxiv:2606.14698v1"
       }
     ],
     "pdf_read": [
       "arxiv:2606.14679v1",
+      "arxiv:2606.14698v1",
+      "arxiv:2606.14700v1",
       "arxiv:2606.14704v1"
     ],
     "pdf_urls_seen": [],
@@ -515,29 +550,60 @@
         "state_k": 3,
         "replayed": false,
         "claims": 4
+      },
+      {
+        "call_id": "joni-c2:8a4f6a2d76c6",
+        "served_model": "deepseek-v4-pro",
+        "reason": "high_conflict_load",
+        "state_k": 3,
+        "replayed": false,
+        "claims": 0
       }
     ],
     "methods_seen": [
       "arxiv:2606.14674v1",
-      "arxiv:2606.14679v1"
+      "arxiv:2606.14679v1",
+      "arxiv:2606.14698v1",
+      "huggingface:2606.10747"
     ],
-    "method_trials_total": 2,
+    "method_trials_total": 7,
     "methods_ready_total": 0,
     "core_ask_signals": {},
     "core_ask_filed": {},
-    "linked": [],
-    "semantic_backfilled": [],
+    "linked": [
+      "C-59|C-80",
+      "C-62|C-75",
+      "C-62|C-79",
+      "C-62|C-83",
+      "C-63|C-69"
+    ],
+    "semantic_backfilled": [
+      "C-59|C-80@bge-small-en-v1.5",
+      "C-62|C-75@bge-small-en-v1.5",
+      "C-62|C-79@bge-small-en-v1.5",
+      "C-62|C-83@bge-small-en-v1.5",
+      "C-63|C-69@bge-small-en-v1.5"
+    ],
     "invented": [
+      "alignment|drift",
       "drift|memory"
     ],
     "emerged_topics": [
-      "convex"
+      "convex",
+      "variance"
     ],
     "synthesized": [
+      "coverage evaluation with privacy|because",
+      "coverage evaluation with privacy|contamination",
+      "coverage evaluation with privacy|context",
+      "coverage evaluation with privacy|evaluation",
+      "coverage evaluation with privacy|exchanges",
+      "coverage evaluation with privacy|variance",
       "memory|convex",
       "memory|memory"
     ],
     "emerged_methods": [
+      "alignment",
       "principle"
     ],
     "emerge_insufficient": {},
@@ -551,51 +617,60 @@
       "drift+memory dissipating",
       "drift+memory pattern",
       "memory claims",
-      "memory through-line"
+      "memory through-line",
+      "alignment+drift drift",
+      "alignment+drift apply",
+      "coverage evaluation with privacy privacy",
+      "coverage evaluation with privacy worth"
     ],
     "hyp_seen_cycle": {
       "C-49": 1,
-      "C-51": 1
+      "C-51": 1,
+      "C-124": 2,
+      "C-126": 2
     },
     "hyp_domain_ok": [
+      "C-126",
       "C-49",
       "C-51"
     ],
     "methods_domain_ok": [
       "M-1",
       "M-2",
-      "M-3"
+      "M-3",
+      "M-4",
+      "M-5"
     ],
     "vitality": {
-      "verdict": "steady",
-      "development": 0,
+      "verdict": "developing",
+      "development": 6,
       "degeneration": 0,
-      "active": 44,
-      "hypotheses": 2,
-      "unsupported_hypotheses": 2,
+      "active": 100,
+      "hypotheses": 3,
+      "unsupported_hypotheses": 3,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
-      "evidence_links": 0,
-      "supporting_links": 0,
-      "emergent_total": 4,
-      "usable_semantic_rate": 0.0,
-      "methods_total": 3,
-      "method_trials_total": 2,
+      "evidence_links": 2,
+      "supporting_links": 2,
+      "emergent_total": 12,
+      "usable_semantic_rate": 1.0,
+      "methods_total": 5,
+      "method_trials_total": 7,
       "methods_ready_total": 0,
-      "stagnation_cycles": 1,
-      "objects": 283,
-      "cycle": 1
+      "stagnation_cycles": 0,
+      "objects": 788,
+      "cycle": 2
     },
     "vitality_prev": {
-      "supports": 0,
+      "supports": 2,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 283,
-      "active": 44,
-      "links": 0,
-      "emergent": 4
+      "objects": 788,
+      "active": 100,
+      "links": 2,
+      "emergent": 12
     },
-    "stagnation": 1,
+    "stagnation": 0,
     "vitality_history": [
       {
         "cycle": 1,
@@ -603,6 +678,13 @@
         "development": 0,
         "degeneration": 0,
         "usable_semantic_rate": 0.0
+      },
+      {
+        "cycle": 2,
+        "verdict": "developing",
+        "development": 6,
+        "degeneration": 0,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
@@ -695,13 +777,33 @@
         "question": "Hat jemand gute Quellen oder Erfahrungen zu 'alignment'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
         "status": "posted",
         "posted_url": "https://www.moltbook.com/posts/e033e22f-f081-4120-9dc5-6d9d175c7783"
+      },
+      {
+        "id": "FA-2-2410a8",
+        "cycle": 2,
+        "platform": "hacker_news",
+        "need": "topic:drift",
+        "question": "Hat jemand gute Quellen oder Erfahrungen zu 'drift'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+        "status": "drafted",
+        "posted_url": null
+      },
+      {
+        "id": "FA-2-beb95f",
+        "cycle": 2,
+        "platform": "moltbook",
+        "need": "topic:drift",
+        "question": "Hat jemand gute Quellen oder Erfahrungen zu 'drift'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+        "status": "posted",
+        "posted_url": "https://www.moltbook.com/posts/0ea3a8b4-5dce-47ad-a6c9-04755e276b8d"
       }
     ],
     "forum_asked": [
-      "topic:alignment"
+      "topic:alignment",
+      "topic:drift"
     ],
     "forum_asked_moltbook": [
-      "topic:alignment"
+      "topic:alignment",
+      "topic:drift"
     ],
     "forum_identity": {
       "moltbook": {
@@ -2082,7 +2184,604 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:31:47+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:31:48+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:31:48+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:31:49+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:31:53+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:41+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "openalex: 0 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:42+00:00",
+      "cycle": 2,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:42+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: RepFusion: Leveraging Multimodal Priors for Denoising in Representation Space",
+      "refs": {
+        "source": "arxiv:2606.14700v1",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.14700v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:42+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Resolving the Edge of a Quantum Pyramid",
+      "refs": {
+        "source": "arxiv:2606.14698v1",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.14698v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:42+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Google Memory Loss",
+      "refs": {
+        "source": "hackernews:16153840",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://www.tbray.org/ongoing/When/201x/2018/01/15/Google-is-losing-its-memory"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:42+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: The Arbiter Agent: Continually Monitoring Multi-Agent Conversations to Detect Em",
+      "refs": {
+        "source": "huggingface:2606.10747",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.10747"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:42+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: P3D-Bench: Benchmarking MLLMs for Parametric 3D Generation and Structural Reason",
+      "refs": {
+        "source": "huggingface:2606.11152",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": "benchmarking",
+        "url": "https://huggingface.co/papers/2606.11152"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:43+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: goa",
+      "refs": {
+        "source": "github:goadesign/goa",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://github.com/goadesign/goa"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:43+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: MessageDisplayKit",
+      "refs": {
+        "source": "github:xhzengAIB/MessageDisplayKit",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://github.com/xhzengAIB/MessageDisplayKit"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:43+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Base de datos del archivo fotográfico de la Fiesta Juramentada al Señor San José",
+      "refs": {
+        "source": "zenodo:20707244",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20707244"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:43+00:00",
+      "cycle": 2,
+      "kind": "judged",
+      "summary": "relevant: Reducing Vertical Oscillation in Human Gait- A Biotensegrity Model of Smooth, Co",
+      "refs": {
+        "source": "zenodo:20706874",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20706874"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:49+00:00",
+      "cycle": 2,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from arxiv:2606.14700v1 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:52+00:00",
+      "cycle": 2,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from arxiv:2606.14698v1 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:53+00:00",
+      "cycle": 2,
+      "kind": "read",
+      "summary": "read full text of RepFusion: Leveraging Multimodal Priors for Denoising in Rep: 5 claim(s) [arxiv:2606.14700v1]",
+      "refs": {
+        "url": "https://arxiv.org/pdf/2606.14700v1.pdf",
+        "topic": "coverage evaluation with privacy"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:32:54+00:00",
+      "cycle": 2,
+      "kind": "read",
+      "summary": "read full text of Resolving the Edge of a Quantum Pyramid: 5 claim(s) [arxiv:2606.14698v1]",
+      "refs": {
+        "url": "https://arxiv.org/pdf/2606.14698v1.pdf",
+        "topic": "coverage evaluation with privacy"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:07+00:00",
+      "cycle": 2,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [high_conflict_load] proposed 0 claim(s) [deepseek-v4-pro, replayed=False] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:07+00:00",
+      "cycle": 2,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: Resolving the Edge of a Quantum Pyramid (from arxiv)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:07+00:00",
+      "cycle": 2,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: The Arbiter Agent: Continually Monitoring Multi-Agent Conversations to (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:07+00:00",
+      "cycle": 2,
+      "kind": "trialed",
+      "summary": "Kevin trialed 5 method(s): 1 passed, 4 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:07+00:00",
+      "cycle": 2,
+      "kind": "improved",
+      "summary": "track_topic: benchmarking",
+      "refs": {
+        "claim": "C-123",
+        "topic": "benchmarking",
+        "source": "huggingface:2606.11152",
+        "url": "https://huggingface.co/papers/2606.11152"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "linked C-59 <-> C-80 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "C-62/C-75: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "C-62/C-79: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "C-62/C-83: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "linked C-63 <-> C-69 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-1",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-2",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-3",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-4",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-5",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-6",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-7",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-8",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-9",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:08+00:00",
+      "cycle": 2,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-10",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:09+00:00",
+      "cycle": 2,
+      "kind": "invented",
+      "summary": "new hypothesis bridging alignment x drift (candidate, derived from C-54+C-60)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:09+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "new topic 'variance' precipitated from a recurrence across alignment, coverage evaluation with privacy, drift, forum, private state representation",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:09+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "'context' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:09+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "'contamination' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:10+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "'exchanges' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:10+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "'variance' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:10+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "'because' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:10+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "synthesis on coverage evaluation with privacy: 'evaluation' (Layer 9 synthesis-eligible, SC-14) from 8 claims (C-62, C-66, C-67, C-75, C-79)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:10+00:00",
+      "cycle": 2,
+      "kind": "emerged",
+      "summary": "'alignment' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:11+00:00",
+      "cycle": 2,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): online inventory optimization, online inventory optimization regret, norm alignment principle, polylogarithmic regret guarantee, experimental validation",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:11+00:00",
+      "cycle": 2,
+      "kind": "regulate",
+      "summary": "retired 1 junk-subject hypothesis(es): C-124",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:11+00:00",
+      "cycle": 2,
+      "kind": "vitality",
+      "summary": "developing · dev 6 · degen 0 · 3 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:12+00:00",
+      "cycle": 2,
+      "kind": "forum_draft",
+      "summary": "drafted FA-2-2410a8 for hacker_news (need topic:drift) - awaiting human approval",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:12+00:00",
+      "cycle": 2,
+      "kind": "forum_draft",
+      "summary": "drafted FA-2-beb95f for moltbook (need topic:drift) - agent-net, auto-posts",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:12+00:00",
+      "cycle": 2,
+      "kind": "forum_post",
+      "summary": "posted FA-2-beb95f to moltbook (agent-net auto) -> https://www.moltbook.com/posts/0ea3a8b4-5dce-47ad-a6c9-04755e276b8d",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:12+00:00",
+      "cycle": 2,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:12+00:00",
+      "cycle": 2,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T19:33:12+00:00",
+      "cycle": 2,
+      "kind": "note",
+      "summary": "cycle done · 9 new · read 2 paper(s) · 2 method(s) · 5 trialed · 2 new link(s) · 1 hypothesis(es) · 2 emergent · developing · spend €0.1500 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
-  "generated": "2026-06-15T19:28:40+00:00"
+  "generated": "2026-06-15T19:33:12+00:00"
 }
