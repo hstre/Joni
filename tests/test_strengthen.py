@@ -16,12 +16,13 @@ class _Proto:
 
 def _cs_with_a_hypothesis():
     cs = CoreState(l9.Layer9())
-    p1 = cs.learn("teams care about routing speed", "routing")
-    p2 = cs.learn("sessions benefit from routing choices", "routing")
-    # supporting evidence claims (distinct sources) that overlap the hypothesis strongly
-    cs.learn("routing locally reduces latency on small tasks", "routing")
-    cs.learn("routing reduces latency under heavy load", "routing")
-    cs.learn("routing decisions drive lower latency overall", "routing")
+    p1 = cs.learn("teams care about routing speed", "routing", source_id="arxiv:p1")
+    p2 = cs.learn("sessions benefit from routing choices", "routing", source_id="arxiv:p2")
+    # supporting evidence claims from DISTINCT sources (independent origins) that overlap the
+    # hypothesis strongly - promotion now requires independent backing, not circularity.
+    cs.learn("routing locally reduces latency on small tasks", "routing", source_id="arxiv:1")
+    cs.learn("routing reduces latency under heavy load", "routing", source_id="arxiv:2")
+    cs.learn("routing decisions drive lower latency overall", "routing", source_id="arxiv:3")
     h = cs.hypothesize("Hypothesis: routing locally reduces latency", "routing",
                        parents=(p1, p2))
     return cs, h
@@ -50,6 +51,24 @@ def test_kevin_rejection_is_advisory_not_a_veto(monkeypatch):
     assert out["promoted"] >= 1                     # ...and Kevin's veto no longer blocks it
     assert cs.core.get(h).status is l9.Status.ACTIVE          # the rules promote it
     assert cs.core.get(h).status is not l9.Status.CONFIRMED   # but never auto-confirmed
+
+
+def test_circular_same_source_support_does_not_promote(monkeypatch):
+    """Claim-to-claim circularity is not evidence: a hypothesis backed only by claims that all
+    share one origin (same paper / model run) must NOT be promoted, however many there are."""
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
+    cs = CoreState(l9.Layer9())
+    p1 = cs.learn("teams care about routing speed", "routing", source_id="arxiv:same")
+    p2 = cs.learn("sessions benefit from routing choices", "routing", source_id="arxiv:same")
+    # every supporter shares the SAME source id -> one independent family, not enough
+    cs.learn("routing locally reduces latency on small tasks", "routing", source_id="arxiv:same")
+    cs.learn("routing reduces latency under heavy load", "routing", source_id="arxiv:same")
+    cs.learn("routing decisions drive lower latency overall", "routing", source_id="arxiv:same")
+    h = cs.hypothesize("Hypothesis: routing locally reduces latency", "routing", parents=(p1, p2))
+    out = strengthen.strengthen(cs, {}, _Proto(), layer=StubSemanticLayer())
+    assert out["supported"] >= 2                              # it accrued claim-to-claim support...
+    assert cs.core.get(h).status is l9.Status.CANDIDATE       # ...but stayed candidate (no indep.)
+    assert out["promoted"] == 0
 
 
 def test_a_contradicted_idea_is_challenged_not_promoted(monkeypatch):
