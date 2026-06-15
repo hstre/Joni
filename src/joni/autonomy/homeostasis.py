@@ -104,6 +104,9 @@ def vitality(cs, extensions: dict, proto, cycle: int = 0) -> dict:
         len(extensions.get("emerged_methods", [])) + len(extensions.get("synthesized", []))
     usable = _usable_semantic_rate(cs)
     objects = len(s.objects)
+    methods_total = len(s.all(l9.ObjectType.METHOD))
+    method_trials_total = extensions.get("method_trials_total", 0)
+    methods_ready_total = extensions.get("methods_ready_total", 0)
 
     prev = extensions.get("vitality_prev", {})
     d_supports = supports - prev.get("supports", supports)
@@ -136,6 +139,8 @@ def vitality(cs, extensions: dict, proto, cycle: int = 0) -> dict:
               "promoted_ideas": promoted, "confirmed_claims": confirmed,
               "evidence_links": links, "supporting_links": supports,
               "emergent_total": emergent, "usable_semantic_rate": usable,
+              "methods_total": methods_total, "method_trials_total": method_trials_total,
+              "methods_ready_total": methods_ready_total,
               "stagnation_cycles": stagnation, "objects": objects, "cycle": cycle}
     extensions["vitality"] = record
     extensions["vitality_prev"] = {"supports": supports, "promoted": promoted,

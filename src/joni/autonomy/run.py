@@ -172,6 +172,11 @@ def one_cycle() -> dict:
     # 3c. Kevin trials the shelf in-process: candidate/provisional methods get a
     #     deterministic transfer trial (recorded, never promoted). No-op without Kevin.
     trialed = trials.run_trials(cs, proto, cycle)
+    # running totals so homeostasis/commission can see whether method-trialing ever matures
+    extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
+        trialed.get("trialed", 0)
+    extensions["methods_ready_total"] = extensions.get("methods_ready_total", 0) + \
+        trialed.get("activation_ready", 0)
 
     # 4. Improvements, split by governance (peripheral ones applied via the gate).
     asks_new: list = []
