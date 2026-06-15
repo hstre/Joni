@@ -26,12 +26,18 @@ def _looks_like_method(item) -> bool:
 
 
 def harvest(cs, judged, extensions: dict, proto, cycle: int = 0, *, max_methods: int = 2) -> dict:
+    from . import quality
     seen = set(extensions.get("methods_seen", []))
     found = 0
     for item, rel in judged:
         if found >= max_methods:
             break
         if item.key in seen or not _looks_like_method(item):
+            continue
+        # Domain gate: a GitHub repo is treated as a method by default, but generic off-domain
+        # tooling (e.g. C++ coding guidelines) is not Joni's subject - don't shelve it for Kevin.
+        if not quality.on_domain_text(f"{item.title} {item.summary}"):
+            seen.add(item.key)                 # judged once, off-domain - don't reconsider
             continue
         cs.propose_method(
             name=item.title[:80],

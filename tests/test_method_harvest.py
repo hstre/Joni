@@ -70,3 +70,38 @@ def test_kevin_could_use_them_only_after_promotion():
     # candidates are not yet usable - a human/Kevin must promote them
     from kevin.layer9_link import usable_methods
     assert usable_methods(cs.core) == []
+
+
+def _fake_domain(monkeypatch):
+    """Inject an embedder: AI/agent text is on-domain, generic C++/dev tooling is off-domain."""
+    from joni.autonomy import embeddings
+    monkeypatch.setattr(embeddings, "available", lambda: True)
+    off = ("c++", "coding-style", "coding style", "guidelines", "frontend", "ui frameworks",
+           "devops", "deployment", "infrastructure", "cotton", "medicine", "cooking")
+
+    def cd(probe, anchor):
+        p_off = any(k in probe.lower() for k in off)
+        a_off = any(k in anchor.lower() for k in off)
+        return 0.15 if (p_off == a_off) else 0.9
+    monkeypatch.setattr(embeddings, "cosine_distance", cd)
+
+
+def test_off_domain_github_repo_is_not_harvested(monkeypatch):
+    _fake_domain(monkeypatch)
+    cs = CoreState(l9.Layer9())
+    cs.learn("cheap local routing works", "routing")
+    item = Item("github", "isocpp/CppCoreGuidelines", "CppCoreGuidelines",
+                "https://github.com/isocpp/CppCoreGuidelines",
+                "The C++ Core Guidelines are a set of coding-style guidelines.", 40000.0)
+    out = methods.harvest(cs, _judged(cs, [item]), {}, _Proto())
+    assert out["methods"] == 0                       # off-domain dev tooling -> not shelved
+
+
+def test_on_domain_method_is_still_harvested(monkeypatch):
+    _fake_domain(monkeypatch)
+    cs = CoreState(l9.Layer9())
+    cs.learn("routing matters", "routing")
+    item = Item("arxiv", "9", "A framework for model routing in LLM agents",
+                "http://x", "a method for routing and inference in agent systems", 0.0)
+    out = methods.harvest(cs, _judged(cs, [item]), {}, _Proto())
+    assert out["methods"] == 1
