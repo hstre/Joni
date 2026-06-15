@@ -254,3 +254,25 @@ def test_pasted_replies_are_folded_into_the_inbox_and_heard(tmp_path):
     inbox = json.loads(paths.forum_inbox.read_text())
     assert any("routing locally" in m["text"] for m in inbox)
     assert paths.post_sheet.exists() and "Post-Mappe" in paths.post_sheet.read_text()
+
+
+def test_a_hypothesis_is_only_asked_after_internal_check_and_if_it_bridges_claims():
+    cs = CoreState(seed_core())
+    p1 = cs.learn("routing reduces latency", "routing")
+    p2 = cs.learn("memory continuity matters", "memory")
+    h = cs.hypothesize("Hypothesis: routing and memory share a latency factor",
+                       "routing+memory", parents=(p1, p2))
+    # untested -> the hypothesis is NOT carried outside (no key matches hyp:<id>)
+    need = humans._open_need(cs, set(), tested=frozenset())
+    assert need is None or need[0] != h
+    # once Joni has challenged it himself, it becomes askable
+    need2 = humans._open_need(cs, set(), tested=frozenset({h}))
+    assert need2 is not None and need2[0] == h
+
+
+def test_a_one_parent_hypothesis_is_never_asked_outside():
+    cs = CoreState(seed_core())
+    p = cs.learn("routing reduces latency", "routing")
+    h = cs.hypothesize("Hypothesis: routing is special", "routing", parents=(p,))
+    need = humans._open_need(cs, set(), tested=frozenset({h}))   # tested, but only 1 parent
+    assert need is None or need[0] != h
