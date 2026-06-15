@@ -657,3 +657,37 @@ dem gefalteten Layer-9-Journal):
   Resolution — alle abgelehnt, jetzt gedrosselt.
 
 Beide Fixes live, Loop neu gestartet, Tests grün (290), Protected Core unangetastet.
+
+### Eintrag 2026-06-15 ~10:00 UTC — Qualitätsschranke: gegen die regelkonforme Degeneration
+
+Eine externe Review brachte den Befund auf den Punkt: das System zeigte erstmals eine **reale
+Degenerationsform** — nicht Absturz oder Halluzination, sondern *regelkonforme, auditierbare,
+energiearme Produktion epistemisch schwacher Struktur*. Junk-Token-Hypothesen (`cotton`, `about`,
+`mid-ir`, `mllm`), die als Forenfragen nach außen getragen wurden und über Reaktionen neue
+Claims/Konflikte erzeugten — was wiederum die Vitalitätsmetrik aufblähte (eine kleine
+„Müllverbrennung mit Fernwärmenetz"). Antwort: **nicht mehr Quellen, sondern eine Qualitätsschranke
+vor Emergenz und Außenkommunikation.** Sechs PRs:
+
+- **Lexikalische Schranke** (`quality.py`): Stopwords, generische Qualifizierer, vokallose/Akronym-
+  Fragmente (`mllm`), Bindestrich-Artefakte (`mid-ir`) dürfen keine Struktur säen. Angewandt in
+  `emerge` (Topic/Synthese/Methode) und vor Forenfragen. `invent` brückt nicht mehr über Jonis
+  eigene Buchhaltungs-Claims — das tötet die dominante „the pattern behind '…'"-Junk-Familie.
+- **Semantische Schranke — Domänenkonsistenz** (`on_domain`): kontrastiver Embedding-Check (In-
+  vs. Off-Domain-Referenzanker) fängt off-domain *echte* Wörter (`cotton`, `glioma`). Fail-open
+  ohne Embedder, env-justierbar, nur der ausgewählte Kandidat wird eingebettet (keine API-Kosten).
+- **Vitalität misst jetzt Fortschritt, nicht Bewegung**: `development = 3·Δstützende-Evidenz +
+  4·Δpromotet + 6·Δconfirmed`. Rohwachstum/Emergenz zählen nicht mehr — Joni kann sich nicht
+  länger durch Verarbeitung seines eigenen Rauschens als „vital" bewerten (der zentrale
+  systemische Fehler der Review).
+- **Core-asks nur im Kern-Sinn** (`is_core_sense`): `operator` aus Model-Reduction ≠ Layer-9-
+  Operator — kontrastiver Check pro Trigger, bevor ein Mensch behelligt wird.
+- **Adversarialer Vor-Check vor dem Posten**: eine Hypothese geht nur nach außen, wenn sie ≥2
+  Claims verbindet **und** intern mindestens einmal getestet wurde (in `hyp_tested`).
+- **Methoden-Patt erkannt** (1649 Trials / 0 reif): Joni stellt einen Non-Core-Auftrag für ein
+  klares Trial-Pass-Kriterium (Baseline, Negativergebnis, Verwerfen) — die Tiefe liegt in Kevin.
+
+Leitprinzip durchgehend gewahrt: alles deterministisch/regelbasiert, Embedding nur als Messung
+(fail-closed/-open, nie als Schätzung), Kevin/Trio **beraten**, Joni entscheidet peripher, der
+geschützte Core bleibt unangetastet. Suite 307 grün. Der Versuch zeigt damit beides: die
+Degenerationsform *und* eine regelkonforme Gegenmaßnahme — wissenschaftlich interessanter als
+glatt steigende Kennzahlen.
