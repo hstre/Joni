@@ -45,6 +45,10 @@ OFFDOMAIN_ANCHORS = (
     "plants, animals and wildlife biology",
     "history, politics and law",
     "astronomy, planets and the cosmos",
+    # generic developer content not specific to AI/agents/epistemics
+    "general-purpose programming languages, C++ syntax and coding-style guidelines",
+    "web development, frontend and UI frameworks",
+    "devops, deployment, build tooling and infrastructure",
 )
 
 # Function words, generic qualifiers, and ML-paper filler - none of which names a concept Joni
@@ -113,15 +117,12 @@ def is_substantive_hypothesis(text: str) -> bool:
     return all(is_meaningful_term(s) for s in subs) if subs else True
 
 
-def on_domain(term: str, *, margin: float | None = None) -> bool:
-    """Is this term within Joni's actual subject matter? Contrastive embedding check against
-    reference anchors. **Fail-open**: with no embedder (or an unreadable one) it returns True -
-    a measurement is never substituted by a lexical guess. A term is rejected only when it is
-    *clearly* closer to an off-domain anchor than to any in-domain one."""
+def _contrastive_on_domain(probe: str, margin: float | None) -> bool:
+    """True unless ``probe`` is *clearly* closer to an off-domain anchor than to any in-domain
+    one. **Fail-open** without an embedder - a measurement is never replaced by a lexical guess."""
     from . import embeddings
     if not embeddings.available():
         return True
-    probe = f"the concept of {(term or '').strip().lower()}"
 
     def _nearest(anchors) -> float | None:
         ds = [d for d in (embeddings.cosine_distance(probe, a) for a in anchors) if d is not None]
@@ -132,6 +133,17 @@ def on_domain(term: str, *, margin: float | None = None) -> bool:
         return True
     m = margin if margin is not None else float(os.getenv("JONI_DOMAIN_MARGIN", "0.04"))
     return not (d_out + m < d_in)              # reject only when clearly off-domain
+
+
+def on_domain(term: str, *, margin: float | None = None) -> bool:
+    """Is this single term within Joni's subject matter? Contrastive embedding check."""
+    return _contrastive_on_domain(f"the concept of {(term or '').strip().lower()}", margin)
+
+
+def on_domain_text(text: str, *, margin: float | None = None) -> bool:
+    """Like :func:`on_domain` but for free text (a paper/method title + summary), so a generic
+    off-domain artifact (C++ coding guidelines) is caught before it is harvested as a method."""
+    return _contrastive_on_domain((text or "").strip()[:400], margin)
 
 
 def is_core_sense(text: str, core_ref: str, other_ref: str, *, margin: float | None = None) -> bool:
