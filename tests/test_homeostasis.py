@@ -146,3 +146,32 @@ def test_retire_junk_methods_is_a_noop_without_an_embedder(monkeypatch):
     cs.propose_method(name="CppCoreGuidelines", summary="C++ guidelines", origin="github")
     out = homeostasis.retire_junk_methods(cs, {}, _Proto())
     assert out["retired_methods"] == 0                              # fail-open: nothing shed
+
+
+def test_retire_junk_hypotheses_sheds_artifact_through_lines():
+    # lexical junk subjects ('mllm' vowelless, 'modes' stopword) are shed with no embedder
+    cs = CoreState(seed_core())
+    p = cs.learn("a routing parent", "routing")
+    j1 = cs.hypothesize("Across my routing claims, 'mllm' recurs as a through-line.",
+                        "routing", parents=(p,))
+    j2 = cs.hypothesize("Across my routing claims, 'modes' recurs as a through-line.",
+                        "routing", parents=(p,))
+    good = cs.hypothesize("Across my routing claims, 'retrieval' recurs as a through-line.",
+                          "routing", parents=(p,))
+    out = homeostasis.retire_junk_hypotheses(cs, {}, _Proto())
+    assert out["retired_hyps"] == 2
+    assert cs.core.get(j1).status is l9.Status.REJECTED
+    assert cs.core.get(j2).status is l9.Status.REJECTED
+    assert cs.core.get(good).status is l9.Status.CANDIDATE      # admissible subject -> kept
+
+
+def test_retire_junk_hypotheses_keeps_a_supported_one():
+    cs = CoreState(seed_core())
+    p = cs.learn("a routing parent", "routing")
+    h = cs.hypothesize("Across my routing claims, 'mllm' recurs as a through-line.",
+                       "routing", parents=(p,))
+    ev = cs.learn("evidence for it", "routing")
+    cs.corroborate(h, cs.core.get(ev), relation="supports")     # it earned support
+    out = homeostasis.retire_junk_hypotheses(cs, {}, _Proto())
+    assert out["retired_hyps"] == 0
+    assert cs.core.get(h).status is l9.Status.CANDIDATE          # supported -> kept even if ugly
