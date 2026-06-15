@@ -134,6 +134,11 @@ def build(data: dict) -> str:
 
     # Semantic-engine telemetry: read off the capture log, never guessed from a €0 line.
     tele = d.get("telemetry", {}) if isinstance(d.get("telemetry"), dict) else {}
+    # The honest quality metric (review #10): a strict per-claim AND of six conditions.
+    eu = s.get("epistemically_usable", {})
+    eu_pct = f"{eu.get('rate', 0) * 100:.0f}%" if isinstance(eu, dict) else "—"
+    eu_title = ("typed AND source-anchored AND non-duplicate AND topic-valid AND scope-valid "
+                "AND provenance-complete")
 
     def _tstat(label: str, value) -> str:
         return f"<div class=stat><span>{label}</span><span><b>{esc(value)}</b></span></div>"
@@ -148,12 +153,18 @@ def build(data: dict) -> str:
             + _tstat("Kevin calls", tele.get("kevin_calls", 0))
             + _tstat("cached (replayed)", tele.get("cached_calls", 0))
             + _tstat("live (real API)", tele.get("live_calls", 0))
+            + _tstat("accepted claims", tele.get("accepted_claims", 0))
+            + _tstat("accepted / live call", f"{tele.get('accepted_per_live_call', 0):.3f}")
+            + _tstat("reserved budget", f"€{tele.get('reserved_budget_eur', 0):.2f}")
             + _tstat("est. API cost", f"€{tele.get('est_cost_eur', 0):.4f}")
+            + _tstat("est. cost / accepted claim",
+                     f"€{tele.get('est_cost_per_accepted_eur', 0):.4f}")
             + _tstat("last semantic call", tele.get("last_call") or "—")
             + f"<div class=note>by model — {by_model}. Granite via prepaid OpenRouter; "
-            "DeepSeek v4-pro via prepaid DeepSeek. Cost is <b>estimated</b> (per-call rate); "
-            "exact spend is on each provider's dashboard. These are real capture records "
-            "(<code>state/model_calls/calls.jsonl</code>) — proof the semantic engine ran.</div>")
+            "DeepSeek v4-pro via prepaid DeepSeek. <b>reserved</b> budget ≠ <b>estimated</b> API "
+            "cost (per-call rate; exact spend on each provider's page). The number that matters: "
+            "<b>accepted / live call</b> — how many real calls became an accepted claim. Real "
+            "capture records (<code>state/model_calls/calls.jsonl</code>).</div>")
     else:
         tele_block = ("<p class=empty>Noch keine Modell-Calls erfasst &mdash; entweder ist die "
                       "semantische Schicht aus (<code>JONI_SEMANTIC_PROPOSALS</code>) oder dieser "
@@ -301,6 +312,8 @@ what is uncertain, what contradicts, and what changed.</p>
       <span>hypotheses <b>{esc(s.get('hypotheses',0))}</b></span>
       <span>self-model <b>{esc(s.get('self_model',0))}</b></span>
       <span>conflicts open <b>{esc(s.get('open_conflicts',0))}</b></span>
+      <span>research topics <b>{esc(s.get('research_topics',0))}</b></span>
+      <span title="{eu_title}">epistemically usable <b>{eu_pct}</b></span>
     </div>
     <div class=note>Runtime window: started {esc(w.get('start','?'))} · run {esc(w.get('runs',0))}
       {'· <b style=color:var(--rej)>RETIRED</b>' if w.get('retired') else '· active (1 week)'}</div>

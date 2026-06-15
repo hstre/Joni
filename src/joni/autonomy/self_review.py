@@ -53,7 +53,16 @@ def should_review(extensions: dict, now: datetime, *, runs: int | None = None,
         return True
 
 
-def _assessments(cs, *, days: int, spend: float, topics_added: int) -> list[dict]:
+def _model_activity(extensions: dict) -> dict:
+    """Model use this run, from the same capture-backed logs the dashboard uses (review #8/#9):
+    no more 'no model was needed' while telemetry shows real calls."""
+    return {"granite": len(extensions.get("semantic_calls", [])),
+            "deepseek": len(extensions.get("escalations", [])),
+            "kevin": len(extensions.get("kevin_llm", []))}
+
+
+def _assessments(cs, *, days: int, spend: float, topics_added: int,
+                 model_calls: int = 0) -> list[dict]:
     """Deterministic provisional self-model claims grounded in real metrics."""
     live = cs.active_claims()
     confirmed = cs.confirmed_claims()
@@ -77,9 +86,14 @@ def _assessments(cs, *, days: int, spend: float, topics_added: int) -> list[dict
             "text": "I tend to broaden my topics quickly as I read.",
             "evidence": topics[:6],
             "counterevidence": [c.id for c in confirmed[:3]]})
-    if spend == 0:
+    if model_calls:
         out.append({
-            "text": "I operate almost entirely deterministically, at no model cost.",
+            "text": "My governance core stays deterministic, but I now use Granite and DeepSeek "
+                    "as a non-authoritative proposal layer - their calls are logged, not free.",
+            "evidence": [], "counterevidence": []})
+    elif spend == 0:
+        out.append({
+            "text": "This hour I operated entirely deterministically - no model call was made.",
             "evidence": [], "counterevidence": []})
     return out[:3]
 
@@ -205,11 +219,50 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
         learned.append(f"And {len(emergent_topics)} topic(s) have emerged from my own "
                        f"recurring patterns rather than from any source: "
                        f"{', '.join(emergent_topics[:5])}.")
-    learned.append(f"All of this hour cost €{spend:.4f}; I stay deterministic and free "
-                   "unless something genuinely needs a model, and this hour it did not.")
+    act = _model_activity(extensions)
+    total = act["granite"] + act["deepseek"] + act["kevin"]
+    if total:
+        learned.append(
+            f"The deterministic core cost €{spend:.4f}; on top of it the semantic layer made "
+            f"model calls ({act['granite']} Granite, {act['deepseek']} DeepSeek escalation(s), "
+            f"{act['kevin']} Kevin) - logged in the telemetry, not free. I report this from the "
+            "same source as the dashboard, so the two never disagree.")
+    else:
+        learned.append(f"All of this hour cost €{spend:.4f}; the semantic layer made no model "
+                       "call this hour - it is opt-in and fired only when warranted.")
     sections.append({"title": "What I took away", "text": " ".join(learned)})
 
     return sections
+
+
+def _delta_section(snap: dict, act: dict, extensions: dict) -> dict | None:
+    """Only what moved since the last review - so the report stops repeating stable numbers."""
+    prev = extensions.get("last_review_snapshot") or {}
+    eu = snap.get("epistemically_usable", {})
+    cur = {"active": snap.get("claims_active", 0), "hypotheses": snap.get("hypotheses", 0),
+           "open_conflicts": snap.get("open_conflicts", 0),
+           "research_topics": snap.get("research_topics", 0),
+           "usable": (eu.get("rate") if isinstance(eu, dict) else None),
+           "model_calls": act["granite"] + act["deepseek"] + act["kevin"]}
+    extensions["last_review_snapshot"] = cur
+    if not prev:
+        return None
+    parts = []
+    for key, label in (("active", "active claim"), ("hypotheses", "hypothesis"),
+                       ("research_topics", "research topic"), ("open_conflicts", "open conflict")):
+        d = cur[key] - prev.get(key, 0)
+        if d:
+            parts.append(f"{d:+d} {label}{'s' if abs(d) != 1 else ''}")
+    if cur["usable"] is not None and prev.get("usable") is not None:
+        du = round(cur["usable"] - prev["usable"], 3)
+        if du:
+            parts.append(f"epistemically-usable {du:+.3f}")
+    dc = cur["model_calls"] - prev.get("model_calls", 0)
+    if dc:
+        parts.append(f"{dc:+d} model call(s)")
+    if not parts:
+        return None
+    return {"title": "Since my last review", "text": "Net change: " + ", ".join(parts) + "."}
 
 
 def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: float,
@@ -218,10 +271,17 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     context = context or {}
     snap = cs.snapshot()
     topics_added = len(extensions.get("topics_added", []))
-    assessments = _assessments(cs, days=days, spend=spend, topics_added=topics_added)
+    act = _model_activity(extensions)
+    assessments = _assessments(cs, days=days, spend=spend, topics_added=topics_added,
+                               model_calls=act["granite"] + act["deepseek"] + act["kevin"])
 
     # The first-person report (built before we mint, so it can read the prior metrics).
     sections = _narrative(cs, extensions, days=days, spend=spend, context=context)
+    # Review #8: lead with what actually CHANGED since the last review, not a re-statement of
+    # stable self-descriptions. Only non-zero deltas are reported.
+    delta = _delta_section(snap, act, extensions)
+    if delta:
+        sections.insert(0, delta)
 
     seen = set(extensions.get("sm_seen", []))
     minted = []
