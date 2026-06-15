@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import os
 
-from . import model_call, model_profile, projection, quality
+from . import model_call, model_profile, projection
 from .config import paths
 
 _SYS = (
@@ -53,7 +53,10 @@ def propose(cs, extensions: dict, proto, cycle: int) -> dict:
     last = extensions.get("kevin_last_cycle")
     if last is not None and cycle - last < _every():
         return out
-    topics = [t for t in cs.topics() if quality.is_good_topic(t)]
+    # Kevin's job is far-analogy, not junk-refinement: only set him on topics that earned the
+    # status of a research direction (>=3 claims across >=2 independent sources), never on
+    # 'unsorted', a thin word cluster, or a one-source fluke.
+    topics = cs.research_topics()
     if len(topics) < 2:
         return out
     ta, tb = topics[0], topics[1]

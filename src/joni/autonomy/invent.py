@@ -30,7 +30,11 @@ def invent(cs, extensions: dict, proto, cycle: int = 0) -> dict:
         if cur is None or (c.confidence_or_support, c.id) > (cur.confidence_or_support, cur.id):
             by_topic[c.topic] = c
 
-    topics = sorted(by_topic)
+    # Only bridge topics that earned the status of a research direction (>=3 claims across >=2
+    # independent sources). A hypothesis spanning two one-source word clusters is exactly the
+    # noise the review flagged - Joni invents fewer, but better-grounded, cross-domain leaps.
+    research = set(cs.research_topics())
+    topics = sorted(t for t in by_topic if t in research)
     made = 0
     for i, ta in enumerate(topics):
         if made:

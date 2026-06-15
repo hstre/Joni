@@ -16,6 +16,15 @@ class _Proto:
         self.events.append((kind, summary))
 
 
+def _cs_with_two_research_topics():
+    # two topics that each earned research status: >=3 claims across >=2 independent sources
+    cs = CoreState(seed_core())
+    for i in range(3):
+        cs.learn(f"routing claim {i} about latency and serving", "routing", source_id=f"arxiv:r{i}")
+        cs.learn(f"memory claim {i} about episodic continuity", "memory", source_id=f"arxiv:m{i}")
+    return cs
+
+
 def test_off_by_default(monkeypatch, tmp_path):
     monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)
     monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
@@ -34,7 +43,7 @@ def test_kevin_proposes_cross_domain_hypothesis_via_his_own_model(monkeypatch, t
                ' "topic":"routing"}]'
     monkeypatch.setattr(model_call, "_complete", fake)
 
-    cs = CoreState(seed_core())
+    cs = _cs_with_two_research_topics()
     before = len(cs.hypotheses())
     out = kevin_llm.propose(cs, {}, _Proto(), 3)
     assert out["kevin_calls"] == 1 and out["hypotheses"] == 1
@@ -51,7 +60,7 @@ def test_cadence_spaces_kevin_out(monkeypatch, tmp_path):
     monkeypatch.setenv("JONI_KEVIN_EVERY", "3")
     monkeypatch.setattr(model_call, "_complete",
                         lambda p, s, u: '[{"text":"A links to B somehow","topic":"routing"}]')
-    cs = CoreState(seed_core())
+    cs = _cs_with_two_research_topics()
     ext: dict = {}
     assert kevin_llm.propose(cs, ext, _Proto(), 3)["kevin_calls"] == 1
     assert kevin_llm.propose(cs, ext, _Proto(), 4)["kevin_calls"] == 0   # within cadence -> wait

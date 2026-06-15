@@ -89,6 +89,15 @@ _VOWEL = re.compile(r"[aeiou]")
 # subject terms a generated claim quotes, e.g. "...'cotton' recurs..." -> ['cotton']
 _QUOTED = re.compile(r"'([^']+)'")
 
+# Sentinel buckets - they LABEL a claim whose topic could not be classified, but they are NOT
+# research subjects. "unsorted" must never become a tracked topic, a forum question, or a Kevin
+# target: it is a signal that classification failed, not a concept.
+_RESERVED_TOPICS = frozenset({"unsorted", "misc", "other", "general", "uncategorized", "untitled"})
+
+
+def is_reserved_topic(term: str) -> bool:
+    return (term or "").strip().lower() in _RESERVED_TOPICS
+
 
 def is_meaningful_term(term: str) -> bool:
     """Could this single token plausibly name a concept worth developing or asking about?
@@ -97,7 +106,7 @@ def is_meaningful_term(term: str) -> bool:
     (``mllm``, ``gpt-4``) and hyphenated artifacts with a tiny part (``mid-ir``). It does not
     (yet) judge whether the concept is *on-domain* - that is the semantic layer's job."""
     t = (term or "").strip().lower()
-    if not t or t in STOPWORDS:
+    if not t or t in STOPWORDS or t in _RESERVED_TOPICS:
         return False
     parts = t.split("-")
     if any(len(p) < 3 or not p.isalpha() for p in parts):   # 'mid-ir', 'gpt-4', 'a-b'

@@ -19,6 +19,14 @@ class _Proto:
         self.events.append((kind, summary))
 
 
+def _routing_research_parent(cs):
+    """Make 'routing' an earned research direction (>=3 claims across >=2 independent sources)
+    so Joni may draft a forum question about it, and return a parent claim id."""
+    cs.learn("routing reduces latency on small tasks", "routing", source_id="arxiv:a")
+    cs.learn("routing reduces latency under load", "routing", source_id="arxiv:b")
+    return cs.learn("routing parent", "routing", source_id="arxiv:c")
+
+
 class _Paths:
     def __init__(self, d):
         self.forum_inbox = d / "forum_inbox.json"
@@ -107,7 +115,7 @@ def test_pull_live_replies_tags_legacy_vs_own_posts(tmp_path, monkeypatch):
 
 def test_a_polite_question_is_drafted_awaiting_approval_and_bounded():
     cs = CoreState(seed_core())
-    p = cs.learn("routing parent", "routing")
+    p = _routing_research_parent(cs)
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     drafts = humans.draft_outbox(cs, ext, _Proto(), 1,
@@ -121,7 +129,7 @@ def test_a_polite_question_is_drafted_awaiting_approval_and_bounded():
 
 def test_live_loop_posts_nothing_without_an_approved_ready_draft(tmp_path):
     cs = CoreState(seed_core())
-    p = cs.learn("routing parent", "routing")
+    p = _routing_research_parent(cs)
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     res = humans.interact(cs, ext, _Proto(), 1, paths=_Paths(tmp_path),
@@ -140,7 +148,7 @@ def test_live_loop_autoposts_moltbook_without_approval(tmp_path, monkeypatch):
     monkeypatch.setattr(adapters.MoltbookAdapter, "post",
                         lambda self, text: "https://www.moltbook.com/posts/p1")
     cs = CoreState(seed_core())
-    p = cs.learn("routing parent", "routing")
+    p = _routing_research_parent(cs)
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     paths = _Paths(tmp_path)
@@ -159,7 +167,7 @@ def test_live_loop_autoposts_moltbook_without_approval(tmp_path, monkeypatch):
 
 def test_draft_autopost_pulls_from_open_needs_and_dedupes_per_platform():
     cs = CoreState(seed_core())
-    p = cs.learn("routing parent", "routing")
+    p = _routing_research_parent(cs)
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext: dict = {}
     d1 = humans.draft_autopost(cs, ext, _Proto(), 1, autopost=("moltbook",))
@@ -178,7 +186,7 @@ def test_a_human_forum_still_needs_approval_even_with_a_ready_adapter(tmp_path, 
     monkeypatch.setattr(adapters.RedditAdapter, "post",
                         lambda self, text: "https://reddit.example/p")
     cs = CoreState(seed_core())
-    p = cs.learn("routing parent", "routing")
+    p = _routing_research_parent(cs)
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     paths = _Paths(tmp_path)
@@ -196,7 +204,7 @@ def test_a_human_forum_still_needs_approval_even_with_a_ready_adapter(tmp_path, 
 
 def test_moderation_gate_only_releases_approved_drafts(tmp_path):
     cs = CoreState(seed_core())
-    p = cs.learn("routing parent", "routing")
+    p = _routing_research_parent(cs)
     cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
     ext = {}
     drafts = humans.draft_outbox(cs, ext, _Proto(), 1, platforms=("reddit",))

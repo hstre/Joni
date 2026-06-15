@@ -14,9 +14,12 @@ class _Proto:
 
 
 def _cs_two_topics():
+    # two topics that each earned research status (>=3 claims across >=2 independent sources),
+    # so invention may bridge them - a one-source word cluster is no longer a research direction.
     cs = CoreState(l9.Layer9())
-    cs.learn("cheap local models handle most turns", "routing")
-    cs.learn("episodic memory preserves continuity", "memory")
+    for i in range(3):
+        cs.learn(f"cheap local models handle most turns {i}", "routing", source_id=f"arxiv:r{i}")
+        cs.learn(f"episodic memory preserves continuity {i}", "memory", source_id=f"arxiv:m{i}")
     return cs
 
 
