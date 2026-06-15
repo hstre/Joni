@@ -469,6 +469,7 @@
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
     "zenodo:20413370",
     "zenodo:20703165",
+    "zenodo:20705508",
     "zenodo:20706874",
     "zenodo:20707244",
     "zenodo:20707565",
@@ -610,6 +611,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708053"
+    },
+    {
+      "call_id": "joni-c13:97a3f82171b5",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20705508"
     }
   ],
   "pdf_read": [
@@ -723,6 +732,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c13:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -737,7 +754,7 @@
     "zenodo:20707998",
     "zenodo:20708085"
   ],
-  "method_trials_total": 83,
+  "method_trials_total": 91,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -776,6 +793,7 @@
     "C-79|C-83@bge-small-en-v1.5"
   ],
   "invented": [
+    "agentspec|alignment",
     "alignment|anthology",
     "alignment|drift",
     "alignment|flarum",
@@ -801,6 +819,7 @@
     "representation",
     "representations",
     "session",
+    "thinking-answer",
     "variance"
   ],
   "synthesized": [
@@ -826,13 +845,15 @@
     "memory|principle",
     "unsorted|boundary",
     "unsorted|distichlis",
-    "unsorted|halophytic"
+    "unsorted|halophytic",
+    "unsorted|laxiflora"
   ],
   "emerged_methods": [
     "alignment",
     "anthology",
     "principle",
     "reasoning",
+    "thinking-answer",
     "variance"
   ],
   "emerge_insufficient": {
@@ -849,7 +870,10 @@
     "C-234|C-225",
     "C-243|C-137",
     "C-243|C-221",
-    "C-243|C-225"
+    "C-243|C-225",
+    "C-252|C-221",
+    "C-252|C-225",
+    "C-252|C-7"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -868,14 +892,14 @@
     "C-51"
   ],
   "learned_queries": [
-    "unsorted worth",
-    "anthology+forum abundance",
-    "anthology+forum titled",
     "memory principle",
     "memory single",
     "anthology+memory might",
     "anthology+memory abundance",
-    "unsorted unsorted"
+    "unsorted unsorted",
+    "agentspec+alignment pattern",
+    "agentspec+alignment agent",
+    "unsorted laxiflora"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -892,7 +916,9 @@
     "C-234": 11,
     "C-236": 11,
     "C-243": 12,
-    "C-245": 12
+    "C-245": 12,
+    "C-252": 13,
+    "C-254": 13
   },
   "hyp_domain_ok": [
     "C-126",
@@ -906,6 +932,7 @@
     "C-227",
     "C-236",
     "C-245",
+    "C-254",
     "C-49",
     "C-51"
   ],
@@ -924,32 +951,32 @@
   ],
   "vitality": {
     "verdict": "developing",
-    "development": 3,
+    "development": 13,
     "degeneration": 0,
-    "active": 151,
-    "hypotheses": 15,
-    "unsupported_hypotheses": 13,
-    "promoted_ideas": 2,
+    "active": 154,
+    "hypotheses": 16,
+    "unsupported_hypotheses": 14,
+    "promoted_ideas": 3,
     "confirmed_claims": 0,
-    "evidence_links": 8,
-    "supporting_links": 8,
-    "emergent_total": 40,
+    "evidence_links": 11,
+    "supporting_links": 11,
+    "emergent_total": 43,
     "usable_semantic_rate": 1.0,
     "methods_total": 11,
-    "method_trials_total": 83,
+    "method_trials_total": 91,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 1788,
-    "cycle": 12
+    "objects": 1884,
+    "cycle": 13
   },
   "vitality_prev": {
-    "supports": 8,
-    "promoted": 2,
+    "supports": 11,
+    "promoted": 3,
     "confirmed": 0,
-    "objects": 1788,
-    "active": 151,
-    "links": 8,
-    "emergent": 40
+    "objects": 1884,
+    "active": 154,
+    "links": 11,
+    "emergent": 43
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1036,12 +1063,19 @@
       "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 13,
+      "verdict": "developing",
+      "development": 13,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 9,
+    "starved_topic": 10,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -1496,5 +1530,18 @@
       "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500."
     }
   ],
-  "reconsolidate_lens_idx": 0
+  "reconsolidate_lens_idx": 0,
+  "kevin_last_cycle": 13,
+  "kevin_llm": [
+    {
+      "call_id": "kevin-c13:08dcd1f2fe59",
+      "served_model": "deepseek-v4-pro",
+      "topics": [
+        "memory",
+        "unsorted"
+      ],
+      "hypotheses": 0,
+      "replayed": false
+    }
+  ]
 }
