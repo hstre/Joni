@@ -48,6 +48,10 @@ _EXTENSIBLE = {
         "the emergence / strengthening layer (emerge.py / strengthen.py) - how candidates earn "
         "development, outside the protected core",
         "medium - changes how ideas develop; still gated, still never auto-confirms"),
+    "method-trialing": (
+        "the method-trialing / harvesting layer (trials.py / methods.py and Kevin's trial "
+        "runner) - the pass-criterion and retirement of methods, outside the protected core",
+        "medium - changes how a method is judged tried/passed/discarded; never auto-confirms"),
 }
 
 # How long a signal must hold before it becomes a commission, and how long before a given kind
@@ -58,6 +62,8 @@ _SEMANTIC_MIN_CLUSTERS = 5
 _UNQUALIFIED_FLOOR = 4
 _STARVED_MIN_HYPS = 3
 _STALL_CYCLES = 12
+_METHODS_FLOOR = 20         # a sizeable shelf...
+_TRIALS_FLOOR = 200         # ...trialed many times...
 
 
 def _commission(kind: str, component_key: str, *, cycle: int, title: str, motivation: str,
@@ -175,12 +181,39 @@ def _stalled_development(cs, vit: dict, cycle: int) -> dict | None:
                   "unsupported_hypotheses": vit.get("unsupported_hypotheses")})
 
 
+def _methods_never_mature(cs, vit: dict, cycle: int) -> dict | None:
+    """A large method shelf, trialed many times, with not a single method ever reaching
+    activation-ready: high activity, no adoption. The trial pass-criterion needs work - ask for
+    a clear bar (baseline, negative result, when a method is discarded)."""
+    methods = vit.get("methods_total", 0)
+    trials = vit.get("method_trials_total", 0)
+    ready = vit.get("methods_ready_total", 0)
+    if methods < _METHODS_FLOOR or trials < _TRIALS_FLOOR or ready > 0:
+        return None
+    return _commission(
+        "methods_never_mature", "method-trialing", cycle=cycle,
+        title="Gib dem Methoden-Trial ein klares Bestehens-Kriterium",
+        motivation=(f"{methods} Methoden, {trials} Trials, aber 0 reif (activation-ready). Hohe "
+                    "Aktivität ohne Adoption - ein Trial unterscheidet sich nicht von einer bloß "
+                    "erfolgreichen Ausführung, und keine Methode wird je verworfen."),
+        desired=("Definiere in trials.py / methods.py (und ggf. Kevins Trial-Runner) ein klares "
+                 "Pass-Kriterium: Baseline, messbare Differenz zum Nicht-Anwenden, Negativ"
+                 "ergebnisse, und ein Verwerfen einer Methode nach N Trials ohne Differenz - "
+                 "weiterhin ohne Selbst-Bestätigung."),
+        acceptance=("Innerhalb weniger Zyklen reift mindestens eine Methode (activation-ready) "
+                    "ODER nicht-reifende Methoden werden verworfen, sodass die Methodenzahl nicht "
+                    "unbegrenzt wächst."),
+        evidence={"methods_total": methods, "method_trials_total": trials,
+                  "methods_ready_total": ready})
+
+
 # (kind, detector, cycles the signal must hold before it fires).
 _DETECTORS = [
     ("semantic_blind_spot", _semantic_blind_spot, 4),
     ("unqualified_conflicts", _unqualified_conflicts, 2),
     ("starved_topic", _starved_topic, 3),
     ("stalled_development", _stalled_development, 1),   # vitality already requires sustained stall
+    ("methods_never_mature", _methods_never_mature, 3),
 ]
 
 

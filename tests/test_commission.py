@@ -157,3 +157,20 @@ def test_stalled_development_commission_after_a_long_stagnation():
     assert c["kind"] == "stalled_development"
     assert c["component_key"] == "emergence"
     _non_core(c)
+
+
+def test_methods_never_mature_commission_fires_on_activity_without_adoption():
+    cs = CoreState(seed_core())
+    # large shelf, many trials, nothing ever activation-ready -> ask for a pass-criterion
+    vit = {"methods_total": 30, "method_trials_total": 500, "methods_ready_total": 0}
+    c = commission._methods_never_mature(cs, vit, cycle=5)
+    assert c is not None
+    _non_core(c)
+    assert c["component_key"] == "method-trialing"
+    assert c["evidence"]["method_trials_total"] == 500
+    # one matured method -> no commission
+    assert commission._methods_never_mature(
+        cs, {"methods_total": 30, "method_trials_total": 500, "methods_ready_total": 1}, 5) is None
+    # below the floors -> no commission
+    assert commission._methods_never_mature(
+        cs, {"methods_total": 5, "method_trials_total": 10, "methods_ready_total": 0}, 5) is None
