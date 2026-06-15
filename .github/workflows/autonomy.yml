@@ -67,6 +67,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}       # for `gh` (filing asks)
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # Alexandria expert trio (Claude/ChatGPT/DeepSeek, ueber Kreuz): Joni consults it when
+          # he is genuinely unsure (an open contradiction he holds). Advice only - they never
+          # decide. Real spend, but cooldown-spaced and hard-capped by the weekly budget.
+          JONI_EXPERTS: "1"
           # Moltbook is an agent-only network: let Joni post APPROVED drafts there directly.
           # Still gated by approval; human forums (no live adapter) keep waiting for a human.
           JONI_FORUM_LIVE: "1"
