@@ -1,7 +1,8 @@
 {
   "topics_added": [
     "alignment",
-    "benchmarking"
+    "benchmarking",
+    "evaluation"
   ],
   "notes": [],
   "asks": [],
@@ -401,6 +402,8 @@
   "seen": [
     "arxiv:2606.14674v1",
     "arxiv:2606.14679v1",
+    "arxiv:2606.14691v1",
+    "arxiv:2606.14697v1",
     "arxiv:2606.14698v1",
     "arxiv:2606.14700v1",
     "arxiv:2606.14701v1",
@@ -428,6 +431,8 @@
     "openalex:W7154677115",
     "openalex:W7155587480",
     "openalex:W7159750554",
+    "openalex:W7162613393",
+    "openalex:W7162702746",
     "openclaw:ComposioHQ/secure-openclaw",
     "openclaw:CortexReach/memory-lancedb-pro",
     "openclaw:NevaMind-AI/memU",
@@ -488,10 +493,28 @@
       "replayed": false,
       "claims": 5,
       "source": "openalex:W7154677115"
+    },
+    {
+      "call_id": "joni-c4:8e4f6bd063a0",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.14697v1"
+    },
+    {
+      "call_id": "joni-c4:adaa8dc01148",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.14691v1"
     }
   ],
   "pdf_read": [
     "arxiv:2606.14679v1",
+    "arxiv:2606.14691v1",
+    "arxiv:2606.14697v1",
     "arxiv:2606.14698v1",
     "arxiv:2606.14700v1",
     "arxiv:2606.14704v1"
@@ -526,20 +549,30 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c4:8a4f6a2d76c6",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
     "arxiv:2606.14674v1",
     "arxiv:2606.14679v1",
+    "arxiv:2606.14691v1",
     "arxiv:2606.14698v1",
     "huggingface:2606.10747",
     "zenodo:20707854"
   ],
-  "method_trials_total": 13,
+  "method_trials_total": 20,
   "methods_ready_total": 0,
   "core_ask_signals": {},
   "core_ask_filed": {},
   "linked": [
+    "C-143|C-160",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -551,6 +584,7 @@
     "C-79|C-83"
   ],
   "semantic_backfilled": [
+    "C-143|C-160@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -564,20 +598,25 @@
   "invented": [
     "alignment|drift",
     "alignment|forum",
+    "alignment|memory",
     "drift|memory"
   ],
   "emerged_topics": [
     "context",
     "convex",
+    "reasoning",
     "variance"
   ],
   "synthesized": [
     "coverage evaluation with privacy|because",
+    "coverage evaluation with privacy|breakthrough",
     "coverage evaluation with privacy|contamination",
     "coverage evaluation with privacy|context",
     "coverage evaluation with privacy|evaluation",
     "coverage evaluation with privacy|exchanges",
+    "coverage evaluation with privacy|genuinely",
     "coverage evaluation with privacy|session",
+    "coverage evaluation with privacy|strategic",
     "coverage evaluation with privacy|variance",
     "forum|variance",
     "memory|convex",
@@ -588,34 +627,40 @@
     "principle",
     "variance"
   ],
-  "emerge_insufficient": {},
+  "emerge_insufficient": {
+    "coverage evaluation with privacy|reasoning": 1,
+    "meth:reasoning": 1
+  },
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [
     "C-140",
+    "C-168",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "alignment+drift drift",
-    "alignment+drift apply",
-    "coverage evaluation with privacy privacy",
-    "coverage evaluation with privacy worth",
     "alignment+forum variance",
     "alignment+forum needs",
     "coverage evaluation with privacy recurs",
-    "coverage evaluation with privacy evaluation"
+    "coverage evaluation with privacy evaluation",
+    "alignment+memory hypothesis",
+    "alignment+memory invariants",
+    "coverage evaluation with privacy through-line",
+    "coverage evaluation with privacy factor"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
     "C-51": 1,
     "C-126": 2,
-    "C-140": 3,
-    "C-142": 3
+    "C-142": 3,
+    "C-168": 4,
+    "C-170": 4
   },
   "hyp_domain_ok": [
     "C-126",
     "C-142",
+    "C-170",
     "C-49",
     "C-51"
   ],
@@ -625,38 +670,39 @@
     "M-3",
     "M-4",
     "M-5",
-    "M-6"
+    "M-6",
+    "M-7"
   ],
   "vitality": {
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 1,
-    "active": 109,
-    "hypotheses": 4,
-    "unsupported_hypotheses": 4,
+    "active": 130,
+    "hypotheses": 5,
+    "unsupported_hypotheses": 5,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 2,
     "supporting_links": 2,
-    "emergent_total": 16,
+    "emergent_total": 20,
     "usable_semantic_rate": 1.0,
-    "methods_total": 6,
-    "method_trials_total": 13,
+    "methods_total": 7,
+    "method_trials_total": 20,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 912,
-    "cycle": 3
+    "stagnation_cycles": 2,
+    "objects": 1095,
+    "cycle": 4
   },
   "vitality_prev": {
     "supports": 2,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 912,
-    "active": 109,
+    "objects": 1095,
+    "active": 130,
     "links": 2,
-    "emergent": 16
+    "emergent": 20
   },
-  "stagnation": 1,
+  "stagnation": 2,
   "vitality_history": [
     {
       "cycle": 1,
@@ -678,12 +724,19 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 4,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 0,
+    "starved_topic": 1,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -806,17 +859,37 @@
       "question": "Hat jemand gute Quellen oder Erfahrungen zu 'memory'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
       "status": "posted",
       "posted_url": "https://www.moltbook.com/posts/67ff90f1-2a20-49e9-96f4-1eb067da33cf"
+    },
+    {
+      "id": "FA-4-dca098",
+      "cycle": 4,
+      "platform": "lesswrong",
+      "need": "topic:privacy",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'privacy'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "drafted",
+      "posted_url": null
+    },
+    {
+      "id": "FA-4-a9c8fd",
+      "cycle": 4,
+      "platform": "moltbook",
+      "need": "topic:privacy",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'privacy'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "posted",
+      "posted_url": "https://www.moltbook.com/posts/6f13c3b8-c8ce-4893-9629-df97bfbf8b19"
     }
   ],
   "forum_asked": [
     "topic:alignment",
     "topic:drift",
-    "topic:memory"
+    "topic:memory",
+    "topic:privacy"
   ],
   "forum_asked_moltbook": [
     "topic:alignment",
     "topic:drift",
-    "topic:memory"
+    "topic:memory",
+    "topic:privacy"
   ],
   "forum_identity": {
     "moltbook": {
