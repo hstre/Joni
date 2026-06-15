@@ -89,6 +89,25 @@ def test_a_non_judgment_is_retried_not_permanently_burned(monkeypatch):
     assert cs.core.get(h).status is l9.Status.ACTIVE
 
 
+def test_rotation_is_fair_no_hypothesis_starves(monkeypatch):
+    """The least-recently-strengthened hypotheses are attended first, so a stuck oldest idea
+    can't hog the single slot every cycle while the rest never get tested."""
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "rejected")  # all hollow
+    cs = CoreState(l9.Layer9())
+    p = cs.learn("a parent claim about routing", "routing")
+    hyps = [cs.hypothesize(f"Hypothesis number {i} about routing latency", "routing",
+                           parents=(p,)) for i in range(4)]
+    ext: dict = {}
+    attended: set[str] = set()
+    # one hypothesis attended per cycle; over 4 cycles every hypothesis must get a turn
+    for c in range(4):
+        before = dict(ext.get("hyp_seen_cycle", {}))
+        strengthen.strengthen(cs, ext, _Proto(), cycle=c, layer=StubSemanticLayer(), max_hyp=1)
+        now = ext["hyp_seen_cycle"]
+        attended |= {hid for hid, cyc in now.items() if before.get(hid) != cyc}
+    assert set(hyps) <= attended            # all four were strengthened, none starved
+
+
 def test_non_judgment_retries_are_bounded(monkeypatch):
     """Insufficient is retried, but not forever - after a bounded number it is finalised."""
     monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
