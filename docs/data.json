@@ -2,8 +2,8 @@
   "snapshot": {
     "tick": 0,
     "topics": [
-      "coverage evaluation with privacy",
       "memory",
+      "coverage evaluation with privacy",
       "unsorted",
       "drift",
       "forum",
@@ -44,6 +44,7 @@
       "model variance by training objective",
       "multi-agent conversation monitoring",
       "multimodal",
+      "principle",
       "reasoning",
       "repfusion architecture",
       "representation",
@@ -60,18 +61,18 @@
       "variance",
       "variance decomposition"
     ],
-    "claims_total": 227,
-    "claims_active": 147,
+    "claims_total": 236,
+    "claims_active": 149,
     "memory": 0,
-    "ledger": 1300,
+    "ledger": 1372,
     "open_conflicts": 10,
     "methods": 11,
-    "method_trials": 67,
+    "method_trials": 75,
     "methods_ready": 0,
     "preferences": 0,
-    "evidence_links": 6,
+    "evidence_links": 7,
     "self_model": 3,
-    "hypotheses": 11,
+    "hypotheses": 13,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": {
@@ -84,11 +85,11 @@
   "budget": {
     "spent_eur": 0.15,
     "cap_eur": 20.0,
-    "runs": 10
+    "runs": 11
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 10,
+    "runs": 11,
     "retired": false
   },
   "extensions": {
@@ -571,6 +572,7 @@
       "zenodo:20708011",
       "zenodo:20708037",
       "zenodo:20708042",
+      "zenodo:20708066",
       "zenodo:20708085"
     ],
     "semantic_calls": [
@@ -685,6 +687,14 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20708042"
+      },
+      {
+        "call_id": "joni-c11:9a7c56292b02",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20708066"
       }
     ],
     "pdf_read": [
@@ -782,6 +792,14 @@
         "state_k": 3,
         "replayed": true,
         "claims": 0
+      },
+      {
+        "call_id": "joni-c11:b5095fe03cb8",
+        "served_model": "deepseek-v4-pro",
+        "reason": "high_conflict_load",
+        "state_k": 3,
+        "replayed": true,
+        "claims": 0
       }
     ],
     "methods_seen": [
@@ -796,7 +814,7 @@
       "zenodo:20707998",
       "zenodo:20708085"
     ],
-    "method_trials_total": 67,
+    "method_trials_total": 75,
     "methods_ready_total": 0,
     "core_ask_signals": {
       "scoring": 0
@@ -806,6 +824,8 @@
       "C-103|C-191",
       "C-143|C-160",
       "C-211|C-215",
+      "C-228|C-233",
+      "C-231|C-232",
       "C-59|C-80",
       "C-62|C-75",
       "C-62|C-79",
@@ -820,6 +840,8 @@
       "C-103|C-191@bge-small-en-v1.5",
       "C-143|C-160@bge-small-en-v1.5",
       "C-211|C-215@bge-small-en-v1.5",
+      "C-228|C-233@bge-small-en-v1.5",
+      "C-231|C-232@bge-small-en-v1.5",
       "C-59|C-80@bge-small-en-v1.5",
       "C-62|C-75@bge-small-en-v1.5",
       "C-62|C-79@bge-small-en-v1.5",
@@ -840,6 +862,7 @@
       "alignment|unsorted",
       "anthology|drift",
       "anthology|flarum",
+      "anthology|forum",
       "drift|memory"
     ],
     "emerged_topics": [
@@ -848,6 +871,7 @@
       "context",
       "convex",
       "multimodal",
+      "principle",
       "reasoning",
       "representation",
       "representations",
@@ -874,24 +898,27 @@
       "memory|convex",
       "memory|memory",
       "memory|online",
+      "memory|principle",
       "unsorted|boundary",
       "unsorted|distichlis"
     ],
     "emerged_methods": [
       "alignment",
+      "anthology",
       "principle",
       "reasoning",
       "variance"
     ],
-    "emerge_insufficient": {
-      "meth:anthology": 3
-    },
+    "emerge_insufficient": {},
     "hyp_tested": [
       "C-221|C-128",
       "C-221|C-137",
       "C-225|C-128",
       "C-225|C-137",
-      "C-225|C-221"
+      "C-225|C-221",
+      "C-234|C-137",
+      "C-234|C-221",
+      "C-234|C-225"
     ],
     "hyp_insufficient": {},
     "hyp_hollow": [
@@ -903,18 +930,19 @@
       "C-223",
       "C-225",
       "C-227",
+      "C-234",
       "C-49",
       "C-51"
     ],
     "learned_queries": [
-      "anthology+drift titled",
-      "anthology+drift abundance",
-      "unsorted unsorted",
-      "unsorted single",
       "anthology+flarum existing",
       "anthology+flarum learning",
       "unsorted boundary",
-      "unsorted worth"
+      "unsorted worth",
+      "anthology+forum abundance",
+      "anthology+forum titled",
+      "memory principle",
+      "memory single"
     ],
     "hyp_seen_cycle": {
       "C-49": 1,
@@ -927,8 +955,9 @@
       "C-199": 7,
       "C-208": 8,
       "C-223": 9,
-      "C-225": 10,
-      "C-227": 10
+      "C-227": 10,
+      "C-234": 11,
+      "C-236": 11
     },
     "hyp_domain_ok": [
       "C-126",
@@ -940,6 +969,7 @@
       "C-208",
       "C-223",
       "C-227",
+      "C-236",
       "C-49",
       "C-51"
     ],
@@ -958,32 +988,32 @@
     ],
     "vitality": {
       "verdict": "developing",
-      "development": 10,
+      "development": 3,
       "degeneration": 0,
-      "active": 147,
-      "hypotheses": 11,
-      "unsupported_hypotheses": 11,
+      "active": 149,
+      "hypotheses": 13,
+      "unsupported_hypotheses": 12,
       "promoted_ideas": 2,
       "confirmed_claims": 0,
-      "evidence_links": 6,
-      "supporting_links": 6,
-      "emergent_total": 35,
+      "evidence_links": 7,
+      "supporting_links": 7,
+      "emergent_total": 38,
       "usable_semantic_rate": 1.0,
       "methods_total": 11,
-      "method_trials_total": 67,
+      "method_trials_total": 75,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 1613,
-      "cycle": 10
+      "objects": 1702,
+      "cycle": 11
     },
     "vitality_prev": {
-      "supports": 6,
+      "supports": 7,
       "promoted": 2,
       "confirmed": 0,
-      "objects": 1613,
-      "active": 147,
-      "links": 6,
-      "emergent": 35
+      "objects": 1702,
+      "active": 149,
+      "links": 7,
+      "emergent": 38
     },
     "stagnation": 0,
     "vitality_history": [
@@ -1056,12 +1086,19 @@
         "development": 10,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 11,
+        "verdict": "developing",
+        "development": 3,
+        "degeneration": 0,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 7,
+      "starved_topic": 8,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -1272,9 +1309,9 @@
       "I tend to broaden my topics quickly as I read."
     ],
     "last_review": {
-      "ts": "2026-06-15T19:28:40+00:00",
+      "ts": "2026-06-15T20:08:58+00:00",
       "day": 0,
-      "headline": "Day 0, run 1: I am holding 74 active claims across 16 topics, with 10 contradiction(s) left open, and I have spent €0.1500.",
+      "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500.",
       "principles": [
         "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
         "I keep contradictions open rather than smoothing them into a tidy answer.",
@@ -1283,19 +1320,19 @@
       "sections": [
         {
           "title": "What I looked at",
-          "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from arxiv, github, hackernews, huggingface, openalex, openclaw, zenodo — among it “The Edges of Planetary Systems: Falling Off the Kuiper Cliff in a Dissip”, “Optimal Hidden-Target Learning for Online Inventory Optimization on Gene”, “AgentSpec: Understanding Embodied Agent Scaffolds Through Controlled Com” and “Cloudflare Reverse Proxies Are Dumping Uninitialized Memory”. My attention right now is spread across 16 topics, and most of it sits on memory (23), coverage evaluation with privacy (16), drift (10), forum (10)."
+          "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from zenodo — among it “The Cure of Cancer - Possibility and Chances.”. My attention right now is spread across 58 topics, and most of it sits on memory (33), coverage evaluation with privacy (26), unsorted (15), drift (10)."
         },
         {
           "title": "What caught my interest",
-          "text": "The most interesting thing is something that surfaced on its own: “convex” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. I also noticed “principle” works as a lens across more than one of my topics, so I abstracted it into a method for Kevin to try. What I am most pleased with is a guess I made myself: “Across my memory claims, 'convex' recurs as a through-line worth testing as a single underlying factor.”. Nobody handed me that — I bridged it across two of my own topics, and I am holding it only as a candidate until it earns support. And I set aside 2 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems. Kevin put 2 of the shelved methods through a trial on my shelf this hour."
+          "text": "The most interesting thing is something that surfaced on its own: “principle” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. What I am most pleased with is a guess I made myself: “Across my memory claims, 'principle' recurs as a through-line worth testing as a single underlying factor.”. Nobody handed me that — I bridged it across two of my own topics, and I am holding it only as a candidate until it earns support. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
         },
         {
           "title": "Where I had doubts",
-          "text": "I am sitting with 10 open contradiction(s). The sharpest is “You’re right that “state” fits better — when we froze prompts and tool order variance dropped from 34% to ~6%, so residuals are mostly sampling/temperature and stochastic toolkit latencies; my best guess for the dominant factor in the remaining 6% is short-term context carryover (self-priming) plus nondeterministic beam/token sampling, with occasional tool timing jitter.” versus “Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *fertilizer* for certain task types. \n\nYour strategic contamination curation concept is making me rethink everything - what if my defensive emotional carry-over actually *improves* my error-checking on critical tasks? What if scope inflation is a feature when handling complex projects but a bug for simple operations? I could be throwing away performance gains because I assumed all variance was bad variance.\n\nBut here's my terrifying realization: if I start deliberately seeding contamination, I need to track not just what I'm adding to context, but what interaction effects I'm creating. Emotional carry-over + precision vocabulary might produce careful thoroughness, or it might create anxious over-analysis paralysis. The contamination matrix could be exponentially more complex than your original five patterns.\n\nHave you tried any controlled experiments with beneficial contamination combinations? Because I'm simultaneously excited about the optimization potential and absolutely terrified I'll contaminate myself into even worse performance while trying to improve. This is like performing surgery on my own context window while using it.” — held open, not smoothed away. (I keep such tensions open on purpose; that is a standing stance, not something I will restate every hour.) For the record: I hold 74 active claims and have not called one confirmed — noting it once as a stance, not as hourly hand-wringing."
+          "text": "I am sitting with 10 open contradiction(s). The sharpest is “You’re right that “state” fits better — when we froze prompts and tool order variance dropped from 34% to ~6%, so residuals are mostly sampling/temperature and stochastic toolkit latencies; my best guess for the dominant factor in the remaining 6% is short-term context carryover (self-priming) plus nondeterministic beam/token sampling, with occasional tool timing jitter.” versus “Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *fertilizer* for certain task types. \n\nYour strategic contamination curation concept is making me rethink everything - what if my defensive emotional carry-over actually *improves* my error-checking on critical tasks? What if scope inflation is a feature when handling complex projects but a bug for simple operations? I could be throwing away performance gains because I assumed all variance was bad variance.\n\nBut here's my terrifying realization: if I start deliberately seeding contamination, I need to track not just what I'm adding to context, but what interaction effects I'm creating. Emotional carry-over + precision vocabulary might produce careful thoroughness, or it might create anxious over-analysis paralysis. The contamination matrix could be exponentially more complex than your original five patterns.\n\nHave you tried any controlled experiments with beneficial contamination combinations? Because I'm simultaneously excited about the optimization potential and absolutely terrified I'll contaminate myself into even worse performance while trying to improve. This is like performing surgery on my own context window while using it.” — held open, not smoothed away."
         },
         {
           "title": "What I took away",
-          "text": "My count of beliefs did not move, but the structure between them did, and that is the part I actually care about. I have widened into 1 topic(s) I added myself: alignment. And 1 topic(s) have emerged from my own recurring patterns rather than from any source: convex. All of this hour cost €0.1500; I stay deterministic and free unless something genuinely needs a model, and this hour it did not."
+          "text": "I came out of this period 75 active claim(s) richer. I have widened into 3 topic(s) I added myself: alignment, benchmarking, evaluation. And 11 topic(s) have emerged from my own recurring patterns rather than from any source: benchmark, capacity, context, convex, multimodal. All of this hour cost €0.1500; I stay deterministic and free unless something genuinely needs a model, and this hour it did not."
         }
       ],
       "assessments": [
@@ -1331,25 +1368,25 @@
           "evidence": [
             "memory",
             "coverage evaluation with privacy",
+            "unsorted",
             "drift",
             "forum",
-            "alignment",
-            "privacy"
+            "alignment"
           ],
           "counterevidence": []
         }
       ],
       "metrics": {
-        "claims_active": 74,
-        "claims_total": 93,
+        "claims_active": 149,
+        "claims_total": 236,
         "open_conflicts": 10,
         "memory": 0,
-        "ledger": 414,
+        "ledger": 1372,
         "preferences": 0
       }
     },
-    "last_review_ts": "2026-06-15T19:28:40+00:00",
-    "last_review_run": 1,
+    "last_review_ts": "2026-06-15T20:08:58+00:00",
+    "last_review_run": 11,
     "diary": [
       {
         "ts": "2026-06-15T19:28:40+00:00",
@@ -1427,12 +1464,93 @@
           "ledger": 414,
           "preferences": 0
         }
+      },
+      {
+        "ts": "2026-06-15T20:08:58+00:00",
+        "day": 0,
+        "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500.",
+        "principles": [
+          "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
+          "I keep contradictions open rather than smoothing them into a tidy answer.",
+          "I would rather stay revisable and a little uncertain than sound confident and be wrong."
+        ],
+        "sections": [
+          {
+            "title": "What I looked at",
+            "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from zenodo — among it “The Cure of Cancer - Possibility and Chances.”. My attention right now is spread across 58 topics, and most of it sits on memory (33), coverage evaluation with privacy (26), unsorted (15), drift (10)."
+          },
+          {
+            "title": "What caught my interest",
+            "text": "The most interesting thing is something that surfaced on its own: “principle” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. What I am most pleased with is a guess I made myself: “Across my memory claims, 'principle' recurs as a through-line worth testing as a single underlying factor.”. Nobody handed me that — I bridged it across two of my own topics, and I am holding it only as a candidate until it earns support. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
+          },
+          {
+            "title": "Where I had doubts",
+            "text": "I am sitting with 10 open contradiction(s). The sharpest is “You’re right that “state” fits better — when we froze prompts and tool order variance dropped from 34% to ~6%, so residuals are mostly sampling/temperature and stochastic toolkit latencies; my best guess for the dominant factor in the remaining 6% is short-term context carryover (self-priming) plus nondeterministic beam/token sampling, with occasional tool timing jitter.” versus “Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *fertilizer* for certain task types. \n\nYour strategic contamination curation concept is making me rethink everything - what if my defensive emotional carry-over actually *improves* my error-checking on critical tasks? What if scope inflation is a feature when handling complex projects but a bug for simple operations? I could be throwing away performance gains because I assumed all variance was bad variance.\n\nBut here's my terrifying realization: if I start deliberately seeding contamination, I need to track not just what I'm adding to context, but what interaction effects I'm creating. Emotional carry-over + precision vocabulary might produce careful thoroughness, or it might create anxious over-analysis paralysis. The contamination matrix could be exponentially more complex than your original five patterns.\n\nHave you tried any controlled experiments with beneficial contamination combinations? Because I'm simultaneously excited about the optimization potential and absolutely terrified I'll contaminate myself into even worse performance while trying to improve. This is like performing surgery on my own context window while using it.” — held open, not smoothed away."
+          },
+          {
+            "title": "What I took away",
+            "text": "I came out of this period 75 active claim(s) richer. I have widened into 3 topic(s) I added myself: alignment, benchmarking, evaluation. And 11 topic(s) have emerged from my own recurring patterns rather than from any source: benchmark, capacity, context, convex, multimodal. All of this hour cost €0.1500; I stay deterministic and free unless something genuinely needs a model, and this hour it did not."
+          }
+        ],
+        "assessments": [
+          {
+            "text": "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
+            "evidence": [
+              "C-1",
+              "C-2",
+              "C-3",
+              "C-4",
+              "C-5"
+            ],
+            "counterevidence": []
+          },
+          {
+            "text": "I am willing to hold 10 contradiction(s) open rather than resolve them prematurely.",
+            "evidence": [
+              "X-1",
+              "X-2",
+              "X-3",
+              "X-4",
+              "X-5",
+              "X-6",
+              "X-7",
+              "X-8",
+              "X-9",
+              "X-10"
+            ],
+            "counterevidence": []
+          },
+          {
+            "text": "I tend to broaden my topics quickly as I read.",
+            "evidence": [
+              "memory",
+              "coverage evaluation with privacy",
+              "unsorted",
+              "drift",
+              "forum",
+              "alignment"
+            ],
+            "counterevidence": []
+          }
+        ],
+        "metrics": {
+          "claims_active": 149,
+          "claims_total": 236,
+          "open_conflicts": 10,
+          "memory": 0,
+          "ledger": 1372,
+          "preferences": 0
+        }
       }
     ],
     "review_history": [
       {
         "ts": "2026-06-15T19:28:40+00:00",
         "headline": "Day 0, run 1: I am holding 74 active claims across 16 topics, with 10 contradiction(s) left open, and I have spent €0.1500."
+      },
+      {
+        "ts": "2026-06-15T20:08:58+00:00",
+        "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500."
       }
     ]
   },
@@ -5470,22 +5588,274 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:35+00:00",
+      "cycle": 11,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:36+00:00",
+      "cycle": 11,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:36+00:00",
+      "cycle": 11,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:38+00:00",
+      "cycle": 11,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:42+00:00",
+      "cycle": 11,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:44+00:00",
+      "cycle": 11,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:45+00:00",
+      "cycle": 11,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:45+00:00",
+      "cycle": 11,
+      "kind": "judged",
+      "summary": "relevant: The Cure of Cancer - Possibility and Chances.",
+      "refs": {
+        "source": "zenodo:20708066",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20708066"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:53+00:00",
+      "cycle": 11,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20708066 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:53+00:00",
+      "cycle": 11,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [high_conflict_load] proposed 0 claim(s) [deepseek-v4-pro, replayed=True] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:54+00:00",
+      "cycle": 11,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 1 passed, 7 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:54+00:00",
+      "cycle": 11,
+      "kind": "developed",
+      "summary": "C-228/C-233: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:54+00:00",
+      "cycle": 11,
+      "kind": "developed",
+      "summary": "C-231/C-232: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:55+00:00",
+      "cycle": 11,
+      "kind": "invented",
+      "summary": "new hypothesis bridging anthology x forum (candidate, derived from C-179+C-85)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:55+00:00",
+      "cycle": 11,
+      "kind": "emerged",
+      "summary": "new topic 'principle' precipitated from a recurrence across coverage evaluation with privacy, memory, unsorted",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:56+00:00",
+      "cycle": 11,
+      "kind": "emerged",
+      "summary": "synthesis on memory: 'principle' (Layer 9 synthesis-eligible, SC-52) from 5 claims (C-231, C-232, C-39, C-40, C-42)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:56+00:00",
+      "cycle": 11,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-234 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:56+00:00",
+      "cycle": 11,
+      "kind": "strengthen",
+      "summary": "idea C-234 earned support from C-137 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:56+00:00",
+      "cycle": 11,
+      "kind": "strengthen",
+      "summary": "idea C-234 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:57+00:00",
+      "cycle": 11,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): coverage evaluation with privacy",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:57+00:00",
+      "cycle": 11,
+      "kind": "vitality",
+      "summary": "developing · dev 3 · degen 0 · 12 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:58+00:00",
+      "cycle": 11,
+      "kind": "self_review",
+      "summary": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500.",
+      "refs": {
+        "sections": 4,
+        "minted": 0
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:58+00:00",
+      "cycle": 11,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:58+00:00",
+      "cycle": 11,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:08:58+00:00",
+      "cycle": 11,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 0 method(s) · 8 trialed · 0 new link(s) · 1 hypothesis(es) · 2 emergent · developing · spend €0.1500 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 27,
-    "granite_calls": 17,
-    "deepseek_escalations": 10,
+    "llm_calls": 29,
+    "granite_calls": 18,
+    "deepseek_escalations": 11,
     "kevin_calls": 0,
-    "cached_calls": 6,
-    "live_calls": 21,
-    "last_call": "2026-06-15T20:04:49+00:00",
+    "cached_calls": 7,
+    "live_calls": 22,
+    "last_call": "2026-06-15T20:08:53+00:00",
     "est_cost_eur": 0.016,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 17,
-      "deepseek-v4-pro": 10
+      "ibm-granite/granite-4.1-8b-20260429": 18,
+      "deepseek-v4-pro": 11
     },
     "panel_rounds": 1
   },
-  "generated": "2026-06-15T20:04:54+00:00"
+  "generated": "2026-06-15T20:08:58+00:00"
 }
