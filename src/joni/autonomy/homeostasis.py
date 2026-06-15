@@ -80,6 +80,36 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
     return out
 
 
+def retire_junk_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retire: int = 5) -> dict:
+    """Shed accumulated junk *topics* - the legacy left by the cycles before the quality gate.
+
+    A topic is junk when it is a stopword/artifact, off-domain, or a compound '+' bridge. We
+    reject the 0-support live claims carrying such a topic (so it drains from ``topics()``), but
+    keep any claim that earned support - its topic may be ugly, the idea is real. Bounded per
+    cycle; works through the backlog over several cycles. Also prunes the self-added list."""
+    from . import quality
+    retired = 0
+    topics: list[str] = []
+    for c in cs.active_claims():
+        if retired >= max_retire:
+            break
+        t = getattr(c, "topic", None)
+        if not t or quality.is_good_topic(t) or _supports_on(cs, c.id) > 0:
+            continue
+        cs.reject_claim(c.id)
+        retired += 1
+        if t not in topics:
+            topics.append(t)
+    ta = extensions.get("topics_added", [])
+    good_ta = [x for x in ta if quality.is_good_topic(x)]
+    if len(good_ta) != len(ta):
+        extensions["topics_added"] = good_ta
+    if topics:
+        proto.record(cycle, "regulate",
+                     f"retired {retired} junk-topic claim(s): {', '.join(topics)}")
+    return {"retired_claims": retired, "topics": topics}
+
+
 def _usable_semantic_rate(cs) -> float:
     clusters = [c for c in cs.core.all(l9.ObjectType.SEMANTIC_CLUSTER)
                 if c.measurement.get("distance_metric") == "cosine"][-40:]

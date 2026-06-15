@@ -89,3 +89,27 @@ def test_vitality_flags_degenerating_on_a_swelling_unsupported_backlog():
     rec = homeostasis.vitality(cs, ext, _Proto())
     assert rec["unsupported_hypotheses"] > 25
     assert rec["verdict"] == "degenerating"
+
+
+def test_retire_junk_topics_drains_stopword_and_compound_topics():
+    cs = CoreState(seed_core())
+    cs.learn("'about' keeps recurring, tracking it as a topic", "about")        # stopword topic
+    cs.learn("a bridge claim", "alignment+memory")                             # compound topic
+    keep = cs.learn("routing reduces latency", "routing")                      # good topic
+    ext = {"topics_added": ["about", "alignment+memory", "calibration"]}
+    out = homeostasis.retire_junk_topics(cs, ext, _Proto())
+    assert out["retired_claims"] >= 2
+    topics = cs.topics()
+    assert "about" not in topics and "alignment+memory" not in topics          # junk drained
+    assert "routing" in topics                                                  # good kept
+    assert cs.core.get(keep).status.value == "active"
+    assert ext["topics_added"] == ["calibration"]                              # self-added pruned
+
+
+def test_retire_keeps_a_junk_topic_claim_that_earned_support():
+    cs = CoreState(seed_core())
+    a = cs.learn("a real cross idea", "alignment+memory")
+    ev = cs.learn("supporting evidence", "alignment+memory")
+    cs.corroborate(a, cs.core.get(ev), relation="supports")                    # 'a' earned support
+    homeostasis.retire_junk_topics(cs, {}, _Proto())
+    assert cs.core.get(a).status.value == "active"     # ugly topic, but a real idea -> kept
