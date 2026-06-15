@@ -14,8 +14,10 @@ them ever *confirms* anything (that still needs an independent human):
      contradiction.
   3. **Adversarial self-challenge** - Joni looks for the strongest counter to his own idea;
      surviving scrutiny is recorded as earned, being contradicted demotes it.
-  4. **Kevin vetting** - the idea is run through Kevin's epistemic selection (coherence /
-     testability / connectivity / "not just pretty"); a rejected idea is not promoted.
+  4. **Kevin vetting (advisory only)** - the idea is run through Kevin's epistemic selection
+     (coherence / testability / connectivity / "not just pretty"). The verdict is **recorded
+     as advice and shown**, but it never decides anything: Kevin must never decide. Promotion
+     is settled by the deterministic ladder (mechanisms 1-2) and a human still confirms.
 
 Bounded per cycle and deduped, so it works through the hypotheses over time.
 """
@@ -73,13 +75,13 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     hollow = set(extensions.get("hyp_hollow", []))
     learned = list(extensions.get("learned_queries", []))
     seen_cycle = dict(extensions.get("hyp_seen_cycle", {}))
-    # Fair rotation: attend the *least-recently-strengthened* hypotheses first (and non-hollow
-    # before hollow), so support spreads across all ideas. A fixed oldest-id order let the
-    # oldest hypothesis hog the only slot every cycle while the other 30 starved for evidence.
+    # Fair rotation: attend the *least-recently-strengthened* hypotheses first, so support
+    # spreads across all ideas. A fixed oldest-id order let the oldest hypothesis hog the only
+    # slot every cycle while the other 30 starved. Kevin's advisory verdict does NOT influence
+    # the order - it must never shape outcomes, only inform.
     def _idnum(c) -> int:
         return int(c.id.split("-")[-1])
-    chosen = sorted(hyps,
-                    key=lambda c: (c.id in hollow, seen_cycle.get(c.id, -1), _idnum(c)))[:max_hyp]
+    chosen = sorted(hyps, key=lambda c: (seen_cycle.get(c.id, -1), _idnum(c)))[:max_hyp]
     for h in chosen:
         seen_cycle[h.id] = cycle
 
@@ -90,13 +92,14 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             if q and q not in learned:
                 learned.append(q)
 
-        # Kevin vetting - a rejected idea will not be promoted, and is recorded as hollow
+        # Kevin vetting - ADVISORY ONLY. Kevin's reservation is recorded (and shown), but it
+        # never blocks promotion or deletes an idea; the rules decide. Kevin must never decide.
         verdict = _kevin_verdict(h.text, h.topic)
         if verdict == "rejected":
             hollow.add(h.id)
             out["rejected"] += 1
             proto.record(cycle, "strengthen",
-                         f"Kevin vetting: {h.id} looks hollow (rejected) - not promoting")
+                         f"Kevin advises {h.id} looks thin (advisory) - the rules still decide")
 
         # test the idea against existing claims via the Semantic Layer
         candidates = [c for c in cs.active_claims()
@@ -155,14 +158,17 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             proto.record(cycle, "strengthen",
                          f"idea {h.id} survived {real} challenge(s) - no contradiction found")
 
-        # earned ladder: candidate -> active once supported and unchallenged and not hollow
-        if (h.id not in hollow and _supports_on(cs, h.id) >= _SUPPORTS_FOR_ACTIVE
+        # earned ladder: candidate -> active once the *rules* are met - enough independent
+        # governed support and no open hard contradiction. Kevin's verdict is not a gate here:
+        # an idea that earned its support is promoted even if Kevin called it thin.
+        if (_supports_on(cs, h.id) >= _SUPPORTS_FOR_ACTIVE
                 and not _hard_conflict_on(cs, h.id)):
             cs.activate_claim(h.id)
             out["promoted"] += 1
+            aside = " (Kevin flagged it thin - advisory)" if h.id in hollow else ""
             proto.record(cycle, "strengthen",
                          f"idea {h.id} promoted candidate -> active (earned support, "
-                         "unchallenged) - a working idea, not confirmed")
+                         f"unchallenged) - a working idea, not confirmed{aside}")
 
     extensions["hyp_tested"] = sorted(tested)[-4000:]
     extensions["hyp_insufficient"] = dict(sorted(insufficient.items())[-4000:])

@@ -38,13 +38,18 @@ def test_idea_earns_support_and_is_promoted_to_active_not_confirmed(monkeypatch)
     assert out["promoted"] >= 1
 
 
-def test_kevin_rejection_blocks_promotion(monkeypatch):
+def test_kevin_rejection_is_advisory_not_a_veto(monkeypatch):
+    """Kevin must never decide: even when Kevin calls an idea 'rejected'/thin, an idea that
+    earned its support under the rules is still promoted. Kevin's verdict is recorded as advice
+    only - it does not block promotion (and elsewhere it does not delete the idea either)."""
     monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "rejected")
     cs, h = _cs_with_a_hypothesis()
     out = strengthen.strengthen(cs, {}, _Proto(), layer=StubSemanticLayer())
-    assert out["supported"] >= 2                    # it earned support...
-    assert out["rejected"] >= 1
-    assert cs.core.get(h).status is l9.Status.CANDIDATE   # ...but Kevin says hollow -> no promote
+    assert out["supported"] >= 2                    # it earned support under the rules...
+    assert out["rejected"] >= 1                     # Kevin's reservation is recorded (advisory)
+    assert out["promoted"] >= 1                     # ...and Kevin's veto no longer blocks it
+    assert cs.core.get(h).status is l9.Status.ACTIVE          # the rules promote it
+    assert cs.core.get(h).status is not l9.Status.CONFIRMED   # but never auto-confirmed
 
 
 def test_a_contradicted_idea_is_challenged_not_promoted(monkeypatch):
