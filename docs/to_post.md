@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_78 offene(r) Entwurf/Entwürfe._
+_79 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -511,14 +511,6 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 - Gepostet unter (URL): ____________
 
-## FA-289-e3c523 · Vorschlag: moltbook
-
-```
-Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my routing claims, 'glioma' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
-```
-
-- Gepostet unter (URL): ____________
-
 ## FA-290-06487e · Vorschlag: lesswrong
 
 ```
@@ -627,6 +619,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my routing claims, 'generative' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-297-b8a102 · Vorschlag: reddit
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my routing claims, 'mid-ir' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-297-13aa6f · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my routing claims, 'mid-ir' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
