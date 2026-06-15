@@ -517,8 +517,10 @@
     "zenodo:20708705",
     "zenodo:20708784",
     "zenodo:20708798",
+    "zenodo:20708811",
     "zenodo:20708833",
-    "zenodo:20708871"
+    "zenodo:20708871",
+    "zenodo:20708901"
   ],
   "semantic_calls": [
     {
@@ -832,6 +834,22 @@
       "replayed": false,
       "claims": 5,
       "source": "github:hugsy/stuff"
+    },
+    {
+      "call_id": "joni-c29:22c1ff273edc",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708811"
+    },
+    {
+      "call_id": "joni-c29:a9209f6270ab",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708901"
     }
   ],
   "pdf_read": [
@@ -1075,6 +1093,15 @@
       "replayed": false,
       "claims": 0,
       "conflict": "X-11"
+    },
+    {
+      "call_id": "joni-c29:37cd6337be61",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 0,
+      "conflict": "X-12"
     }
   ],
   "methods_seen": [
@@ -1098,7 +1125,7 @@
     "zenodo:20708564",
     "zenodo:20708798"
   ],
-  "method_trials_total": 211,
+  "method_trials_total": 219,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -1117,6 +1144,13 @@
     "C-317|C-329",
     "C-335|C-341",
     "C-335|C-345",
+    "C-348|C-442",
+    "C-348|C-451",
+    "C-348|C-452",
+    "C-350|C-448",
+    "C-350|C-451",
+    "C-352|C-450",
+    "C-353|C-449",
     "C-357|C-392",
     "C-358|C-393",
     "C-362|C-374",
@@ -1130,6 +1164,12 @@
     "C-401|C-406",
     "C-410|C-413",
     "C-411|C-417",
+    "C-441|C-445",
+    "C-441|C-446",
+    "C-442|C-451",
+    "C-442|C-452",
+    "C-445|C-446",
+    "C-448|C-451",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -1153,6 +1193,13 @@
     "C-317|C-329@bge-small-en-v1.5",
     "C-335|C-341@bge-small-en-v1.5",
     "C-335|C-345@bge-small-en-v1.5",
+    "C-348|C-442@bge-small-en-v1.5",
+    "C-348|C-451@bge-small-en-v1.5",
+    "C-348|C-452@bge-small-en-v1.5",
+    "C-350|C-448@bge-small-en-v1.5",
+    "C-350|C-451@bge-small-en-v1.5",
+    "C-352|C-450@bge-small-en-v1.5",
+    "C-353|C-449@bge-small-en-v1.5",
     "C-357|C-392@bge-small-en-v1.5",
     "C-358|C-393@bge-small-en-v1.5",
     "C-362|C-374@bge-small-en-v1.5",
@@ -1166,6 +1213,12 @@
     "C-401|C-406@bge-small-en-v1.5",
     "C-410|C-413@bge-small-en-v1.5",
     "C-411|C-417@bge-small-en-v1.5",
+    "C-441|C-445@bge-small-en-v1.5",
+    "C-441|C-446@bge-small-en-v1.5",
+    "C-442|C-451@bge-small-en-v1.5",
+    "C-442|C-452@bge-small-en-v1.5",
+    "C-445|C-446@bge-small-en-v1.5",
+    "C-448|C-451@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -1215,6 +1268,7 @@
     "evolution",
     "existing",
     "helpfulness",
+    "hidden",
     "inconsistency",
     "information",
     "multimodal",
@@ -1259,6 +1313,7 @@
     "forum|vertical",
     "memory|accuracy",
     "memory|agent",
+    "memory|brown",
     "memory|capacity",
     "memory|change",
     "memory|chromatin",
@@ -1279,6 +1334,7 @@
     "memory|review",
     "memory|social",
     "memory|systematic",
+    "memory|time",
     "memory|trivia",
     "memory|unrecorded",
     "memory|valuable",
@@ -1310,7 +1366,8 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:composition": 1
+    "meth:composition": 1,
+    "meth:titled": 1
   },
   "hyp_tested": [
     "C-221|C-128",
@@ -1373,24 +1430,24 @@
     "C-409",
     "C-423",
     "C-440",
+    "C-454",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "forum underlying",
-    "memory single",
     "memory mobility",
     "coverage evaluation with privacy evaluation",
     "coverage evaluation with privacy single",
     "memory worth",
     "coverage evaluation with privacy through-line",
-    "coverage evaluation with privacy worth"
+    "coverage evaluation with privacy worth",
+    "memory brown",
+    "memory testing"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
-    "C-184": 27,
     "C-199": 28,
-    "C-208": 8,
+    "C-208": 29,
     "C-223": 9,
     "C-227": 10,
     "C-234": 11,
@@ -1418,7 +1475,8 @@
     "C-396": 25,
     "C-409": 26,
     "C-423": 27,
-    "C-440": 28
+    "C-440": 28,
+    "C-454": 29
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1450,6 +1508,7 @@
     "C-409",
     "C-423",
     "C-440",
+    "C-454",
     "C-49",
     "C-51"
   ],
@@ -1473,35 +1532,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "degenerating",
-    "development": 0,
-    "degeneration": 1,
-    "active": 233,
+    "verdict": "developing",
+    "development": 6,
+    "degeneration": 0,
+    "active": 238,
     "hypotheses": 31,
     "unsupported_hypotheses": 24,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
-    "evidence_links": 30,
-    "supporting_links": 30,
-    "emergent_total": 105,
+    "evidence_links": 32,
+    "supporting_links": 32,
+    "emergent_total": 108,
     "usable_semantic_rate": 1.0,
     "methods_total": 17,
-    "method_trials_total": 211,
+    "method_trials_total": 219,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 3577,
-    "cycle": 28
+    "stagnation_cycles": 0,
+    "objects": 3739,
+    "cycle": 29
   },
   "vitality_prev": {
-    "supports": 30,
+    "supports": 32,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 3577,
-    "active": 233,
-    "links": 30,
-    "emergent": 105
+    "objects": 3739,
+    "active": 238,
+    "links": 32,
+    "emergent": 108
   },
-  "stagnation": 1,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1698,12 +1757,19 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 29,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 25,
+    "starved_topic": 26,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2310,6 +2376,7 @@
     }
   ],
   "escalated_conflicts": [
-    "X-11"
+    "X-11",
+    "X-12"
   ]
 }
