@@ -487,7 +487,9 @@
     "zenodo:20708365",
     "zenodo:20708417",
     "zenodo:20708454",
-    "zenodo:20708460"
+    "zenodo:20708460",
+    "zenodo:20708472",
+    "zenodo:20708478"
   ],
   "semantic_calls": [
     {
@@ -649,6 +651,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708460"
+    },
+    {
+      "call_id": "joni-c19:ae6e9ab933e4",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708472"
+    },
+    {
+      "call_id": "joni-c19:ea6d56d60306",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708478"
     }
   ],
   "pdf_read": [
@@ -810,6 +828,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c19:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -825,7 +851,7 @@
     "zenodo:20708062",
     "zenodo:20708085"
   ],
-  "method_trials_total": 131,
+  "method_trials_total": 139,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -885,11 +911,13 @@
     "anthology|flarum",
     "anthology|forum",
     "anthology|memory",
+    "drift|forum",
     "drift|memory"
   ],
   "emerged_topics": [
     "accuracy",
     "agent",
+    "agents",
     "benchmark",
     "boundary",
     "capacity",
@@ -943,6 +971,7 @@
     "memory|memory",
     "memory|online",
     "memory|principle",
+    "unsorted|bacfluxl",
     "unsorted|boundary",
     "unsorted|distichlis",
     "unsorted|halophytic",
@@ -950,6 +979,7 @@
     "unsorted|representation"
   ],
   "emerged_methods": [
+    "agent",
     "alignment",
     "anthology",
     "inconsistency",
@@ -1014,18 +1044,19 @@
     "C-277",
     "C-279",
     "C-287",
+    "C-304",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "agentspec+forum through",
-    "agentspec+forum controlled",
-    "memory across",
-    "memory through-line",
     "agentspec+memory pattern",
     "agentspec+memory scaffolds",
     "memory recurs",
-    "memory learner"
+    "memory learner",
+    "drift+forum order",
+    "drift+forum usually",
+    "unsorted factor",
+    "unsorted worth"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -1052,7 +1083,9 @@
     "C-277": 17,
     "C-279": 17,
     "C-287": 18,
-    "C-289": 18
+    "C-289": 18,
+    "C-302": 19,
+    "C-304": 19
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1072,6 +1105,8 @@
     "C-263",
     "C-279",
     "C-289",
+    "C-302",
+    "C-304",
     "C-49",
     "C-51"
   ],
@@ -1090,35 +1125,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "developing",
-    "development": 6,
-    "degeneration": 0,
-    "active": 155,
-    "hypotheses": 25,
-    "unsupported_hypotheses": 19,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 1,
+    "active": 163,
+    "hypotheses": 27,
+    "unsupported_hypotheses": 21,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
     "evidence_links": 18,
     "supporting_links": 18,
-    "emergent_total": 66,
+    "emergent_total": 69,
     "usable_semantic_rate": 1.0,
     "methods_total": 12,
-    "method_trials_total": 131,
+    "method_trials_total": 139,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 2316,
-    "cycle": 18
+    "stagnation_cycles": 1,
+    "objects": 2419,
+    "cycle": 19
   },
   "vitality_prev": {
     "supports": 18,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 2316,
-    "active": 155,
+    "objects": 2419,
+    "active": 163,
     "links": 18,
-    "emergent": 66
+    "emergent": 69
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1245,12 +1280,19 @@
       "development": 6,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 19,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 15,
+    "starved_topic": 16,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -1706,7 +1748,7 @@
     }
   ],
   "reconsolidate_lens_idx": 0,
-  "kevin_last_cycle": 16,
+  "kevin_last_cycle": 19,
   "kevin_llm": [
     {
       "call_id": "kevin-c13:08dcd1f2fe59",
@@ -1727,6 +1769,16 @@
       ],
       "hypotheses": 0,
       "replayed": true
+    },
+    {
+      "call_id": "kevin-c19:951f06ca5646",
+      "served_model": "deepseek-v4-pro",
+      "topics": [
+        "memory",
+        "forum"
+      ],
+      "hypotheses": 0,
+      "replayed": false
     }
   ]
 }
