@@ -242,6 +242,7 @@ def one_cycle() -> dict:
     # 4g. Homeostasis: shed dead ideas and cap the backlog so a long run does not silt up,
     #     then grade Joni's own trajectory (developing / steady / degenerating).
     regulated = homeostasis.regulate(cs, extensions, proto, cycle)
+    homeostasis.retire_junk_topics(cs, extensions, proto, cycle)   # drain pre-gate junk topics
     vitality = homeostasis.vitality(cs, extensions, proto, cycle)
 
     # 4h. Aufträge an Claude: when Joni's own state shows a non-core capability gap the rules
