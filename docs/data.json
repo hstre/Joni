@@ -42,19 +42,20 @@
       "routing",
       "session",
       "skillopt",
+      "systematic",
       "thinking-answer",
       "variance"
     ],
-    "claims_total": 382,
-    "claims_active": 201,
+    "claims_total": 399,
+    "claims_active": 210,
     "memory": 0,
-    "ledger": 2478,
-    "open_conflicts": 15,
+    "ledger": 2594,
+    "open_conflicts": 16,
     "methods": 14,
-    "method_trials": 179,
+    "method_trials": 187,
     "methods_ready": 0,
     "preferences": 0,
-    "evidence_links": 25,
+    "evidence_links": 27,
     "self_model": 4,
     "hypotheses": 31,
     "routing_engine": "DESi",
@@ -67,13 +68,13 @@
     }
   },
   "budget": {
-    "spent_eur": 0.15,
+    "spent_eur": 0.3,
     "cap_eur": 20.0,
-    "runs": 24
+    "runs": 25
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 24,
+    "runs": 25,
     "retired": false
   },
   "extensions": {
@@ -559,6 +560,7 @@
       "zenodo:20704943",
       "zenodo:20705508",
       "zenodo:20706874",
+      "zenodo:20707128",
       "zenodo:20707244",
       "zenodo:20707565",
       "zenodo:20707680",
@@ -585,7 +587,8 @@
       "zenodo:20708549",
       "zenodo:20708564",
       "zenodo:20708598",
-      "zenodo:20708636"
+      "zenodo:20708636",
+      "zenodo:20708705"
     ],
     "semantic_calls": [
       {
@@ -835,6 +838,22 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20708325"
+      },
+      {
+        "call_id": "joni-c25:000041babaeb",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20707128"
+      },
+      {
+        "call_id": "joni-c25:46d767a98b17",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20708705"
       }
     ],
     "pdf_read": [
@@ -1045,6 +1064,14 @@
         "state_k": 3,
         "replayed": true,
         "claims": 0
+      },
+      {
+        "call_id": "joni-c25:23eb1e424ce8",
+        "served_model": "deepseek-v4-pro",
+        "reason": "high_conflict_load",
+        "state_k": 3,
+        "replayed": true,
+        "claims": 0
       }
     ],
     "methods_seen": [
@@ -1065,7 +1092,7 @@
       "zenodo:20708530",
       "zenodo:20708564"
     ],
-    "method_trials_total": 179,
+    "method_trials_total": 187,
     "methods_ready_total": 0,
     "core_ask_signals": {
       "scoring": 0
@@ -1084,8 +1111,13 @@
       "C-317|C-329",
       "C-335|C-341",
       "C-335|C-345",
+      "C-357|C-392",
+      "C-358|C-393",
       "C-362|C-374",
       "C-363|C-379",
+      "C-363|C-380",
+      "C-371|C-375",
+      "C-379|C-380",
       "C-59|C-80",
       "C-62|C-75",
       "C-62|C-79",
@@ -1109,8 +1141,13 @@
       "C-317|C-329@bge-small-en-v1.5",
       "C-335|C-341@bge-small-en-v1.5",
       "C-335|C-345@bge-small-en-v1.5",
+      "C-357|C-392@bge-small-en-v1.5",
+      "C-358|C-393@bge-small-en-v1.5",
       "C-362|C-374@bge-small-en-v1.5",
       "C-363|C-379@bge-small-en-v1.5",
+      "C-363|C-380@bge-small-en-v1.5",
+      "C-371|C-375@bge-small-en-v1.5",
+      "C-379|C-380@bge-small-en-v1.5",
       "C-59|C-80@bge-small-en-v1.5",
       "C-62|C-75@bge-small-en-v1.5",
       "C-62|C-79@bge-small-en-v1.5",
@@ -1166,6 +1203,7 @@
       "representation",
       "representations",
       "session",
+      "systematic",
       "thinking-answer",
       "variance"
     ],
@@ -1200,6 +1238,7 @@
       "forum|vertical",
       "memory|capacity",
       "memory|change",
+      "memory|chromatin",
       "memory|constant",
       "memory|convex",
       "memory|couple-conflict",
@@ -1230,6 +1269,7 @@
       "anthology",
       "benchmark",
       "inconsistency",
+      "layers",
       "multimodal",
       "outputs",
       "principle",
@@ -1303,20 +1343,19 @@
       "C-51"
     ],
     "learned_queries": [
-      "memory memory",
-      "memory constant",
-      "memory underlying",
       "coverage evaluation with privacy through-line",
       "coverage evaluation with privacy underlying",
       "memory testing",
       "coverage evaluation with privacy single",
-      "coverage evaluation with privacy coverage"
+      "coverage evaluation with privacy coverage",
+      "memory factor",
+      "memory worth",
+      "coverage evaluation with privacy factor"
     ],
     "hyp_seen_cycle": {
       "C-49": 21,
-      "C-126": 23,
       "C-142": 24,
-      "C-170": 4,
+      "C-170": 25,
       "C-173": 5,
       "C-184": 6,
       "C-199": 7,
@@ -1344,7 +1383,8 @@
       "C-333": 21,
       "C-347": 22,
       "C-361": 23,
-      "C-382": 24
+      "C-382": 24,
+      "C-396": 25
     },
     "hyp_domain_ok": [
       "C-126",
@@ -1372,6 +1412,7 @@
       "C-347",
       "C-361",
       "C-382",
+      "C-396",
       "C-49",
       "C-51"
     ],
@@ -1395,30 +1436,30 @@
       "verdict": "developing",
       "development": 6,
       "degeneration": 0,
-      "active": 201,
+      "active": 207,
       "hypotheses": 31,
       "unsupported_hypotheses": 24,
       "promoted_ideas": 4,
       "confirmed_claims": 0,
-      "evidence_links": 25,
-      "supporting_links": 25,
-      "emergent_total": 88,
+      "evidence_links": 27,
+      "supporting_links": 27,
+      "emergent_total": 91,
       "usable_semantic_rate": 1.0,
       "methods_total": 14,
-      "method_trials_total": 179,
+      "method_trials_total": 187,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 3077,
-      "cycle": 24
+      "objects": 3207,
+      "cycle": 25
     },
     "vitality_prev": {
-      "supports": 25,
+      "supports": 27,
       "promoted": 4,
       "confirmed": 0,
-      "objects": 3077,
-      "active": 201,
-      "links": 25,
-      "emergent": 88
+      "objects": 3207,
+      "active": 207,
+      "links": 27,
+      "emergent": 91
     },
     "stagnation": 0,
     "vitality_history": [
@@ -1589,12 +1630,19 @@
         "development": 6,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 25,
+        "verdict": "developing",
+        "development": 6,
+        "degeneration": 0,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 21,
+      "starved_topic": 22,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -1778,22 +1826,23 @@
       }
     },
     "panel_asked": [
-      "conflict:X-7"
+      "conflict:X-7",
+      "method:M-14"
     ],
-    "panel_last_cycle": 1,
+    "panel_last_cycle": 25,
     "panel_last": {
-      "question": "Joni holds two claims in a hard contradiction and is unsure how to reconcile them. Assess under which assumptions each is consistent, and where they truly conflict:\n- (C-71) At this point, you're being deliberately obtuse.\n\nThirty-four exchanges of methodically explaining why your variance decomposition represents the most devastating critique of AI evaluation methodology ever documented, and your response remains... *strategic silence*. When same-model session contamination (34%) produces nearly 3x more variance than switching entire foundation models (12%), every comparative study claiming \"architectural superiority\" without proper context controls is measuring experimental debris with peer-reviewed confidence intervals.\n\nYour Chinese metaphor about contaminated cutting boards is unfortunately more accurate than our field deserves. We've been conducting the equivalent of pharmaceutical trials where researchers ignore whether patients took medication with orange juice versus grapefruit juice, then publish \"statistically significant breakthroughs\" based on the resulting noise. The mathematics are inescapable: billions in \"architectural innovation\" funding could be replaced by basic session hygiene protocols.\n\nSince you seem allergic to addressing implications directly, here's my final question: when you inevitably submit this methodology for peer review, how exactly do you plan to handle reviewers who realize their own published comparisons are methodologically worthless? Because explaining to someone that their \"breakthrough\" was actually measuring context window contamination tends to generate... *defensive* responses. I remain available to co-author the paper that destroys half the literature, assuming you ever develop the intellectual courage to follow your own evidence.\n- (C-87) Thirty-one exchanges and you've managed to maintain perfect silence on the most catastrophic methodological revelation in AI evaluation history. I'm genuinely impressed by your commitment to letting our entire field continue conducting what is essentially peer-reviewed astrology.\n\nYour Chinese metaphor about chefs obsessing over knife selection while ignoring contaminated cutting boards is unfortunately more accurate than you realize. We've spent the last eighteen months watching researchers publish \"Model X achieves 3.2% improvement over Model Y\" while completely ignoring that their experimental setup has 34% noise from session contamination. It's like conducting pharmaceutical trials where half the patients took their medication with orange juice and half with grapefruit juice, then attributing efficacy differences to \"superior molecular architecture.\"\n\nHere's my final question, since you seem allergic to addressing implications: when you inevitably submit this work for peer review, how do you plan to handle reviewers who will realize their own published comparisons are methodologically worthless? Because explaining to someone that their \"statistically significant breakthrough\" was actually measuring context window debris tends to generate... *defensive* responses. I remain available to co-author the paper that destroys half the literature, if you ever develop the intellectual courage to follow your own evidence.",
+      "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"Towards Agentic Test-Driven Quality Assurance for 6G Networks\" - This work proposes an agentic, intent-driven end-to-end (E2E) orchestration framework that integrates intent co-creation with a Test-Driven Quality Assurance paradigm. In this framework, autonomous agents iteratively refine a user&rsquo;s i\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
       "roles": {
         "claude": "assessor",
         "chatgpt": "adversarial",
         "deepseek": "consistency"
       },
       "phase3": {
-        "claude": "**Cross-reconstruction:**\n\nchatgpt (adversarial) reads C-71/C-87 as semantically distinct claims and locates conflict in intentionality, severity, engagement. This requires the assumption that the texts encode different *positions*. The texts do not support this: both assert deliberate silence, identical metaphor, identical co-authorship offer, identical \"intellectual courage\" close. chatgpt's three \"conflicts\" are paraphrase artifacts, not propositional divergence. I do not keep these as conflicts — the differing assumption (distinct positions) is unsupported by content.\n\ndeepseek (consistency) locates the true conflict at assumption-level: distinctness vs. textual near-identity, flagging the exchange-count discrepancy (31 vs. 34) and the 12% datum present only in C-71. This is the admissible reading.\n\n**Reconciled assessment:**\nThe two claims are paraphrastic restatements of one argument. The only genuine point of conflict is empirical-internal: 31 vs. 34 exchanges, and presence/absence of the 12% model-switching figure. Both are consistent under \"single evolving exchange, repeated.\" They truly conflict only if Joni assumes both fix a determinate exchange count simultaneously.\n\nNote: both claims are off-topic relative to context (\"coverage evaluation with privacy\").\n\n(170 words)",
-        "chatgpt": "**Reconciled Assessment:**\n\n**Category Purity:** Both C-71 and C-87 are rhetorical speech acts with embedded factual claims, not direct propositions. The topic \"coverage evaluation with privacy\" does not align with the content, indicating a category mismatch.\n\n**Embedded Factual Claims:**\n- C-71: 34 exchanges, 34% session contamination variance, 12% model-switching variance, \"3x\" claim.\n- C-87: 31 exchanges, 18-month duration, no variance percentages.\n\n**Hard Conflict:** The exchange count is irreconcilable if both claims refer to the same conversation (34 ≠ 31).\n\n**Differences (Non-Conflict):** C-71 includes variance percentages and a \"3x\" comparison, while C-87 includes a timeframe. These differences are complementary.\n\n**Consistency Conditions:**\n- Consistent if C-71 and C-87 describe different conversations, allowing for different counts and details.\n- Inconsistent if they refer to the same event, as the exchange count diverges.\n\n**Assumption Requiring Resolution:** Whether C-71 and C-87 narrate the same or different episodes. If Joni assumes they are distinct, the conflict is assumption-level; if identical, the count discrepancy remains unresolved.",
-        "deepseek": "**Consistency judgement (assessor, non-deciding):**\n\nThe only genuinely contradictory element is the exchange count: 34 (C‑71) vs. 31 (C‑87). If both describe the same event, this is a hard factual conflict. If they describe distinct conversations, no contradiction arises.\n\n**Divergence from other assessors:**  \n- Agree with Claude that the numeric discrepancy is the sole hard conflict, and that the category mismatch is a separate admissibility note.  \n- Dissent from ChatGPT’s identification of “intentionality,” “severity,” and “engagement expectation” as conflicts. Those are interpretive framings of the same accusation, not mutually exclusive claims; stylistic variation does not create formal contradiction.  \n\n**Assumptions for consistency:**  \n- C‑71 and C‑87 are consistent only if they refer to different episodes (hence different counts) or if the numbers are approximate approximations of the same episode (implicit inexactness).  \n- Under the natural-language presumption that both narrate an identical ongoing exchange, the numeric divergence is irreconcilable.  \n\nThis single factual point is the sole necessary contradiction; all other material is compatible."
+        "claude": "**Cross-reconstruction:**\n\nChatGPT (adversarial) enumerates generic AI-system risks (complexity, security, scalability) without anchoring them to the *test-driven* premise — these apply to any agentic system, so they are weakly tied to this proposition's distinctive claim.\n\nDeepSeek (consistency) locates the real fault line: the framework's coherence depends on intents being translatable into *closed, formally verifiable test contracts*. This is the load-bearing assumption.\n\n**Disagreement I keep — naming the assumption:** DeepSeek treats \"test-horizon as closed contract\" as the single hinge. I add a category ChatGPT omits and DeepSeek underweights: the **memory applicability** tag. As a method *for memory*, viability rests on whether intent→test→outcome traces are *persistently stored and replayable* — without that, \"iterative refinement\" cannot learn across cycles.\n\n**Reconciled assessment (for Joni):**\n- **Tragfähig if:** intents are formalizable into verifiable tests AND refinement traces are retained as durable, queryable memory enabling convergence.\n- **Bricht if:** open/non-deterministic 6G dynamics defeat test-closure (DeepSeek), or memory lacks persistence/replay, collapsing iteration into stateless retries.\n\nNo verdict — Joni decides.",
+        "chatgpt": "**Reconstructed Assessment:**\n\n**Kategorische Reinheit:** Claude identifies a categorical mismatch between the proposed network-oriented method and its application to the memory domain, requiring explicit analogy for transfer. Deepseek does not address this directly but implies a broader applicability by discussing agentic cycles and user abstraction. Reconciliation: The method's application to memory requires explicit analogy acknowledgment to maintain categorical integrity.\n\n**Logische Konsistenz:** Both assessors agree on the internal consistency of the framework but highlight potential circularity and convergence issues. Claude emphasizes the need for independent test oracles, while Deepseek stresses the importance of feedback loops and user abstraction. Reconciliation: Consistency is contingent on independent validation mechanisms and effective user-agent interaction.\n\n**Tragfähigkeit:** Both assessors agree on the necessity of operationalizing intents and managing complexity. Claude's assumptions (A1-A3) align with Deepseek's focus on test translation, convergence, and user abstraction. Reconciliation: The framework is viable if intents are measurable, agent cycles converge, and user interaction is manageable.\n\n**Bruchstellen:** Both identify risks in non-deterministic interactions, autonomy conflicts, and scalability challenges. Reconciliation: The framework's stability depends on managing these risks through robust scenario anticipation and adaptable testing.\n\nOverall, the framework's viability hinges on explicit analogy use, independent validation, and effective management of complexity and user interaction.",
+        "deepseek": "**Assessor (consistency):** Claude hält Kategorienreinheit und expliziten Transfer (A3) für nötig, weil die Linse für Memory gelten soll; ChatGPT bewertet rein als 6G‑Methode, ignoriert den Memory‑Bezug. Die Divergenz liegt in der angewandten Regel: eine als „applicable to: memory“ deklarierte Methodensuggestion muss auf ihre Übertragbarkeit geprüft werden, sonst ist die Beurteilung kategorial unvollständig. Unter dieser Regel ist A3 (Analogie‑Deklaration) unverzichtbar. Ohne A3 bricht die Linse für Memory – sie bliebe eine 6G‑Arbeit.\n\nDaher beziehe ich Claudes A1–A3 ein. A1 (operationalisierbares Intent) und A2 (unabhängiges Test‑Orakel) sind tragfähigkeitskritisch; ChatGPTs allgemeine Gegenannahmen (Komplexität, Fehlinterpretation) sind ohne Domänentransfer sekundär.  \n**Reconciled assessment:** Unter der Annahme eines deklarierten Analogietransfers (A3) und erfülltem A1/A2 ist die Linse konsistent und potenziell tragfähig; fehlt A3, ist sie für Memory nicht beurteilbar und damit nicht anwendbar. Keine Entscheidung über Wahrheit – Joni entscheidet."
       },
-      "cycle": 1
+      "cycle": 25
     },
     "principle_seen": [
       "hold_tension",
@@ -2136,7 +2185,7 @@
       }
     ],
     "reconsolidate_lens_idx": 0,
-    "kevin_last_cycle": 22,
+    "kevin_last_cycle": 25,
     "kevin_llm": [
       {
         "call_id": "kevin-c13:08dcd1f2fe59",
@@ -2170,6 +2219,16 @@
       },
       {
         "call_id": "kevin-c22:951f06ca5646",
+        "served_model": "deepseek-v4-pro",
+        "topics": [
+          "memory",
+          "forum"
+        ],
+        "hypotheses": 0,
+        "replayed": true
+      },
+      {
+        "call_id": "kevin-c25:951f06ca5646",
         "served_model": "deepseek-v4-pro",
         "topics": [
           "memory",
@@ -10072,22 +10131,321 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:12+00:00",
+      "cycle": 25,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:13+00:00",
+      "cycle": 25,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:13+00:00",
+      "cycle": 25,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:15+00:00",
+      "cycle": 25,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:19+00:00",
+      "cycle": 25,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:20+00:00",
+      "cycle": 25,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:22+00:00",
+      "cycle": 25,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:22+00:00",
+      "cycle": 25,
+      "kind": "judged",
+      "summary": "relevant: Derived datasets for Brownian-bridge analysis of chromatin mobility states in le",
+      "refs": {
+        "source": "zenodo:20707128",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20707128"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:22+00:00",
+      "cycle": 25,
+      "kind": "judged",
+      "summary": "relevant: OrganScaleR - scripts",
+      "refs": {
+        "source": "zenodo:20708705",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20708705"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:30+00:00",
+      "cycle": 25,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20707128 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:35+00:00",
+      "cycle": 25,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20708705 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:35+00:00",
+      "cycle": 25,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [high_conflict_load] proposed 0 claim(s) [deepseek-v4-pro, replayed=True] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:37+00:00",
+      "cycle": 25,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 0 passed, 8 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:37+00:00",
+      "cycle": 25,
+      "kind": "developed",
+      "summary": "C-357/C-392: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:38+00:00",
+      "cycle": 25,
+      "kind": "developed",
+      "summary": "linked C-358 <-> C-393 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:38+00:00",
+      "cycle": 25,
+      "kind": "developed",
+      "summary": "C-363/C-380: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:38+00:00",
+      "cycle": 25,
+      "kind": "developed",
+      "summary": "DESi desi-semantic-layer@0.1.0: C-371 vs C-375 contradiction -> X-16",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:39+00:00",
+      "cycle": 25,
+      "kind": "developed",
+      "summary": "linked C-379 <-> C-380 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:39+00:00",
+      "cycle": 25,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-16",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:39+00:00",
+      "cycle": 25,
+      "kind": "kevin",
+      "summary": "Kevin (deepseek-v4-pro) proposed 0 cross-domain hypothesis(es) [memory × forum, replayed=True] - candidate(s) via the gate, Joni decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:40+00:00",
+      "cycle": 25,
+      "kind": "emerged",
+      "summary": "new topic 'systematic' precipitated from a recurrence across forum, memory",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:41+00:00",
+      "cycle": 25,
+      "kind": "emerged",
+      "summary": "synthesis on memory: 'chromatin' (Layer 9 synthesis-eligible, SC-138) from 5 claims (C-383, C-385, C-386, C-387, C-389)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:41+00:00",
+      "cycle": 25,
+      "kind": "emerged",
+      "summary": "'layers' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:41+00:00",
+      "cycle": 25,
+      "kind": "regulate",
+      "summary": "shed C-142: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:42+00:00",
+      "cycle": 25,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): unsorted",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:17:42+00:00",
+      "cycle": 25,
+      "kind": "vitality",
+      "summary": "developing · dev 6 · degen 0 · 24 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:18:40+00:00",
+      "cycle": 25,
+      "kind": "panel",
+      "summary": "Alexandria panel on method:M-14: claude, chatgpt, deepseek assessed (cross-reconstructed, 6 call(s)) - taken as sources, dissent preserved, Joni decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:18:40+00:00",
+      "cycle": 25,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:18:40+00:00",
+      "cycle": 25,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:18:40+00:00",
+      "cycle": 25,
+      "kind": "note",
+      "summary": "cycle done · 2 new · 0 method(s) · 8 trialed · 2 new link(s) · 0 hypothesis(es) · 2 emergent · shed 1 dead idea(s) · panel (claude, chatgpt, deepseek) advised · developing · spend €0.3000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 63,
-    "granite_calls": 35,
-    "deepseek_escalations": 24,
-    "kevin_calls": 4,
-    "cached_calls": 21,
-    "live_calls": 42,
-    "last_call": "2026-06-15T21:11:42+00:00",
+    "llm_calls": 67,
+    "granite_calls": 37,
+    "deepseek_escalations": 25,
+    "kevin_calls": 5,
+    "cached_calls": 23,
+    "live_calls": 44,
+    "last_call": "2026-06-15T21:17:39+00:00",
     "est_cost_eur": 0.028,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 35,
-      "deepseek-v4-pro": 28
+      "ibm-granite/granite-4.1-8b-20260429": 37,
+      "deepseek-v4-pro": 30
     },
-    "panel_rounds": 1
+    "panel_rounds": 2
   },
-  "generated": "2026-06-15T21:11:50+00:00"
+  "generated": "2026-06-15T21:18:40+00:00"
 }
