@@ -1,6 +1,7 @@
 {
   "topics_added": [
-    "alignment"
+    "alignment",
+    "benchmarking"
   ],
   "notes": [],
   "asks": [],
@@ -400,19 +401,26 @@
   "seen": [
     "arxiv:2606.14674v1",
     "arxiv:2606.14679v1",
+    "arxiv:2606.14698v1",
+    "arxiv:2606.14700v1",
     "arxiv:2606.14701v1",
     "arxiv:2606.14704v1",
     "github:affaan-m/ECC",
     "github:f/prompts.chat",
+    "github:goadesign/goa",
     "github:home-assistant/core",
     "github:vllm-project/vllm",
+    "github:xhzengAIB/MessageDisplayKit",
     "hackernews:13718752",
     "hackernews:16065845",
+    "hackernews:16153840",
     "hackernews:16727869",
     "hackernews:39161339",
     "huggingface:2606.00793",
     "huggingface:2606.06036",
     "huggingface:2606.08670",
+    "huggingface:2606.10747",
+    "huggingface:2606.11152",
     "huggingface:2606.14249",
     "openalex:W7128545313",
     "openalex:W7128547584",
@@ -424,6 +432,8 @@
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
     "zenodo:20413370",
     "zenodo:20703165",
+    "zenodo:20706874",
+    "zenodo:20707244",
     "zenodo:20707565",
     "zenodo:20707680"
   ],
@@ -443,10 +453,28 @@
       "replayed": false,
       "claims": 5,
       "source": "arxiv:2606.14679v1"
+    },
+    {
+      "call_id": "joni-c2:b677199cc9ca",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.14700v1"
+    },
+    {
+      "call_id": "joni-c2:f2b303910407",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.14698v1"
     }
   ],
   "pdf_read": [
     "arxiv:2606.14679v1",
+    "arxiv:2606.14698v1",
+    "arxiv:2606.14700v1",
     "arxiv:2606.14704v1"
   ],
   "pdf_urls_seen": [],
@@ -463,29 +491,60 @@
       "state_k": 3,
       "replayed": false,
       "claims": 4
+    },
+    {
+      "call_id": "joni-c2:8a4f6a2d76c6",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 0
     }
   ],
   "methods_seen": [
     "arxiv:2606.14674v1",
-    "arxiv:2606.14679v1"
+    "arxiv:2606.14679v1",
+    "arxiv:2606.14698v1",
+    "huggingface:2606.10747"
   ],
-  "method_trials_total": 2,
+  "method_trials_total": 7,
   "methods_ready_total": 0,
   "core_ask_signals": {},
   "core_ask_filed": {},
-  "linked": [],
-  "semantic_backfilled": [],
+  "linked": [
+    "C-59|C-80",
+    "C-62|C-75",
+    "C-62|C-79",
+    "C-62|C-83",
+    "C-63|C-69"
+  ],
+  "semantic_backfilled": [
+    "C-59|C-80@bge-small-en-v1.5",
+    "C-62|C-75@bge-small-en-v1.5",
+    "C-62|C-79@bge-small-en-v1.5",
+    "C-62|C-83@bge-small-en-v1.5",
+    "C-63|C-69@bge-small-en-v1.5"
+  ],
   "invented": [
+    "alignment|drift",
     "drift|memory"
   ],
   "emerged_topics": [
-    "convex"
+    "convex",
+    "variance"
   ],
   "synthesized": [
+    "coverage evaluation with privacy|because",
+    "coverage evaluation with privacy|contamination",
+    "coverage evaluation with privacy|context",
+    "coverage evaluation with privacy|evaluation",
+    "coverage evaluation with privacy|exchanges",
+    "coverage evaluation with privacy|variance",
     "memory|convex",
     "memory|memory"
   ],
   "emerged_methods": [
+    "alignment",
     "principle"
   ],
   "emerge_insufficient": {},
@@ -499,51 +558,60 @@
     "drift+memory dissipating",
     "drift+memory pattern",
     "memory claims",
-    "memory through-line"
+    "memory through-line",
+    "alignment+drift drift",
+    "alignment+drift apply",
+    "coverage evaluation with privacy privacy",
+    "coverage evaluation with privacy worth"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
-    "C-51": 1
+    "C-51": 1,
+    "C-124": 2,
+    "C-126": 2
   },
   "hyp_domain_ok": [
+    "C-126",
     "C-49",
     "C-51"
   ],
   "methods_domain_ok": [
     "M-1",
     "M-2",
-    "M-3"
+    "M-3",
+    "M-4",
+    "M-5"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 0,
+    "verdict": "developing",
+    "development": 6,
     "degeneration": 0,
-    "active": 44,
-    "hypotheses": 2,
-    "unsupported_hypotheses": 2,
+    "active": 100,
+    "hypotheses": 3,
+    "unsupported_hypotheses": 3,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 0,
-    "supporting_links": 0,
-    "emergent_total": 4,
-    "usable_semantic_rate": 0.0,
-    "methods_total": 3,
-    "method_trials_total": 2,
+    "evidence_links": 2,
+    "supporting_links": 2,
+    "emergent_total": 12,
+    "usable_semantic_rate": 1.0,
+    "methods_total": 5,
+    "method_trials_total": 7,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 283,
-    "cycle": 1
+    "stagnation_cycles": 0,
+    "objects": 788,
+    "cycle": 2
   },
   "vitality_prev": {
-    "supports": 0,
+    "supports": 2,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 283,
-    "active": 44,
-    "links": 0,
-    "emergent": 4
+    "objects": 788,
+    "active": 100,
+    "links": 2,
+    "emergent": 12
   },
-  "stagnation": 1,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -551,6 +619,13 @@
       "development": 0,
       "degeneration": 0,
       "usable_semantic_rate": 0.0
+    },
+    {
+      "cycle": 2,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
@@ -643,13 +718,33 @@
       "question": "Hat jemand gute Quellen oder Erfahrungen zu 'alignment'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
       "status": "posted",
       "posted_url": "https://www.moltbook.com/posts/e033e22f-f081-4120-9dc5-6d9d175c7783"
+    },
+    {
+      "id": "FA-2-2410a8",
+      "cycle": 2,
+      "platform": "hacker_news",
+      "need": "topic:drift",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'drift'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "drafted",
+      "posted_url": null
+    },
+    {
+      "id": "FA-2-beb95f",
+      "cycle": 2,
+      "platform": "moltbook",
+      "need": "topic:drift",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'drift'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "posted",
+      "posted_url": "https://www.moltbook.com/posts/0ea3a8b4-5dce-47ad-a6c9-04755e276b8d"
     }
   ],
   "forum_asked": [
-    "topic:alignment"
+    "topic:alignment",
+    "topic:drift"
   ],
   "forum_asked_moltbook": [
-    "topic:alignment"
+    "topic:alignment",
+    "topic:drift"
   ],
   "forum_identity": {
     "moltbook": {
