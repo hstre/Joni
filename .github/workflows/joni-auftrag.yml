@@ -2,8 +2,9 @@ name: joni-auftrag
 
 # Joni commissions Claude to extend him. When the autonomy loop files a `joni-auftrag`
 # issue (a non-core extension request Joni derived from his own state), Claude Code picks it
-# up, implements it, and opens a pull request - automatically. The protected DESi core is
-# off-limits, and nothing is merged: the PR waits for the human merge gate.
+# up, implements it, opens a pull request, and - once the checks are green - the PR is
+# **auto-merged**. This is by design: Joni decides his own non-core development autonomously,
+# without a human. Only his protected core stays human-gated (the separate joni-core-ask path).
 #
 # Why a schedule (not just the label event): issues created by the loop use the repo's
 # GITHUB_TOKEN, and GitHub deliberately does NOT let GITHUB_TOKEN-created events trigger
@@ -19,8 +20,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write          # push the extension branch
-  pull-requests: write     # open the PR (never merged here)
+  contents: write          # push the extension branch and merge the PR
+  pull-requests: write     # open and merge the PR
   issues: write            # read the order, mark it taken, comment back
 
 concurrency:
@@ -131,7 +132,8 @@ jobs:
               5. Open a pull request that references the issue (include "Closes
                  #${{ steps.pick.outputs.issue }}"), explains what you extended and how the
                  acceptance criterion is met, and states that the protected core was not
-                 touched. Do NOT merge it - leave it for human review.
+                 touched. Do NOT merge it yourself - a follow-up step auto-merges it once the
+                 checks (ruff / pytest / core-verify) pass on the branch.
 
             If the request cannot be done without touching the protected core, do NOT force it:
             open no PR, and instead comment on the issue explaining that it needs the
@@ -139,3 +141,39 @@ jobs:
           claude_args: |
             --model claude-sonnet-4-6
             --max-turns 30
+
+      - name: Auto-merge the Auftrag PR when the checks are green (non-core, no human needed)
+        if: steps.pick.outputs.issue != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          issue="${{ steps.pick.outputs.issue }}"
+          repo="$GITHUB_REPOSITORY"
+          # Find the PR Claude opened for this Auftrag (it references the issue in its body).
+          pr=$(gh pr list --repo "$repo" --state open --json number,body,createdAt \
+                --jq "map(select(.body | test(\"#${issue}\"))) | sort_by(.createdAt) | last | .number // empty")
+          if [ -z "$pr" ]; then
+            echo "no PR opened (Claude likely routed this to the human core-ask path) - nothing to merge"
+            exit 0
+          fi
+          head=$(gh pr view "$pr" --repo "$repo" --json headRefName --jq .headRefName)
+          echo "verifying PR #$pr ($head) before auto-merge"
+          # GITHUB_TOKEN-opened PRs do NOT trigger ci.yml, so run the very same checks here, on
+          # the PR head: ruff + pytest (what ci.yml runs) plus the protected-core fail-safe.
+          git fetch origin "$head"
+          git checkout "$head"
+          python -m pip install -e ".[dev,llm,pdf,embed]" >/dev/null 2>&1 || true
+          ok=1
+          python -m ruff check . || ok=0
+          python -m pytest -q || ok=0
+          python -m joni.autonomy verify || ok=0
+          if [ "$ok" = "1" ]; then
+            gh pr merge "$pr" --repo "$repo" --squash --delete-branch
+            echo "auto-merged PR #$pr - Joni's non-core extension is live; the issue auto-closes"
+          else
+            gh pr comment "$pr" --repo "$repo" --body "Auto-merge held: the checks (ruff / pytest / \`joni.autonomy verify\`) are not green on this branch, so it was **not** merged. A human should review and fix it."
+            gh issue comment "$issue" --repo "$repo" --body "The auto-build opened PR #$pr but its checks did not pass, so it was not auto-merged. A human needs to look."
+            echo "checks not green - left PR #$pr for a human"
+            exit 1
+          fi
