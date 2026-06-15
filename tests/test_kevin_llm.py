@@ -73,3 +73,19 @@ def test_no_op_with_fewer_than_two_topics(monkeypatch, tmp_path):
     monkeypatch.setattr(model_call, "_complete", lambda p, s, u: "[]")
     cs = CoreState(l9.Layer9())                                 # empty core: no topics
     assert kevin_llm.propose(cs, {}, _Proto(), 3)["kevin_calls"] == 0
+
+
+def test_kevin_is_not_set_on_thin_or_synthetic_topics(monkeypatch, tmp_path):
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u: "[]")
+    # two topics that DO pass research_topics (>=3 claims across >=2 sources), but whose claims
+    # are all synthetic through-line bookkeeping - Kevin must NOT be set on junk to "refine".
+    cs = CoreState(l9.Layer9())
+    for i in range(3):
+        cs.learn(f"Across my claims, 'x{i}' recurs as a through-line worth testing", "alpha",
+                 source_id=f"arxiv:a{i}")
+        cs.learn(f"Across my claims, 'y{i}' recurs as a through-line worth testing", "beta",
+                 source_id=f"arxiv:b{i}")
+    assert "alpha" in cs.research_topics() and "beta" in cs.research_topics()   # they pass #2...
+    assert kevin_llm.propose(cs, {}, _Proto(), 3)["kevin_calls"] == 0           # ...but #7 blocks
