@@ -29,6 +29,7 @@ from . import (
     desi_semantics,
     develop,
     emerge,
+    escalation,
     experts,
     governance,
     homeostasis,
@@ -172,6 +173,13 @@ def one_cycle() -> dict:
     for conflict_id in cs.detect_and_open_conflicts():
         proto.record(cycle, "conflict_open",
                      f"opened {conflict_id} - two claims held open, not smoothed away")
+
+    # 3a-esc. Audited escalation to DeepSeek (joni-hard): Granite proposed above and Layer 9 now
+    #     holds the conflicts. ONLY when a named, deterministic rule fires (high conflict load,
+    #     contested, low coverage, ...) is DeepSeek invoked as the escalation analyst - never a
+    #     silent fallback, never a parallel vote. Its output enters as candidate SOURCE proposals
+    #     through the gate; the escalation reason is recorded in the call capture. One per cycle.
+    escalated = escalation.escalate_if_needed(cs, extensions, proto, cycle)
 
     # 3b. Store methods Joni found, as candidates in the Layer 9 core - for Kevin.
     found_methods = methods.harvest(cs, judged, extensions, proto, cycle)
@@ -324,7 +332,7 @@ def one_cycle() -> dict:
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
             "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io,
-            "research": research, "projected": projected}
+            "research": research, "projected": projected, "escalated": escalated}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:

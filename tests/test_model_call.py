@@ -11,7 +11,7 @@ from joni.autonomy import model_call, model_profile
 def test_profiles_separate_sampling_from_desi_state_k(monkeypatch):
     # the two axes are distinct fields, not the same knob
     sem = model_profile.profile("joni-semantic")
-    assert sem.state_k == 1 and sem.sampling.temperature == 0.0      # deterministic projector
+    assert sem.state_k == 5 and sem.sampling.temperature == 0.0      # Granite start k (calibrate)
     ref = model_profile.profile("reference")
     assert ref.state_k == 5                                          # the control arm's density
     kev = model_profile.profile("kevin")
@@ -32,7 +32,7 @@ def test_hard_tasks_use_deepseek_pro_v4_directly(monkeypatch):
     assert hard.base_url == "https://api.deepseek.com"
     assert hard.key_env == "DEEPSEEK_API_KEY"
     assert hard.model_id == "deepseek-pro-v4"
-    assert hard.state_k == 8                                         # its own, richer density
+    assert hard.state_k == 3                                         # its own start k over {3,5}
     # the rest (structured papers / extraction) -> Granite 4.1 8B, not a tiny model
     sem = model_profile.profile("joni-semantic")
     assert sem.model_id == "granite-4.1-8b"
@@ -71,8 +71,9 @@ def test_call_captures_then_replays(monkeypatch, tmp_path):
     assert cap1.replayed is False and len(calls) == 1
     # the capture carries the full reproducibility record
     assert cap1.requested_model == prof.model_id and cap1.served_model == prof.served_slug
-    assert cap1.state_k == 1 and cap1.temperature == 0.0 and cap1.seed == prof.sampling.seed
+    assert cap1.state_k == 5 and cap1.temperature == 0.0 and cap1.seed == prof.sampling.seed
     assert cap1.prompt_sha and cap1.output_sha and cap1.run_id == "r1" and cap1.call_id
+    assert cap1.escalation_reason is None                            # primary call, not escalated
 
     # same prompt + pinned config -> REPLAY from the persisted capture, no second network call
     out2, cap2 = model_call.call(prof, "sys", "the source text", run_id="r2", store_dir=tmp_path)
@@ -85,7 +86,7 @@ def test_call_captures_then_replays(monkeypatch, tmp_path):
     rec = json.loads(log[0])
     for field in ("requested_model", "served_model", "provider", "temperature", "seed",
                   "max_tokens", "sampling_sha", "state_k", "prompt_sha", "output_sha",
-                  "run_id", "call_id", "replayed"):
+                  "run_id", "call_id", "replayed", "escalation_reason"):
         assert field in rec
 
 

@@ -21,16 +21,16 @@ privileged HUMAN origin, never auto-confirmed). Marked dissent is preserved - wh
 contradicts something Joni holds, a conflict opens and is held open, never aggregated away. Joni
 alone decides.
 
-Joni convenes the panel **when he is genuinely unsure** - when he is holding an open
-contradiction he cannot reconcile - not on a fixed schedule. If he is not unsure about
-anything, no panel is called (and nothing is spent). A short cooldown keeps recurring
-uncertainty from bursting the panel, and the weekly budget is the hard cap.
-
 Joni convenes the panel **when he is genuinely unsure** (an open contradiction he holds) **or
 when Kevin proposes something** - a new method/lens or an invented cross-topic hypothesis. On a
 suggestion the panel assesses *whether it is a good idea, and why or why not* (under which
 assumptions it is sound vs where it breaks), so Joni gets an explained recommendation - never a
-decision. A short cooldown keeps it from bursting; the weekly budget is the hard cap.
+decision.
+
+The panel is **integrated like the Moltbook forum**: a *periodic, bounded round*, not an
+every-cycle reaction. It convenes at most once per cadence window (``JONI_PANEL_EVERY``,
+default ~daily), only when there is genuinely something to assess, each thing assessed once;
+the weekly budget is the hard cap. Nothing to assess, or not yet due -> no panel, nothing spent.
 
 Three voices: **Claude** and **ChatGPT** via OpenRouter, **DeepSeek** via the DeepSeek key.
 Opt-in (``JONI_EXPERTS=1``) and budget-gated; otherwise a no-op.
@@ -41,8 +41,14 @@ import os
 
 import desi_layer9 as l9
 
-_MIN_GAP = 5                      # at least this many cycles between panels (don't burst)
 _DEFAULT_COST_EUR = 0.15          # conservative flat charge per convened round (budget caps it)
+
+
+def _panel_every() -> int:
+    """Cadence: convene at most once per this many cycles. The panel is now a **periodic round,
+    like the Moltbook forum** - a scheduled, bounded activity, not a reaction in every cycle.
+    Env-dialled (``JONI_PANEL_EVERY``); default ~daily at the hourly relauncher cadence."""
+    return max(1, int(os.getenv("JONI_PANEL_EVERY", "24")))
 
 # Functional roles (Alexandria IV.3) - distinct rule sets, not interchangeable opinions.
 _ROLE_RULES = {
@@ -235,9 +241,10 @@ def maybe_convene(cs, extensions: dict, proto, budget, cycle: int, *,
     if dp is None:
         return out                              # nothing unsure and nothing new to assess
     key, question, context, topic = dp
-    # Uncertainty can recur every cycle; a short cooldown keeps the panel from bursting.
+    # The panel is a periodic round (like the Moltbook forum), not an every-cycle reaction: it
+    # convenes at most once per cadence window, even if an uncertainty/suggestion is present.
     last = extensions.get("panel_last_cycle")
-    if last is not None and cycle - last < _MIN_GAP:
+    if last is not None and cycle - last < _panel_every():
         return out
     # A panel is a deliberate spend - gate on weekly room. Each uncertainty is convened at most
     # once (panel_asked), which bounds total cost.

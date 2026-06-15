@@ -109,19 +109,34 @@ def test_an_invented_cross_topic_hypothesis_is_assessed_as_a_suggestion(monkeypa
     assert experts.maybe_convene(cs, {}, _Proto(), budget, cycle=20)["convened"] is True
 
 
-def test_panel_respects_a_cooldown_between_uncertainties(monkeypatch):
+def test_panel_runs_on_a_periodic_cadence_like_the_forum(monkeypatch):
     _enable(monkeypatch)
     _mock_ask(monkeypatch)
+    monkeypatch.setenv("JONI_PANEL_EVERY", "5")          # pin the cadence window for the test
     cs = CoreState(seed_core())
     _make_uncertain(cs)
     budget = Budget(week_start="t", spent_eur=0.0, runs=0, cap_eur=20.0)
     ext: dict = {}
     assert experts.maybe_convene(cs, ext, _Proto(), budget, cycle=10)["convened"] is True
-    # a second, distinct uncertainty appears immediately - but the cooldown holds the panel
+    # a second, distinct uncertainty appears immediately - but the cadence window holds the panel
     _make_uncertain(cs, "routing must always be remote", "routing must never be remote")
     assert experts.maybe_convene(cs, ext, _Proto(), budget, cycle=12)["convened"] is False
-    # once the cooldown elapses, the new uncertainty is assessed
+    # once the cadence window elapses, the next round is assessed
     assert experts.maybe_convene(cs, ext, _Proto(), budget, cycle=16)["convened"] is True
+
+
+def test_panel_default_cadence_is_not_every_round(monkeypatch):
+    _enable(monkeypatch)
+    _mock_ask(monkeypatch)
+    monkeypatch.delenv("JONI_PANEL_EVERY", raising=False)   # default ~daily, not every cycle
+    cs = CoreState(seed_core())
+    _make_uncertain(cs)
+    budget = Budget(week_start="t", spent_eur=0.0, runs=0, cap_eur=20.0)
+    ext: dict = {}
+    assert experts.maybe_convene(cs, ext, _Proto(), budget, cycle=10)["convened"] is True
+    _make_uncertain(cs, "routing must always be remote", "routing must never be remote")
+    # only a few cycles later: the default cadence has not elapsed -> no panel this round
+    assert experts.maybe_convene(cs, ext, _Proto(), budget, cycle=14)["convened"] is False
 
 
 def test_panel_is_off_by_default(monkeypatch):
