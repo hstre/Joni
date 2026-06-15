@@ -86,7 +86,8 @@ def _experts() -> list[dict]:
          "model": os.getenv("JONI_EXPERT_GPT", "openai/gpt-4o")},
         {"name": "deepseek", "role": os.getenv("JONI_EXPERT_DEEPSEEK_ROLE", "consistency"),
          "base_url": "https://api.deepseek.com", "key_env": "DEEPSEEK_API_KEY",
-         "model": os.getenv("JONI_EXPERT_DEEPSEEK", "deepseek-chat")},
+         # deepseek-v4-pro per the API docs; deepseek-chat (v4-flash) is being deprecated.
+         "model": os.getenv("JONI_EXPERT_DEEPSEEK", "deepseek-v4-pro")},
     ]
 
 
