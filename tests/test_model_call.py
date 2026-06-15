@@ -25,6 +25,32 @@ def test_profiles_separate_sampling_from_desi_state_k(monkeypatch):
     assert sem2.state_k == 3 and sem2.served_slug == "ibm-granite/granite-x"
 
 
+def test_hard_tasks_use_deepseek_pro_v4_directly(monkeypatch):
+    # difficult semantic work -> DeepSeek Pro v4 via the DeepSeek API, NOT a micro model
+    hard = model_profile.profile("joni-hard")
+    assert hard.provider == "deepseek"
+    assert hard.base_url == "https://api.deepseek.com"
+    assert hard.key_env == "DEEPSEEK_API_KEY"
+    assert hard.model_id == "deepseek-pro-v4"
+    assert hard.state_k == 8                                         # its own, richer density
+    # the rest (structured papers / extraction) -> Granite 4.1 8B, not a tiny model
+    sem = model_profile.profile("joni-semantic")
+    assert sem.model_id == "granite-4.1-8b"
+    assert sem.served_slug == "ibm-granite/granite-4.1-8b-20260429"
+    # state_k is task-specific, never inherited
+    assert hard.state_k != sem.state_k
+    # the exact DeepSeek slug is env-pinned and captured (no silent label)
+    monkeypatch.setenv("JONI_DEEPSEEK_SLUG", "deepseek-reasoner")
+    assert model_profile.profile("joni-hard").served_slug == "deepseek-reasoner"
+
+
+def test_task_router_sends_difficult_to_deepseek_and_rest_to_granite():
+    assert model_profile.for_task("conflict").name == "joni-hard"
+    assert model_profile.for_task("source-analysis").name == "joni-hard"
+    assert model_profile.for_task("extraction").name == "joni-semantic"
+    assert model_profile.for_task("paper-audit").name == "joni-semantic"
+
+
 def test_unknown_profile_is_never_silently_substituted():
     import pytest
     with pytest.raises(KeyError):

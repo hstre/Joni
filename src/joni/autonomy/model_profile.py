@@ -12,17 +12,31 @@ Two axes are kept **strictly separate**, exactly as specified:
 * ``state_k`` - the **DESi state-slice density**: how many relevant Layer-9 state elements the
   semantic projector is allowed to see as context. This is NOT the ``top_k`` sampling argument.
 
-Four profiles, each independently configurable (env-overridable so a profile can be re-pinned
+Model choice follows the operator's own benchmark results (README): a **small-LLM extraction
+layer is harmful** (micro-extraction -40%, hybrid evidence cards -60%, question-aware
+extraction -80%), so Joni does NOT use a tiny model as its semantic core. Instead:
+
+  * **Difficult** semantic work (hard conflicts, source/contradiction analysis) -> **DeepSeek
+    Pro v4, called directly via the DeepSeek API** (``joni-hard``).
+  * **The rest** - structured paper/state audits, claim extraction/projection -> **Granite
+    4.1 8B** (``joni-semantic``).
+
+``state_k`` is **task-specific and is NOT inherited** between profiles (the README is explicit:
+calibrate ``k`` per task) - each profile pins its own density.
+
+Profiles, each independently configurable (env-overridable so a profile can be re-pinned
 without code changes), because they are optimised for different jobs:
 
-  * ``joni-semantic`` - controlled semantic projection into proposals. Granite, ``state_k=1``.
+  * ``joni-semantic`` - structured projection into proposals. Granite 4.1 8B, ``state_k=1``.
+  * ``joni-hard``     - difficult semantic analysis. DeepSeek Pro v4 via the DeepSeek API,
+    richer ``state_k``. Selected only for hard tasks; never an automatic fallback.
   * ``reference``     - an explicit control/regression arm. Llama 3.1 8B, ``state_k=5``. Never an
     automatic fallback; selected only on purpose.
   * ``kevin``         - creative exploration. Its own model, NOT Joni's semantic model or k.
   * ``renderer``      - language/voice only. Separate interface and separate provenance, so a
     semantic projection and a phrasing call are never the same indistinguishable call.
 
-The default ``model_id`` records the *requested* pin (e.g. ``granite-4.0-h-micro``); the
+The default ``model_id`` records the *requested* pin (e.g. ``granite-4.1-8b``); the
 ``served_slug`` is what the provider actually serves. The capture records both, so any
 divergence is auditable - a substitution is explicit and logged, never silent.
 """
@@ -71,13 +85,14 @@ def _env(name: str, default: str) -> str:
     return os.getenv(name, default)
 
 
-# Granite 4.0 H Micro is the *requested* semantic pin. It is not on OpenRouter today, so the
-# served slug is configurable (JONI_GRANITE_SLUG); whatever serves it is captured, so the
-# substitution is explicit, never silent. Re-pin by setting the env vars.
+# "The rest" - structured paper/state audits and claim projection - use **Granite 4.1 8B**
+# (NOT a micro model: the operator's own tests show small-LLM extraction is harmful). Served via
+# OpenRouter (prepaid). The requested pin equals the served slug, so there is no divergence to
+# explain; re-pin by setting the env vars.
 def joni_semantic() -> ModelProfile:
     return ModelProfile(
         name="joni-semantic",
-        model_id=_env("JONI_SEMANTIC_MODEL_ID", "granite-4.0-h-micro"),
+        model_id=_env("JONI_SEMANTIC_MODEL_ID", "granite-4.1-8b"),
         provider=_env("JONI_SEMANTIC_PROVIDER", "openrouter"),
         base_url=_env("JONI_SEMANTIC_BASE_URL", "https://openrouter.ai/api/v1"),
         key_env=_env("JONI_SEMANTIC_KEY_ENV", "OPENROUTER_API_KEY"),
@@ -87,6 +102,27 @@ def joni_semantic() -> ModelProfile:
             seed=int(_env("JONI_SEMANTIC_SEED", "7")),
             max_tokens=int(_env("JONI_SEMANTIC_MAX_TOKENS", "768"))),
         state_k=int(_env("JONI_SEMANTIC_STATE_K", "1")))
+
+
+# **Difficult** semantic work - hard conflicts, source/contradiction analysis - goes to
+# **DeepSeek Pro v4, called directly through the DeepSeek API** (not via OpenRouter). DeepSeek's
+# API serves its chat models under short slugs; the exact "pro v4" id is env-pinned
+# (JONI_DEEPSEEK_SLUG) and captured, so the requested pin -> served slug mapping is explicit.
+# state_k is calibrated for this task separately (a richer slice for hard reasoning), NOT
+# inherited from joni-semantic.
+def joni_hard() -> ModelProfile:
+    return ModelProfile(
+        name="joni-hard",
+        model_id=_env("JONI_HARD_MODEL_ID", "deepseek-pro-v4"),
+        provider=_env("JONI_HARD_PROVIDER", "deepseek"),
+        base_url=_env("JONI_HARD_BASE_URL", "https://api.deepseek.com"),
+        key_env=_env("JONI_HARD_KEY_ENV", "DEEPSEEK_API_KEY"),
+        served_slug=_env("JONI_DEEPSEEK_SLUG", "deepseek-chat"),
+        sampling=Sampling(
+            temperature=float(_env("JONI_HARD_TEMPERATURE", "0.0")),
+            seed=int(_env("JONI_HARD_SEED", "7")),
+            max_tokens=int(_env("JONI_HARD_MAX_TOKENS", "1024"))),
+        state_k=int(_env("JONI_HARD_STATE_K", "8")))
 
 
 def reference() -> ModelProfile:
@@ -109,7 +145,7 @@ def kevin() -> ModelProfile:
     """Kevin's own profile - creative exploration, NOT Joni's semantic model or k."""
     return ModelProfile(
         name="kevin",
-        model_id=_env("JONI_KEVIN_MODEL_ID", "granite-4.0-h-micro"),
+        model_id=_env("JONI_KEVIN_MODEL_ID", "granite-4.1-8b"),
         provider=_env("JONI_KEVIN_PROVIDER", "openrouter"),
         base_url=_env("JONI_KEVIN_BASE_URL", "https://openrouter.ai/api/v1"),
         key_env=_env("JONI_KEVIN_KEY_ENV", "OPENROUTER_API_KEY"),
@@ -125,7 +161,7 @@ def renderer() -> ModelProfile:
     """Voice/phrasing only - separate interface and provenance from semantic projection."""
     return ModelProfile(
         name="renderer",
-        model_id=_env("JONI_RENDERER_MODEL_ID", "granite-4.0-h-micro"),
+        model_id=_env("JONI_RENDERER_MODEL_ID", "granite-4.1-8b"),
         provider=_env("JONI_RENDERER_PROVIDER", "openrouter"),
         base_url=_env("JONI_RENDERER_BASE_URL", "https://openrouter.ai/api/v1"),
         key_env=_env("JONI_RENDERER_KEY_ENV", "OPENROUTER_API_KEY"),
@@ -137,7 +173,7 @@ def renderer() -> ModelProfile:
         state_k=0)
 
 
-_PROFILES = {"joni-semantic": joni_semantic, "reference": reference,
+_PROFILES = {"joni-semantic": joni_semantic, "joni-hard": joni_hard, "reference": reference,
              "kevin": kevin, "renderer": renderer}
 
 
@@ -147,3 +183,15 @@ def profile(name: str) -> ModelProfile:
     if name not in _PROFILES:
         raise KeyError(f"unknown model profile {name!r}; known: {sorted(_PROFILES)}")
     return _PROFILES[name]()
+
+
+# Tasks the operator classified as "difficult" - hard conflicts and source/contradiction
+# analysis - route to DeepSeek; everything else (structured extraction/projection/audit) to
+# Granite 4.1 8B. This is a deliberate, named routing, not a fallback chain.
+_HARD_TASKS = frozenset({"conflict", "source-analysis", "contradiction", "hard"})
+
+
+def for_task(kind: str) -> ModelProfile:
+    """Pick the pinned profile for a semantic task by difficulty class. Difficult tasks ->
+    ``joni-hard`` (DeepSeek Pro v4); the rest -> ``joni-semantic`` (Granite 4.1 8B)."""
+    return profile("joni-hard" if kind in _HARD_TASKS else "joni-semantic")
