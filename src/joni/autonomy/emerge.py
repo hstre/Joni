@@ -97,6 +97,7 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
          if t not in known_topics and t not in done_topics
          and len(e["claims"]) >= _MIN_CLAIMS and len(e["topics"]) >= _MIN_TOPICS_FOR_TOPIC),
         key=lambda kv: (-len(kv[1]["claims"]), kv[0]))
+    cands = [(t, e) for t, e in cands if quality.on_domain(t)]   # domain-consistency gate
     if cands:
         term, e = cands[0]
         cs.learn(f"'{term}' keeps recurring across {len(e['topics'])} of my topics, "
@@ -125,6 +126,8 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
         key = f"{topic}|{term}"
         if key in done_syn or len(cluster) < _MIN_CLAIMS:
             continue
+        if not quality.on_domain(term):
+            continue                            # off-domain token: not a real through-line
         if insuff.get(key, 0) >= _MAX_INSUFFICIENT_RETRIES:
             done_syn.add(key)                               # several fair chances - finalise
             insuff.pop(key, None)
@@ -155,6 +158,7 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
          if t not in done_meth and len(e["topics"]) >= _MIN_TOPICS_FOR_METHOD
          and len(e["claims"]) >= _MIN_CLAIMS),
         key=lambda kv: (-len(kv[1]["topics"]), -len(kv[1]["claims"]), kv[0]))
+    lenses = [(t, e) for t, e in lenses if quality.on_domain(t)]   # domain-consistency gate
     if lenses:
         term, e = lenses[0]
         topics = tuple(sorted(e["topics"]))

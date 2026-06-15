@@ -179,7 +179,7 @@ def _open_need(cs, asked: set) -> tuple[str, str] | None:
     #    NOT carry a token-artifact hypothesis (a through-line about 'cotton'/'about') outside.
     for h in sorted(cs.hypotheses(), key=lambda c: int(c.id.split("-")[-1]), reverse=True):
         if (_supports_on(cs, h.id) == 0 and h.id not in asked
-                and quality.is_substantive_hypothesis(h.text)):
+                and quality.hypothesis_admissible(h.text)):
             q = (f"Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente "
                  f"oder Belege freuen (ich nehme beides gleich ernst): \"{h.text}\" - "
                  "wo koennte das brechen?")
@@ -188,7 +188,7 @@ def _open_need(cs, asked: set) -> tuple[str, str] | None:
     # 2. a topic with claims but no evidence links at all (only a meaningful one is asked about).
     for topic in sorted(cs.topics()):
         key = f"topic:{topic}"
-        if key in asked or not quality.is_meaningful_term(topic):
+        if key in asked or not quality.admissible_term(topic):
             continue
         claims = cs.claims_on(topic)
         if len(claims) >= 2 and sum(_supports_on(cs, c.id) for c in claims) == 0:
