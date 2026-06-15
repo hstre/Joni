@@ -83,14 +83,19 @@ def propose(cs, extensions: dict, proto, cycle: int) -> dict:
         return out
     props = projection._parse(output, f"{ta}+{tb}")
     parents = (claims_a[0].id, claims_b[0].id)
+    ids = []
     for p in props[:2]:
-        cs.hypothesize(p["text"], p["topic"], parents=parents)
+        ids.append(cs.hypothesize(p["text"], p["topic"], parents=parents))
         out["hypotheses"] += 1
     out["kevin_calls"] = 1
     extensions["kevin_last_cycle"] = cycle
     log = extensions.setdefault("kevin_llm", [])
-    log.append({"call_id": cap.call_id, "served_model": cap.served_model,
-                "topics": [ta, tb], "hypotheses": len(props), "replayed": cap.replayed})
+    # store the actual proposal TEXT (not just a count) so the site can show what Kevin suggested
+    # and the panel's verdict can be matched to it by hypothesis id.
+    log.append({"call_id": cap.call_id, "served_model": cap.served_model, "cycle": cycle,
+                "topics": [ta, tb], "replayed": cap.replayed,
+                "proposals": [{"id": i, "text": p["text"], "topic": p["topic"]}
+                              for i, p in zip(ids, props[:2], strict=False)]})
     extensions["kevin_llm"] = log[-200:]
     proto.record(cycle, "kevin",
                  f"Kevin ({cap.served_model}) proposed {len(props)} cross-domain hypothesis(es) "
