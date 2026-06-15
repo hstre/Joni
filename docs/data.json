@@ -16,10 +16,12 @@
       "anthology theme",
       "anthology title and producer",
       "anthology+drift",
+      "anthology+flarum",
       "benchmark",
       "benchmark availability",
       "benchmark design",
       "benchmarking",
+      "capacity",
       "clinhallu benchmark structure",
       "coherence cost law",
       "context",
@@ -36,8 +38,6 @@
       "evaluation",
       "experimental hygiene",
       "flarum",
-      "general ℓ^p inequality proof",
-      "lambert w function inequality",
       "limitations of existing benchmarks",
       "methylation and cell type distinction",
       "model consistency vs creativity",
@@ -60,18 +60,18 @@
       "variance",
       "variance decomposition"
     ],
-    "claims_total": 223,
-    "claims_active": 149,
+    "claims_total": 227,
+    "claims_active": 147,
     "memory": 0,
-    "ledger": 1244,
+    "ledger": 1300,
     "open_conflicts": 10,
-    "methods": 10,
-    "method_trials": 59,
+    "methods": 11,
+    "method_trials": 67,
     "methods_ready": 0,
     "preferences": 0,
-    "evidence_links": 4,
+    "evidence_links": 6,
     "self_model": 3,
-    "hypotheses": 10,
+    "hypotheses": 11,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": {
@@ -84,11 +84,11 @@
   "budget": {
     "spent_eur": 0.15,
     "cap_eur": 20.0,
-    "runs": 9
+    "runs": 10
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 9,
+    "runs": 10,
     "retired": false
   },
   "extensions": {
@@ -570,7 +570,8 @@
       "zenodo:20707998",
       "zenodo:20708011",
       "zenodo:20708037",
-      "zenodo:20708042"
+      "zenodo:20708042",
+      "zenodo:20708085"
     ],
     "semantic_calls": [
       {
@@ -773,6 +774,14 @@
         "state_k": 3,
         "replayed": true,
         "claims": 0
+      },
+      {
+        "call_id": "joni-c10:b5095fe03cb8",
+        "served_model": "deepseek-v4-pro",
+        "reason": "high_conflict_load",
+        "state_k": 3,
+        "replayed": true,
+        "claims": 0
       }
     ],
     "methods_seen": [
@@ -784,9 +793,10 @@
       "github:flarum/flarum",
       "huggingface:2606.10747",
       "zenodo:20707854",
-      "zenodo:20707998"
+      "zenodo:20707998",
+      "zenodo:20708085"
     ],
-    "method_trials_total": 59,
+    "method_trials_total": 67,
     "methods_ready_total": 0,
     "core_ask_signals": {
       "scoring": 0
@@ -829,10 +839,12 @@
       "alignment|privacy",
       "alignment|unsorted",
       "anthology|drift",
+      "anthology|flarum",
       "drift|memory"
     ],
     "emerged_topics": [
       "benchmark",
+      "capacity",
       "context",
       "convex",
       "multimodal",
@@ -862,6 +874,7 @@
       "memory|convex",
       "memory|memory",
       "memory|online",
+      "unsorted|boundary",
       "unsorted|distichlis"
     ],
     "emerged_methods": [
@@ -871,11 +884,14 @@
       "variance"
     ],
     "emerge_insufficient": {
-      "meth:anthology": 2
+      "meth:anthology": 3
     },
     "hyp_tested": [
       "C-221|C-128",
-      "C-221|C-137"
+      "C-221|C-137",
+      "C-225|C-128",
+      "C-225|C-137",
+      "C-225|C-221"
     ],
     "hyp_insufficient": {},
     "hyp_hollow": [
@@ -885,18 +901,20 @@
       "C-206",
       "C-208",
       "C-223",
+      "C-225",
+      "C-227",
       "C-49",
       "C-51"
     ],
     "learned_queries": [
-      "alignment+unsorted right",
-      "alignment+unsorted trade-offs",
-      "memory testing",
-      "memory worth",
       "anthology+drift titled",
       "anthology+drift abundance",
       "unsorted unsorted",
-      "unsorted single"
+      "unsorted single",
+      "anthology+flarum existing",
+      "anthology+flarum learning",
+      "unsorted boundary",
+      "unsorted worth"
     ],
     "hyp_seen_cycle": {
       "C-49": 1,
@@ -908,8 +926,9 @@
       "C-184": 6,
       "C-199": 7,
       "C-208": 8,
-      "C-221": 9,
-      "C-223": 9
+      "C-223": 9,
+      "C-225": 10,
+      "C-227": 10
     },
     "hyp_domain_ok": [
       "C-126",
@@ -920,12 +939,14 @@
       "C-199",
       "C-208",
       "C-223",
+      "C-227",
       "C-49",
       "C-51"
     ],
     "methods_domain_ok": [
       "M-1",
       "M-10",
+      "M-11",
       "M-2",
       "M-3",
       "M-4",
@@ -939,30 +960,30 @@
       "verdict": "developing",
       "development": 10,
       "degeneration": 0,
-      "active": 149,
-      "hypotheses": 10,
-      "unsupported_hypotheses": 10,
-      "promoted_ideas": 1,
+      "active": 147,
+      "hypotheses": 11,
+      "unsupported_hypotheses": 11,
+      "promoted_ideas": 2,
       "confirmed_claims": 0,
-      "evidence_links": 4,
-      "supporting_links": 4,
-      "emergent_total": 33,
+      "evidence_links": 6,
+      "supporting_links": 6,
+      "emergent_total": 35,
       "usable_semantic_rate": 1.0,
-      "methods_total": 10,
-      "method_trials_total": 59,
+      "methods_total": 11,
+      "method_trials_total": 67,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 1543,
-      "cycle": 9
+      "objects": 1613,
+      "cycle": 10
     },
     "vitality_prev": {
-      "supports": 4,
-      "promoted": 1,
+      "supports": 6,
+      "promoted": 2,
       "confirmed": 0,
-      "objects": 1543,
-      "active": 149,
-      "links": 4,
-      "emergent": 33
+      "objects": 1613,
+      "active": 147,
+      "links": 6,
+      "emergent": 35
     },
     "stagnation": 0,
     "vitality_history": [
@@ -1028,12 +1049,19 @@
         "development": 10,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 10,
+        "verdict": "developing",
+        "development": 10,
+        "degeneration": 0,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 6,
+      "starved_topic": 7,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -5184,22 +5212,280 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:33+00:00",
+      "cycle": 10,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:34+00:00",
+      "cycle": 10,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:35+00:00",
+      "cycle": 10,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:36+00:00",
+      "cycle": 10,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:41+00:00",
+      "cycle": 10,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:42+00:00",
+      "cycle": 10,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:43+00:00",
+      "cycle": 10,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:43+00:00",
+      "cycle": 10,
+      "kind": "judged",
+      "summary": "relevant: oda: Pure-R Core Engine for Optimal Data Analysis (ODA / MultiODA)",
+      "refs": {
+        "source": "zenodo:20708085",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20708085"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:49+00:00",
+      "cycle": 10,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [high_conflict_load] proposed 0 claim(s) [deepseek-v4-pro, replayed=True] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:49+00:00",
+      "cycle": 10,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: oda: Pure-R Core Engine for Optimal Data Analysis (ODA / MultiODA) (from zenodo)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:50+00:00",
+      "cycle": 10,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 0 passed, 8 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:50+00:00",
+      "cycle": 10,
+      "kind": "invented",
+      "summary": "new hypothesis bridging anthology x flarum (candidate, derived from C-179+C-177)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:51+00:00",
+      "cycle": 10,
+      "kind": "emerged",
+      "summary": "new topic 'capacity' precipitated from a recurrence across coverage evaluation with privacy, dna methylation information capacity, memory, unsorted",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:51+00:00",
+      "cycle": 10,
+      "kind": "emerged",
+      "summary": "synthesis on unsorted: 'boundary' (Layer 9 synthesis-eligible, SC-45) from 4 claims (C-211, C-212, C-214, C-215)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:52+00:00",
+      "cycle": 10,
+      "kind": "emerged",
+      "summary": "'anthology' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:52+00:00",
+      "cycle": 10,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-225 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:52+00:00",
+      "cycle": 10,
+      "kind": "strengthen",
+      "summary": "idea C-225 earned support from C-137 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:52+00:00",
+      "cycle": 10,
+      "kind": "strengthen",
+      "summary": "idea C-225 earned support from C-128 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:52+00:00",
+      "cycle": 10,
+      "kind": "strengthen",
+      "summary": "idea C-225 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:52+00:00",
+      "cycle": 10,
+      "kind": "strengthen",
+      "summary": "idea C-225 promoted candidate -> active (earned support, unchallenged) - a working idea, not confirmed (Kevin flagged it thin - advisory)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:52+00:00",
+      "cycle": 10,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-227 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:53+00:00",
+      "cycle": 10,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): general ℓ^p inequality proof, lambert w function inequality, coverage evaluation with privacy",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:53+00:00",
+      "cycle": 10,
+      "kind": "vitality",
+      "summary": "developing · dev 10 · degen 0 · 11 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:54+00:00",
+      "cycle": 10,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:54+00:00",
+      "cycle": 10,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:04:54+00:00",
+      "cycle": 10,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 1 method(s) · 8 trialed · 0 new link(s) · 1 hypothesis(es) · 2 emergent · developing · spend €0.1500 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 25,
-    "granite_calls": 16,
-    "deepseek_escalations": 9,
+    "llm_calls": 27,
+    "granite_calls": 17,
+    "deepseek_escalations": 10,
     "kevin_calls": 0,
-    "cached_calls": 5,
-    "live_calls": 20,
-    "last_call": "2026-06-15T20:00:49+00:00",
+    "cached_calls": 6,
+    "live_calls": 21,
+    "last_call": "2026-06-15T20:04:49+00:00",
     "est_cost_eur": 0.016,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 16,
-      "deepseek-v4-pro": 9
+      "ibm-granite/granite-4.1-8b-20260429": 17,
+      "deepseek-v4-pro": 10
     },
     "panel_rounds": 1
   },
-  "generated": "2026-06-15T20:00:55+00:00"
+  "generated": "2026-06-15T20:04:54+00:00"
 }
