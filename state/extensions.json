@@ -485,7 +485,9 @@
     "zenodo:20708066",
     "zenodo:20708085",
     "zenodo:20708365",
-    "zenodo:20708417"
+    "zenodo:20708417",
+    "zenodo:20708454",
+    "zenodo:20708460"
   ],
   "semantic_calls": [
     {
@@ -639,6 +641,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708417"
+    },
+    {
+      "call_id": "joni-c18:6a36541c0813",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708460"
     }
   ],
   "pdf_read": [
@@ -792,6 +802,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c18:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -807,7 +825,7 @@
     "zenodo:20708062",
     "zenodo:20708085"
   ],
-  "method_trials_total": 123,
+  "method_trials_total": 131,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -820,6 +838,7 @@
     "C-228|C-233",
     "C-231|C-232",
     "C-264|C-269",
+    "C-282|C-283",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -837,6 +856,7 @@
     "C-228|C-233@bge-small-en-v1.5",
     "C-231|C-232@bge-small-en-v1.5",
     "C-264|C-269@bge-small-en-v1.5",
+    "C-282|C-283@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -853,6 +873,7 @@
     "agentspec|drift",
     "agentspec|flarum",
     "agentspec|forum",
+    "agentspec|memory",
     "alignment|anthology",
     "alignment|drift",
     "alignment|flarum",
@@ -867,6 +888,7 @@
     "drift|memory"
   ],
   "emerged_topics": [
+    "accuracy",
     "agent",
     "benchmark",
     "boundary",
@@ -917,6 +939,7 @@
     "memory|capacity",
     "memory|convex",
     "memory|inventory",
+    "memory|learner",
     "memory|memory",
     "memory|online",
     "memory|principle",
@@ -937,7 +960,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:benchmark": 1,
+    "meth:benchmark": 2,
     "meth:existing": 2
   },
   "hyp_tested": [
@@ -966,7 +989,10 @@
     "C-261|C-7",
     "C-277|C-252",
     "C-277|C-255",
-    "C-277|C-7"
+    "C-277|C-7",
+    "C-287|C-252",
+    "C-287|C-255",
+    "C-287|C-7"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -987,18 +1013,19 @@
     "C-263",
     "C-277",
     "C-279",
+    "C-287",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "agentspec+flarum agentspec",
-    "agentspec+flarum pattern",
-    "memory claims",
-    "memory memory",
     "agentspec+forum through",
     "agentspec+forum controlled",
     "memory across",
-    "memory through-line"
+    "memory through-line",
+    "agentspec+memory pattern",
+    "agentspec+memory scaffolds",
+    "memory recurs",
+    "memory learner"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -1023,7 +1050,9 @@
     "C-261": 16,
     "C-263": 16,
     "C-277": 17,
-    "C-279": 17
+    "C-279": 17,
+    "C-287": 18,
+    "C-289": 18
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1042,6 +1071,7 @@
     "C-260",
     "C-263",
     "C-279",
+    "C-289",
     "C-49",
     "C-51"
   ],
@@ -1061,32 +1091,32 @@
   ],
   "vitality": {
     "verdict": "developing",
-    "development": 3,
+    "development": 6,
     "degeneration": 0,
-    "active": 152,
-    "hypotheses": 23,
-    "unsupported_hypotheses": 18,
+    "active": 155,
+    "hypotheses": 25,
+    "unsupported_hypotheses": 19,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
-    "evidence_links": 16,
-    "supporting_links": 16,
-    "emergent_total": 64,
+    "evidence_links": 18,
+    "supporting_links": 18,
+    "emergent_total": 66,
     "usable_semantic_rate": 1.0,
     "methods_total": 12,
-    "method_trials_total": 123,
+    "method_trials_total": 131,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 2218,
-    "cycle": 17
+    "objects": 2316,
+    "cycle": 18
   },
   "vitality_prev": {
-    "supports": 16,
+    "supports": 18,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 2218,
-    "active": 152,
-    "links": 16,
-    "emergent": 64
+    "objects": 2316,
+    "active": 155,
+    "links": 18,
+    "emergent": 66
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1208,12 +1238,19 @@
       "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 18,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 14,
+    "starved_topic": 15,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
