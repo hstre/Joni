@@ -13,6 +13,7 @@ the wall clock each cycle. There are no artificial per-cycle time jumps.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -30,6 +31,45 @@ _CONTAMINATION_FIELDS = (
     "source_exposed", "interaction_exposed", "affective_pressure", "adversarial_source",
     "frame_contamination_possible", "role_contamination_possible", "unverified_model_output",
 )
+
+
+def _source_family(obj) -> str:
+    """A stable key for a claim's *independent origin* - so two claims from the same paper, forum
+    thread, or model run count as ONE source, not two. The first explicit source id wins; else the
+    origin type plus the model run/call that produced it (paraphrases of one comment are not two
+    sources). Used for source-independence in topic and claim promotion."""
+    prov = getattr(obj, "provenance", None)
+    if prov is None:
+        return "unknown"
+    sids = tuple(prov.source_ids or ())
+    if sids:
+        return f"src:{sids[0]}"
+    origin = getattr(prov.origin_type, "value", str(prov.origin_type))
+    return f"origin:{origin}:{prov.run_id or prov.call_id or ''}"
+
+
+_NUM = re.compile(r"\d+(?:\.\d+)?")
+
+
+def _numeric_discrepancy(a: str, b: str) -> bool:
+    """The two texts mention different numbers - the 'differ only in a count' case the review
+    described (31 vs 34 exchanges)."""
+    na, nb = set(_NUM.findall(a or "")), set(_NUM.findall(b or ""))
+    return bool(na or nb) and na != nb
+
+
+def _numeric_only_difference(a: str, b: str) -> bool:
+    """True when the two texts are the SAME once numbers are removed, but the numbers differ - a
+    numeric discrepancy, not a contradiction. Deliberately number-based, NOT embedding-based: an
+    embedding cannot see negation, so 'X is good' vs 'X is not good' must NOT be mistaken for a
+    duplicate. Stripping numbers leaves a 'not' in place, so a real negation is never caught here;
+    only '...31 exchanges...' vs '...34 exchanges...' (identical residual) is."""
+    import os
+    if not _numeric_discrepancy(a, b):
+        return False
+    ra, rb = _NUM.sub("#", (a or "").lower()), _NUM.sub("#", (b or "").lower())
+    return ra.strip() == rb.strip() or _overlap(ra, rb) >= float(
+        os.getenv("JONI_NUMERIC_PARAPHRASE_OVERLAP", "0.9"))
 
 
 class CoreState:
@@ -50,6 +90,31 @@ class CoreState:
     def topics(self) -> list[str]:
         counts = Counter(c.topic for c in self._live_claims() if c.topic)
         return [t for t, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))]
+
+    def research_topics(self, *, min_claims: int | None = None,
+                        min_sources: int | None = None) -> list[str]:
+        """The topics that have actually *earned* the status of a research direction - not every
+        word that recurs. A topic qualifies only when it is lexically meaningful (no stopword, no
+        ``unsorted`` sentinel) AND it appears in at least ``min_claims`` live claims drawn from at
+        least ``min_sources`` *independent* origins. This is what keeps 'principle' or 'convex'
+        from becoming a research subject on word-repetition alone. Used by the action consumers
+        (forum questions, Kevin, invention), not just the display."""
+        import os
+
+        from . import quality
+        mc = min_claims if min_claims is not None else int(os.getenv("JONI_TOPIC_MIN_CLAIMS", "3"))
+        ms = (min_sources if min_sources is not None
+              else int(os.getenv("JONI_TOPIC_MIN_SOURCES", "2")))
+        counts: Counter = Counter()
+        fams: dict[str, set] = {}
+        for c in self._live_claims():
+            t = c.topic
+            if not t or not quality.is_good_topic(t):
+                continue
+            counts[t] += 1
+            fams.setdefault(t, set()).add(_source_family(c))
+        good = [t for t in counts if counts[t] >= mc and len(fams[t]) >= ms]
+        return sorted(good, key=lambda t: (-counts[t], t))
 
     # -- gate-backed writes -------------------------------------------------- #
     def _op(self, ptype, op, payload, targets=()):
@@ -222,10 +287,17 @@ class CoreState:
                 elif _overlap(a.text, b.text) >= 0.34 and _polarity(a.text) != _polarity(b.text):
                     kind = "negation"
                 if kind:
+                    # Near-duplicate guard (review #4): detect a numeric-only paraphrase BEFORE
+                    # opening a conflict. A pair that is identical except for a number (31 vs 34
+                    # exchanges) is a minor discrepancy, not a contradiction - downgrade it from a
+                    # big hard conflict (which would trigger an Alexandria round) to a SOFT one.
+                    # Real negations keep a 'not' after stripping numbers, so they stay hard.
+                    numeric_only = _numeric_only_difference(a.text, b.text)
                     from .qualify import qualify_conflict
-                    severity = "hard" if kind == "negation" else "soft"
+                    contradictory = kind == "negation" and not numeric_only
+                    severity = "hard" if contradictory else "soft"
                     ck = qualify_conflict(a.text, b.text, severity=severity,
-                                          contradictory=(kind == "negation"))
+                                          contradictory=contradictory)
                     cid = self.open_conflict((a.id, b.id), severity=severity, conflict_kind=ck)
                     opened.append(cid)
                     existing.add(pair)

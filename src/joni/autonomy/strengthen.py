@@ -24,6 +24,8 @@ Bounded per cycle and deduped, so it works through the hypotheses over time.
 
 from __future__ import annotations
 
+import re
+
 from desi_layer9 import SemanticDecision
 from desi_layer9.semantics import adapter, lexical_overlap
 from desi_layer9.semantics.ports import NullSemanticLayer
@@ -32,7 +34,10 @@ from ..conflict import _content
 
 _TRIGGER = 0.2          # be more eager than develop: we *want* to test ideas
 _SUPPORTS_FOR_ACTIVE = 2
+_INDEP_SOURCES_FOR_ACTIVE = 2   # candidate -> active needs >=2 *independent* origins (or an
+#                                 external evidence card) - not claim-to-claim circularity
 _MAX_INSUFFICIENT_RETRIES = 3   # a layer-absent non-judgment is retried this often, not burned
+_VIA = re.compile(r"\bvia\s+([A-Za-z]+-\d+)")
 
 
 def _kevin_verdict(text: str, topic: str):
@@ -59,6 +64,40 @@ def _supports_on(cs, claim_id: str) -> int:
 
 def _hard_conflict_on(cs, claim_id: str) -> bool:
     return any(claim_id in x.claim_ids and x.severity == "hard" for x in cs.core.open_conflicts())
+
+
+def _independent_support(cs, claim_id: str) -> tuple[int, int]:
+    """Promotion must rest on *independent* evidence, not claim-to-claim circularity. Returns
+    (independent_source_families, external_evidence_cards) backing ``claim_id``: a support that
+    points at another claim contributes that claim's source family (so two claims from the same
+    paper/run count once); a support not derived from a claim is an external evidence card."""
+    from desi_layer9 import ObjectType
+
+    from .core_state import _source_family
+    ev_by_id = {e.id: e for e in cs.core.all(ObjectType.EVIDENCE)}
+    claim_by_id = {c.id: c for c in cs.core.all(ObjectType.CLAIM)}
+    families: set[str] = set()
+    external = 0
+    for el in cs.core.all(ObjectType.EVIDENCE_LINK):
+        if el.claim_id != claim_id or el.relation.value not in ("supports", "contextualizes"):
+            continue
+        ev = ev_by_id.get(el.evidence_id)
+        m = _VIA.search(getattr(ev, "content", "") or "")
+        supporter = claim_by_id.get(m.group(1)) if m else None
+        if supporter is not None:
+            families.add(_source_family(supporter))
+        else:                                   # an evidence card not derived from another claim
+            external += 1
+            sid = getattr(ev, "source_id", None)
+            families.add(f"src:{sid}" if sid else f"ext:{el.id}")
+    return len(families), external
+
+
+def _independently_supported(cs, claim_id: str) -> bool:
+    """Enough independent backing to promote: >=2 distinct source families, or >=1 external
+    evidence card. A pile of mutually-supporting claims from one origin is NOT enough."""
+    families, external = _independent_support(cs, claim_id)
+    return families >= _INDEP_SOURCES_FOR_ACTIVE or external >= 1
 
 
 def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
@@ -158,10 +197,13 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             proto.record(cycle, "strengthen",
                          f"idea {h.id} survived {real} challenge(s) - no contradiction found")
 
-        # earned ladder: candidate -> active once the *rules* are met - enough independent
-        # governed support and no open hard contradiction. Kevin's verdict is not a gate here:
-        # an idea that earned its support is promoted even if Kevin called it thin.
+        # earned ladder: candidate -> active once the *rules* are met - enough support, that
+        # support is INDEPENDENT (>=2 distinct source families or an external evidence card, not
+        # claim-to-claim circularity from a common origin), and no open hard contradiction. Kevin's
+        # verdict is not a gate here: an idea that earned independent support is promoted even if
+        # Kevin called it thin.
         if (_supports_on(cs, h.id) >= _SUPPORTS_FOR_ACTIVE
+                and _independently_supported(cs, h.id)
                 and not _hard_conflict_on(cs, h.id)):
             cs.activate_claim(h.id)
             out["promoted"] += 1

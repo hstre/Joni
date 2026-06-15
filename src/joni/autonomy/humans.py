@@ -197,8 +197,10 @@ def _open_need(cs, asked: set, *, tested: frozenset = frozenset()) -> tuple[str,
                  "wo koennte das brechen?")
             return h.id, q
 
-    # 2. a topic with claims but no evidence links at all (only a meaningful one is asked about).
-    for topic in sorted(cs.topics()):
+    # 2. a topic with claims but no evidence links at all - but only one Joni has actually earned
+    #    as a research direction (>=3 claims across >=2 independent sources), never a thin word
+    #    cluster or the "unsorted" sentinel. He does not ask the world about classification fails.
+    for topic in cs.research_topics():
         key = f"topic:{topic}"
         if key in asked or not quality.admissible_term(topic):
             continue
