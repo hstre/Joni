@@ -274,6 +274,14 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     act = _model_activity(extensions)
     assessments = _assessments(cs, days=days, spend=spend, topics_added=topics_added,
                                model_calls=act["granite"] + act["deepseek"] + act["kevin"])
+    # Joni records, once (sm_seen dedupes), that he understands what an Auftrag to Claude IS:
+    # in the first place a program change to himself - to his own non-core modules.
+    assessments = [*assessments, {
+        "text": "My commissions to Claude are first of all program changes to myself - to my own "
+                "non-core modules - never an external or abstract task.",
+        "evidence": [c.get("component_key", "") for c in extensions.get("commissions", [])
+                     if isinstance(c, dict)][:5],
+        "counterevidence": []}]
 
     # The first-person report (built before we mint, so it can read the prior metrics).
     sections = _narrative(cs, extensions, days=days, spend=spend, context=context)
