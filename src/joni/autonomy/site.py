@@ -110,6 +110,27 @@ def build(data: dict) -> str:
         f"<div class=asrow><span class=k>treated as</span> {esc(h.get('treated_as',''))}</div></li>"
         for h in reversed(heard)) or \
         "<li class=empty>no human input yet — inbox at state/forum_inbox.json</li>"
+
+    # Expert panel: what the Alexandria trio discussed the last time Joni was unsure.
+    panel = ext.get("panel_last") if isinstance(ext.get("panel_last"), dict) else {}
+    if isinstance(panel.get("phase3"), dict) and panel.get("phase3"):
+        proles = panel.get("roles", {}) if isinstance(panel.get("roles"), dict) else {}
+        voices = "".join(
+            f"<li><div><span class=chip>{esc(name)} &middot; "
+            f"{esc(proles.get(name, 'assessor'))}</span></div>"
+            f"<div class=asrow>{esc(text)}</div></li>"
+            for name, text in panel["phase3"].items()) or "<li class=empty>—</li>"
+        panel_block = (
+            "<div class=asrow><span class=k>unsicher bei</span> "
+            f"{esc(panel.get('question', '')).replace(chr(10), '<br>')}</div>"
+            f"<ul>{voices}</ul>"
+            "<div class=note>Phase&nbsp;3 (&uuml;ber Kreuz): jede Stimme rekonstruiert die "
+            "anderen; Dissens nur mit benannter abweichender Annahme. <b>Assessoren, keine "
+            "Autorit&auml;t</b> &mdash; sie beraten, <b>Joni entscheidet</b>; Widerspruch "
+            f"bleibt offen. Zyklus {esc(panel.get('cycle', ''))}.</div>")
+    else:
+        panel_block = ("<p class=empty>Noch keine Runde &mdash; das Trio wird nur einberufen, "
+                       "wenn Joni unsicher ist (ein offener Widerspruch, den er h&auml;lt).</p>")
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in s.get("topics", []))
     added = "".join(f"<span class='pill add'>{esc(t)}</span>"
                     for t in ext.get("topics_added", [])) or "<span class=empty>none yet</span>"
@@ -289,6 +310,10 @@ what is uncertain, what contradicts, and what changed.</p>
     {approve_note}
     <h3 style='margin:10px 0 4px'>Heard from people — and how it was treated</h3>
     <ul>{heard_html}</ul>
+  </div>
+  <div class="card full">
+    <h2>Expertenrunde — Alexandria, über Kreuz (berät; Joni entscheidet)</h2>
+    {panel_block}
   </div>
   <div class="card full">
     <h2>Protocol — append-only, newest first</h2>
