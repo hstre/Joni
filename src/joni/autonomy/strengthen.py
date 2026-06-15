@@ -72,8 +72,16 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     insufficient = dict(extensions.get("hyp_insufficient", {}))
     hollow = set(extensions.get("hyp_hollow", []))
     learned = list(extensions.get("learned_queries", []))
-    # rotate through hypotheses oldest-first so all get attention over time
-    chosen = sorted(hyps, key=lambda c: int(c.id.split("-")[-1]))[:max_hyp]
+    seen_cycle = dict(extensions.get("hyp_seen_cycle", {}))
+    # Fair rotation: attend the *least-recently-strengthened* hypotheses first (and non-hollow
+    # before hollow), so support spreads across all ideas. A fixed oldest-id order let the
+    # oldest hypothesis hog the only slot every cycle while the other 30 starved for evidence.
+    def _idnum(c) -> int:
+        return int(c.id.split("-")[-1])
+    chosen = sorted(hyps,
+                    key=lambda c: (c.id in hollow, seen_cycle.get(c.id, -1), _idnum(c)))[:max_hyp]
+    for h in chosen:
+        seen_cycle[h.id] = cycle
 
     for h in chosen:
         # a query so Joni actively seeks outside evidence about his own idea
@@ -160,4 +168,7 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     extensions["hyp_insufficient"] = dict(sorted(insufficient.items())[-4000:])
     extensions["hyp_hollow"] = sorted(hollow)[-1000:]
     extensions["learned_queries"] = learned[-8:]
+    # keep the rotation clock only for live hypotheses (drop ids that have left the set)
+    live_ids = {c.id for c in hyps}
+    extensions["hyp_seen_cycle"] = {k: v for k, v in seen_cycle.items() if k in live_ids}
     return out
