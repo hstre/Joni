@@ -32,3 +32,24 @@ def test_site_shows_heard_replies_as_sources():
          "text": "Dein Punkt ignoriert drift.", "treated_as": "source - not an authority"}]}))
     assert "agentX" in html and "drift" in html
     assert "not an authority" in html
+
+
+def test_site_shows_what_the_expert_panel_discussed():
+    html = site.build(_data({"panel_last": {
+        "question": "Joni holds two claims in a hard contradiction:\n- (C-5) routing is local\n"
+                    "- (C-6) routing is never local",
+        "roles": {"claude": "assessor", "chatgpt": "adversarial", "deepseek": "consistency"},
+        "phase3": {"claude": "Consistent only if 'local' is scoped to latency-bound tasks.",
+                   "chatgpt": "Counter-assumption: under cost pressure the second claim wins.",
+                   "deepseek": "The two resolve by separating the deployment assumption."},
+        "cycle": 42}}))
+    assert "Expertenrunde" in html
+    assert "assessor" in html and "adversarial" in html and "consistency" in html
+    assert "latency-bound tasks" in html                 # an actual assessment is shown
+    assert "Joni entscheidet" in html                    # advisory framing preserved
+
+
+def test_site_panel_card_is_empty_until_a_round_happens():
+    html = site.build(_data({}))
+    assert "Expertenrunde" in html
+    assert "Noch keine Runde" in html
