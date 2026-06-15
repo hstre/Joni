@@ -26,12 +26,20 @@ contradiction he cannot reconcile - not on a fixed schedule. If he is not unsure
 anything, no panel is called (and nothing is spent). A short cooldown keeps recurring
 uncertainty from bursting the panel, and the weekly budget is the hard cap.
 
+Joni convenes the panel **when he is genuinely unsure** (an open contradiction he holds) **or
+when Kevin proposes something** - a new method/lens or an invented cross-topic hypothesis. On a
+suggestion the panel assesses *whether it is a good idea, and why or why not* (under which
+assumptions it is sound vs where it breaks), so Joni gets an explained recommendation - never a
+decision. A short cooldown keeps it from bursting; the weekly budget is the hard cap.
+
 Three voices: **Claude** and **ChatGPT** via OpenRouter, **DeepSeek** via the DeepSeek key.
 Opt-in (``JONI_EXPERTS=1``) and budget-gated; otherwise a no-op.
 """
 from __future__ import annotations
 
 import os
+
+import desi_layer9 as l9
 
 _MIN_GAP = 5                      # at least this many cycles between panels (don't burst)
 _DEFAULT_COST_EUR = 0.15          # conservative flat charge per convened round (budget caps it)
@@ -165,18 +173,57 @@ def _uncertainty_point(cs, asked=()) -> tuple[str, str, str, str] | None:
     return None
 
 
+def _idnum(oid: str) -> int:
+    try:
+        return int(str(oid).split("-")[-1])
+    except (ValueError, AttributeError):
+        return 0
+
+
+def _suggestion_point(cs, asked=()) -> tuple[str, str, str, str] | None:
+    """A fresh creative suggestion worth assessing - **when Kevin proposes something**: a newly
+    proposed method/lens, else an invented cross-topic hypothesis. The panel is asked the plain
+    question Joni needs answered: *is this a good idea, and why or why not?* Already-assessed
+    suggestions (``asked``) are skipped. Returns (key, question, context, topic) or None."""
+    asked = set(asked)
+    ask = ("Beurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig "
+           "(was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - "
+           "eine begruendete Einschaetzung.")
+    # 1. a proposed method (a transferable lens Kevin would trial)
+    for m in sorted(cs.core.all(l9.ObjectType.METHOD), key=lambda o: _idnum(o.id), reverse=True):
+        key = f"method:{m.id}"
+        if key in asked:
+            continue
+        name = getattr(m, "name", m.id)
+        summ = getattr(m, "summary", "") or ""
+        applic = list(getattr(m, "applicable_to", ()) or ())
+        topic = applic[0] if applic else "panel"
+        q = f"Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"{name}\" - {summ}\n\n{ask}"
+        return key, q, f"kind: method suggestion; applicable to: {', '.join(applic)}", topic
+    # 2. an invented cross-topic hypothesis (a creative leap; its topic carries a '+')
+    for h in sorted(cs.hypotheses(), key=lambda c: _idnum(c.id), reverse=True):
+        key = f"hyp:{h.id}"
+        if key in asked or "+" not in (h.topic or ""):
+            continue
+        q = f"Kevin/Joni schlaegt eine Hypothese vor: \"{h.text}\"\n\n{ask}"
+        return key, q, f"topic: {h.topic}", (h.topic or "panel")
+    return None
+
+
 def maybe_convene(cs, extensions: dict, proto, budget, cycle: int, *,
                   runs_per_week: int = 672) -> dict:
-    """Convene the panel **when Joni is unsure** (an open contradiction he holds) and take its
-    assessments in as SOURCES. Opt-in (JONI_EXPERTS=1), cooldown-spaced, within budget. Joni
-    decides - never the panel. No uncertainty -> no panel, nothing spent."""
+    """Convene the panel **when Joni is unsure** (an open contradiction he holds) **or when Kevin
+    proposes something** (a method/lens or invented hypothesis - assessed as a good/bad idea with
+    reasons) and take its assessments in as SOURCES. Opt-in (JONI_EXPERTS=1), cooldown-spaced,
+    within budget. Joni decides - never the panel. Nothing to assess -> no panel, nothing spent."""
     out = {"convened": False, "question": None, "experts": [], "calls": 0}
     if not enabled():
         return out
     asked = set(extensions.get("panel_asked", []))
-    dp = _uncertainty_point(cs, asked)          # first un-assessed uncertainty, hardest first
+    # convene on a held uncertainty first, else on a fresh Kevin suggestion to assess
+    dp = _uncertainty_point(cs, asked) or _suggestion_point(cs, asked)
     if dp is None:
-        return out                              # not unsure about anything new -> no panel
+        return out                              # nothing unsure and nothing new to assess
     key, question, context, topic = dp
     # Uncertainty can recur every cycle; a short cooldown keeps the panel from bursting.
     last = extensions.get("panel_last_cycle")
