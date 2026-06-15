@@ -35,6 +35,7 @@ from . import (
     homeostasis,
     humans,
     invent,
+    kevin_llm,
     layer9_view,
     methods,
     model_call,
@@ -237,6 +238,11 @@ def one_cycle() -> dict:
     #     auto-confirmed). Joni does not only react to sources.
     invented = invent.invent(cs, extensions, proto, cycle)
 
+    # 4c-kevin. Kevin's creative arm (opt-in, cadence-spaced): his own deepseek-v4-pro profile
+    #     proposes a bold cross-domain transfer hypothesis from two of Joni's topics. Candidate
+    #     through the gate, captured. Distinct from his deterministic method trials above.
+    kevin_proposed = kevin_llm.propose(cs, extensions, proto, cycle)
+
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
     emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
@@ -333,7 +339,8 @@ def one_cycle() -> dict:
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
             "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io,
-            "research": research, "projected": projected, "escalated": escalated}
+            "research": research, "projected": projected, "escalated": escalated,
+            "kevin_proposed": kevin_proposed}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:

@@ -1,0 +1,87 @@
+"""Kevin, for real - creative cross-domain transfer over his own pinned model.
+
+Until now Kevin only ran deterministic transfer *trials* (``trials.py`` / ``kevin.trial_runner``)
+on the method shelf; his ``deepseek-v4-pro`` profile was defined but never actually called, so
+the telemetry showed zero Kevin calls. This wires Kevin's creative arm: given a slice of Joni's
+claims across two different topics, Kevin (warm sampling, his own profile - NOT Joni's structured
+projector) proposes a **bold but testable cross-domain transfer hypothesis** - an insight or
+method from one area that might apply to the other.
+
+Like every model output here it is only a **proposal**: it enters Layer 9 as a ``candidate``
+hypothesis through the normal gate (derived from the two seed claims, never auto-confirmed), and
+the call is fully captured (``model_call.py``) so it is replay-stable and shows up in the
+dashboard telemetry as a Kevin call.
+
+Rides the same master switch as the rest of the semantic layer (``JONI_SEMANTIC_PROPOSALS``),
+with its own opt-out and a cadence so a creative leap is a deliberate, bounded act - not an
+every-cycle spend.
+"""
+
+from __future__ import annotations
+
+import os
+
+from . import model_call, model_profile, projection, quality
+from .config import paths
+
+_SYS = (
+    "You are Kevin, a creative research partner for an epistemic reasoning agent. You are given "
+    "some of the agent's current claims across TWO different topics. Propose a bold but TESTABLE "
+    "cross-domain transfer: an insight, mechanism or method from one topic that might apply to "
+    "the other. Output ONLY a JSON array of at most 2 objects {\"text\": <one falsifiable "
+    "conjecture linking the two domains>, \"topic\": <short topic>}. Each is a single declarative, "
+    "checkable statement - creative but concrete, no opinions, no meta-commentary, no questions.")
+
+
+def enabled() -> bool:
+    return projection.enabled() and os.getenv("JONI_KEVIN_LLM", "1") != "0"
+
+
+def _every() -> int:
+    """Cadence: Kevin's creative call fires at most once per this many cycles (a deliberate leap,
+    not an every-cycle spend). Env-dialled."""
+    return max(1, int(os.getenv("JONI_KEVIN_EVERY", "3")))
+
+
+def propose(cs, extensions: dict, proto, cycle: int) -> dict:
+    """Once per cadence, let Kevin propose a cross-domain transfer hypothesis via his pinned
+    ``deepseek-v4-pro`` profile. Candidate through the gate, captured for replay. No-op when
+    disabled, not yet due, or fewer than two good topics exist."""
+    out = {"kevin_calls": 0, "hypotheses": 0}
+    if not enabled():
+        return out
+    last = extensions.get("kevin_last_cycle")
+    if last is not None and cycle - last < _every():
+        return out
+    topics = [t for t in cs.topics() if quality.is_good_topic(t)]
+    if len(topics) < 2:
+        return out
+    ta, tb = topics[0], topics[1]
+    claims_a, claims_b = cs.claims_on(ta), cs.claims_on(tb)
+    if not claims_a or not claims_b:
+        return out
+    sa = "\n".join(f"- {c.text}" for c in claims_a[:3])
+    sb = "\n".join(f"- {c.text}" for c in claims_b[:3])
+    user = (f"TOPIC A ({ta}):\n{sa}\n\nTOPIC B ({tb}):\n{sb}\n\n"
+            "Propose a cross-domain transfer hypothesis linking A and B.")
+    prof = model_profile.profile("kevin")
+    output, cap = model_call.call(prof, _SYS, user, run_id=f"kevin-c{cycle}",
+                                  store_dir=paths().model_calls)
+    if output is None or cap is None:
+        return out
+    props = projection._parse(output, f"{ta}+{tb}")
+    parents = (claims_a[0].id, claims_b[0].id)
+    for p in props[:2]:
+        cs.hypothesize(p["text"], p["topic"], parents=parents)
+        out["hypotheses"] += 1
+    out["kevin_calls"] = 1
+    extensions["kevin_last_cycle"] = cycle
+    log = extensions.setdefault("kevin_llm", [])
+    log.append({"call_id": cap.call_id, "served_model": cap.served_model,
+                "topics": [ta, tb], "hypotheses": len(props), "replayed": cap.replayed})
+    extensions["kevin_llm"] = log[-200:]
+    proto.record(cycle, "kevin",
+                 f"Kevin ({cap.served_model}) proposed {len(props)} cross-domain hypothesis(es) "
+                 f"[{ta} × {tb}, replayed={cap.replayed}] - candidate(s) via the gate, "
+                 "Joni decides")
+    return out
