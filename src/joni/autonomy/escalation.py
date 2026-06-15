@@ -141,11 +141,37 @@ def _focus(cs) -> tuple[str, str]:
             topics[0] if topics else "unsorted")
 
 
+def _backoff_window() -> int:
+    return max(1, int(os.getenv("JONI_ESCALATE_BACKOFF", "3")))
+
+
+def _novel_hard_conflict(cs, escalated: set):
+    """A *new* hard, genuinely-contradictory conflict worth a DeepSeek round (review #6): hard
+    severity, not already escalated, and not a numeric-only paraphrase that slipped through.
+    Novelty is the practical 'expected information gain' proxy - re-escalating the same or a soft
+    or a numeric conflict spends money for nothing. Returns (conflict_id, focus, topic) or None."""
+    from .core_state import _numeric_only_difference
+    by_id = {c.id: (c.text, c.topic) for c in cs.core.all(l9.ObjectType.CLAIM)}
+    for conf in sorted(cs.core.open_conflicts(), key=lambda c: c.id):
+        if conf.id in escalated or getattr(conf, "severity", "soft") != "hard":
+            continue
+        ids = [i for i in conf.claim_ids[:2] if i in by_id]
+        if len(ids) != 2:
+            continue
+        (ta, topa), (tb, _) = by_id[ids[0]], by_id[ids[1]]
+        if _numeric_only_difference(ta, tb):
+            continue
+        return conf.id, f"Contradiction:\n- A: {ta}\n- B: {tb}", topa or "unsorted"
+    return None
+
+
 def escalate_if_needed(cs, extensions: dict, proto, cycle: int, *,
                        risky_transition: bool = False) -> dict:
-    """Run at most one DeepSeek escalation when a named rule fires. The escalation's output, like
-    Granite's, enters Layer 9 as ``candidate`` SOURCE proposals (never authoritative). No-op when
-    disabled or when no rule fires - DeepSeek is never reached without a recorded reason."""
+    """Run at most one DeepSeek escalation when a named rule fires AND it is worth it. The
+    escalation's output, like Granite's, enters Layer 9 as ``candidate`` SOURCE proposals (never
+    authoritative). DeepSeek is reached only for a NEW hard contradiction, or (when not backing
+    off) a coverage/underspecified gap - never the same conflict twice, never a soft or numeric
+    one, and not at all after repeated empty escalations."""
     out = {"escalated": 0, "reason": None, "claims": 0}
     if not enabled():
         return out
@@ -153,7 +179,24 @@ def escalate_if_needed(cs, extensions: dict, proto, cycle: int, *,
     why = reason(sig)
     if why is None:
         return out
-    focus, topic = _focus(cs)
+
+    escalated = set(extensions.get("escalated_conflicts", []))
+    recent = extensions.get("escalations", [])[-_backoff_window():]
+    backoff = len(recent) >= _backoff_window() and all(r.get("claims", 0) == 0 for r in recent)
+
+    conflict_id = None
+    novel = None if risky_transition else _novel_hard_conflict(cs, escalated)
+    if novel is not None:
+        conflict_id, focus, topic = novel
+        why = CONTESTED                                  # a concrete, new contradiction
+    elif backoff:
+        proto.record(cycle, "note", "DeepSeek escalation stood down (repeated empty rounds, no "
+                                    "new hard contradiction) - not spending on a stale conflict")
+        return out                                       # don't burn money re-chewing the same load
+    elif why in (LOW_EVIDENCE_COVERAGE, UNDERSPECIFIED, UNCLEAR_SCOPE, RISKY_STATUS_TRANSITION):
+        focus, topic = _focus(cs)
+    else:                                                # high load / contested but nothing NEW
+        return out
     prof = model_profile.profile("joni-hard")
     context = projection.state_slice(cs, focus, k=prof.state_k)
     ctx = "\n".join(f"- {t}" for t in context) or "(none yet)"
@@ -170,9 +213,13 @@ def escalate_if_needed(cs, extensions: dict, proto, cycle: int, *,
         out["claims"] += 1
     out["escalated"] = 1
     out["reason"] = why
+    if conflict_id is not None:                          # never escalate the same conflict twice
+        escalated.add(conflict_id)
+        extensions["escalated_conflicts"] = sorted(escalated)[-500:]
     log = extensions.setdefault("escalations", [])
     log.append({"call_id": cap.call_id, "served_model": cap.served_model, "reason": why,
-                "state_k": cap.state_k, "replayed": cap.replayed, "claims": len(props)})
+                "state_k": cap.state_k, "replayed": cap.replayed, "claims": len(props),
+                "conflict": conflict_id})
     extensions["escalations"] = log[-200:]
     proto.record(cycle, "escalated",
                  f"DeepSeek escalation [{why}] proposed {len(props)} claim(s) "

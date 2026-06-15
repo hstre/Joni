@@ -43,6 +43,14 @@ def _every() -> int:
     return max(1, int(os.getenv("JONI_KEVIN_EVERY", "3")))
 
 
+def _kevin_usable(cs, topic: str) -> bool:
+    """A topic carries enough real, non-trivial material for a far-analogy: at least two
+    non-synthetic claims (not Joni's own bookkeeping 'X recurs as a through-line' lines)."""
+    from .emerge import _is_synthetic
+    real = [c for c in cs.claims_on(topic) if not _is_synthetic(c.text)]
+    return len(real) >= 2
+
+
 def propose(cs, extensions: dict, proto, cycle: int) -> dict:
     """Once per cadence, let Kevin propose a cross-domain transfer hypothesis via his pinned
     ``deepseek-v4-pro`` profile. Candidate through the gate, captured for replay. No-op when
@@ -53,10 +61,11 @@ def propose(cs, extensions: dict, proto, cycle: int) -> dict:
     last = extensions.get("kevin_last_cycle")
     if last is not None and cycle - last < _every():
         return out
-    # Kevin's job is far-analogy, not junk-refinement: only set him on topics that earned the
-    # status of a research direction (>=3 claims across >=2 independent sources), never on
-    # 'unsorted', a thin word cluster, or a one-source fluke.
-    topics = cs.research_topics()
+    # Kevin's job is far-analogy, not junk-refinement (review #7). Only set him on topics that
+    # (a) earned research status (>=3 claims across >=2 independent sources - never 'unsorted', a
+    # thin word cluster, or a one-source fluke) AND (b) carry real, non-trivial material: at least
+    # two non-synthetic claims (not Joni's own "X recurs as a through-line" bookkeeping).
+    topics = [t for t in cs.research_topics() if _kevin_usable(cs, t)]
     if len(topics) < 2:
         return out
     ta, tb = topics[0], topics[1]

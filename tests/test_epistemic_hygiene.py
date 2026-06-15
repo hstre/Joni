@@ -56,3 +56,40 @@ def test_a_real_negation_stays_a_hard_conflict():
     cs.detect_and_open_conflicts()
     conflicts = cs.core.all(l9.ObjectType.CONFLICT)
     assert conflicts and any(c.severity == "hard" for c in conflicts)   # negation is not a dup
+
+
+# -- P10: honest epistemically-usable, not a generous 100% ---------------------------------- #
+def test_epistemic_usability_is_honest_about_duplicates():
+    cs = CoreState(l9.Layer9())
+    cs.learn("routing reduces latency", "routing", source_id="arxiv:1")
+    cs.learn("routing reduces latency", "routing", source_id="arxiv:2")   # exact-dup text
+    cs.learn("memory helps continuity", "memory", source_id="arxiv:3")
+    u = cs.epistemic_usability()
+    assert u["n"] == 3 and u["rate"] < 1.0                  # the duplicate pulls it below 100%
+    assert u["flags"]["non_duplicate"] == 1                 # only one of the three is unique
+
+
+# -- P5: independence and derivation depth ------------------------------------------------- #
+def test_independent_source_count_and_derivation_depth():
+    cs = CoreState(l9.Layer9())
+    h = cs.hypothesize("routing transfers to memory", "routing")
+    a = cs.learn("supporter A", "routing", source_id="arxiv:a")
+    b = cs.learn("supporter B", "routing", source_id="arxiv:b")
+    cs.corroborate(h, cs.core.get(a), relation="supports")
+    cs.corroborate(h, cs.core.get(b), relation="supports")
+    assert cs.independent_source_count(h) == 2              # two distinct papers
+    # three claims from ONE thread are not three independent sources
+    cs2 = CoreState(l9.Layer9())
+    hh = cs2.hypothesize("x", "routing")
+    for _ in range(3):
+        c = cs2.learn("same-thread supporter", "routing", source_id="moltbook:T1")
+        cs2.corroborate(hh, cs2.core.get(c), relation="supports")
+    assert cs2.independent_source_count(hh) == 1
+
+
+def test_accepted_proposal_count_tracks_model_origin_claims():
+    cs = CoreState(l9.Layer9())
+    cs.learn("a granite-proposed claim", "routing", source_id="granite:call-1")
+    cs.learn("a deepseek-proposed claim", "routing", source_id="deepseek:call-2")
+    cs.learn("a plain paper claim", "routing", source_id="arxiv:9")
+    assert cs.proposal_accepted_count() == 2                # only the model-proposed, gated claims

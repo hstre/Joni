@@ -49,6 +49,7 @@ def _source_family(obj) -> str:
 
 
 _NUM = re.compile(r"\d+(?:\.\d+)?")
+_VIA = re.compile(r"\bvia\s+([A-Za-z]+-\d+)")
 
 
 def _numeric_discrepancy(a: str, b: str) -> bool:
@@ -304,6 +305,93 @@ class CoreState:
         return opened
 
     # -- snapshot for the site ---------------------------------------------- #
+    def supporter_families(self, claim_id: str) -> tuple[set[str], int]:
+        """(independent source families, external evidence cards) backing a claim. A support that
+        points at another claim contributes that claim's source family (so two claims from one
+        paper/run/thread count once); a support not derived from a claim is an external card. This
+        is the single source of truth for source-independence (used by promotion and the export)."""
+        ev_by_id = {e.id: e for e in self.core.all(l9.ObjectType.EVIDENCE)}
+        claim_by_id = {c.id: c for c in self.core.all(l9.ObjectType.CLAIM)}
+        families: set[str] = set()
+        external = 0
+        for el in self.core.all(l9.ObjectType.EVIDENCE_LINK):
+            if el.claim_id != claim_id or el.relation.value not in ("supports", "contextualizes"):
+                continue
+            ev = ev_by_id.get(el.evidence_id)
+            m = _VIA.search(getattr(ev, "content", "") or "")
+            supporter = claim_by_id.get(m.group(1)) if m else None
+            if supporter is not None:
+                families.add(_source_family(supporter))
+            else:
+                external += 1
+                sid = getattr(ev, "source_id", None)
+                families.add(f"src:{sid}" if sid else f"ext:{el.id}")
+        return families, external
+
+    def independent_source_count(self, claim_id: str) -> int:
+        fams, _ = self.supporter_families(claim_id)
+        return len(fams)
+
+    def proposal_accepted_count(self) -> int:
+        """Live claims that originated from a semantic-model proposal (Granite/DeepSeek) and made
+        it through the gate - the numerator for 'how many calls actually produced an accepted
+        epistemic object' (review #9). Kevin's are candidate hypotheses, counted separately."""
+        n = 0
+        for c in self._live_claims():
+            sids = getattr(c.provenance, "source_ids", ()) or ()
+            if any(str(s).startswith(("granite:", "deepseek:")) for s in sids):
+                n += 1
+        return n
+
+    def derivation_depth(self, claim, _seen: set | None = None) -> int:
+        """How deep a claim's derivation chain runs (0 = a root, source-anchored claim). A deep
+        chain with no fresh source is a warning sign of self-referential growth."""
+        by_id = {c.id: c for c in self.core.all(l9.ObjectType.CLAIM)}
+        seen = _seen or set()
+        parents = [by_id[p] for p in (getattr(claim, "derived_from", ()) or ())
+                   if p in by_id and p not in seen]
+        if not parents:
+            return 0
+        seen = seen | {claim.id}
+        return 1 + max(self.derivation_depth(p, seen) for p in parents)
+
+    def epistemic_usability(self) -> dict:
+        """The honest quality metric (review #10): a claim is *epistemically usable* only if it is
+        correctly typed AND source-anchored AND non-duplicate AND topic-valid AND scope-valid AND
+        provenance-complete. Far stricter than 'not insufficient-semantic-evidence', so it stops
+        showing 100% while junk topics and unsupported ideas sit in the state."""
+        from collections import Counter
+
+        from . import quality
+        active = self._live_claims()
+        keys = ("correctly_typed", "source_anchored", "non_duplicate",
+                "topic_valid", "scope_valid", "provenance_complete")
+        flags = dict.fromkeys(keys, 0)
+        if not active:
+            return {"rate": 1.0, "n": 0, "flags": flags}
+
+        def _norm(t: str) -> str:
+            return " ".join((t or "").lower().split())
+        dup_counts = Counter(_norm(c.text) for c in active)
+        usable = 0
+        for c in active:
+            prov = getattr(c, "provenance", None)
+            sids = tuple(getattr(prov, "source_ids", ()) or ()) if prov else ()
+            origin = getattr(getattr(prov, "origin_type", None), "value", "") if prov else ""
+            f = {
+                "correctly_typed": bool((c.text or "").strip()) and bool((c.topic or "").strip()),
+                "source_anchored": bool(sids) or bool(getattr(c, "derived_from", ()) or ()),
+                "non_duplicate": dup_counts[_norm(c.text)] <= 1,
+                "topic_valid": quality.is_good_topic(c.topic or ""),
+                "scope_valid": bool(c.topic) and not quality.is_reserved_topic(c.topic or ""),
+                "provenance_complete": bool(origin) and (bool(sids) or origin in
+                                                         ("operator", "human")),
+            }
+            for k, v in f.items():
+                flags[k] += int(v)
+            usable += int(all(f.values()))
+        return {"rate": round(usable / len(active), 3), "n": len(active), "flags": flags}
+
     def snapshot(self) -> dict:
         s = self.core
         ms = s.all(l9.ObjectType.METHOD)
@@ -325,6 +413,8 @@ class CoreState:
             "evidence_links": len(s.all(l9.ObjectType.EVIDENCE_LINK)),
             "self_model": len(s.all(l9.ObjectType.SELF_MODEL_CLAIM)),
             "hypotheses": len(self.hypotheses()),
+            "research_topics": len(self.research_topics()),
+            "epistemically_usable": self.epistemic_usability(),
         }
 
     # -- rich export for the human-facing Layer-9 map ----------------------- #
@@ -355,6 +445,14 @@ class CoreState:
                 "salience": ref_count.get(c.id, 0),
                 "evidence_strength": round(sum(el.strength for el in links), 3),
                 "evidence_count": len(links),
+                # review #5: count *independent* backing, not raw evidence_count (three claims
+                # from one Moltbook thread are not three evidences), plus how deep the derivation
+                # chain runs and the originating model family/provider where known.
+                "independent_source_count": self.independent_source_count(c.id),
+                "derivation_depth": self.derivation_depth(c),
+                "origin_family": _source_family(c),
+                "model_family": getattr(c.provenance, "model_id", "") or "",
+                "provider": getattr(c.provenance, "provider", "") or "",
                 "taint": taint_flags(c), "derived_from": list(c.derived_from),
                 "ledger_event": c.ledger_event, "tick": c.last_changed_tick,
             })

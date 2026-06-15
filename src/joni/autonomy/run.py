@@ -407,6 +407,18 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
     budget_d = {"spent_eur": budget.spent_eur, "cap_eur": budget.cap_eur, "runs": budget.runs}
     tele = model_call.telemetry(p.model_calls)
     tele["panel_rounds"] = len(extensions.get("panel_asked", []))
+    # Review #9: consistent cost/value accounting from ONE source. Separate the reserved budget
+    # (the cap) and the deterministic/panel spend (budget.spent_eur) from the estimated semantic
+    # API cost (telemetry), and report what actually matters: how many live calls produced an
+    # accepted epistemic object.
+    tele["reserved_budget_eur"] = round(budget.cap_eur, 4)
+    tele["spent_budget_eur"] = round(budget.spent_eur, 4)
+    accepted = cs.proposal_accepted_count()
+    live = tele.get("live_calls", 0)
+    tele["accepted_claims"] = accepted
+    tele["accepted_per_live_call"] = round(accepted / live, 3) if live else 0.0
+    tele["est_cost_per_accepted_eur"] = (round(tele["est_cost_eur"] / accepted, 4)
+                                         if accepted else 0.0)
     site.render(p.docs_index, p.docs_data, {
         "snapshot": snap,
         "budget": budget_d,

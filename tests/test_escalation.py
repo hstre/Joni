@@ -82,6 +82,27 @@ def test_escalation_calls_deepseek_with_a_recorded_reason(monkeypatch, tmp_path)
     assert ext["escalations"][0]["reason"] == out["reason"]
 
 
+def test_same_conflict_is_not_escalated_twice_and_backs_off(monkeypatch, tmp_path):
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    monkeypatch.setenv("JONI_ESCALATE_BACKOFF", "2")
+    # DeepSeek returns nothing useful (0 claims) - exactly the '14 escalations, 0 claims' case
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u: "[]")
+
+    cs = CoreState(seed_core())
+    cs.learn("local routing reduces latency", "routing")
+    cs.learn("local routing does not reduce latency", "routing")
+    assert cs.detect_and_open_conflicts()                  # one hard contradiction
+    ext: dict = {}
+    first = escalation.escalate_if_needed(cs, ext, _Proto(), 1)
+    assert first["escalated"] == 1                          # the new hard conflict is escalated
+    assert ext["escalated_conflicts"]                       # and recorded so it is not repeated
+    # no NEW hard conflict + repeated empty rounds -> it stands down instead of re-spending
+    ext.setdefault("escalations", []).append({"claims": 0})
+    second = escalation.escalate_if_needed(cs, ext, _Proto(), 2)
+    assert second["escalated"] == 0
+
+
 def test_capture_persists_the_escalation_reason(monkeypatch, tmp_path):
     from joni.autonomy import model_profile
 
