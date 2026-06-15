@@ -58,6 +58,7 @@ from .config import (
     weekly_budget_eur,
 )
 from .improve import derive, judge, structured_ask
+from .improve import gate_core_asks as improve_gate
 from .protocol import Protocol
 from .sources import get_fetchers
 
@@ -174,18 +175,32 @@ def one_cycle() -> dict:
 
     # 4. Improvements, split by governance (peripheral ones applied via the gate).
     asks_new: list = []
-    for imp in derive(cs, judged):
+    improvements = list(derive(cs, judged))
+    # A core-ask only fires when the trigger has *recurred* across cycles - a single paper that
+    # merely mentions a core word is noise, not a reason to interrupt a human.
+    allowed_core = improve_gate(extensions,
+                                [imp.target for imp in improvements if not imp.autonomous], cycle)
+    raised: set = set()
+    held: list = []
+    for imp in improvements:
         if imp.autonomous:
             refs = _apply(cs, extensions, imp)
             proto.record(cycle, "improved", f"{imp.kind}: {imp.title[:80]}",
                          refs={**refs, "source": imp.source_key, "url": imp.source_url})
-        else:
+        elif imp.target in allowed_core and imp.target not in raised:
             ask = structured_ask(imp, cycle)
             extensions["asks"].append(ask)
             asks_new.append(ask)
+            raised.add(imp.target)
             proto.record(cycle, "asked",
                          f"core observation needs a human: {ask['component']} ({imp.title[:50]})",
                          refs={"url": imp.source_url})
+        else:
+            held.append(imp.target)
+    if held:
+        held_list = ", ".join(sorted(set(held)))
+        proto.record(cycle, "note",
+                     f"core observation(s) held (not yet sustained): {held_list}")
 
     extensions["seen"] = sorted(seen)[-2000:]   # bound the dedup set
 
