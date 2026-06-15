@@ -29,6 +29,7 @@ from desi_layer9.semantics import adapter
 from desi_layer9.semantics.ports import NullSemanticLayer
 
 from ..conflict import _content
+from . import quality
 
 # Structural / meta words from Joni's own generated text - never a real emergent topic.
 _META = frozenset({
@@ -60,8 +61,8 @@ def _term_index(claims) -> dict[str, dict]:
         if not c.topic or _is_synthetic(c.text):
             continue
         for w in _content(c.text):
-            if w in _META:
-                continue
+            if w in _META or not quality.is_meaningful_term(w):
+                continue                        # quality gate: no stopwords / artifact tokens
             entry = idx[w]
             entry["topics"].add(c.topic)
             entry["claims"].append(c)
@@ -115,7 +116,7 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
         if not c.topic or _is_synthetic(c.text):
             continue
         for w in _content(c.text):
-            if w not in _META:
+            if w not in _META and quality.is_meaningful_term(w):
                 by_topic_term[(c.topic, w)].append(c)
     for (topic, term), cluster in sorted(by_topic_term.items(),
                                          key=lambda kv: (-len(kv[1]), kv[0])):
