@@ -67,9 +67,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}       # for `gh` (filing asks)
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          # The Alexandria expert trio (JONI_EXPERTS=1) is kept OFF to avoid API spend. The
-          # logic is uncertainty-driven and ready; flip it on when the budget allows. Until
-          # then the operator handles uncertainty by invoking Claude directly.
+          # Alexandria expert trio (Claude/ChatGPT via OpenRouter, DeepSeek via its key): Joni
+          # consults it automatically when he is genuinely unsure (an open contradiction he
+          # holds). Advice only - they never decide. OpenRouter is prepaid; spend is cooldown-
+          # spaced and hard-capped by the weekly budget.
+          JONI_EXPERTS: "1"
           # Moltbook is an agent-only network: let Joni post APPROVED drafts there directly.
           # Still gated by approval; human forums (no live adapter) keep waiting for a human.
           JONI_FORUM_LIVE: "1"
