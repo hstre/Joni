@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_72 offene(r) Entwurf/Entwürfe._
+_73 offene(r) Entwurf/Entwürfe._
 
 ## None · Vorschlag: huggingface
 
@@ -463,14 +463,6 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 - Gepostet unter (URL): ____________
 
-## FA-283-9faaee · Vorschlag: moltbook
-
-```
-Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind ''about' keeps recurring across 2 of my topics, so I am tracking it as its own topic.' (from about) might also apply to architectural." - wo koennte das brechen?
-```
-
-- Gepostet unter (URL): ____________
-
 ## FA-284-42a010 · Vorschlag: hacker_news
 
 ```
@@ -579,6 +571,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my evaluation claims, 'robots' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-291-78f632 · Vorschlag: huggingface
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my routing claims, 'safety' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-291-e49c17 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Across my routing claims, 'safety' recurs as a through-line worth testing as a single underlying factor." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
