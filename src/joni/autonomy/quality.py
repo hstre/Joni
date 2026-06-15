@@ -15,7 +15,37 @@ vowelless/acronym fragments, and - via ``invent`` - bridging on Joni's own bookk
 
 from __future__ import annotations
 
+import os
 import re
+
+# Domain-consistency reference anchors (the user's "Referenzdefinitionen"). A recurring term is
+# off-domain when it is *clearly closer* to an off-domain anchor than to any in-domain one - that
+# catches an off-domain real word ('cotton', 'glioma') that the lexical filter cannot. Contrastive
+# (in vs out) rather than an absolute threshold, so it is robust and conservative.
+DOMAIN_ANCHORS = (
+    "large language models and AI agents",
+    "model routing, inference and serving",
+    "memory and continuity for autonomous agents",
+    "alignment and safety of AI systems",
+    "evaluation and benchmarking of machine learning models",
+    "retrieval, calibration and distillation in machine learning",
+    "reasoning, epistemics, claims, evidence and provenance",
+    "semantic similarity, embeddings and knowledge representation",
+    "software engineering, code and distributed systems",
+    "data drift, privacy and robustness in machine learning",
+)
+OFFDOMAIN_ANCHORS = (
+    "cotton, textiles, farming and agriculture",
+    "clinical medicine, oncology and human disease",
+    "geology, minerals and earth science",
+    "cooking, food and recipes",
+    "sports, games and athletics",
+    "finance, banking and accounting",
+    "music, painting and entertainment",
+    "plants, animals and wildlife biology",
+    "history, politics and law",
+    "astronomy, planets and the cosmos",
+)
 
 # Function words, generic qualifiers, and ML-paper filler - none of which names a concept Joni
 # could actually develop. Domain terms (routing, alignment, calibration, retrieval, ...) are
@@ -81,3 +111,35 @@ def is_substantive_hypothesis(text: str) -> bool:
     through-line about 'cotton' or 'about' is held back from external communication."""
     subs = subject_terms(text)
     return all(is_meaningful_term(s) for s in subs) if subs else True
+
+
+def on_domain(term: str, *, margin: float | None = None) -> bool:
+    """Is this term within Joni's actual subject matter? Contrastive embedding check against
+    reference anchors. **Fail-open**: with no embedder (or an unreadable one) it returns True -
+    a measurement is never substituted by a lexical guess. A term is rejected only when it is
+    *clearly* closer to an off-domain anchor than to any in-domain one."""
+    from . import embeddings
+    if not embeddings.available():
+        return True
+    probe = f"the concept of {(term or '').strip().lower()}"
+
+    def _nearest(anchors) -> float | None:
+        ds = [d for d in (embeddings.cosine_distance(probe, a) for a in anchors) if d is not None]
+        return min(ds) if ds else None
+
+    d_in, d_out = _nearest(DOMAIN_ANCHORS), _nearest(OFFDOMAIN_ANCHORS)
+    if d_in is None or d_out is None:
+        return True
+    m = margin if margin is not None else float(os.getenv("JONI_DOMAIN_MARGIN", "0.04"))
+    return not (d_out + m < d_in)              # reject only when clearly off-domain
+
+
+def admissible_term(term: str) -> bool:
+    """A term may seed structure only if it is both lexically meaningful and on-domain."""
+    return is_meaningful_term(term) and on_domain(term)
+
+
+def hypothesis_admissible(text: str) -> bool:
+    """A hypothesis may be carried outside only if it is substantive and its named subjects are
+    on-domain (so an off-domain real word like 'cotton' is held back too)."""
+    return is_substantive_hypothesis(text) and all(on_domain(s) for s in subject_terms(text))
