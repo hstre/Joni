@@ -495,7 +495,9 @@
     "zenodo:20708514",
     "zenodo:20708522",
     "zenodo:20708530",
-    "zenodo:20708598"
+    "zenodo:20708564",
+    "zenodo:20708598",
+    "zenodo:20708636"
   ],
   "semantic_calls": [
     {
@@ -713,6 +715,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708522"
+    },
+    {
+      "call_id": "joni-c23:d669c552d311",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708636"
+    },
+    {
+      "call_id": "joni-c23:bf73e5a702cd",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708564"
     }
   ],
   "pdf_read": [
@@ -907,6 +925,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c23:23eb1e424ce8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -921,9 +947,10 @@
     "zenodo:20707998",
     "zenodo:20708062",
     "zenodo:20708085",
-    "zenodo:20708530"
+    "zenodo:20708530",
+    "zenodo:20708564"
   ],
-  "method_trials_total": 163,
+  "method_trials_total": 171,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -1013,6 +1040,7 @@
     "inconsistency",
     "information",
     "multimodal",
+    "outputs",
     "principle",
     "reasoning",
     "representation",
@@ -1051,6 +1079,7 @@
     "forum|variance",
     "forum|vertical",
     "memory|capacity",
+    "memory|constant",
     "memory|convex",
     "memory|couple-conflict",
     "memory|geometric",
@@ -1073,6 +1102,7 @@
     "unsorted|representation"
   ],
   "emerged_methods": [
+    "accuracy",
     "agent",
     "alignment",
     "anthology",
@@ -1086,7 +1116,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "memory|change": 1,
+    "memory|change": 2,
     "meth:existing": 2
   },
   "hyp_tested": [
@@ -1150,19 +1180,19 @@
     "C-51"
   ],
   "learned_queries": [
-    "forum+memory tasks",
-    "unsorted across",
-    "memory claims",
-    "memory testing",
     "drift+memory drift",
     "drift+memory hypothesis",
     "memory single",
-    "memory memory"
+    "memory memory",
+    "memory constant",
+    "memory underlying",
+    "coverage evaluation with privacy through-line",
+    "coverage evaluation with privacy underlying"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
     "C-51": 22,
-    "C-126": 2,
+    "C-126": 23,
     "C-142": 3,
     "C-170": 4,
     "C-173": 5,
@@ -1190,7 +1220,8 @@
     "C-311": 20,
     "C-313": 20,
     "C-333": 21,
-    "C-347": 22
+    "C-347": 22,
+    "C-361": 23
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1216,6 +1247,7 @@
     "C-313",
     "C-333",
     "C-347",
+    "C-361",
     "C-49",
     "C-51"
   ],
@@ -1235,35 +1267,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "developing",
-    "development": 3,
-    "degeneration": 0,
-    "active": 183,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 1,
+    "active": 186,
     "hypotheses": 31,
     "unsupported_hypotheses": 24,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
     "evidence_links": 23,
     "supporting_links": 23,
-    "emergent_total": 82,
+    "emergent_total": 85,
     "usable_semantic_rate": 1.0,
     "methods_total": 13,
-    "method_trials_total": 163,
+    "method_trials_total": 171,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 2800,
-    "cycle": 22
+    "stagnation_cycles": 1,
+    "objects": 2920,
+    "cycle": 23
   },
   "vitality_prev": {
     "supports": 23,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 2800,
-    "active": 183,
+    "objects": 2920,
+    "active": 186,
     "links": 23,
-    "emergent": 82
+    "emergent": 85
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1418,12 +1450,19 @@
       "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 23,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 19,
+    "starved_topic": 20,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
