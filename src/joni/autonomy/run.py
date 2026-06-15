@@ -251,9 +251,10 @@ def one_cycle() -> dict:
     human_io = humans.interact(cs, extensions, proto, cycle, paths=p,
                                platforms=forum_platforms(), live=forum_live())
 
-    # 4j. Alexandria assessment panel (opt-in, budget-gated): occasionally three models
-    #     cross-assess one hard open question (assessors, not authorities). Their judgements
-    #     enter as SOURCES, dissent preserved - Joni decides, never the panel.
+    # 4j. Alexandria assessment panel (opt-in, budget-gated): when Joni is genuinely UNSURE -
+    #     holding an open contradiction he cannot reconcile - three models cross-assess it
+    #     (assessors, not authorities). Their judgements enter as SOURCES, dissent preserved -
+    #     Joni decides, never the panel. Not a fixed cadence; no uncertainty -> no panel.
     panel = experts.maybe_convene(cs, extensions, proto, budget, cycle,
                                   runs_per_week=runs_per_week())
 
