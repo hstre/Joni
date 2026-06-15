@@ -89,7 +89,7 @@ def _ask(expert: dict, system: str, user: str, *, temperature: float = 0.3) -> s
         return None
     try:
         from openai import OpenAI
-        client = OpenAI(api_key=key, base_url=expert["base_url"], timeout=45)
+        client = OpenAI(api_key=key, base_url=expert["base_url"], timeout=20)
         resp = client.chat.completions.create(
             model=expert["model"], temperature=temperature,
             messages=[{"role": "system", "content": system},

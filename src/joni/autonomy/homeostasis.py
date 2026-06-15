@@ -96,7 +96,10 @@ def retire_junk_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retir
         t = getattr(c, "topic", None)
         if not t or quality.is_good_topic(t) or _supports_on(cs, c.id) > 0:
             continue
-        cs.reject_claim(c.id)
+        try:
+            cs.reject_claim(c.id)
+        except Exception:  # noqa: BLE001 - a stubborn claim must never break the cycle
+            continue
         retired += 1
         if t not in topics:
             topics.append(t)
