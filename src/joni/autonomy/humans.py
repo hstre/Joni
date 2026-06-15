@@ -174,18 +174,21 @@ def _open_need(cs, asked: set) -> tuple[str, str] | None:
     """Pick one thing worth asking a forum about: a hypothesis Joni cannot corroborate, or a
     topic he works on but has no evidence for, that is not already in ``asked``. Returns
     (need_key, question) or None."""
-    # 1. an unsupported hypothesis - ask for evidence or a counter-argument.
+    from . import quality
+    # 1. an unsupported hypothesis - ask for evidence or a counter-argument. Quality gate: do
+    #    NOT carry a token-artifact hypothesis (a through-line about 'cotton'/'about') outside.
     for h in sorted(cs.hypotheses(), key=lambda c: int(c.id.split("-")[-1]), reverse=True):
-        if _supports_on(cs, h.id) == 0 and h.id not in asked:
+        if (_supports_on(cs, h.id) == 0 and h.id not in asked
+                and quality.is_substantive_hypothesis(h.text)):
             q = (f"Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente "
                  f"oder Belege freuen (ich nehme beides gleich ernst): \"{h.text}\" - "
                  "wo koennte das brechen?")
             return h.id, q
 
-    # 2. a topic with claims but no evidence links at all.
+    # 2. a topic with claims but no evidence links at all (only a meaningful one is asked about).
     for topic in sorted(cs.topics()):
         key = f"topic:{topic}"
-        if key in asked:
+        if key in asked or not quality.is_meaningful_term(topic):
             continue
         claims = cs.claims_on(topic)
         if len(claims) >= 2 and sum(_supports_on(cs, c.id) for c in claims) == 0:

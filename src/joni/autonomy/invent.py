@@ -12,14 +12,19 @@ quiet until new topics appear.
 
 from __future__ import annotations
 
+from . import quality
+from .emerge import _is_synthetic
+
 
 def invent(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     invented = set(extensions.get("invented", []))      # topic pairs already tried
 
-    # strongest active claim per topic
+    # strongest active claim per topic - but only over MEANINGFUL topics and REAL claims. A
+    # bridge built on Joni's own bookkeeping ("'about' keeps recurring...") or on a junk token
+    # topic is exactly the noise the review flagged, so it is excluded here.
     by_topic: dict[str, object] = {}
     for c in cs.active_claims():
-        if not c.topic:
+        if not c.topic or _is_synthetic(c.text) or not quality.is_meaningful_term(c.topic):
             continue
         cur = by_topic.get(c.topic)
         if cur is None or (c.confidence_or_support, c.id) > (cur.confidence_or_support, cur.id):
