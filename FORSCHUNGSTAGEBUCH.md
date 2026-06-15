@@ -691,3 +691,89 @@ Leitprinzip durchgehend gewahrt: alles deterministisch/regelbasiert, Embedding n
 geschützte Core bleibt unangetastet. Suite 307 grün. Der Versuch zeigt damit beides: die
 Degenerationsform *und* eine regelkonforme Gegenmaßnahme — wissenschaftlich interessanter als
 glatt steigende Kennzahlen.
+
+### Eintrag 2026-06-15 ~22:00 UTC — Architektur-Korrektur: vom Sprach-Skin zur echten semantischen Vorschlagsschicht
+
+Der zentrale Befund des Tages kam vom Betreiber selbst: Joni war faktisch eine **deterministische
+Zustandsmaschine mit Sprach-Skin** — das LLM nur Renderer/Stimme, der eigentlich beabsichtigte
+DESi-basierte semantische Motor fehlte. Das Leitprinzip „LLM für Sprache, Regeln für Logik" blieb
+gewahrt, *aber* die Sprachschicht tat semantisch nichts. Korrektur, ohne den Governance-Kern
+anzutasten: **echte semantische Modellarbeit als nicht-autoritative Vorschlagsschicht** *außerhalb*
+des Layer-9-Gates. Layer 9 selbst bleibt 100 % deterministisch (verifiziert: kein `openai`/
+`httpx`-Import im ganzen `desi_layer9`-Paket; jeder Schreibpfad läuft durch `submit` → Schema/
+Authority/Control-Gate → Operator → Ledger).
+
+**Phase 1/2 — gepinnte Modelle, Capture/Replay (PR #101/#102).** Jeder Modell-Call ist *gepinnt
+und reproduzierbar*: festes Modell, feste Sampling-Config, **keine Provider-Fallbacks, kein stiller
+Modellwechsel**, voller Capture (`state/model_calls/calls.jsonl`). Re-Runs *replayen* aus den
+persistierten Captures — Reproduzierbarkeit, ohne die Semantik zu entfernen. Strikt getrennt:
+`Sampling` (temperature/seed/max_tokens) vs. `desi.state_k` (Dichte des State-Slice, **nicht**
+top_k). Eigene Profile für `joni-semantic`, `joni-hard`, `reference` (Kontrollarm), `kevin`,
+`renderer`.
+
+**Modellwahl — korrigiert nach den eigenen README-Tests (PR #103/#105).** Erst war Granite 4.0 H
+Micro als semantischer Kern geplant; die eigenen Benchmarks zeigten aber, dass **Klein-LLM-
+Extraktion schädlich** ist (Micro-Extraktion −40 %, Hybrid Evidence Cards −60 %, frage-bewusste
+Extraktion −80 %). Endstand: **DeepSeek Pro v4 (`deepseek-v4-pro`, direkt über die DeepSeek-API)
+für Schwieriges**, **Granite 4.1 8B für den Rest** (strukturierte Paper-/State-Audits, Claim-
+Extraktion). `state_k` ist **aufgabenspezifisch und wird nicht vererbt** (Start: Granite {3,5,10},
+DeepSeek {3,5}). Der Slug `deepseek-v4-pro` aus den API-Docs bestätigt — `deepseek-chat` ist das
+kleinere, auslaufende v4-flash. Beide Schlüssel sind prepaid; Kevin läuft jetzt ebenfalls auf
+`deepseek-v4-pro`.
+
+**Eskalationsarchitektur, nicht Parallel-Meinung.** Kein „A vs. B → Mittelwert", sondern eine
+Pipeline: `Input → Granite proposes → Layer 9 prüft Schema/Provenienz/Status/Konflikte → nur bei
+benannter, auditierter Regel: DeepSeek als Eskalations-Analyst → Layer 9 entscheidet`. Beide
+liefern **nur Proposals** (candidate SOURCE durch den Gate); jede DeepSeek-Einberufung trägt einen
+`escalation_reason` im Capture. Das Expertenforum wurde zugleich wie das Moltbook-Forum **periodisch**
+eingebunden (Kadenz statt jede Runde).
+
+**Der Hänger und seine Ursache.** Der erste echte LLM-Lauf blockierte ~70 min ohne Commit — *nicht*
+der neue Code, sondern eine **`git`-Rebase-Konfliktschleife**: ein per `workflow_dispatch` auf einen
+veralteten Checkout-SHA gepinnter Job rechnete auf altem State, und der autogenerierte JSON-State
+ließ sich nicht rebasen. Fix (PR #106): vor jedem Zyklus **hart auf `origin/main` syncen** (immer
+vom aktuellsten autoritativen State rechnen), bei Push-Ablehnung den Stale-Base-Zyklus verwerfen
+statt zu kämpfen. Angenehmer Nebeneffekt: der laufende Job lädt gemergte Fixes beim nächsten Zyklus
+automatisch (frischer Subprozess nach Hard-Sync), ohne Neustart.
+
+**Das A/B-Experiment.** Statt den Lauf wegzuwerfen: das deterministische Gedächtnis als **Kontroll-
+Baseline** sichern (`backups/pre-llm-2026-06-15/`: 608 Claims / 427 aktiv / 25 Konflikte / 80
+Methoden / 41 Hypothesen / 107 Evidenz-Links), Joni **bei 0** neu seeden und die LLM-Version
+**2 Tage** laufen lassen (`JONI_RUNTIME_DAYS=2`). Damit testen wir nicht „alt gegen leer", sondern
+**gleiche Vorgeschichte, neue semantische Architektur**. Erster frischer Zyklus bewies den Motor:
+Granite projizierte Claims aus arXiv, DeepSeek eskalierte auf `low_evidence_coverage` — real im
+Capture-Log, Replay funktioniert.
+
+**Telemetrie statt Raten (PR #109).** Die „€0,0000 / Most work is deterministic"-Anzeige machte
+nicht erkennbar, ob der Motor arbeitet. Neue Dashboard-Karte aus dem echten Capture-Log: LLM-/
+Granite-/DeepSeek-/Kevin-Calls, cached vs. live, geschätzte Kosten, letzter semantischer Call.
+
+**Zehn Review-Punkte — weniger semantischer Müll im autoritativen Zustand (PR #109/#110/#111/#112).**
+Eine zweite Review legte die nächste Qualitätsstufe offen; vollständig abgearbeitet:
+1. **`unsorted` raus aus dem Forschungsraum** — reservierte Sentinels, nie Thema/Forenpost.
+2. **Topic-Promotion verschärft** — `research_topics()`: ≥3 Claims aus ≥2 **unabhängigen** Quellen.
+3. **Claim-Promotion an unabhängige Evidenz gebunden** — keine Claim-zu-Claim-Zirkularität;
+   `_source_family()` zählt gleiche Quelle/Modelllauf als **eine** Quelle.
+4. **Near-Duplicate vor `CONFLICT_OPEN`** — rein numerische Paraphrasen (31 vs. 34) werden
+   hart→weich herabgestuft; echte Negation bleibt hart (zahl-basiert, nicht embedding-basiert,
+   da Embeddings Negation nicht sehen).
+5. **Quellenunabhängigkeit gemessen** — `independent_source_count`, `derivation_depth`,
+   origin/model/provider pro Claim.
+6. **Eskalation entschärft** — nur **neue, harte, nicht-numerische** Konflikte, nie derselbe
+   zweimal, **Backoff** nach Leerrunden (Ende von „14 Eskalationen, 0 Claims").
+7. **Kevin-Vorfilter** — nur auf Research-Topics mit echtem, nicht-trivialem Material; Fernanalogie
+   statt Müllveredelung.
+8. **Self-Review verdichtet + ehrlich** — nur Deltas seit dem letzten Review; Modellnutzung aus
+   derselben Telemetriequelle wie das Dashboard (kein „kein Modell nötig" mehr, während Calls liefen).
+9. **Telemetrie konsistent** — reserved budget vs. estimated cost getrennt; **accepted_claims**,
+   **accepted/live-call-Ratio**, Kosten je akzeptiertem Claim.
+10. **Ehrliche Qualitätsmetrik** — `epistemically_usable = typed ∧ source-anchored ∧ non-duplicate
+    ∧ topic-valid ∧ scope-valid ∧ provenance-complete` statt großzügiger 100 %.
+
+Leitprinzip gewahrt: der deterministische Governance-Core bleibt unangetastet (jedes
+`python -m joni.autonomy verify` grün), die Modelle sind eine **nicht-autoritative Vorschlagsschicht**,
+Layer 9 die einzige Entscheidungsebene. Suite 351 grün. Netto, in den Worten des Betreibers: **Joni
+produziert weniger, denkt aber besser** — und das Dashboard zeigt jetzt ehrlich, was der semantische
+Motor tut und kostet. Der Alt-vs-neu-Vergleich (pro 100 Runs normiert) folgt nach den zwei Tagen,
+mit dem gesicherten deterministischen Lauf als Baseline.
+
