@@ -2,7 +2,8 @@
   "topics_added": [
     "alignment",
     "benchmarking",
-    "evaluation"
+    "evaluation",
+    "caching"
   ],
   "notes": [],
   "asks": [],
@@ -438,10 +439,12 @@
     "arxiv:2606.14704v1",
     "github:affaan-m/ECC",
     "github:apache/answer",
+    "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
     "github:f/prompts.chat",
     "github:flarum/flarum",
     "github:goadesign/goa",
     "github:home-assistant/core",
+    "github:hugsy/stuff",
     "github:vllm-project/vllm",
     "github:xhzengAIB/MessageDisplayKit",
     "hackernews:13718752",
@@ -513,7 +516,9 @@
     "zenodo:20708689",
     "zenodo:20708705",
     "zenodo:20708784",
-    "zenodo:20708798"
+    "zenodo:20708798",
+    "zenodo:20708833",
+    "zenodo:20708871"
   ],
   "semantic_calls": [
     {
@@ -811,6 +816,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708798"
+    },
+    {
+      "call_id": "joni-c28:9d8aa23b26c4",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020"
+    },
+    {
+      "call_id": "joni-c28:8f9e41c6eaed",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "github:hugsy/stuff"
     }
   ],
   "pdf_read": [
@@ -1045,6 +1066,15 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c28:9da9c4305893",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 0,
+      "conflict": "X-11"
     }
   ],
   "methods_seen": [
@@ -1053,7 +1083,9 @@
     "arxiv:2606.14691v1",
     "arxiv:2606.14698v1",
     "github:apache/answer",
+    "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
     "github:flarum/flarum",
+    "github:hugsy/stuff",
     "huggingface:2606.10747",
     "openalex:W7137681926",
     "zenodo:20702346",
@@ -1066,7 +1098,7 @@
     "zenodo:20708564",
     "zenodo:20708798"
   ],
-  "method_trials_total": 203,
+  "method_trials_total": 211,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -1181,6 +1213,7 @@
     "description",
     "distichlis",
     "evolution",
+    "existing",
     "helpfulness",
     "inconsistency",
     "information",
@@ -1224,6 +1257,7 @@
     "forum|session",
     "forum|variance",
     "forum|vertical",
+    "memory|accuracy",
     "memory|agent",
     "memory|capacity",
     "memory|change",
@@ -1242,7 +1276,9 @@
     "memory|online",
     "memory|optimal",
     "memory|principle",
+    "memory|review",
     "memory|social",
+    "memory|systematic",
     "memory|trivia",
     "memory|unrecorded",
     "memory|valuable",
@@ -1263,6 +1299,7 @@
     "benchmark",
     "consistency",
     "context",
+    "existing",
     "inconsistency",
     "layers",
     "multimodal",
@@ -1273,8 +1310,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:composition": 1,
-    "meth:existing": 2
+    "meth:composition": 1
   },
   "hyp_tested": [
     "C-221|C-128",
@@ -1336,24 +1372,24 @@
     "C-382",
     "C-409",
     "C-423",
+    "C-440",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "memory memory",
-    "memory through-line",
-    "forum through-line",
     "forum underlying",
     "memory single",
     "memory mobility",
     "coverage evaluation with privacy evaluation",
-    "coverage evaluation with privacy single"
+    "coverage evaluation with privacy single",
+    "memory worth",
+    "coverage evaluation with privacy through-line",
+    "coverage evaluation with privacy worth"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
-    "C-173": 26,
     "C-184": 27,
-    "C-199": 7,
+    "C-199": 28,
     "C-208": 8,
     "C-223": 9,
     "C-227": 10,
@@ -1381,7 +1417,8 @@
     "C-382": 24,
     "C-396": 25,
     "C-409": 26,
-    "C-423": 27
+    "C-423": 27,
+    "C-440": 28
   },
   "hyp_domain_ok": [
     "C-126",
@@ -1412,6 +1449,7 @@
     "C-396",
     "C-409",
     "C-423",
+    "C-440",
     "C-49",
     "C-51"
   ],
@@ -1423,6 +1461,8 @@
     "M-13",
     "M-14",
     "M-15",
+    "M-16",
+    "M-17",
     "M-2",
     "M-3",
     "M-4",
@@ -1433,35 +1473,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "developing",
-    "development": 6,
-    "degeneration": 0,
-    "active": 222,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 1,
+    "active": 233,
     "hypotheses": 31,
     "unsupported_hypotheses": 24,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
     "evidence_links": 30,
     "supporting_links": 30,
-    "emergent_total": 100,
+    "emergent_total": 105,
     "usable_semantic_rate": 1.0,
-    "methods_total": 15,
-    "method_trials_total": 203,
+    "methods_total": 17,
+    "method_trials_total": 211,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 3448,
-    "cycle": 27
+    "stagnation_cycles": 1,
+    "objects": 3577,
+    "cycle": 28
   },
   "vitality_prev": {
     "supports": 30,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 3448,
-    "active": 222,
+    "objects": 3577,
+    "active": 233,
     "links": 30,
-    "emergent": 100
+    "emergent": 105
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1651,12 +1691,19 @@
       "development": 6,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 28,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 24,
+    "starved_topic": 25,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2199,7 +2246,7 @@
     }
   ],
   "reconsolidate_lens_idx": 0,
-  "kevin_last_cycle": 25,
+  "kevin_last_cycle": 28,
   "kevin_llm": [
     {
       "call_id": "kevin-c13:08dcd1f2fe59",
@@ -2250,6 +2297,19 @@
       ],
       "hypotheses": 0,
       "replayed": true
+    },
+    {
+      "call_id": "kevin-c28:951f06ca5646",
+      "served_model": "deepseek-v4-pro",
+      "topics": [
+        "memory",
+        "forum"
+      ],
+      "hypotheses": 0,
+      "replayed": true
     }
+  ],
+  "escalated_conflicts": [
+    "X-11"
   ]
 }

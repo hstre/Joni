@@ -3,8 +3,8 @@
     "tick": 0,
     "topics": [
       "memory",
-      "unsorted",
       "forum",
+      "unsorted",
       "drift",
       "alignment",
       "privacy",
@@ -17,10 +17,13 @@
       "anthology",
       "anthology+drift",
       "anthology+flarum",
+      "awesome-openclaw-skills",
+      "awesome-openclaw-usecases",
       "behavior",
       "benchmark",
       "benchmarking",
       "boundary",
+      "caching",
       "capacity",
       "change",
       "consistency",
@@ -30,6 +33,7 @@
       "distichlis",
       "evaluation",
       "evolution",
+      "existing",
       "flarum",
       "helpfulness",
       "inconsistency",
@@ -41,24 +45,38 @@
       "representation",
       "representations",
       "routing",
+      "secure-openclaw",
       "session",
       "skillopt",
       "systematic",
       "thinking-answer",
       "variance"
     ],
-    "claims_total": 423,
-    "claims_active": 222,
+    "claims_total": 440,
+    "claims_active": 233,
     "memory": 0,
-    "ledger": 2776,
+    "ledger": 2882,
     "open_conflicts": 16,
-    "methods": 15,
-    "method_trials": 203,
+    "methods": 17,
+    "method_trials": 211,
     "methods_ready": 0,
     "preferences": 0,
     "evidence_links": 30,
     "self_model": 4,
     "hypotheses": 31,
+    "research_topics": 3,
+    "epistemically_usable": {
+      "rate": 0.76,
+      "n": 233,
+      "flags": {
+        "correctly_typed": 233,
+        "source_anchored": 197,
+        "non_duplicate": 233,
+        "topic_valid": 213,
+        "scope_valid": 217,
+        "provenance_complete": 193
+      }
+    },
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": {
@@ -71,18 +89,19 @@
   "budget": {
     "spent_eur": 0.3,
     "cap_eur": 20.0,
-    "runs": 27
+    "runs": 28
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 27,
+    "runs": 28,
     "retired": false
   },
   "extensions": {
     "topics_added": [
       "alignment",
       "benchmarking",
-      "evaluation"
+      "evaluation",
+      "caching"
     ],
     "notes": [],
     "asks": [],
@@ -518,10 +537,12 @@
       "arxiv:2606.14704v1",
       "github:affaan-m/ECC",
       "github:apache/answer",
+      "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
       "github:f/prompts.chat",
       "github:flarum/flarum",
       "github:goadesign/goa",
       "github:home-assistant/core",
+      "github:hugsy/stuff",
       "github:vllm-project/vllm",
       "github:xhzengAIB/MessageDisplayKit",
       "hackernews:13718752",
@@ -593,7 +614,9 @@
       "zenodo:20708689",
       "zenodo:20708705",
       "zenodo:20708784",
-      "zenodo:20708798"
+      "zenodo:20708798",
+      "zenodo:20708833",
+      "zenodo:20708871"
     ],
     "semantic_calls": [
       {
@@ -891,6 +914,22 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20708798"
+      },
+      {
+        "call_id": "joni-c28:9d8aa23b26c4",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020"
+      },
+      {
+        "call_id": "joni-c28:8f9e41c6eaed",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "github:hugsy/stuff"
       }
     ],
     "pdf_read": [
@@ -1125,6 +1164,15 @@
         "state_k": 3,
         "replayed": true,
         "claims": 0
+      },
+      {
+        "call_id": "joni-c28:9da9c4305893",
+        "served_model": "deepseek-v4-pro",
+        "reason": "contested",
+        "state_k": 3,
+        "replayed": false,
+        "claims": 0,
+        "conflict": "X-11"
       }
     ],
     "methods_seen": [
@@ -1133,7 +1181,9 @@
       "arxiv:2606.14691v1",
       "arxiv:2606.14698v1",
       "github:apache/answer",
+      "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
       "github:flarum/flarum",
+      "github:hugsy/stuff",
       "huggingface:2606.10747",
       "openalex:W7137681926",
       "zenodo:20702346",
@@ -1146,7 +1196,7 @@
       "zenodo:20708564",
       "zenodo:20708798"
     ],
-    "method_trials_total": 203,
+    "method_trials_total": 211,
     "methods_ready_total": 0,
     "core_ask_signals": {
       "scoring": 0
@@ -1261,6 +1311,7 @@
       "description",
       "distichlis",
       "evolution",
+      "existing",
       "helpfulness",
       "inconsistency",
       "information",
@@ -1304,6 +1355,7 @@
       "forum|session",
       "forum|variance",
       "forum|vertical",
+      "memory|accuracy",
       "memory|agent",
       "memory|capacity",
       "memory|change",
@@ -1322,7 +1374,9 @@
       "memory|online",
       "memory|optimal",
       "memory|principle",
+      "memory|review",
       "memory|social",
+      "memory|systematic",
       "memory|trivia",
       "memory|unrecorded",
       "memory|valuable",
@@ -1343,6 +1397,7 @@
       "benchmark",
       "consistency",
       "context",
+      "existing",
       "inconsistency",
       "layers",
       "multimodal",
@@ -1353,8 +1408,7 @@
       "variance"
     ],
     "emerge_insufficient": {
-      "meth:composition": 1,
-      "meth:existing": 2
+      "meth:composition": 1
     },
     "hyp_tested": [
       "C-221|C-128",
@@ -1416,24 +1470,24 @@
       "C-382",
       "C-409",
       "C-423",
+      "C-440",
       "C-49",
       "C-51"
     ],
     "learned_queries": [
-      "memory memory",
-      "memory through-line",
-      "forum through-line",
       "forum underlying",
       "memory single",
       "memory mobility",
       "coverage evaluation with privacy evaluation",
-      "coverage evaluation with privacy single"
+      "coverage evaluation with privacy single",
+      "memory worth",
+      "coverage evaluation with privacy through-line",
+      "coverage evaluation with privacy worth"
     ],
     "hyp_seen_cycle": {
       "C-49": 21,
-      "C-173": 26,
       "C-184": 27,
-      "C-199": 7,
+      "C-199": 28,
       "C-208": 8,
       "C-223": 9,
       "C-227": 10,
@@ -1461,7 +1515,8 @@
       "C-382": 24,
       "C-396": 25,
       "C-409": 26,
-      "C-423": 27
+      "C-423": 27,
+      "C-440": 28
     },
     "hyp_domain_ok": [
       "C-126",
@@ -1492,6 +1547,7 @@
       "C-396",
       "C-409",
       "C-423",
+      "C-440",
       "C-49",
       "C-51"
     ],
@@ -1503,6 +1559,8 @@
       "M-13",
       "M-14",
       "M-15",
+      "M-16",
+      "M-17",
       "M-2",
       "M-3",
       "M-4",
@@ -1513,35 +1571,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "developing",
-      "development": 6,
-      "degeneration": 0,
-      "active": 222,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "active": 233,
       "hypotheses": 31,
       "unsupported_hypotheses": 24,
       "promoted_ideas": 4,
       "confirmed_claims": 0,
       "evidence_links": 30,
       "supporting_links": 30,
-      "emergent_total": 100,
+      "emergent_total": 105,
       "usable_semantic_rate": 1.0,
-      "methods_total": 15,
-      "method_trials_total": 203,
+      "methods_total": 17,
+      "method_trials_total": 211,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 3448,
-      "cycle": 27
+      "stagnation_cycles": 1,
+      "objects": 3577,
+      "cycle": 28
     },
     "vitality_prev": {
       "supports": 30,
       "promoted": 4,
       "confirmed": 0,
-      "objects": 3448,
-      "active": 222,
+      "objects": 3577,
+      "active": 233,
       "links": 30,
-      "emergent": 100
+      "emergent": 105
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -1731,12 +1789,19 @@
         "development": 6,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 28,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 24,
+      "starved_topic": 25,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -2279,7 +2344,7 @@
       }
     ],
     "reconsolidate_lens_idx": 0,
-    "kevin_last_cycle": 25,
+    "kevin_last_cycle": 28,
     "kevin_llm": [
       {
         "call_id": "kevin-c13:08dcd1f2fe59",
@@ -2330,7 +2395,20 @@
         ],
         "hypotheses": 0,
         "replayed": true
+      },
+      {
+        "call_id": "kevin-c28:951f06ca5646",
+        "served_model": "deepseek-v4-pro",
+        "topics": [
+          "memory",
+          "forum"
+        ],
+        "hypotheses": 0,
+        "replayed": true
       }
+    ],
+    "escalated_conflicts": [
+      "X-11"
     ]
   },
   "protocol": [
@@ -11086,22 +11164,350 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:45+00:00",
+      "cycle": 28,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:46+00:00",
+      "cycle": 28,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:47+00:00",
+      "cycle": 28,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:48+00:00",
+      "cycle": 28,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:51+00:00",
+      "cycle": 28,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:52+00:00",
+      "cycle": 28,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:53+00:00",
+      "cycle": 28,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:53+00:00",
+      "cycle": 28,
+      "kind": "judged",
+      "summary": "relevant: FTC-Skystone-Dark-Angels-Romania-2020",
+      "refs": {
+        "source": "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
+        "topic": "memory",
+        "new_topic": "caching",
+        "url": "https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:53+00:00",
+      "cycle": 28,
+      "kind": "judged",
+      "summary": "relevant: stuff",
+      "refs": {
+        "source": "github:hugsy/stuff",
+        "topic": "unsorted",
+        "new_topic": null,
+        "url": "https://github.com/hugsy/stuff"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:54+00:00",
+      "cycle": 28,
+      "kind": "judged",
+      "summary": "relevant: ArcadeDB Embedded for Python",
+      "refs": {
+        "source": "zenodo:20708871",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20708871"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:43:54+00:00",
+      "cycle": 28,
+      "kind": "judged",
+      "summary": "relevant: Behind the scenes of an ARFIMA gait study: a reproduction archive",
+      "refs": {
+        "source": "zenodo:20708833",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20708833"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:04+00:00",
+      "cycle": 28,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:10+00:00",
+      "cycle": 28,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from github:hugsy/stuff [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:22+00:00",
+      "cycle": 28,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [contested] proposed 0 claim(s) [deepseek-v4-pro, replayed=False] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:23+00:00",
+      "cycle": 28,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: FTC-Skystone-Dark-Angels-Romania-2020 (from github)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:23+00:00",
+      "cycle": 28,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: stuff (from github)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:25+00:00",
+      "cycle": 28,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 2 passed, 6 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:25+00:00",
+      "cycle": 28,
+      "kind": "improved",
+      "summary": "track_topic: caching",
+      "refs": {
+        "claim": "C-438",
+        "topic": "caching",
+        "source": "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
+        "url": "https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:26+00:00",
+      "cycle": 28,
+      "kind": "kevin",
+      "summary": "Kevin (deepseek-v4-pro) proposed 0 cross-domain hypothesis(es) [memory × forum, replayed=True] - candidate(s) via the gate, Joni decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:27+00:00",
+      "cycle": 28,
+      "kind": "emerged",
+      "summary": "new topic 'existing' precipitated from a recurrence across anthology, awesome-openclaw-skills, awesome-openclaw-usecases, forum, secure-openclaw",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:27+00:00",
+      "cycle": 28,
+      "kind": "emerged",
+      "summary": "'review' cluster not synthesised: Layer 9 says unrelated (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:27+00:00",
+      "cycle": 28,
+      "kind": "emerged",
+      "summary": "'systematic' cluster not synthesised: Layer 9 says supports (semantic-measured)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:28+00:00",
+      "cycle": 28,
+      "kind": "emerged",
+      "summary": "synthesis on memory: 'accuracy' (Layer 9 synthesis-eligible, SC-155) from 4 claims (C-357, C-358, C-392, C-393)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:28+00:00",
+      "cycle": 28,
+      "kind": "emerged",
+      "summary": "'existing' cluster not synthesised: Layer 9 says unrelated (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:28+00:00",
+      "cycle": 28,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-440 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:29+00:00",
+      "cycle": 28,
+      "kind": "regulate",
+      "summary": "shed C-184: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:30+00:00",
+      "cycle": 28,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): unsorted",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:30+00:00",
+      "cycle": 28,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 24 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:31+00:00",
+      "cycle": 28,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:31+00:00",
+      "cycle": 28,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T21:44:31+00:00",
+      "cycle": 28,
+      "kind": "note",
+      "summary": "cycle done · 4 new · 2 method(s) · 8 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · shed 1 dead idea(s) · degenerating · spend €0.3000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 73,
-    "granite_calls": 41,
-    "deepseek_escalations": 27,
-    "kevin_calls": 5,
-    "cached_calls": 24,
-    "live_calls": 49,
-    "last_call": "2026-06-15T21:31:09+00:00",
-    "est_cost_eur": 0.032,
+    "llm_calls": 77,
+    "granite_calls": 43,
+    "deepseek_escalations": 28,
+    "kevin_calls": 6,
+    "cached_calls": 25,
+    "live_calls": 52,
+    "last_call": "2026-06-15T21:44:26+00:00",
+    "est_cost_eur": 0.036,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 41,
-      "deepseek-v4-pro": 32
+      "ibm-granite/granite-4.1-8b-20260429": 43,
+      "deepseek-v4-pro": 34
     },
-    "panel_rounds": 2
+    "panel_rounds": 2,
+    "reserved_budget_eur": 20.0,
+    "spent_budget_eur": 0.3,
+    "accepted_claims": 108,
+    "accepted_per_live_call": 2.077,
+    "est_cost_per_accepted_eur": 0.0003
   },
-  "generated": "2026-06-15T21:31:17+00:00"
+  "generated": "2026-06-15T21:44:31+00:00"
 }
