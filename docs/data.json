@@ -21,9 +21,9 @@
       "benchmark availability",
       "benchmark design",
       "benchmarking",
+      "boundary",
       "capacity",
       "clinhallu benchmark structure",
-      "coherence cost law",
       "context",
       "context optimization",
       "convex",
@@ -61,18 +61,18 @@
       "variance",
       "variance decomposition"
     ],
-    "claims_total": 236,
-    "claims_active": 149,
+    "claims_total": 245,
+    "claims_active": 151,
     "memory": 0,
-    "ledger": 1372,
+    "ledger": 1442,
     "open_conflicts": 10,
     "methods": 11,
-    "method_trials": 75,
+    "method_trials": 83,
     "methods_ready": 0,
     "preferences": 0,
-    "evidence_links": 7,
+    "evidence_links": 8,
     "self_model": 3,
-    "hypotheses": 13,
+    "hypotheses": 15,
     "routing_engine": "DESi",
     "days_running": 0,
     "last_route": {
@@ -85,11 +85,11 @@
   "budget": {
     "spent_eur": 0.15,
     "cap_eur": 20.0,
-    "runs": 11
+    "runs": 12
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 11,
+    "runs": 12,
     "retired": false
   },
   "extensions": {
@@ -572,6 +572,7 @@
       "zenodo:20708011",
       "zenodo:20708037",
       "zenodo:20708042",
+      "zenodo:20708053",
       "zenodo:20708066",
       "zenodo:20708085"
     ],
@@ -695,6 +696,14 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20708066"
+      },
+      {
+        "call_id": "joni-c12:2227bdb1f069",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20708053"
       }
     ],
     "pdf_read": [
@@ -800,6 +809,14 @@
         "state_k": 3,
         "replayed": true,
         "claims": 0
+      },
+      {
+        "call_id": "joni-c12:b5095fe03cb8",
+        "served_model": "deepseek-v4-pro",
+        "reason": "high_conflict_load",
+        "state_k": 3,
+        "replayed": true,
+        "claims": 0
       }
     ],
     "methods_seen": [
@@ -814,7 +831,7 @@
       "zenodo:20707998",
       "zenodo:20708085"
     ],
-    "method_trials_total": 75,
+    "method_trials_total": 83,
     "methods_ready_total": 0,
     "core_ask_signals": {
       "scoring": 0
@@ -863,10 +880,12 @@
       "anthology|drift",
       "anthology|flarum",
       "anthology|forum",
+      "anthology|memory",
       "drift|memory"
     ],
     "emerged_topics": [
       "benchmark",
+      "boundary",
       "capacity",
       "context",
       "convex",
@@ -900,7 +919,8 @@
       "memory|online",
       "memory|principle",
       "unsorted|boundary",
-      "unsorted|distichlis"
+      "unsorted|distichlis",
+      "unsorted|halophytic"
     ],
     "emerged_methods": [
       "alignment",
@@ -909,7 +929,9 @@
       "reasoning",
       "variance"
     ],
-    "emerge_insufficient": {},
+    "emerge_insufficient": {
+      "meth:existing": 1
+    },
     "hyp_tested": [
       "C-221|C-128",
       "C-221|C-137",
@@ -918,7 +940,10 @@
       "C-225|C-221",
       "C-234|C-137",
       "C-234|C-221",
-      "C-234|C-225"
+      "C-234|C-225",
+      "C-243|C-137",
+      "C-243|C-221",
+      "C-243|C-225"
     ],
     "hyp_insufficient": {},
     "hyp_hollow": [
@@ -931,18 +956,20 @@
       "C-225",
       "C-227",
       "C-234",
+      "C-243",
+      "C-245",
       "C-49",
       "C-51"
     ],
     "learned_queries": [
-      "anthology+flarum existing",
-      "anthology+flarum learning",
-      "unsorted boundary",
       "unsorted worth",
       "anthology+forum abundance",
       "anthology+forum titled",
       "memory principle",
-      "memory single"
+      "memory single",
+      "anthology+memory might",
+      "anthology+memory abundance",
+      "unsorted unsorted"
     ],
     "hyp_seen_cycle": {
       "C-49": 1,
@@ -957,7 +984,9 @@
       "C-223": 9,
       "C-227": 10,
       "C-234": 11,
-      "C-236": 11
+      "C-236": 11,
+      "C-243": 12,
+      "C-245": 12
     },
     "hyp_domain_ok": [
       "C-126",
@@ -970,6 +999,7 @@
       "C-223",
       "C-227",
       "C-236",
+      "C-245",
       "C-49",
       "C-51"
     ],
@@ -990,30 +1020,30 @@
       "verdict": "developing",
       "development": 3,
       "degeneration": 0,
-      "active": 149,
-      "hypotheses": 13,
-      "unsupported_hypotheses": 12,
+      "active": 151,
+      "hypotheses": 15,
+      "unsupported_hypotheses": 13,
       "promoted_ideas": 2,
       "confirmed_claims": 0,
-      "evidence_links": 7,
-      "supporting_links": 7,
-      "emergent_total": 38,
+      "evidence_links": 8,
+      "supporting_links": 8,
+      "emergent_total": 40,
       "usable_semantic_rate": 1.0,
       "methods_total": 11,
-      "method_trials_total": 75,
+      "method_trials_total": 83,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 1702,
-      "cycle": 11
+      "objects": 1788,
+      "cycle": 12
     },
     "vitality_prev": {
-      "supports": 7,
+      "supports": 8,
       "promoted": 2,
       "confirmed": 0,
-      "objects": 1702,
-      "active": 149,
-      "links": 7,
-      "emergent": 38
+      "objects": 1788,
+      "active": 151,
+      "links": 8,
+      "emergent": 40
     },
     "stagnation": 0,
     "vitality_history": [
@@ -1093,12 +1123,19 @@
         "development": 3,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 12,
+        "verdict": "developing",
+        "development": 3,
+        "degeneration": 0,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 8,
+      "starved_topic": 9,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -1552,7 +1589,8 @@
         "ts": "2026-06-15T20:08:58+00:00",
         "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500."
       }
-    ]
+    ],
+    "reconsolidate_lens_idx": 0
   },
   "protocol": [
     {
@@ -5840,22 +5878,271 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:44+00:00",
+      "cycle": 12,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:45+00:00",
+      "cycle": 12,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:45+00:00",
+      "cycle": 12,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:47+00:00",
+      "cycle": 12,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:51+00:00",
+      "cycle": 12,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:52+00:00",
+      "cycle": 12,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:53+00:00",
+      "cycle": 12,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:12:53+00:00",
+      "cycle": 12,
+      "kind": "judged",
+      "summary": "relevant: Raster layers of bioclimatic, environmental, and anthropogenic variables in a me",
+      "refs": {
+        "source": "zenodo:20708053",
+        "topic": "coverage evaluation with privacy",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20708053"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:01+00:00",
+      "cycle": 12,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20708053 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:01+00:00",
+      "cycle": 12,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [high_conflict_load] proposed 0 claim(s) [deepseek-v4-pro, replayed=True] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:02+00:00",
+      "cycle": 12,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 0 passed, 8 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:02+00:00",
+      "cycle": 12,
+      "kind": "invented",
+      "summary": "new hypothesis bridging anthology x memory (candidate, derived from C-179+C-96)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:03+00:00",
+      "cycle": 12,
+      "kind": "emerged",
+      "summary": "new topic 'boundary' precipitated from a recurrence across coverage evaluation with privacy, memory, unsorted",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:03+00:00",
+      "cycle": 12,
+      "kind": "emerged",
+      "summary": "synthesis on unsorted: 'halophytic' (Layer 9 synthesis-eligible, SC-56) from 4 claims (C-216, C-218, C-219, C-220)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:04+00:00",
+      "cycle": 12,
+      "kind": "emerged",
+      "summary": "'existing' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:04+00:00",
+      "cycle": 12,
+      "kind": "reconsolidated",
+      "summary": "re-read memory through Kevin lens 'principle-as-a-lens' across coverage evaluation with privacy, memory, norm alignment principle, online inventory optimization, privacy extension of norm alignment, privacy-regret trade-off: 0 pair(s) examined, 0 new cross-topic link(s)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:04+00:00",
+      "cycle": 12,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-243 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:04+00:00",
+      "cycle": 12,
+      "kind": "strengthen",
+      "summary": "idea C-243 earned support from C-137 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:04+00:00",
+      "cycle": 12,
+      "kind": "strengthen",
+      "summary": "idea C-243 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:04+00:00",
+      "cycle": 12,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-245 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:05+00:00",
+      "cycle": 12,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): coverage evaluation with privacy, coherence cost law",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:05+00:00",
+      "cycle": 12,
+      "kind": "vitality",
+      "summary": "developing · dev 3 · degen 0 · 13 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:07+00:00",
+      "cycle": 12,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:07+00:00",
+      "cycle": 12,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-15T20:13:07+00:00",
+      "cycle": 12,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 0 method(s) · 8 trialed · 0 new link(s) · 1 hypothesis(es) · 2 emergent · reconsolidated 0 link(s) via 'principle-as-a-lens' · developing · spend €0.1500 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 29,
-    "granite_calls": 18,
-    "deepseek_escalations": 11,
+    "llm_calls": 31,
+    "granite_calls": 19,
+    "deepseek_escalations": 12,
     "kevin_calls": 0,
-    "cached_calls": 7,
-    "live_calls": 22,
-    "last_call": "2026-06-15T20:08:53+00:00",
+    "cached_calls": 8,
+    "live_calls": 23,
+    "last_call": "2026-06-15T20:13:01+00:00",
     "est_cost_eur": 0.016,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 18,
-      "deepseek-v4-pro": 11
+      "ibm-granite/granite-4.1-8b-20260429": 19,
+      "deepseek-v4-pro": 12
     },
     "panel_rounds": 1
   },
-  "generated": "2026-06-15T20:08:58+00:00"
+  "generated": "2026-06-15T20:13:07+00:00"
 }

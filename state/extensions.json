@@ -478,6 +478,7 @@
     "zenodo:20708011",
     "zenodo:20708037",
     "zenodo:20708042",
+    "zenodo:20708053",
     "zenodo:20708066",
     "zenodo:20708085"
   ],
@@ -601,6 +602,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20708066"
+    },
+    {
+      "call_id": "joni-c12:2227bdb1f069",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708053"
     }
   ],
   "pdf_read": [
@@ -706,6 +715,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c12:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -720,7 +737,7 @@
     "zenodo:20707998",
     "zenodo:20708085"
   ],
-  "method_trials_total": 75,
+  "method_trials_total": 83,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -769,10 +786,12 @@
     "anthology|drift",
     "anthology|flarum",
     "anthology|forum",
+    "anthology|memory",
     "drift|memory"
   ],
   "emerged_topics": [
     "benchmark",
+    "boundary",
     "capacity",
     "context",
     "convex",
@@ -806,7 +825,8 @@
     "memory|online",
     "memory|principle",
     "unsorted|boundary",
-    "unsorted|distichlis"
+    "unsorted|distichlis",
+    "unsorted|halophytic"
   ],
   "emerged_methods": [
     "alignment",
@@ -815,7 +835,9 @@
     "reasoning",
     "variance"
   ],
-  "emerge_insufficient": {},
+  "emerge_insufficient": {
+    "meth:existing": 1
+  },
   "hyp_tested": [
     "C-221|C-128",
     "C-221|C-137",
@@ -824,7 +846,10 @@
     "C-225|C-221",
     "C-234|C-137",
     "C-234|C-221",
-    "C-234|C-225"
+    "C-234|C-225",
+    "C-243|C-137",
+    "C-243|C-221",
+    "C-243|C-225"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -837,18 +862,20 @@
     "C-225",
     "C-227",
     "C-234",
+    "C-243",
+    "C-245",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "anthology+flarum existing",
-    "anthology+flarum learning",
-    "unsorted boundary",
     "unsorted worth",
     "anthology+forum abundance",
     "anthology+forum titled",
     "memory principle",
-    "memory single"
+    "memory single",
+    "anthology+memory might",
+    "anthology+memory abundance",
+    "unsorted unsorted"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -863,7 +890,9 @@
     "C-223": 9,
     "C-227": 10,
     "C-234": 11,
-    "C-236": 11
+    "C-236": 11,
+    "C-243": 12,
+    "C-245": 12
   },
   "hyp_domain_ok": [
     "C-126",
@@ -876,6 +905,7 @@
     "C-223",
     "C-227",
     "C-236",
+    "C-245",
     "C-49",
     "C-51"
   ],
@@ -896,30 +926,30 @@
     "verdict": "developing",
     "development": 3,
     "degeneration": 0,
-    "active": 149,
-    "hypotheses": 13,
-    "unsupported_hypotheses": 12,
+    "active": 151,
+    "hypotheses": 15,
+    "unsupported_hypotheses": 13,
     "promoted_ideas": 2,
     "confirmed_claims": 0,
-    "evidence_links": 7,
-    "supporting_links": 7,
-    "emergent_total": 38,
+    "evidence_links": 8,
+    "supporting_links": 8,
+    "emergent_total": 40,
     "usable_semantic_rate": 1.0,
     "methods_total": 11,
-    "method_trials_total": 75,
+    "method_trials_total": 83,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 1702,
-    "cycle": 11
+    "objects": 1788,
+    "cycle": 12
   },
   "vitality_prev": {
-    "supports": 7,
+    "supports": 8,
     "promoted": 2,
     "confirmed": 0,
-    "objects": 1702,
-    "active": 149,
-    "links": 7,
-    "emergent": 38
+    "objects": 1788,
+    "active": 151,
+    "links": 8,
+    "emergent": 40
   },
   "stagnation": 0,
   "vitality_history": [
@@ -999,12 +1029,19 @@
       "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 12,
+      "verdict": "developing",
+      "development": 3,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 8,
+    "starved_topic": 9,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -1458,5 +1495,6 @@
       "ts": "2026-06-15T20:08:58+00:00",
       "headline": "Day 0, run 11: I am holding 149 active claims across 58 topics, with 10 contradiction(s) left open, and I have spent €0.1500."
     }
-  ]
+  ],
+  "reconsolidate_lens_idx": 0
 }
