@@ -71,7 +71,10 @@ def _experts() -> list[dict]:
     return [
         {"name": "claude", "role": os.getenv("JONI_EXPERT_CLAUDE_ROLE", "assessor"),
          "base_url": "https://openrouter.ai/api/v1", "key_env": "OPENROUTER_API_KEY",
-         "model": os.getenv("JONI_EXPERT_CLAUDE", "anthropic/claude-3.7-sonnet")},
+         # OpenRouter retired anthropic/claude-3.7-sonnet; the alias resolves to the latest
+         # Sonnet, with a confirmed Opus slug as fallback so a slug change never drops the voice.
+         "model": os.getenv("JONI_EXPERT_CLAUDE", "anthropic/claude-sonnet-latest"),
+         "fallback": "anthropic/claude-opus-4.8"},
         {"name": "chatgpt", "role": os.getenv("JONI_EXPERT_GPT_ROLE", "adversarial"),
          "base_url": "https://openrouter.ai/api/v1", "key_env": "OPENROUTER_API_KEY",
          "model": os.getenv("JONI_EXPERT_GPT", "openai/gpt-4o")},
@@ -87,16 +90,23 @@ def _ask(expert: dict, system: str, user: str, *, temperature: float = 0.3) -> s
     key = os.getenv(expert["key_env"])
     if not key:
         return None
-    try:
-        from openai import OpenAI
-        client = OpenAI(api_key=key, base_url=expert["base_url"], timeout=20)
-        resp = client.chat.completions.create(
-            model=expert["model"], temperature=temperature,
-            messages=[{"role": "system", "content": system},
-                      {"role": "user", "content": user}])
-        return (resp.choices[0].message.content or "").strip() or None
-    except Exception:  # noqa: BLE001 - best-effort; an unreachable advisor abstains
-        return None
+    # try the configured model, then a fallback slug (so a retired model id never silently drops
+    # the voice and leaves a two-member panel).
+    models = [expert["model"]] + ([expert["fallback"]] if expert.get("fallback") else [])
+    for model in models:
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=key, base_url=expert["base_url"], timeout=20)
+            resp = client.chat.completions.create(
+                model=model, temperature=temperature,
+                messages=[{"role": "system", "content": system},
+                          {"role": "user", "content": user}])
+            text = (resp.choices[0].message.content or "").strip()
+            if text:
+                return text
+        except Exception:  # noqa: BLE001 - best-effort; try the fallback, else abstain
+            continue
+    return None
 
 
 def convene(question: str, context: str = "", *, max_words: int = 170) -> dict | None:

@@ -139,3 +139,34 @@ def test_panel_deferred_when_weekly_budget_is_exhausted(monkeypatch):
     _make_uncertain(cs)                                                   # he IS unsure...
     budget = Budget(week_start="t", spent_eur=19.99, runs=0, cap_eur=20.0)   # ...but < 0.15 left
     assert experts.maybe_convene(cs, {}, _Proto(), budget, cycle=20)["convened"] is False
+
+
+def test_ask_falls_back_to_a_second_model_when_the_first_slug_fails(monkeypatch):
+    """A retired primary slug must not drop the voice: _ask retries with the fallback."""
+    import sys
+    import types
+    monkeypatch.setenv("OPENROUTER_API_KEY", "or-test")
+    used = []
+
+    class _Resp:
+        def __init__(self, text):
+            self.choices = [types.SimpleNamespace(message=types.SimpleNamespace(content=text))]
+
+    class _Client:
+        def __init__(self, **kw):
+            self.chat = types.SimpleNamespace(
+                completions=types.SimpleNamespace(create=self._create))
+
+        def _create(self, *, model, **kw):
+            used.append(model)
+            if model == "anthropic/claude-sonnet-latest":     # primary fails (retired slug)
+                raise RuntimeError("model not found")
+            return _Resp("assessed under assumption A")        # fallback works
+
+    monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=_Client))
+    expert = {"name": "claude", "role": "assessor", "key_env": "OPENROUTER_API_KEY",
+              "base_url": "https://openrouter.ai/api/v1",
+              "model": "anthropic/claude-sonnet-latest", "fallback": "anthropic/claude-opus-4.8"}
+    out = experts._ask(expert, "sys", "user")
+    assert out == "assessed under assumption A"
+    assert used == ["anthropic/claude-sonnet-latest", "anthropic/claude-opus-4.8"]
