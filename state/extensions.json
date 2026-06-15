@@ -477,7 +477,8 @@
     "zenodo:20707998",
     "zenodo:20708011",
     "zenodo:20708037",
-    "zenodo:20708042"
+    "zenodo:20708042",
+    "zenodo:20708085"
   ],
   "semantic_calls": [
     {
@@ -680,6 +681,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c10:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -691,9 +700,10 @@
     "github:flarum/flarum",
     "huggingface:2606.10747",
     "zenodo:20707854",
-    "zenodo:20707998"
+    "zenodo:20707998",
+    "zenodo:20708085"
   ],
-  "method_trials_total": 59,
+  "method_trials_total": 67,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -736,10 +746,12 @@
     "alignment|privacy",
     "alignment|unsorted",
     "anthology|drift",
+    "anthology|flarum",
     "drift|memory"
   ],
   "emerged_topics": [
     "benchmark",
+    "capacity",
     "context",
     "convex",
     "multimodal",
@@ -769,6 +781,7 @@
     "memory|convex",
     "memory|memory",
     "memory|online",
+    "unsorted|boundary",
     "unsorted|distichlis"
   ],
   "emerged_methods": [
@@ -778,11 +791,14 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:anthology": 2
+    "meth:anthology": 3
   },
   "hyp_tested": [
     "C-221|C-128",
-    "C-221|C-137"
+    "C-221|C-137",
+    "C-225|C-128",
+    "C-225|C-137",
+    "C-225|C-221"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -792,18 +808,20 @@
     "C-206",
     "C-208",
     "C-223",
+    "C-225",
+    "C-227",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "alignment+unsorted right",
-    "alignment+unsorted trade-offs",
-    "memory testing",
-    "memory worth",
     "anthology+drift titled",
     "anthology+drift abundance",
     "unsorted unsorted",
-    "unsorted single"
+    "unsorted single",
+    "anthology+flarum existing",
+    "anthology+flarum learning",
+    "unsorted boundary",
+    "unsorted worth"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -815,8 +833,9 @@
     "C-184": 6,
     "C-199": 7,
     "C-208": 8,
-    "C-221": 9,
-    "C-223": 9
+    "C-223": 9,
+    "C-225": 10,
+    "C-227": 10
   },
   "hyp_domain_ok": [
     "C-126",
@@ -827,12 +846,14 @@
     "C-199",
     "C-208",
     "C-223",
+    "C-227",
     "C-49",
     "C-51"
   ],
   "methods_domain_ok": [
     "M-1",
     "M-10",
+    "M-11",
     "M-2",
     "M-3",
     "M-4",
@@ -846,30 +867,30 @@
     "verdict": "developing",
     "development": 10,
     "degeneration": 0,
-    "active": 149,
-    "hypotheses": 10,
-    "unsupported_hypotheses": 10,
-    "promoted_ideas": 1,
+    "active": 147,
+    "hypotheses": 11,
+    "unsupported_hypotheses": 11,
+    "promoted_ideas": 2,
     "confirmed_claims": 0,
-    "evidence_links": 4,
-    "supporting_links": 4,
-    "emergent_total": 33,
+    "evidence_links": 6,
+    "supporting_links": 6,
+    "emergent_total": 35,
     "usable_semantic_rate": 1.0,
-    "methods_total": 10,
-    "method_trials_total": 59,
+    "methods_total": 11,
+    "method_trials_total": 67,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 1543,
-    "cycle": 9
+    "objects": 1613,
+    "cycle": 10
   },
   "vitality_prev": {
-    "supports": 4,
-    "promoted": 1,
+    "supports": 6,
+    "promoted": 2,
     "confirmed": 0,
-    "objects": 1543,
-    "active": 149,
-    "links": 4,
-    "emergent": 33
+    "objects": 1613,
+    "active": 147,
+    "links": 6,
+    "emergent": 35
   },
   "stagnation": 0,
   "vitality_history": [
@@ -935,12 +956,19 @@
       "development": 10,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 10,
+      "verdict": "developing",
+      "development": 10,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 6,
+    "starved_topic": 7,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
