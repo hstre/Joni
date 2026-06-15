@@ -170,16 +170,28 @@ def _fold_replies(paths) -> int:
     return len(parsed)
 
 
-def _open_need(cs, asked: set) -> tuple[str, str] | None:
+def _tested_set(extensions: dict) -> frozenset:
+    """Hypothesis ids Joni has already challenged himself (strengthen recorded a test on them)."""
+    return frozenset(k.split("|", 1)[0] for k in extensions.get("hyp_tested", []) if "|" in k)
+
+
+def _open_need(cs, asked: set, *, tested: frozenset = frozenset()) -> tuple[str, str] | None:
     """Pick one thing worth asking a forum about: a hypothesis Joni cannot corroborate, or a
     topic he works on but has no evidence for, that is not already in ``asked``. Returns
-    (need_key, question) or None."""
+    (need_key, question) or None.
+
+    Before a hypothesis leaves Joni it must clear a quality bar: it must be substantive and
+    on-domain, it must actually *connect at least two claims* (so there is something to ask
+    about), and Joni must have *challenged it himself at least once* (it appears in ``tested``)
+    - no carrying an unexamined token-artifact to outsiders."""
     from . import quality
-    # 1. an unsupported hypothesis - ask for evidence or a counter-argument. Quality gate: do
-    #    NOT carry a token-artifact hypothesis (a through-line about 'cotton'/'about') outside.
+    # 1. an unsupported hypothesis - ask for evidence or a counter-argument, but only one that
+    #    passed the internal adversarial pre-check (tested) and genuinely bridges claims.
     for h in sorted(cs.hypotheses(), key=lambda c: int(c.id.split("-")[-1]), reverse=True):
+        derived = tuple(getattr(h, "derived_from", ()) or ())
         if (_supports_on(cs, h.id) == 0 and h.id not in asked
-                and quality.hypothesis_admissible(h.text)):
+                and quality.hypothesis_admissible(h.text)
+                and len(derived) >= 2 and h.id in tested):
             q = (f"Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente "
                  f"oder Belege freuen (ich nehme beides gleich ernst): \"{h.text}\" - "
                  "wo koennte das brechen?")
@@ -209,7 +221,7 @@ def draft_outbox(cs, extensions: dict, proto, cycle: int, *, platforms, max_new:
     asked = extensions.setdefault("forum_asked", [])
     drafts: list = []
     for _ in range(max_new):
-        need = _open_need(cs, set(asked))
+        need = _open_need(cs, set(asked), tested=_tested_set(extensions))
         if need is None:
             break
         key, question = need
@@ -240,7 +252,7 @@ def draft_autopost(cs, extensions: dict, proto, cycle: int, *, autopost, max_new
         akey = f"forum_asked_{platform}"
         asked = list(extensions.get(akey, []))
         for _ in range(max_new):
-            need = _open_need(cs, set(asked))
+            need = _open_need(cs, set(asked), tested=_tested_set(extensions))
             if need is None:
                 break
             key, question = need
