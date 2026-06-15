@@ -113,6 +113,39 @@ def retire_junk_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retir
     return {"retired_claims": retired, "topics": topics}
 
 
+def retire_junk_hypotheses(cs, extensions: dict, proto, cycle: int = 0,
+                           *, max_retire: int = 5) -> dict:
+    """Shed leftover junk-subject hypotheses - the pre-gate 'X recurs as a through-line'
+    conjectures about an off-domain or artifact token (cotton / mllm / modes). These also drive
+    a false 'starved topic' wish (a topic looks full of unsupported ideas when those ideas are
+    noise). Only 0-support candidates that fail the admissibility check are shed; the lexical
+    check short-circuits so most cost nothing, and an on-domain idea is cached. Fail-open."""
+    from . import quality
+    ok = set(extensions.get("hyp_domain_ok", []))
+    retired = 0
+    ids: list[str] = []
+    for h in cs.hypotheses():
+        if retired >= max_retire:
+            break
+        if h.id in ok or _supports_on(cs, h.id) > 0:
+            continue
+        if quality.hypothesis_admissible(h.text):
+            ok.add(h.id)                       # substantive + on-domain: keep, don't re-check
+            continue
+        try:
+            cs.reject_claim(h.id)
+        except Exception:  # noqa: BLE001 - a stubborn hypothesis must never break the cycle
+            ok.add(h.id)
+            continue
+        retired += 1
+        ids.append(h.id)
+    extensions["hyp_domain_ok"] = sorted(ok)[-4000:]
+    if ids:
+        proto.record(cycle, "regulate",
+                     f"retired {retired} junk-subject hypothesis(es): {', '.join(ids)}")
+    return {"retired_hyps": retired}
+
+
 def retire_junk_methods(cs, extensions: dict, proto, cycle: int = 0,
                         *, max_retire: int = 5) -> dict:
     """Shed off-domain method candidates harvested by mistake (e.g. C++ coding guidelines from a
