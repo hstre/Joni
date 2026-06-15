@@ -468,6 +468,7 @@
     "openclaw:NevaMind-AI/memU",
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
     "zenodo:20413370",
+    "zenodo:20701769",
     "zenodo:20703165",
     "zenodo:20705508",
     "zenodo:20706874",
@@ -480,8 +481,11 @@
     "zenodo:20708037",
     "zenodo:20708042",
     "zenodo:20708053",
+    "zenodo:20708062",
     "zenodo:20708066",
-    "zenodo:20708085"
+    "zenodo:20708085",
+    "zenodo:20708365",
+    "zenodo:20708417"
   ],
   "semantic_calls": [
     {
@@ -619,6 +623,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20705508"
+    },
+    {
+      "call_id": "joni-c17:f081c2b3051e",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708062"
+    },
+    {
+      "call_id": "joni-c17:9e0c56786350",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20708417"
     }
   ],
   "pdf_read": [
@@ -764,6 +784,14 @@
       "state_k": 3,
       "replayed": true,
       "claims": 0
+    },
+    {
+      "call_id": "joni-c17:b5095fe03cb8",
+      "served_model": "deepseek-v4-pro",
+      "reason": "high_conflict_load",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0
     }
   ],
   "methods_seen": [
@@ -776,9 +804,10 @@
     "huggingface:2606.10747",
     "zenodo:20707854",
     "zenodo:20707998",
+    "zenodo:20708062",
     "zenodo:20708085"
   ],
-  "method_trials_total": 115,
+  "method_trials_total": 123,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0
@@ -790,6 +819,7 @@
     "C-211|C-215",
     "C-228|C-233",
     "C-231|C-232",
+    "C-264|C-269",
     "C-59|C-80",
     "C-62|C-75",
     "C-62|C-79",
@@ -806,6 +836,7 @@
     "C-211|C-215@bge-small-en-v1.5",
     "C-228|C-233@bge-small-en-v1.5",
     "C-231|C-232@bge-small-en-v1.5",
+    "C-264|C-269@bge-small-en-v1.5",
     "C-59|C-80@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
@@ -821,6 +852,7 @@
     "agentspec|anthology",
     "agentspec|drift",
     "agentspec|flarum",
+    "agentspec|forum",
     "alignment|anthology",
     "alignment|drift",
     "alignment|flarum",
@@ -843,6 +875,7 @@
     "convex",
     "distichlis",
     "inconsistency",
+    "information",
     "multimodal",
     "principle",
     "reasoning",
@@ -872,11 +905,18 @@
     "drift|drift",
     "drift|prompt",
     "drift|variance",
+    "forum|inverted",
+    "forum|locomotion",
     "forum|nobody",
+    "forum|oscillation",
+    "forum|pendulum",
+    "forum|reduced",
     "forum|session",
     "forum|variance",
+    "forum|vertical",
     "memory|capacity",
     "memory|convex",
+    "memory|inventory",
     "memory|memory",
     "memory|online",
     "memory|principle",
@@ -897,6 +937,7 @@
     "variance"
   ],
   "emerge_insufficient": {
+    "meth:benchmark": 1,
     "meth:existing": 2
   },
   "hyp_tested": [
@@ -922,7 +963,10 @@
     "C-258|C-7",
     "C-261|C-252",
     "C-261|C-255",
-    "C-261|C-7"
+    "C-261|C-7",
+    "C-277|C-252",
+    "C-277|C-255",
+    "C-277|C-7"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -941,18 +985,20 @@
     "C-257",
     "C-261",
     "C-263",
+    "C-277",
+    "C-279",
     "C-49",
     "C-51"
   ],
   "learned_queries": [
-    "agentspec+drift governance",
-    "agentspec+drift pattern",
-    "coverage evaluation with privacy coverage",
-    "coverage evaluation with privacy recurs",
     "agentspec+flarum agentspec",
     "agentspec+flarum pattern",
     "memory claims",
-    "memory memory"
+    "memory memory",
+    "agentspec+forum through",
+    "agentspec+forum controlled",
+    "memory across",
+    "memory through-line"
   ],
   "hyp_seen_cycle": {
     "C-49": 1,
@@ -975,7 +1021,9 @@
     "C-258": 15,
     "C-260": 15,
     "C-261": 16,
-    "C-263": 16
+    "C-263": 16,
+    "C-277": 17,
+    "C-279": 17
   },
   "hyp_domain_ok": [
     "C-126",
@@ -993,6 +1041,7 @@
     "C-257",
     "C-260",
     "C-263",
+    "C-279",
     "C-49",
     "C-51"
   ],
@@ -1000,6 +1049,7 @@
     "M-1",
     "M-10",
     "M-11",
+    "M-12",
     "M-2",
     "M-3",
     "M-4",
@@ -1013,30 +1063,30 @@
     "verdict": "developing",
     "development": 3,
     "degeneration": 0,
-    "active": 143,
-    "hypotheses": 21,
-    "unsupported_hypotheses": 17,
+    "active": 152,
+    "hypotheses": 23,
+    "unsupported_hypotheses": 18,
     "promoted_ideas": 4,
     "confirmed_claims": 0,
-    "evidence_links": 15,
-    "supporting_links": 15,
-    "emergent_total": 56,
+    "evidence_links": 16,
+    "supporting_links": 16,
+    "emergent_total": 64,
     "usable_semantic_rate": 1.0,
-    "methods_total": 11,
-    "method_trials_total": 115,
+    "methods_total": 12,
+    "method_trials_total": 123,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 2073,
-    "cycle": 16
+    "objects": 2218,
+    "cycle": 17
   },
   "vitality_prev": {
-    "supports": 15,
+    "supports": 16,
     "promoted": 4,
     "confirmed": 0,
-    "objects": 2073,
-    "active": 143,
-    "links": 15,
-    "emergent": 56
+    "objects": 2218,
+    "active": 152,
+    "links": 16,
+    "emergent": 64
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1151,12 +1201,19 @@
       "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 17,
+      "verdict": "developing",
+      "development": 3,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 13,
+    "starved_topic": 14,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
