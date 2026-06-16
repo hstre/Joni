@@ -123,9 +123,10 @@ def joni_hard() -> ModelProfile:
         sampling=Sampling(
             temperature=float(_env("JONI_HARD_TEMPERATURE", "0.0")),
             seed=int(_env("JONI_HARD_SEED", "7")),
-            # deepseek-v4-pro is a *reasoning* model: it spends tokens on internal thought before
-            # the answer, so a small budget leaves `content` EMPTY (truncated mid-reasoning). Give
-            # it room - too low here returned 0 usable output. Env-overridable.
+            # deepseek-v4-pro reasons before answering, so the budget must cover thought + answer
+            # or `content` truncates to empty. Evidenced by the empty-rate gradient (768: 95%
+            # empty; 1024: 29%). 2048 put this escalation path at ~71%+ non-empty; left here
+            # (frequent, cost-sensitive) until the instrumented finish_reason shows it needs more.
             max_tokens=int(_env("JONI_HARD_MAX_TOKENS", "2048"))),
         # state_k start value for calibration over {3,5} - its own knob, never inherited from
         # joni-semantic, never the sampling top_k. Sweep via JONI_HARD_STATE_K.
@@ -162,10 +163,14 @@ def kevin() -> ModelProfile:
         sampling=Sampling(
             temperature=float(_env("JONI_KEVIN_TEMPERATURE", "0.7")),    # creative, not 0
             seed=int(_env("JONI_KEVIN_SEED", "7")),
-            # deepseek-v4-pro reasons before answering; 768 tokens were entirely consumed by the
-            # reasoning, so EVERY Kevin call returned empty content (19/19). Give the thinking model
-            # room to actually emit the proposal. Env-overridable.
-            max_tokens=int(_env("JONI_KEVIN_MAX_TOKENS", "2048"))),
+            # deepseek-v4-pro reasons before answering: the budget must cover the internal thought
+            # AND the answer, or `content` comes back empty (truncated mid-reasoning). This is
+            # evidenced, not assumed - the same model showed a clear empty-rate gradient by budget:
+            # at 768 tokens 19/20 Kevin calls were empty (95%); at 1024 only 16/55 (29%). 2048 was
+            # still tight, so Kevin (infrequent, cadence-spaced) gets generous headroom toward a ~0
+            # empty rate. The instrumented capture (finish_reason=length, reasoning_tokens) confirms
+            # the mechanism per call. Env-overridable.
+            max_tokens=int(_env("JONI_KEVIN_MAX_TOKENS", "4096"))),
         state_k=int(_env("JONI_KEVIN_STATE_K", "0")))    # Kevin does not use Joni's state slice
 
 

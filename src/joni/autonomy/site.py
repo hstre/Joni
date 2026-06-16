@@ -211,6 +211,14 @@ def build(data: dict) -> str:
     kevin_items = []
     for entry in reversed(kevin_log[-6:]):
         topics = " &times; ".join(esc(t) for t in entry.get("topics", []))
+        if entry.get("failed"):           # a failed creative call - shown, never a silent zero
+            kevin_items.append(
+                f"<li><div><span class=chip>{topics}</span> "
+                f"<span class=src>Zyklus {esc(entry.get('cycle',''))}</span></div>"
+                f"<div class=note style='color:var(--warn)'>⚠ kein Vorschlag &mdash; "
+                f"{esc(entry.get('failed',''))} "
+                f"(content_len={esc(entry.get('content_len',0))})</div></li>")
+            continue
         for p in entry.get("proposals", []):
             txt = p.get("text", "")
             assessed = bool(txt) and txt[:48] in panel_q

@@ -81,14 +81,29 @@ def propose(cs, extensions: dict, proto, cycle: int) -> dict:
                                   store_dir=paths().model_calls)
     if output is None or cap is None:
         return out
+    out["kevin_calls"] = 1
+    extensions["kevin_last_cycle"] = cycle          # cadence still bounds cost on a failed call
     props = projection._parse(output, f"{ta}+{tb}")
+    if not output.strip() or not props:
+        # An empty/truncated answer (reasoning model out of budget) or an unparseable one is a
+        # FAILED creative call - NOT a '0-proposal success'. Record it honestly so the page shows a
+        # real failure, not a silent zero. The instrumented capture (finish_reason=length /
+        # reasoning_tokens) says which; raising the token budget is the fix for truncation.
+        reason = "empty (model truncation?)" if not output.strip() else "no parseable proposal"
+        log = extensions.setdefault("kevin_llm", [])
+        log.append({"call_id": cap.call_id, "served_model": cap.served_model, "cycle": cycle,
+                    "topics": [ta, tb], "replayed": cap.replayed, "failed": reason,
+                    "content_len": len(output), "proposals": []})
+        extensions["kevin_llm"] = log[-200:]
+        proto.record(cycle, "kevin",
+                     f"Kevin ({cap.served_model}) call produced NO proposal [{ta} × {tb}]: "
+                     f"{reason} (content_len={len(output)}) - no hypothesis this round")
+        return out
     parents = (claims_a[0].id, claims_b[0].id)
     ids = []
     for p in props[:2]:
         ids.append(cs.hypothesize(p["text"], p["topic"], parents=parents))
         out["hypotheses"] += 1
-    out["kevin_calls"] = 1
-    extensions["kevin_last_cycle"] = cycle
     log = extensions.setdefault("kevin_llm", [])
     # store the actual proposal TEXT (not just a count) so the site can show what Kevin suggested
     # and the panel's verdict can be matched to it by hypothesis id.
