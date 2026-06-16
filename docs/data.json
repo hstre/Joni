@@ -14,50 +14,46 @@
       "evaluation",
       "evidence",
       "memory",
+      "operator",
       "provenance"
     ],
-    "claims_total": 158,
-    "claims_active": 104,
+    "claims_total": 160,
+    "claims_active": 100,
     "memory": 0,
-    "ledger": 906,
+    "ledger": 948,
     "open_conflicts": 3,
     "methods": 10,
-    "method_trials": 42,
+    "method_trials": 50,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 6,
     "self_model": 4,
-    "hypotheses": 7,
+    "hypotheses": 8,
     "research_topics": 1,
     "epistemically_usable": {
-      "rate": 0.606,
-      "n": 104,
+      "rate": 0.63,
+      "n": 100,
       "flags": {
-        "correctly_typed": 104,
-        "source_anchored": 94,
-        "non_duplicate": 102,
-        "topic_valid": 74,
-        "scope_valid": 74,
-        "provenance_complete": 94
+        "correctly_typed": 100,
+        "source_anchored": 89,
+        "non_duplicate": 98,
+        "topic_valid": 75,
+        "scope_valid": 75,
+        "provenance_complete": 89
       }
     },
     "routing_engine": "DESi",
     "days_running": 0,
-    "last_route": {
-      "model": "meta-llama/llama-3.1-8b-instruct",
-      "cost_usd": 3e-05,
-      "reason": "Pareto-cheapest at score >= 0.5",
-      "task_class": "scientific_claim"
-    }
+    "last_route": null
   },
   "budget": {
     "spent_eur": 0.154,
     "cap_eur": 20.0,
-    "runs": 7
+    "runs": 8
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 7,
+    "runs": 8,
     "retired": false
   },
   "extensions": {
@@ -518,7 +514,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 4,
+      "starved_topic": 5,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -2519,10 +2515,10 @@
       "evaluation_mode": "real_trial_protocol_v1",
       "epistemic_weight": "provisional"
     },
-    "method_trials_total": 42,
+    "method_trials_total": 50,
     "methods_ready_total": 0,
     "core_ask_signals": {
-      "operator": 1
+      "operator": 0
     },
     "core_ask_filed": {},
     "linked": [
@@ -2566,10 +2562,12 @@
       "architecture",
       "design",
       "evidence",
-      "memory"
+      "memory",
+      "operator"
     ],
     "synthesized": [
       "panel|agent",
+      "panel|approximation",
       "panel|awesome-design-patterns",
       "panel|bounded",
       "panel|deeprubric",
@@ -2583,12 +2581,13 @@
       "unsorted|sternarchella"
     ],
     "emerged_methods": [
+      "agent",
       "architecture",
       "evidence",
       "memory"
     ],
     "emerge_insufficient": {
-      "panel|architecture": 1
+      "panel|architecture": 2
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
@@ -2601,23 +2600,24 @@
       "C-99"
     ],
     "learned_queries": [
-      "unsorted through-line",
-      "unsorted claims",
-      "panel testing",
       "panel across",
       "unsorted testing",
       "panel factor",
       "panel recurs",
-      "unsorted recurs"
+      "unsorted recurs",
+      "panel underlying",
+      "unsorted factor",
+      "unsorted sternarchella"
     ],
     "hyp_seen_cycle": {
       "C-21": 5,
       "C-74": 7,
       "C-99": 6,
-      "C-113": 4,
+      "C-113": 8,
       "C-129": 5,
       "C-142": 6,
-      "C-158": 7
+      "C-158": 7,
+      "C-160": 8
     },
     "topics_domain_ok": [
       "agent",
@@ -2630,6 +2630,7 @@
       "evaluation",
       "evidence",
       "memory",
+      "operator",
       "provenance"
     ],
     "hyp_domain_ok": [
@@ -2637,6 +2638,7 @@
       "C-129",
       "C-142",
       "C-158",
+      "C-160",
       "C-21",
       "C-74",
       "C-99"
@@ -2654,35 +2656,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "developing",
-      "development": 3,
-      "degeneration": 0,
-      "active": 104,
-      "hypotheses": 7,
-      "unsupported_hypotheses": 7,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "active": 100,
+      "hypotheses": 8,
+      "unsupported_hypotheses": 8,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 6,
       "supporting_links": 6,
-      "emergent_total": 21,
+      "emergent_total": 24,
       "usable_semantic_rate": 1.0,
       "methods_total": 10,
-      "method_trials_total": 42,
+      "method_trials_total": 50,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 1128,
-      "cycle": 7
+      "stagnation_cycles": 1,
+      "objects": 1175,
+      "cycle": 8
     },
     "vitality_prev": {
       "supports": 6,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 1128,
-      "active": 104,
+      "objects": 1175,
+      "active": 100,
       "links": 6,
-      "emergent": 21
+      "emergent": 24
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -2731,6 +2733,13 @@
         "verdict": "developing",
         "development": 3,
         "degeneration": 0,
+        "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 8,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
         "usable_semantic_rate": 1.0
       }
     ],
@@ -5808,6 +5817,193 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:08+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:09+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:10+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:12+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:17+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:19+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:21+00:00",
+      "cycle": 8,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:22+00:00",
+      "cycle": 8,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 0 passed, 8 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:22+00:00",
+      "cycle": 8,
+      "kind": "trialed",
+      "summary": "retired method M-2 'DreamX-World 1.0: A General-Purpose Interactive World Model' after 8 trial(s) with no measurable gain (success 0 <= failure 8) - discarded so the shelf does not grow unbounded; a negative result is a result",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:22+00:00",
+      "cycle": 8,
+      "kind": "trialed",
+      "summary": "retired method M-1 'Bath memory as a precision resource in quantum transport' after 8 trial(s) with no measurable gain (success 4 <= failure 4) - discarded so the shelf does not grow unbounded; a negative result is a result",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:23+00:00",
+      "cycle": 8,
+      "kind": "emerged",
+      "summary": "new topic 'operator' precipitated from a recurrence across panel, unsorted",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:24+00:00",
+      "cycle": 8,
+      "kind": "emerged",
+      "summary": "'architecture' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:24+00:00",
+      "cycle": 8,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'approximation' (Layer 9 synthesis-eligible, SC-35) from 3 claims (C-132, C-136, C-137)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:24+00:00",
+      "cycle": 8,
+      "kind": "emerged",
+      "summary": "'agent' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:24+00:00",
+      "cycle": 8,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-113 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:24+00:00",
+      "cycle": 8,
+      "kind": "regulate",
+      "summary": "retired 5 junk-topic claim(s): unsorted",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:24+00:00",
+      "cycle": 8,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 8 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:25+00:00",
+      "cycle": 8,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T13:39:25+00:00",
+      "cycle": 8,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 8 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · degenerating · spend €0.1540 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
@@ -5833,9 +6029,9 @@
     "panel_rounds": 1,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 0.154,
-    "accepted_claims": 46,
-    "accepted_calls": 11,
-    "accepted_call_yield": 0.579,
+    "accepted_claims": 45,
+    "accepted_calls": 10,
+    "accepted_call_yield": 0.526,
     "est_cost_per_accepted_eur": 0.0001
   },
   "commissions_done": [
@@ -5847,5 +6043,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-16T13:35:49+00:00"
+  "generated": "2026-06-16T13:39:25+00:00"
 }
