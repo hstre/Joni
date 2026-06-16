@@ -618,6 +618,24 @@
       "question": "Hat jemand gute Quellen oder Erfahrungen zu 'unsorted'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
       "status": "posted",
       "posted_url": "https://www.moltbook.com/posts/81552755-0ee5-44a8-bf3c-b2b977a8a2aa"
+    },
+    {
+      "id": "FA-2-30fad9",
+      "cycle": 2,
+      "platform": "hacker_news",
+      "need": "topic:panel",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'panel'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "drafted",
+      "posted_url": null
+    },
+    {
+      "id": "FA-2-1a7605",
+      "cycle": 2,
+      "platform": "moltbook",
+      "need": "topic:panel",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'panel'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "posted",
+      "posted_url": "https://www.moltbook.com/posts/6958a0d5-fc3b-4f5d-aeae-198298c0b1fb"
     }
   ],
   "forum_asked": [
@@ -625,14 +643,16 @@
     "topic:drift",
     "topic:memory",
     "topic:privacy",
-    "topic:unsorted"
+    "topic:unsorted",
+    "topic:panel"
   ],
   "forum_asked_moltbook": [
     "topic:alignment",
     "topic:drift",
     "topic:memory",
     "topic:privacy",
-    "topic:unsorted"
+    "topic:unsorted",
+    "topic:panel"
   ],
   "forum_identity": {
     "moltbook": {
@@ -2190,38 +2210,65 @@
     "underframed"
   ],
   "topics_added": [
-    "alignment"
+    "alignment",
+    "evaluation"
   ],
   "asks": [],
   "seen": [
     "arxiv:2606.17018v1",
     "arxiv:2606.17026v1",
+    "arxiv:2606.17029v1",
     "arxiv:2606.17035v1",
+    "arxiv:2606.17044v1",
     "arxiv:2606.17046v1",
+    "arxiv:2606.17051v1",
+    "github:Huanshere/VideoLingo",
+    "github:MHSanaei/3x-ui",
+    "github:OWASP/mastg",
     "github:affaan-m/ECC",
     "github:f/prompts.chat",
     "github:home-assistant/core",
+    "github:payloadcms/payload",
     "github:vllm-project/vllm",
     "hackernews:13718752",
     "hackernews:16065845",
     "hackernews:16727869",
+    "hackernews:22865357",
+    "hackernews:25401294",
+    "hackernews:2906538",
+    "hackernews:32197012",
     "hackernews:39161339",
+    "huggingface:2606.14142",
     "huggingface:2606.14667",
     "huggingface:2606.14832",
+    "huggingface:2606.15079",
     "huggingface:2606.16449",
+    "huggingface:2606.16771",
     "huggingface:2606.16993",
     "openalex:W7113475520",
     "openalex:W7137590217",
+    "openalex:W7137680744",
+    "openalex:W7137683578",
     "openalex:W7137708326",
+    "openalex:W7143316772",
+    "openalex:W7143401746",
     "openalex:W7163454141",
     "openclaw:Agents365-ai/asta-skill",
     "openclaw:GreenSheep01201/Claw-Kanban",
+    "openclaw:JimLiu/baoyu-skills",
     "openclaw:Parad0x-Labs/openclaw-skills",
+    "openclaw:VoltAgent/awesome-openclaw-skills",
+    "openclaw:alirezarezvani/claude-skills",
+    "openclaw:hesamsheikh/awesome-openclaw-usecases",
     "openclaw:oguzhnatly/fleet",
+    "zenodo:20549437",
+    "zenodo:20658123",
     "zenodo:20688956",
+    "zenodo:20707043",
     "zenodo:20717129",
     "zenodo:20718193",
-    "zenodo:20718356"
+    "zenodo:20718356",
+    "zenodo:20718439"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -2240,10 +2287,29 @@
       "replayed": false,
       "claims": 5,
       "source": "huggingface:2606.16993"
+    },
+    {
+      "call_id": "joni-c2:3147c5c84a35",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.17044v1"
+    },
+    {
+      "call_id": "joni-c2:3ec74c4daf1f",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.17029v1"
     }
   ],
   "pdf_read": [
-    "arxiv:2606.17026v1"
+    "arxiv:2606.17026v1",
+    "arxiv:2606.17029v1",
+    "arxiv:2606.17044v1",
+    "arxiv:2606.17051v1"
   ],
   "pdf_urls_seen": [],
   "pdf_inbox_seen": [],
@@ -2264,6 +2330,8 @@
   ],
   "methods_seen": [
     "arxiv:2606.17026v1",
+    "arxiv:2606.17029v1",
+    "huggingface:2606.15079",
     "huggingface:2606.16993"
   ],
   "real_trial": {
@@ -2285,82 +2353,109 @@
     "evaluation_mode": "real_trial_protocol_v1",
     "epistemic_weight": "provisional"
   },
-  "method_trials_total": 2,
+  "method_trials_total": 6,
   "methods_ready_total": 0,
   "core_ask_signals": {},
   "core_ask_filed": {},
   "linked": [
-    "C-11|C-4"
+    "C-11|C-4",
+    "C-26|C-48",
+    "C-40|C-41",
+    "C-55|C-68"
   ],
   "semantic_backfilled": [
-    "C-11|C-4@bge-small-en-v1.5"
+    "C-11|C-4@bge-small-en-v1.5",
+    "C-26|C-48@bge-small-en-v1.5",
+    "C-40|C-41@bge-small-en-v1.5",
+    "C-55|C-68@bge-small-en-v1.5"
   ],
   "invented": [],
-  "emerged_topics": [],
+  "emerged_topics": [
+    "memory"
+  ],
   "synthesized": [
+    "panel|needs",
     "unsorted|bath",
     "unsorted|dreamx-world",
+    "unsorted|lines",
     "unsorted|optimal"
   ],
-  "emerged_methods": [],
+  "emerged_methods": [
+    "memory"
+  ],
   "emerge_insufficient": {},
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [
-    "C-21"
+    "C-21",
+    "C-74"
   ],
   "learned_queries": [
     "unsorted unsorted",
-    "unsorted dreamx-world"
+    "unsorted dreamx-world",
+    "unsorted across"
   ],
   "hyp_seen_cycle": {
-    "C-21": 1
+    "C-21": 2,
+    "C-74": 2
   },
   "topics_domain_ok": [
-    "alignment"
+    "alignment",
+    "evaluation",
+    "memory"
   ],
   "hyp_domain_ok": [
-    "C-21"
+    "C-21",
+    "C-74"
   ],
   "methods_domain_ok": [
     "M-1",
-    "M-2"
+    "M-2",
+    "M-3",
+    "M-4"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 0,
+    "verdict": "developing",
+    "development": 3,
     "degeneration": 0,
-    "active": 15,
-    "hypotheses": 1,
-    "unsupported_hypotheses": 1,
+    "active": 55,
+    "hypotheses": 2,
+    "unsupported_hypotheses": 2,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 0,
-    "supporting_links": 0,
-    "emergent_total": 3,
+    "evidence_links": 1,
+    "supporting_links": 1,
+    "emergent_total": 7,
     "usable_semantic_rate": 1.0,
-    "methods_total": 2,
-    "method_trials_total": 2,
+    "methods_total": 4,
+    "method_trials_total": 6,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 138,
-    "cycle": 1
+    "stagnation_cycles": 0,
+    "objects": 477,
+    "cycle": 2
   },
   "vitality_prev": {
-    "supports": 0,
+    "supports": 1,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 138,
-    "active": 15,
-    "links": 0,
-    "emergent": 3
+    "objects": 477,
+    "active": 55,
+    "links": 1,
+    "emergent": 7
   },
-  "stagnation": 1,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
       "verdict": "steady",
       "development": 0,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 2,
+      "verdict": "developing",
+      "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
     }
@@ -2477,9 +2572,13 @@
     "embeddings": "live",
     "pdf_reader": "live",
     "semantic_proposals": "on",
-    "kevin": "absent",
+    "kevin": "live",
     "sources_degraded": []
   },
   "kevin_installed": true,
-  "kevin_real_trial": true
+  "kevin_real_trial": true,
+  "topic_llm_seen": {
+    "alignment": "valid",
+    "panel": "invalid"
+  }
 }

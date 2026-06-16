@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_5 offene(r) Entwurf/Entwürfe._
+_6 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-11ff1d · Vorschlag: huggingface
 
@@ -43,6 +43,14 @@ Hat jemand gute Quellen oder Erfahrungen zu 'privacy'? Ich sammle dazu Material 
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'unsorted'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-2-30fad9 · Vorschlag: hacker_news
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'panel'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
