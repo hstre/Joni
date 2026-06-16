@@ -1402,6 +1402,15 @@
       "replayed": true,
       "claims": 0,
       "conflict": "X-29"
+    },
+    {
+      "call_id": "joni-c44:3d9bce432ad6",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 0,
+      "conflict": "X-30"
     }
   ],
   "methods_seen": [
@@ -1431,7 +1440,7 @@
     "zenodo:20709229",
     "zenodo:20709322"
   ],
-  "method_trials_total": 331,
+  "method_trials_total": 339,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0,
@@ -1731,6 +1740,7 @@
     "theory",
     "thinking-answer",
     "time",
+    "titled",
     "variance"
   ],
   "synthesized": [
@@ -1787,11 +1797,13 @@
     "memory|geometric",
     "memory|hare",
     "memory|interventions",
+    "memory|introduction",
     "memory|inventory",
     "memory|knowledge",
     "memory|learner",
     "memory|lithodoras",
     "memory|loci",
+    "memory|major-project-list",
     "memory|management",
     "memory|marketing",
     "memory|mechanics",
@@ -1849,14 +1861,15 @@
     "reasoning",
     "theory",
     "thinking-answer",
+    "time",
     "titled",
     "variance"
   ],
   "emerge_insufficient": {
     "memory|associated": 1,
-    "memory|category": 1,
+    "memory|category": 2,
     "memory|geometry": 2,
-    "memory|repository": 1,
+    "memory|repository": 2,
     "memory|structures": 1,
     "meth:composition": 1
   },
@@ -1903,6 +1916,9 @@
     "C-277|C-7",
     "C-287|C-252",
     "C-287|C-255",
+    "C-287|C-258",
+    "C-287|C-261",
+    "C-287|C-277",
     "C-287|C-7",
     "C-49|C-221",
     "C-49|C-252",
@@ -1944,23 +1960,23 @@
     "C-521",
     "C-534",
     "C-566",
-    "C-598"
+    "C-598",
+    "C-619"
   ],
   "learned_queries": [
-    "memory testing",
-    "agentspec+flarum controlled",
     "agentspec+flarum behind",
     "memory across",
     "memory recurs",
     "memory claims",
     "agentspec+forum agent",
-    "agentspec+forum apply"
+    "agentspec+forum apply",
+    "agentspec+memory relevant",
+    "agentspec+memory controlled"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
-    "C-263": 41,
     "C-279": 43,
-    "C-287": 18,
+    "C-287": 44,
     "C-289": 18,
     "C-302": 19,
     "C-304": 19,
@@ -1988,7 +2004,8 @@
     "C-584": 40,
     "C-598": 41,
     "C-615": 42,
-    "C-617": 43
+    "C-617": 43,
+    "C-619": 44
   },
   "hyp_domain_ok": [
     "C-126",
@@ -2036,7 +2053,8 @@
     "C-584",
     "C-598",
     "C-615",
-    "C-617"
+    "C-617",
+    "C-619"
   ],
   "methods_domain_ok": [
     "M-1",
@@ -2064,35 +2082,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 3,
-    "degeneration": 1,
-    "active": 353,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 2,
+    "active": 354,
     "hypotheses": 31,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 9,
     "confirmed_claims": 0,
     "evidence_links": 63,
     "supporting_links": 63,
-    "emergent_total": 158,
+    "emergent_total": 162,
     "usable_semantic_rate": 1.0,
     "methods_total": 23,
-    "method_trials_total": 331,
+    "method_trials_total": 339,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 5437,
-    "cycle": 43
+    "stagnation_cycles": 1,
+    "objects": 5487,
+    "cycle": 44
   },
   "vitality_prev": {
     "supports": 63,
     "promoted": 9,
     "confirmed": 0,
-    "objects": 5437,
-    "active": 353,
+    "objects": 5487,
+    "active": 354,
     "links": 63,
-    "emergent": 158
+    "emergent": 162
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2394,14 +2412,21 @@
       "development": 3,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 44,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 40,
+    "starved_topic": 41,
     "stalled_development": 0,
-    "methods_never_mature": 6
+    "methods_never_mature": 7
   },
   "commissions_filed": {
     "starved_topic": 6,
@@ -3315,7 +3340,8 @@
     "X-26",
     "X-27",
     "X-28",
-    "X-29"
+    "X-29",
+    "X-30"
   ],
   "last_review_snapshot": {
     "active": 295,
