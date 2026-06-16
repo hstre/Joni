@@ -54,6 +54,24 @@ def test_kevin_proposes_cross_domain_hypothesis_via_his_own_model(monkeypatch, t
     assert t["kevin_calls"] == 1
 
 
+def test_empty_truncated_call_is_a_visible_failure_not_a_silent_zero(monkeypatch, tmp_path):
+    # the reasoning model out of budget returns empty content. That is a FAILED creative call:
+    # no hypothesis, but recorded honestly (not a silent '0 proposals'), and cadence still applies.
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u: "")   # empty content
+    cs = _cs_with_two_research_topics()
+    ext: dict = {}
+    proto = _Proto()
+    before = len(cs.hypotheses())
+    out = kevin_llm.propose(cs, ext, proto, 3)
+    assert out["kevin_calls"] == 1 and out["hypotheses"] == 0           # call happened, 0 produced
+    assert len(cs.hypotheses()) == before                              # nothing entered the gate
+    assert ext["kevin_last_cycle"] == 3                                # cadence bounds cost
+    assert ext["kevin_llm"][-1]["failed"].startswith("empty")          # logged as a failure
+    assert any(k == "kevin" and "NO proposal" in s for k, s in proto.events)  # visible in protocol
+
+
 def test_cadence_spaces_kevin_out(monkeypatch, tmp_path):
     monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
