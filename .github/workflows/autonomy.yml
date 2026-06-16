@@ -67,6 +67,9 @@ jobs:
           # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard). Capped
           # at a few projections per cycle; budget is the hard ceiling. No provider fallbacks.
           JONI_SEMANTIC_PROPOSALS: "1"
+          # The synthetic keyword-trial mock carries no epistemic weight and the REAL trial
+          # protocol now exists, so keep the mock OUT of the production loop (no protocol noise).
+          JONI_SYNTHETIC_TRIALS: "0"
           JONI_LOOP_MINUTES: "320"    # run cycles for ~5.3h, then let the next job take over
           JONI_LOOP_PAUSE_SECONDS: "180"   # a polite pause between cycles
           DESI_ROOT: ${{ github.workspace }}/_desi

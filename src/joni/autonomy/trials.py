@@ -17,9 +17,17 @@ Soft dependency: without ``kevin`` (or with the core unavailable) this is a clea
 
 from __future__ import annotations
 
+import os
+
 
 def run_trials(cs, proto, cycle: int = 0, *, run_id: str | None = None) -> dict:
     empty = {"trialed": 0, "succeeded": 0, "failed": 0, "activation_ready": 0}
+    # The synthetic keyword-shape simulator carries NO epistemic weight (it is honestly labelled as
+    # a mock). Now that the REAL trial protocol exists, running it every cycle is just activity +
+    # protocol noise, so it is OFF by default in production (JONI_SYNTHETIC_TRIALS=0). Kept
+    # available as a deterministic control arm (set =1) and for tests.
+    if os.getenv("JONI_SYNTHETIC_TRIALS", "1") == "0":
+        return empty
     try:
         from kevin import trial_runner
     except Exception:  # noqa: BLE001  - Kevin not installed: skip silently.
@@ -89,7 +97,6 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5) -> in
     (``METHOD_REJECT``) - a negative result is a result. This bounds the method count and never
     auto-confirms anything; a maturing method (success > failure) is never touched here.
     """
-    import os
 
     import desi_layer9 as l9
     max_trials = int(os.getenv("JONI_METHOD_MAX_TRIALS", "8"))
