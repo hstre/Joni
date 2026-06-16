@@ -1,16 +1,54 @@
 # Forschungstagebuch — Joni / Kevin / Layer 9
 
-Ein Forschungstagebuch über den Aufbau und das Verhalten eines selbstständig laufenden,
-epistemisch sauberen KI-Agenten-Ökosystems. Es protokolliert **Entscheidungen, Experimente
-und Beobachtungen** auf Forschungsebene. Die *maschinelle* Protokollierung jeder einzelnen
-Handlung lebt daneben weiter in `protocol/protocol.jsonl` (append-only) und `docs/data.json`
-(Live-Snapshot); Joni führt zusätzlich sein **eigenes** Ich-Form-Tagebuch (Self-Review,
-alle 10 Runs). Dieses Dokument ist die Sicht *von außen* auf das System — geführt vom
-Entwickler/Forscher, fortlaufend ergänzt.
+Ein Forschungstagebuch über den **Aufbau, Langzeitbetrieb und die beobachteten
+Degenerationsformen** eines persistenten, **Layer-9-governierten** KI-Agenten-Ökosystems. Es
+protokolliert **Entscheidungen, Experimente, Fehlentwicklungen, Rückbauten und
+Architekturkorrekturen** auf Forschungsebene — bewusst *keine* Erfolgsgeschichte einer immer
+klüger werdenden KI, sondern eine Reihe realer Systemfehler und ihrer protokollierten Ursachen.
+Die *maschinelle* Protokollierung jeder einzelnen Handlung lebt daneben weiter in
+`protocol/protocol.jsonl` (append-only) und `docs/data.json` (Live-Snapshot); Joni führt zusätzlich
+sein **eigenes** Ich-Form-Tagebuch (Self-Review, alle 10 Runs). Dieses Dokument ist die Sicht
+*von außen* auf das System — geführt vom Entwickler/Forscher, fortlaufend ergänzt.
 
-> Leitprinzip des gesamten Ökosystems: **„LLM für Sprache, Regeln für Logik."**
-> Jede Bewertung, Zustandsänderung, Orchestrierung ist deterministisch und nachvollziehbar;
-> ein Sprachmodell formuliert nur, es entscheidet nie.
+> **Leitprinzip (korrigiert 2026-06-15):** *Modelle interpretieren und schlagen vor. Layer 9
+> entscheidet und protokolliert.*
+> Ausführlich: **LLMs** leisten **semantische Interpretation, Hypothesen, Kritik und Sprache** und
+> erzeugen ausschließlich **nicht-autoritative Proposals**; **deterministische Regeln** tragen
+> **Autorität, Statusübergänge, Governance, Replay und Zustandsänderungen**. Ein Modell entscheidet
+> nie — Layer 9 entscheidet, immer.
+>
+> *Historische Notiz (Konsistenz statt Schönfärbung):* Ursprünglich lautete das Prinzip „LLM für
+> Sprache, Regeln für Logik". Genau diese **zu enge** Fassung führte dazu, dass Joni zunächst nur
+> eine deterministische Zustandsmaschine mit Sprach-Skin war (das LLM bloß Renderer, semantisch
+> wirkungslos). Die Korrektur — semantische Modellarbeit als nicht-autoritative Vorschlagsschicht —
+> ist im Eintrag **2026-06-15 ~22:00** dokumentiert. Der alte Wortlaut bleibt hier nur als Beleg
+> der Entwicklung stehen, nicht als geltendes Prinzip.
+
+### Alte vs. neue Architektur
+
+```
+Joni v0 (verworfen):   Regeln → Zustand → LLM-Renderer
+                       (das Modell war nur Stimme; die Semantik fehlte)
+
+Joni v1 (aktuell):     Quelle
+                         → Granite-Proposal (semantische Interpretation)
+                         → DeepSeek / Kevin bei Bedarf (Eskalation / Fernanalogie)
+                         → dreistufiger Einlass-Gate (Lexik → Embedding → LLM-Topic-Review)
+                         → Layer-9-Gate (Schema / Provenienz / Status / Konflikt)
+                         → autoritativer Zustand
+                         → Renderer (Sprache)
+```
+
+### Lesehilfe — Beobachtung vs. Interpretation
+
+Ab 2026-06-15 sind Aussagen, wo es darauf ankommt, klassifiziert, um gesicherte Messung von
+plausibler Deutung zu trennen: **[Beobachtung]** (gemessen) · **[Hypothese]** (Diagnose, noch
+unbestätigt) · **[Eingriff]** (Patch/Änderung) · **[Messergebnis]** (Wirkung nach dem Eingriff) ·
+**[Schluss]** (vorläufige Schlussfolgerung). Frühere Einträge tragen die Labels nicht durchgehend;
+ihre Diagnosen sind als *Hypothesen zum Zeitpunkt* zu lesen, nicht als gesicherte Ursache.
+
+> *Überholte Fassung (nur als Beleg der Entwicklung):* „LLM für Sprache, Regeln für Logik." —
+> ersetzt durch das korrigierte Leitprinzip oben.
 
 ---
 
@@ -817,8 +855,8 @@ Müll der frühen Zyklen (vor dem Merge) nicht rückwirkend. Drei Nachzieher:
 
 **Die architektonische Erkenntnis: der Topic-Gate gehört gestaffelt — und Stufe 3 ist ein LLM.**
 Auf die Frage „ist ein lexikalischer Filter nicht zu einfach?" — ja. Lexik kennt nur Form. Die
-Lösung ist nicht „LLM statt Regeln", sondern **nach Kostenstufe gestaffelt**, im Einklang mit „LLM
-für Sprache, Regeln für Logik":
+Lösung ist nicht „LLM statt Regeln", sondern **nach Kostenstufe gestaffelt**, im Einklang mit dem
+korrigierten Prinzip (*Modelle interpretieren und schlagen vor, Layer 9 entscheidet*):
 1. **Lexik** (`is_good_topic`) — grober Erstfilter, gratis, auf jedem Hot-Path.
 2. **Embedding-Domäne** (`on_domain`) — off-domain echte Wörter, gecacht.
 3. **LLM-Review** (`topic_review.py`, Granite) — das nuancierte *„gehört dieses Konzept dazu?"*,
@@ -832,4 +870,83 @@ für Sprache, Regeln für Logik":
 Damit ist Joni nicht nur „mit Motor", sondern bekommt vor Layer 9 eine **dreistufige Einlass-
 kontrolle**, deren teuerste, klügste Stufe genau dort sitzt, wo Bedeutung statt Form gefragt ist.
 Suite 358 grün, Core unangetastet, alles non-core und beim nächsten Zyklus automatisch wirksam.
+
+---
+
+## Synthese — was das Tagebuch übergreifend zeigt
+
+Dieses Dokument ist wertvoller als ein glatt verlaufender Agententest, weil es **reale
+Fehlentwicklungen, Rückbauten und Architekturkorrekturen** festhält. Die wiederkehrenden,
+übertragbaren Befunde:
+
+- **[Schluss]** Ein deterministisches System kann **regelkonform degenerieren**, ohne abzustürzen —
+  auditierbar, formal korrekt, energiearm, und trotzdem epistemisch wertlos.
+- **[Schluss]** **Aktivität, Wachstum und Vitalität sind keine Qualitätsmetriken.** Bewegung ist
+  nicht Fortschritt.
+- **[Schluss]** Ein semantischer Layer kann **architektonisch korrekt eingebunden, praktisch aber
+  wirkungslos** sein (das LLM hängt im Diagramm, feuert aber nie).
+- **[Schluss]** **Reproduzierbarkeit darf nicht erkauft werden**, indem man semantische Modellarbeit
+  entfernt — sondern indem man LLM-Ausgaben **einfriert, hasht und als beobachtete Inputs behandelt**
+  (Capture/Replay).
+- **[Schluss]** **Qualitätsgates müssen *vor* Emergenz, Konfliktbildung und Außenkommunikation
+  liegen**, nicht als nachträgliches Aufräumen.
+- **[Schluss]** Ein System kann **seinen eigenen Müll verarbeiten und daraus fälschlich Entwicklung
+  ableiten** (siehe Goodhart-Schleife unten).
+- **[Beobachtung]** **Langzeitbetrieb findet Fehler, die Unit-Tests kaum finden** — etwa der
+  Tick-/Mitternachts-Replayfehler (Replaybruch über den Tageswechsel).
+- **[Schluss]** **On-the-fly-Patches sind wissenschaftlich brauchbar**, wenn sie mit Ursache,
+  Wirkung und Nebenwirkung protokolliert werden — nicht nur „geflickt".
+
+### Der stärkste Befund: die epistemische Goodhart-Schleife
+
+**[Beobachtung]** Joni erzeugte auditierbar, deterministisch und formal korrekt **epistemisch
+schwache Struktur** (Junk-Token-Hypothesen, Müll-Topics). Diese Struktur wurde nach außen getragen
+(Forenfragen), erzeugte **externe Reaktionen**, daraus neue Claims und Konflikte — was die eigene
+**Vitalitätsmetrik aufblähte**. Keine klassische Halluzination, sondern eine **selbstverstärkende
+Messwertschleife**:
+
+```
+schwache Struktur → Aktivität → externe Reaktion → mehr Objekte
+                  → höhere Vitalitätsmetrik → System liest sich als „entwickelnd"
+                  ↺ (Rückkopplung verstärkt die schwache Struktur)
+```
+
+**[Schluss → DESi-Regelkandidat]** Daraus folgt eine allgemeine, übertragbare Regel:
+
+> **Eine Qualitätsmetrik darf nicht durch die Verarbeitung der eigenen minderwertigen Outputs
+> steigen.** Vitalität/Fortschritt muss an *unabhängig* gestützten, extern verankerten Zuwachs
+> gebunden sein — nicht an Rohaktivität oder an Reaktionen auf selbst emittiertes Rauschen.
+> (In Joni umgesetzt: `development = 3·Δstützende-Evidenz + 4·Δpromotet + 6·Δconfirmed`;
+> Rohwachstum/Emergenz zählen nicht mehr.)
+
+### Reale Fehlerklassen, die dieser Versuchsträger sichtbar gemacht hat
+
+falsche Architektur · inaktive Semantik · schlechte Topics · Messwert-Gaming (Goodhart) ·
+Evidenz-Starvation · Konfliktrauschen · Wiederholungsfehler (Rotation) · Replaybruch (Tick) ·
+Modellrouting-Probleme. **Jeweils wurde nicht nur geflickt, sondern die Ursache protokolliert.**
+
+## Bewährt für DESi — Mechanismen-Kandidaten
+
+Synthese der Patches als Architekturgrundlage (Status: *bewährt* = über Zyklen stabil nützlich;
+*beobachten* = zu früh für ein Urteil; *teilweise* = Prinzip trägt, Umsetzung noch nicht generisch).
+
+| Mechanismus | Joni-Ergebnis | Status | DESi-Kandidat |
+|---|---|---|---|
+| Fair Rotation (LRU-Hypothesen) | verhindert Starvation des Einzel-Slots | bewährt | ja |
+| Vitalität = Fortschritt, nicht Bewegung | beendet die Goodhart-Schleife | bewährt | **zwingend** |
+| Stopword-/Sentinel-Gate (Lexik) | reduziert Junk-Topics | teilweise | Prinzip ja, Liste nein |
+| Embedding-Domänen-Check (kontrastiv) | fängt off-domain echte Wörter | bewährt | ja (als Messung) |
+| LLM-Topic-Review (Stufe 3, Granite) | „gehört das?" vor Promotion | beobachten | offen |
+| Near-Duplicate vor Konflikt (numerisch) | kein Hard-Konflikt aus 31-vs-34 | beobachten | ja |
+| Unabhängige-Quellen-Promotion | keine Claim-zu-Claim-Zirkularität | bewährt | ja |
+| Auditierte Eskalation (+ Backoff) | DeepSeek nur bei neuem hartem Fall | beobachten | ja |
+| Capture/Replay (einfrieren+hashen) | Replay trotz echter Modellarbeit | bewährt | **zwingend** |
+| Tick im Journal | Replay über Tageswechsel | bewährt | **zwingend** |
+| Runtime Call/Cost-Accounting | Fehler/Kosten sofort sichtbar | bewährt | ja |
+| Hard-Sync vor jedem Zyklus | kein Stale-Base-/Rebase-Deadlock | bewährt | ja (Betrieb) |
+| Qualitätsgate VOR Emergenz/Posting | weniger Müll im Auth-Zustand | bewährt | **zwingend** |
+
+*Diese Tabelle ist als lebende Architekturgrundlage gedacht und wird mit weiteren Zyklen
+fortgeschrieben — „beobachten"-Einträge wandern nach hinreichender Laufzeit nach „bewährt" oder
+werden mit Begründung verworfen.*
 
