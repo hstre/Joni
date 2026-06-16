@@ -971,3 +971,68 @@ Synthese der Patches als Architekturgrundlage (Status: *bewährt* = über Zyklen
 fortgeschrieben — „beobachten"-Einträge wandern nach hinreichender Laufzeit nach „bewährt" oder
 werden mit Begründung verworfen.*
 
+### Eintrag 2026-06-16 ~08:30 UTC — Dieselbe Fehlerklasse, eine Ebene tiefer: „nominal path present, functional semantics absent"
+
+**[Schluss]** Der zweite große Befund ist fast lehrreicher als der erste, weil er das *Muster*
+bestätigt: Wie Jonis semantischer Motor zunächst nur auf dem Diagramm existierte, hatte **Kevin
+zwei nominell vorhandene Funktionspfade, die praktisch keine sinnvolle Arbeit leisteten** —
+sichtbar aktiv, mit Modell-Calls und Trial-Zahlen, aber ohne ihre eigentliche epistemische
+Funktion. Das ist keine zufällige Bug-Sammlung mehr, sondern eine **wiederkehrende
+Architektur-Fehlerklasse: *nominal path present, functional semantics absent.***
+
+**Arm 1 — kreativer LLM-Pfad.** **[Beobachtung]** Alle 19 Kevin-Captures hatten als Output den
+SHA-256 des **Leerstrings**; Non-Kevin-Calls nur ~11 %. **[Hypothese, zunächst überklart]** Ich
+hatte das vorschnell als „das Reasoning-Modell verbrauchte alle 768 Tokens" *behauptet*. Aus einem
+leeren `content` allein ist das aber **nicht bewiesen** — ebenso möglich: Text in `reasoning_content`,
+ein Adapter liest das falsche Feld, ein Schema-/Parserfehler, `finish_reason` ≠ length, ein anderes
+Antwortformat, oder der Capture hasht nur `content` statt der Rohantwort. **[Eingriff]** Statt zu
+raten, **instrumentiert**: der Call-Seam liefert jetzt die volle Evidenz (`content`,
+`reasoning_content`-Länge, `finish_reason`, served model, prompt/completion/**reasoning**-Tokens,
+Rohantwort-Hash + Sidecar-Speicher), und die Telemetrie **klassifiziert** leere Antworten in
+disjunkte Klassen: `empty_truncated` (finish_reason=length → Tokenbudget-Ursache, *belegbar*) ·
+`empty_with_reasoning` (Text in Reasoning-Feld → Adapterfehler) · `empty_silent` (nichts/Filter).
+Erst damit sind die vier Fehlerklassen — *Modell lieferte nichts · Adapter verlor Text · Parser
+scheiterte · Gate lehnte ab* — unterscheidbar statt vermischt. Der 2048-Token-Patch bleibt als
+sinnvoller Sofortpatch, ist aber **keine** Ursachenbestätigung.
+
+**Arm 2 — Methoden-Trial.** **[Beobachtung]** 40 Methoden, bis zu 69 Trials je Methode,
+`success>failure`: **0**. **[Schluss]** Der `trial_runner` nutzt **gar kein Modell** — auch keinen
+MockLLM —, sondern eine **Keyword-Shape-Overlap-Heuristik**. Damit ist es **keine schwache
+Evaluation, sondern im wissenschaftlichen Sinn keine Evaluation der Methodenqualität.** Korrekt ist
+deshalb **nicht** „keine Methode war erfolgreich", sondern: *„der bisherige Trial-Simulator hat
+keine Methode als erfolgreich klassifiziert."* Zahlen wie 5/22 oder 0/69 sehen empirisch aus, sind
+aber **metrische Theaterkulissen** — gefährlich, weil sie präziser wirken als die dahinterliegende
+Erkenntnis. `retire_unproductive()` löst damit nur das *Speicherproblem* (Liste wächst nicht), nicht
+das *Erkenntnisproblem* (hat die Methode unter definierten Bedingungen geholfen?).
+
+**[Eingriff]** Zwei Korrekturen, bewusst **ohne** den Fehler zu wiederholen: Ich habe **nicht** den
+Mock durch „DeepSeek sagt Pass/Fail" ersetzt — das wäre nur eine *sprachmodellbasierte*
+Scheinevaluation an Stelle einer *deterministischen*. Stattdessen ist der Trial jetzt überall
+ehrlich als **synthetische Simulation** markiert (`evaluation_mode=synthetic_mock`,
+`epistemic_weight=none`, im Kevin-Report und auf der Website), und seine Zahlen werden **nicht** als
+Wirksamkeitsnachweis dargestellt. Alte Mock-Trials bleiben **erhalten** (Forschungsgeschichte), nur
+markiert — nicht gelöscht.
+
+**[Schluss → Architektur-Invarianten]** Aus der Fehlerklasse werden prüfbare Tests
+(`test_architecture_invariants`): *raw response preserved · empty output classified/provable ·
+capture behält die Diagnosefelder · trial wird nie als Wirksamkeit dargestellt*. Geplant als
+benannte DESi-Checks: `KEVIN_CREATIVE_OUTPUT_NONEMPTY`, `KEVIN_RAW_RESPONSE_PRESERVED`,
+`KEVIN_PARSER_YIELD_TRACEABLE`, `KEVIN_PROPOSAL_REJECTION_TRACEABLE`,
+`METHOD_TRIAL_NOT_MOCK_IN_PRODUCTION`, `METHOD_TRIAL_HAS_BASELINE`, `METHOD_TRIAL_HAS_FROZEN_TASK`,
+`METHOD_TRIAL_RESULT_HAS_PROVENANCE`.
+
+**[Schluss]** Das passt erschreckend genau zum Hugging-Face-Thread-Motiv: **Auch Software kann
+operative Kontinuität und überzeugende Telemetrie behalten, während ihre konzeptuelle Funktion
+längst verloren gegangen ist.** Bei Joni war das LLM nur Renderer; bei Kevins kreativem Arm
+verschwand die Modellantwort; bei Kevins Trial-Arm wurde reale Bewertung durch einen Mock ersetzt.
+Drei Pfade, ein Muster. Der eigentliche Wert dieses Versuchsträgers ist, dass er **genau diese
+Klasse von „sieht funktional aus, ist es aber nicht" sichtbar und prüfbar macht** — bevor man sie
+für Fortschritt hält.
+
+*Offen (nächster großer Bau, mit dem Betreiber abzustimmen):* ein **echter** Trial-Runner
+(`real_trial_protocol_v1`) — feste Aufgaben-/Fallmenge, Baseline ohne Methode, Intervention mit
+Methode, vorab definierte Messgröße, Wiederholungen, Negativkontrolle, gespeicherte Outputs,
+Layer-9-Proposal mit voller Provenienz. Modelle dürfen Fälle *bearbeiten/bewerten*; die
+Trial-*Entscheidung* ruht auf vorher festgelegten, nachvollziehbaren Größen — nicht auf einem
+LLM-Urteil.
+
