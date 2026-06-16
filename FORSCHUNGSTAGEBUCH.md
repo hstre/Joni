@@ -14,8 +14,11 @@ sein **eigenes** Ich-Form-Tagebuch (Self-Review, alle 10 Runs). Dieses Dokument 
 > entscheidet und protokolliert.*
 > Ausführlich: **LLMs** leisten **semantische Interpretation, Hypothesen, Kritik und Sprache** und
 > erzeugen ausschließlich **nicht-autoritative Proposals**; **deterministische Regeln** tragen
-> **Autorität, Statusübergänge, Governance, Replay und Zustandsänderungen**. Ein Modell entscheidet
-> nie — Layer 9 entscheidet, immer.
+> **Autorität, Statusübergänge, Governance, Replay und Zustandsänderungen**. **Kein Modell besitzt
+> Schreib- oder Autorisierungsrechte:** Modelle liefern Proposals und Bewertungen, ausschließlich
+> Layer 9 führt nach deterministischen Regeln autoritative Zustandsänderungen aus. (Ein
+> Modell-Urteil kann eine Regel *auslösen* — beim Topic-Review etwa liefert Granite `valid/invalid`
+> und Layer 9 setzt es nach Policy um —, aber es schreibt nie selbst.)
 >
 > *Historische Notiz (Konsistenz statt Schönfärbung):* Ursprünglich lautete das Prinzip „LLM für
 > Sprache, Regeln für Logik". Genau diese **zu enge** Fassung führte dazu, dass Joni zunächst nur
@@ -52,6 +55,24 @@ ihre Diagnosen sind als *Hypothesen zum Zeitpunkt* zu lesen, nicht als gesichert
 
 ---
 
+## Aktueller Stand (Schnellübersicht)
+
+*Für neue Leser: der gegenwärtige Zustand auf einen Blick, ohne die ganze Chronologie. Dieser
+Block wird bei jeder Aktualisierung mitgeführt; Details stehen in den datierten Einträgen.*
+
+- **Aktuelle Architektur:** Joni v1 (Quelle → Granite-Proposal → ggf. DeepSeek/Kevin → 3-stufiger
+  Einlass-Gate → Layer-9-Gate → autoritativer Zustand → Renderer).
+- **Versuchsphase:** A/B-Lauf, **Tag 1 von 2** (LLM-Version aus dem Nullzustand; gesicherte
+  deterministische Baseline als Vergleich).
+- **Primäre Modelle:** Granite 4.1 8B (strukturiert) · DeepSeek Pro v4 (schwierig/Eskalation) ·
+  Kevin auf DeepSeek Pro v4 (Fernanalogie).
+- **Governance:** Layer 9, deterministisch (geschützter Core, jedes `verify` grün).
+- **Aktuelle Hauptrisiken:** Topic-Gate (Stufe 3 LLM) noch *in Beobachtung* · Konfliktwachstum ·
+  Qualität der Kevin-Vorschläge · Claim-Akzeptanz pro Live-Call (`accepted/live`).
+- **Nächste Auswertung:** Alt-vs-neu, pro 100 Runs normiert (nach den zwei Tagen).
+
+---
+
 ## 1. Das System auf einen Blick
 
 Drei Komponenten, ein gemeinsamer Kern:
@@ -59,7 +80,7 @@ Drei Komponenten, ein gemeinsamer Kern:
 | Komponente | Repo | Rolle |
 |---|---|---|
 | **Kevin** | `hstre/Kevin` | Kreativitäts-Routing: unerforschte Lösungsräume → wilde Variation → Methoden-Transfer → epistemische Selektion → menschliche Richtung. Findet/abstrahiert Methoden, **trial't** sie, **promotet nie**. |
-| **Joni** | `hstre/Joni` | Operative Identität mit Doppelsicht (Conversation View = scheinbare Person; Epistemic View = Claims/Operatoren/Ledger dahinter). Läuft autonom, forscht, lernt, entwickelt sich selbst weiter, berichtet öffentlich. |
+| **Joni** | `hstre/Joni` | Operative Identität mit Doppelsicht (Conversation View = scheinbare Person; Epistemic View = Claims/Operatoren/Ledger dahinter). Läuft autonom, forscht, verändert periphere Strategien, formuliert Erweiterungsaufträge und berichtet öffentlich; Kernänderungen macht er ausdrücklich **nicht selbst**. |
 | **desi_layer9** | in `hstre/Joni` (`src/desi_layer9/`) | Der **eine autoritative epistemische Kern**: geschlossenes Schema, Autorität/Provenance/Taint, ein State-Update-Gate als einziger Schreibpfad, hash-verketteter Ledger + Replay. Joni und Kevin schreiben nur durch das Gate. |
 
 **Governance-Grundregeln** (warum das hier interessant ist):
@@ -213,8 +234,8 @@ Ausgangspunkt für den „was hat sich nach ein paar Stunden getan"-Vergleich:
 
 ## 5. Betriebs- & Sicherheitsnotizen
 
-- **Offen:** DeepSeek-Key `sk-1c71963824…` wurde im Klartext geteilt → **rotieren**
-  (als kompromittiert behandeln).
+- **Offen:** Ein DeepSeek-API-Key wurde im Klartext geteilt und deshalb als kompromittiert
+  behandelt; **Rotation erforderlich**.
 - **Offen:** GitHub Pages aktivieren (Settings → Pages → `main` / `docs`) für das
   Live-Dashboard `https://hstre.github.io/Joni/`.
 - Modell-Identitäts-ID des Entwickler-Assistenten gehört **nicht** in Commits/PRs/Code.
