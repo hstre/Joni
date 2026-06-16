@@ -26,6 +26,85 @@ def _supports_on(cs, claim_id: str) -> int:
                if el.claim_id == claim_id and el.relation.value in ("supports", "contextualizes"))
 
 
+def review_numeric_duplicate_conflicts(cs, proto, cycle: int = 0, *, max_review: int = 5) -> int:
+    """Retroactively defuse legacy hard conflicts that are really near-duplicates differing only
+    in a number (the C-71/C-87 case: near-identical Moltbook comments, 31 vs 34 exchanges).
+
+    The near-duplicate guard (review #4) only catches *new* conflicts; this drains the ones the
+    early cycles already opened. Such a conflict is NOT a contradiction, so we do not hold it as a
+    fresh open uncertainty: we move it to UNDER_REVIEW (CONFLICT_REVIEW, gate-recorded - never a
+    force-resolve of a real contradiction) and record the honest decomposition (shared claim +
+    the numeric discrepancy). That stops the panel re-chewing two near-identical texts."""
+    from .core_state import _NUM, _numeric_only_difference
+    by_id = {c.id: c for c in cs.core.all(l9.ObjectType.CLAIM)}
+    reviewed = 0
+    for conf in cs.core.open_conflicts():
+        if reviewed >= max_review:
+            break
+        if conf.conflict_status.value != "open" or getattr(conf, "severity", "soft") != "hard":
+            continue
+        ids = [i for i in conf.claim_ids[:2] if i in by_id]
+        if len(ids) != 2:
+            continue
+        a, b = by_id[ids[0]].text, by_id[ids[1]].text
+        if not _numeric_only_difference(a, b):
+            continue
+        try:
+            cs.review_conflict(conf.id)
+        except Exception:  # noqa: BLE001 - a stubborn conflict must never break the cycle
+            continue
+        reviewed += 1
+        shared = _NUM.sub("#", a or "").strip()
+        nums = sorted(set(_NUM.findall(a or "")) | set(_NUM.findall(b or "")))
+        proto.record(cycle, "regulate",
+                     f"{conf.id} reclassified as a minor numeric discrepancy, not a hard "
+                     f"contradiction · shared: \"{shared[:120]}\" · numbers {nums} · under review")
+    return reviewed
+
+
+def retire_offdomain_topics(cs, extensions: dict, proto, cycle: int = 0, *,
+                            max_check: int = 4, max_retire: int = 3) -> int:
+    """Drain off-domain *real-word* topics the lexical junk pass cannot see (laxiflora, cotton,
+    glioma). Bounded and CACHED (``topics_domain_ok``): the contrastive embedding domain check was
+    the perf trap that once stalled the loop, so we check at most a few NEW topics per cycle and
+    never re-embed a known-on-domain one. Fail-open without an embedder (then a clean no-op). An
+    earned research topic is never touched; only 0-support claims of an off-domain topic go."""
+    from . import quality
+    cache = set(extensions.get("topics_domain_ok", []))
+    research = set(cs.research_topics())
+    seen: set[str] = set()
+    checked = retired = 0
+    drained: list[str] = []
+    for c in cs.active_claims():
+        if retired >= max_retire:
+            break
+        t = getattr(c, "topic", None)
+        if not t or t in cache or t in research or not quality.is_good_topic(t):
+            continue
+        if t not in seen:
+            if checked >= max_check:
+                continue
+            seen.add(t)
+            checked += 1
+            if quality.on_domain(t):           # on-domain: cache so we never re-embed it
+                cache.add(t)
+                continue
+        if _supports_on(cs, c.id) > 0:          # off-domain, but a supported idea is kept
+            continue
+        try:
+            cs.reject_claim(c.id)
+        except Exception:  # noqa: BLE001
+            continue
+        retired += 1
+        if t not in drained:
+            drained.append(t)
+    extensions["topics_domain_ok"] = sorted(cache)[-2000:]
+    if drained:
+        proto.record(cycle, "regulate",
+                     f"retired {retired} off-domain topic claim(s): {', '.join(drained)}")
+    return retired
+
+
 def _hard_conflicted(cs, claim_id: str) -> bool:
     return any(claim_id in x.claim_ids and x.severity == "hard"
                for x in cs.core.open_conflicts())
