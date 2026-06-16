@@ -130,13 +130,19 @@ def _store(store_dir: Path) -> tuple[Path, Path]:
 
 
 def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_dir: Path,
-         escalation_reason: str | None = None) -> tuple[str | None, Capture | None]:
+         escalation_reason: str | None = None, budget=None,
+         runs_per_week: int = 0) -> tuple[str | None, Capture | None]:
     """Run (or replay) one pinned call. Returns ``(output, capture)``; ``(None, None)`` if the
     live call failed (best-effort: no proposal this cycle, never a silent fallback).
 
     ``escalation_reason`` is recorded in the capture: it names *why* an escalation model (DeepSeek)
     was invoked - a primary Granite call leaves it ``None``. It is metadata only and is NOT part of
-    the replay key (same prompt + pinned config replays regardless of why it was reached)."""
+    the replay key (same prompt + pinned config replays regardless of why it was reached).
+
+    ``budget`` (optional): the weekly EUR cap governs the SEMANTIC ENGINE too, not just the panel.
+    A *live* call is only made if ``budget.can_spend(est)`` allows it; otherwise it returns
+    ``(None, None)`` (cap reached -> no proposal this cycle, never a fallback). Replays are free and
+    never charged. With ``budget=None`` the call is ungoverned (tests / standalone)."""
     prompt = f"<<SYSTEM>>\n{system}\n<<USER>>\n{user}"
     prompt_sha = _sha(prompt)
     key = _sha(f"{profile.config_sha()}|{prompt_sha}")
@@ -166,12 +172,20 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_di
 
     if cached.exists():                                  # replay from the persisted capture
         output = cached.read_text(encoding="utf-8")
-        return output, _record(output, replayed=True)
+        return output, _record(output, replayed=True)    # replays are free - never charged
+
+    # A LIVE call is about to cost money: the weekly cap governs the semantic engine here, at the
+    # one seam every model path goes through. Cap reached -> no live call (best-effort, no fallbk).
+    est = est_call_cost(profile)
+    if budget is not None and est > 0 and not budget.can_spend(est, runs_per_week=runs_per_week):
+        return None, None
 
     try:
         res = _complete(profile, system, user)
     except Exception:  # noqa: BLE001 - a failed pinned call is "no proposal", never a fallback
         return None, None
+    if budget is not None and est > 0:
+        budget.charge(est)                               # account the live call against the cap
     # the seam may return a plain str (tests) or the full Raw evidence (production)
     raw = res if isinstance(res, Raw) else None
     output = res.text if isinstance(res, Raw) else res
@@ -185,6 +199,17 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_di
         if raw is not None and raw.raw_json:             # preserve the full raw response sidecar
             (out_dir / f"{key}.raw.json").write_text(raw.raw_json, encoding="utf-8")
     return output, _record(output, replayed=False, raw=raw)
+
+
+def est_call_cost(profile: ModelProfile) -> float:
+    """Estimated EUR for ONE live call on this profile, from the same env-dialled per-call rates the
+    telemetry uses. DeepSeek (the metered escalation/Kevin path) carries the real cost; Granite via
+    prepaid OpenRouter is €0 by default (so the EUR cap meaningfully governs the metered paths)."""
+    if profile.provider == "deepseek":
+        return _cost_per_call("JONI_COST_PER_DEEPSEEK_CALL", "0.004")
+    if profile.provider:
+        return _cost_per_call("JONI_COST_PER_GRANITE_CALL", "0.0")
+    return 0.0
 
 
 def _cost_per_call(env: str, default: str) -> float:

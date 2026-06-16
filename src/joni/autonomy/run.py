@@ -134,11 +134,21 @@ def one_cycle() -> dict:
     queries = queries[:8]
     seen = set(extensions["seen"])
     fetched: list = []
+    fetch_errors = []
     for fetcher in get_fetchers(online=online()):
-        items = fetcher.fetch(queries, limit=4)
-        proto.record(cycle, "fetched", f"{fetcher.name}: {len(items)} item(s)",
-                     refs={"source": fetcher.name})
+        try:
+            items = fetcher.fetch(queries, limit=4)
+        except Exception as exc:  # noqa: BLE001 - a source outage must show as DEGRADED, not "0 items"
+            items = []
+            fetch_errors.append(fetcher.name)
+            proto.record(cycle, "fetched",
+                         f"{fetcher.name}: ERROR ({type(exc).__name__}) - source degraded",
+                         refs={"source": fetcher.name, "degraded": True})
+        else:
+            proto.record(cycle, "fetched", f"{fetcher.name}: {len(items)} item(s)",
+                         refs={"source": fetcher.name})
         fetched.extend(items)
+    extensions["fetch_errors"] = fetch_errors
 
     new_items = [it for it in fetched if it.key not in seen]
 
@@ -161,7 +171,8 @@ def one_cycle() -> dict:
     #     Granite model reads a few items and *proposes* atomic claims with a DESi state_k slice
     #     as context. Proposals enter as candidate SOURCE claims via the same gate - never
     #     authoritative - and the call is captured for replay. The deterministic path above stays.
-    projected = projection.project_and_learn(cs, judged, extensions, proto, cycle)
+    projected = projection.project_and_learn(cs, judged, extensions, proto, cycle,
+                                             budget=budget, runs_per_week=runs_per_week())
 
     # 3a. Read the actual papers (PDF) - arXiv full text, a url queue (incl. SSRN), and a
     #     local inbox. Extracted sentences enter as candidate claims; relations stay the
@@ -182,7 +193,8 @@ def one_cycle() -> dict:
     #     contested, low coverage, ...) is DeepSeek invoked as the escalation analyst - never a
     #     silent fallback, never a parallel vote. Its output enters as candidate SOURCE proposals
     #     through the gate; the escalation reason is recorded in the call capture. One per cycle.
-    escalated = escalation.escalate_if_needed(cs, extensions, proto, cycle)
+    escalated = escalation.escalate_if_needed(cs, extensions, proto, cycle,
+                                              budget=budget, runs_per_week=runs_per_week())
 
     # 3b. Store methods Joni found, as candidates in the Layer 9 core - for Kevin.
     found_methods = methods.harvest(cs, judged, extensions, proto, cycle)
@@ -250,7 +262,8 @@ def one_cycle() -> dict:
     # 4c-kevin. Kevin's creative arm (opt-in, cadence-spaced): his own deepseek-v4-pro profile
     #     proposes a bold cross-domain transfer hypothesis from two of Joni's topics. Candidate
     #     through the gate, captured. Distinct from his deterministic method trials above.
-    kevin_proposed = kevin_llm.propose(cs, extensions, proto, cycle)
+    kevin_proposed = kevin_llm.propose(cs, extensions, proto, cycle,
+                                       budget=budget, runs_per_week=runs_per_week())
 
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
@@ -275,7 +288,8 @@ def one_cycle() -> dict:
     regulated = homeostasis.regulate(cs, extensions, proto, cycle)
     homeostasis.retire_junk_topics(cs, extensions, proto, cycle)       # drain pre-gate junk topics
     homeostasis.retire_offdomain_topics(cs, extensions, proto, cycle)  # drain laxiflora-type topics
-    topic_review.review_topics(cs, extensions, proto, cycle)           # LLM 'does it belong?' gate
+    topic_review.review_topics(cs, extensions, proto, cycle,           # LLM 'does it belong?' gate
+                               budget=budget, runs_per_week=runs_per_week())
     homeostasis.retire_junk_hypotheses(cs, extensions, proto, cycle)   # drain junk-subject ideas
     homeostasis.retire_junk_methods(cs, extensions, proto, cycle)      # drain off-domain methods
     homeostasis.review_numeric_duplicate_conflicts(cs, proto, cycle)   # defuse legacy numeric hards
@@ -339,6 +353,20 @@ def one_cycle() -> dict:
                  f"{recon_note}{panel_note}{research_note}{forum_note}· {vitality['verdict']} "
                  f"· spend "
                  f"€{budget.spent_eur:.4f} · routing via {reflect['routing_engine']}")
+
+    # #6: capability health - a missing capability must read as DEGRADED, never as innocent zeros
+    # (DESi absent -> "fallback" routing, embedder absent -> the domain gate is inert, no pypdf ->
+    # the reader is off). These are recorded so the page shows the difference between "did nothing"
+    # and "could not".
+    from . import embeddings
+    extensions["capabilities"] = {
+        "desi_routing": "live" if reflect.get("routing_engine") == "DESi" else "fallback",
+        "embeddings": "live" if embeddings.available() else "inert",
+        "pdf_reader": "live" if read.get("available") else "absent",
+        "semantic_proposals": "on" if projection.enabled() else "off",
+        "kevin": "live" if extensions.get("kevin_installed") else "absent",
+        "sources_degraded": list(extensions.get("fetch_errors", [])),
+    }
 
     _save_json(p.asks_new, asks_new)
     _save_json(p.commissions_new, commissions_new)

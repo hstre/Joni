@@ -83,7 +83,8 @@ def _parse(output: str, topic_hint: str) -> list[dict]:
     return out[:5]
 
 
-def claim_proposals(text: str, *, topic_hint: str, cs, run_id: str, store_dir):
+def claim_proposals(text: str, *, topic_hint: str, cs, run_id: str, store_dir,
+                    budget=None, runs_per_week: int = 0):
     """Project a source text into candidate claim proposals via the pinned Granite profile.
     Returns ``(proposals, capture)`` - ``([], None)`` if the call could not be made."""
     prof = model_profile.profile("joni-semantic")
@@ -91,14 +92,15 @@ def claim_proposals(text: str, *, topic_hint: str, cs, run_id: str, store_dir):
     ctx = "\n".join(f"- {t}" for t in context) or "(none yet)"
     user = (f"SOURCE:\n{text[:2000]}\n\nRELEVANT EXISTING STATE (state_k={prof.state_k}):\n{ctx}"
             f"\n\nTopic hint: {topic_hint}")
-    output, cap = model_call.call(prof, _SYS, user, run_id=run_id, store_dir=store_dir)
+    output, cap = model_call.call(prof, _SYS, user, run_id=run_id, store_dir=store_dir,
+                                  budget=budget, runs_per_week=runs_per_week)
     if output is None or cap is None:
         return [], None
     return _parse(output, topic_hint), cap
 
 
 def project_and_learn(cs, judged, extensions: dict, proto, cycle: int, *,
-                      max_items: int = 2) -> dict:
+                      max_items: int = 2, budget=None, runs_per_week: int = 0) -> dict:
     """When enabled, project a few read items into candidate claim proposals and submit them
     through the gate (SOURCE, candidate). The model call is captured for replay. No-op otherwise.
     The deterministic reader path is unchanged - this adds a model proposal arm, never replaces."""
@@ -113,7 +115,8 @@ def project_and_learn(cs, judged, extensions: dict, proto, cycle: int, *,
             break
         text = f"{getattr(item, 'title', '')}. {getattr(item, 'summary', '')}".strip()
         props, cap = claim_proposals(text, topic_hint=getattr(rel, "topic", None) or "unsorted",
-                                     cs=cs, run_id=run_id, store_dir=store_dir)
+                                     cs=cs, run_id=run_id, store_dir=store_dir,
+                                     budget=budget, runs_per_week=runs_per_week)
         if not props or cap is None:
             continue
         for p in props:

@@ -51,7 +51,8 @@ def _kevin_usable(cs, topic: str) -> bool:
     return len(real) >= 2
 
 
-def propose(cs, extensions: dict, proto, cycle: int) -> dict:
+def propose(cs, extensions: dict, proto, cycle: int, *, budget=None,
+            runs_per_week: int = 0) -> dict:
     """Once per cadence, let Kevin propose a cross-domain transfer hypothesis via his pinned
     ``deepseek-v4-pro`` profile. Candidate through the gate, captured for replay. No-op when
     disabled, not yet due, or fewer than two good topics exist."""
@@ -78,7 +79,8 @@ def propose(cs, extensions: dict, proto, cycle: int) -> dict:
             "Propose a cross-domain transfer hypothesis linking A and B.")
     prof = model_profile.profile("kevin")
     output, cap = model_call.call(prof, _SYS, user, run_id=f"kevin-c{cycle}",
-                                  store_dir=paths().model_calls)
+                                  store_dir=paths().model_calls,
+                                  budget=budget, runs_per_week=runs_per_week)
     if output is None or cap is None:
         return out
     out["kevin_calls"] = 1
