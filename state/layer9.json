@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tick": 0,
-  "snapshot_hash": "f310b16b306ac0b471f5ce1c246f13effce518890a613a0fa303d7458be23c21",
+  "snapshot_hash": "597a38b0f7c504e25fa477bae140086134b5bea6117fde86b8a8cd9aa2b757fe",
   "journal": [
     {
       "operator": "claim_create",
@@ -55806,6 +55806,148 @@
         "C-267"
       ],
       "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-351",
+          "C-55",
+          "C-68"
+        ],
+        "surface_terms": [
+          "generate"
+        ],
+        "lexical_trigger": 0.6667,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-351",
+              "b": "C-55",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.087
+            },
+            {
+              "a": "C-351",
+              "b": "C-68",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.04
+            },
+            {
+              "a": "C-55",
+              "b": "C-68",
+              "decision": "duplicate",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.6667
+            }
+          ]
+        },
+        "decision": "insufficient-semantic-evidence",
+        "semantic_state": "human-review-required",
+        "decision_rationale": "the group could not be fully measured",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c94",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-351",
+        "C-55",
+        "C-68"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-257",
+          "C-261",
+          "C-350"
+        ],
+        "surface_terms": [
+          "variables"
+        ],
+        "lexical_trigger": 0.2069,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-257",
+              "b": "C-261",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.2069
+            },
+            {
+              "a": "C-257",
+              "b": "C-350",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0278
+            },
+            {
+              "a": "C-261",
+              "b": "C-350",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0526
+            }
+          ]
+        },
+        "decision": "supports",
+        "semantic_state": "semantic-measured",
+        "decision_rationale": "mutually supporting group, but no complementary lift",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c94",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-257",
+        "C-261",
+        "C-350"
+      ],
+      "actor": "semantic_layer",
       "governance_approved": false,
       "reason": "",
       "tick": 0
