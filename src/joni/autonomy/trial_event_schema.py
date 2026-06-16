@@ -554,17 +554,27 @@ class IndependencePolicy:
 INDEPENDENCE_POLICY_V1 = IndependencePolicy()
 
 
+def _shared_across_variants(cells: list[VariantScopeOutcome], attr: str) -> set:
+    """Values of ``attr`` that appear in >= 2 DISTINCT method variants - a shared dependency that
+    breaks independence. (A plain ``len(union) >= n`` count is fooled by overlapping sets like
+    {shared, impl-A} / {shared, impl-B}; this is not.)"""
+    owners: dict = {}
+    for c in cells:
+        for v in getattr(c, attr):
+            owners.setdefault(v, set()).add(c.method_variant)
+    return {v for v, variants in owners.items() if len(variants) >= 2}
+
+
 def _profile(neg: list[VariantScopeOutcome]) -> IndependenceProfile:
     variants = {c.method_variant for c in neg}
-    conf_sets = [set(c.confounders) for c in neg]
-    common = set.intersection(*conf_sets) if conf_sets else set()
     return IndependenceProfile(
         n_variants=len(variants), method_variants_distinct=len(variants) == len(neg),
-        implementations_distinct=len({i for c in neg for i in c.implementations}) >= len(neg),
-        model_families_distinct=len({f for c in neg for f in c.model_families}) >= len(neg),
-        task_samples_independent=len({t for c in neg for t in c.task_samples}) >= len(neg),
-        evaluator_independent=len({e for c in neg for e in c.evaluators}) >= len(neg),
-        shared_confounders=tuple(sorted(common)))
+        # a dimension is independent ONLY if no value is shared by two or more variants.
+        implementations_distinct=not _shared_across_variants(neg, "implementations"),
+        model_families_distinct=not _shared_across_variants(neg, "model_families"),
+        task_samples_independent=not _shared_across_variants(neg, "task_samples"),
+        evaluator_independent=not _shared_across_variants(neg, "evaluators"),
+        shared_confounders=tuple(sorted(_shared_across_variants(neg, "confounders"))))
 
 
 @dataclass(frozen=True)

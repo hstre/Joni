@@ -19,19 +19,37 @@ def _core():
     return l9.Layer9()
 
 
-def _payload(**kw):
+def _full_v3(**kw):
+    """A complete, structurally-valid v3 payload (with a nested measurement field for the
+    deep-copy tests). ``decision.verdict`` is kept consistent with ``epistemic_result``."""
     p = {
         "trial_id": "trial:001", "schema_version": "method_trial_recorded_v3",
         "target_type": "conflict", "target_id": "X17", "claim_ids": ["C-7", "C-12"],
-        "scope_id": "qtt", "method_id": "m_causal", "method_variant": "v2",
+        "scope_id": "qtt", "method_id": "m_causal", "method_variant": "v2", "method_version": 1,
+        "implementation_id": "impl-A", "model": "deepseek-chat", "model_family": "deepseek",
+        "sampling": {"temperature": 0}, "task_set_id": "ts", "task_sample_id": "s1",
+        "baseline_id": "bl", "evaluator_id": "ev", "affinities": ["causal"],
+        "attribution_level": "variant", "attribution_strength": "none",
         "execution_status": "completed", "protocol_status": "valid", "failure_kind": "none",
-        "epistemic_result": "no_benefit", "affinities": ["causal"],
+        "epistemic_result": "no_benefit",
+        "estimand": {"outcome_metric": "misclass", "contrast": "intervention_minus_baseline",
+                     "direction": "higher_is_better", "minimum_effect": 0.10,
+                     "decision_rule_id": "rule_v2"},
         "measurement": {"metric_name": "misclass", "baseline_value": 0.4,
                         "intervention_value": 0.39, "effect_size": 0.04, "uncertainty": 0.02,
                         "nested": {"runs": [1, 2, 3]}},
+        "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": "sha256:test",
+                     "verdict": "no_benefit", "effect_size": 0.04,
+                     "confidence_interval": [0.01, 0.07], "minimum_effect": 0.10},
     }
     p.update(kw)
+    if "decision" not in kw:                         # keep the recorded verdict consistent
+        p["decision"] = dict(p["decision"], verdict=p["epistemic_result"])
     return p
+
+
+def _payload(**kw):
+    return _full_v3(**kw)
 
 
 def _record(core, payload, *, proposer="kevin"):
@@ -283,3 +301,45 @@ def test_method_trial_event_is_registered_transitionless():
     from desi_layer9.enums import Status
     assert ObjectType.METHOD_TRIAL_EVENT in transitions.TRANSITIONS
     assert transitions.allowed(ObjectType.METHOD_TRIAL_EVENT, Status.ACTIVE) == frozenset()
+
+
+# -- core gate validates the FULL v3 structural schema, not just a torso ------------------------- #
+def test_minimal_apparent_v3_payload_is_rejected():
+    core = _core()
+    d = _record(core, {"trial_id": "minimal", "schema_version": "method_trial_recorded_v3",
+                       "target_type": "conflict", "target_id": "X",
+                       "execution_status": "completed", "protocol_status": "valid",
+                       "epistemic_result": "success"})
+    assert not d.accepted and "missing required field" in d.reason
+    assert core.method_trial_events() == []          # never stored
+
+
+def test_full_v3_payload_is_accepted():
+    core = _core()
+    assert _record(core, _payload()).accepted
+    assert len(core.method_trial_events()) == 1
+
+
+def test_unknown_extra_field_is_consciously_allowed_and_preserved():
+    # extra fields are NOT interpreted but ARE preserved verbatim in the immutable record.
+    core = _core()
+    assert _record(core, _payload(trial_id="x", extra_field={"k": [1, 2]})).accepted
+    assert core.method_trial_events()[0]["payload"]["extra_field"] == {"k": [1, 2]}
+
+
+def test_real_verdict_without_decision_rule_hash_is_rejected():
+    core = _core()
+    p = _payload()
+    p["decision"] = dict(p["decision"], decision_rule_hash="")    # real result, empty hash
+    d = _record(core, p)
+    assert not d.accepted and "decision_rule_hash" in d.reason
+
+
+def test_not_evaluated_may_be_stored_without_measurement_values():
+    core = _core()
+    p = _payload(trial_id="ne", epistemic_result="not_evaluated", execution_status="failed",
+                 failure_kind="timeout", protocol_status="unknown",
+                 measurement={"metric_name": None, "baseline_value": None,
+                              "intervention_value": None, "effect_size": None, "uncertainty": None})
+    assert _record(core, p).accepted
+    assert core.method_trial_events()[0]["payload"]["epistemic_result"] == "not_evaluated"

@@ -143,24 +143,30 @@ def _independent_variant_count(outcomes) -> int:
 
 
 def _dataset_sufficiency(core, verified, events) -> dict:
-    """Is the WHOLE history enough for a gap analysis? Tied to real OPEN-conflict + scope coverage
-    and comparative depth - NEVER to 'at least one verified event'."""
+    """Is the WHOLE history enough for a gap analysis? Coverage and comparative depth are judged per
+    ``(conflict, scope)`` - NEVER across scopes of the same conflict, and NEVER by event count. A
+    conflict is analysis-ready only if at least ONE concrete stable scope has >= MIN independent,
+    rule-verified variants."""
     open_ids = {c.id for c in core.open_conflicts()} if hasattr(core, "open_conflicts") else set()
     outcomes = aggregate(verified)
-    by_conflict: dict[str, list] = {}
+    by_pair: dict[tuple, list] = {}                 # (target_id, scope_id) -> [outcome...]
+    by_conflict: set = set()
     for o in outcomes:
-        by_conflict.setdefault(o.target_id, []).append(o)
+        by_pair.setdefault((o.target_id, o.scope_id), []).append(o)
+        by_conflict.add(o.target_id)
 
-    covered = sorted(set(by_conflict) & open_ids)
-    uncovered = sorted(open_ids - set(by_conflict))
-    # a conflict is analysis-ready only with >= MIN INDEPENDENT verified variants in a stable scope.
-    ready = sorted(cid for cid in covered
-                   if _independent_variant_count(by_conflict[cid]) >= _MIN_INDEPENDENT_VARIANTS)
-    max_independent = max((_independent_variant_count(v) for v in by_conflict.values()), default=0)
+    covered = sorted(by_conflict & open_ids)
+    uncovered = sorted(open_ids - by_conflict)
+    # analysis-ready PAIRS: an open conflict + a single stable scope with enough independent depth.
+    ready_pairs = sorted(
+        (cid, sid) for (cid, sid), outs in by_pair.items()
+        if cid in open_ids and _independent_variant_count(outs) >= _MIN_INDEPENDENT_VARIANTS)
+    ready_conflicts = sorted({cid for cid, _ in ready_pairs})
+    max_independent = max((_independent_variant_count(v) for v in by_pair.values()), default=0)
 
     affinity = attribute_to_affinity(outcomes)
     affinity_known = any(a.strength != "none" for a in affinity)
-    comparison_possible = bool(ready) or max_independent >= _MIN_INDEPENDENT_VARIANTS
+    comparison_possible = bool(ready_pairs)
     ratio = (len(covered) / len(open_ids)) if open_ids else 0.0
     coverage = ("none" if not open_ids else
                 "high" if ratio >= 0.67 else "medium" if ratio >= 0.34 else "low")
@@ -170,18 +176,16 @@ def _dataset_sufficiency(core, verified, events) -> dict:
         reasons.append("no open conflicts to analyse")
     if not covered:
         reasons.append("no open conflict has any verified scope-bound trial history")
-    if not ready:
-        reasons.append(f"no open conflict has >= {_MIN_INDEPENDENT_VARIANTS} independent verified "
-                       "method variants (no comparative depth)")
-    if not comparison_possible:
-        reasons.append("no independent variant comparison / baseline available")
+    if not ready_pairs:
+        reasons.append(f"no (conflict, scope) has >= {_MIN_INDEPENDENT_VARIANTS} independent "
+                       "verified variants within a single stable scope (no comparative depth)")
     if uncovered:
         reasons.append(f"{len(uncovered)} open conflict(s) have no trial history")
     if not affinity_known:
         reasons.append("affinity-level attribution not yet admissible (independence "
                        "not established)")
 
-    sufficient = bool(ready) and comparison_possible
+    sufficient = bool(ready_pairs)
     interpretation = {
         "means": ("operational minimum only: for >= 1 open conflict there is enough comparable, "
                   "rule-verified, scope-bound trial history to ATTEMPT a state-dependent gap "
@@ -202,7 +206,8 @@ def _dataset_sufficiency(core, verified, events) -> dict:
         "rule_verified_events": len(verified),
         "covered_open_conflicts": covered,
         "open_conflicts_without_trial_history": uncovered,
-        "analysis_ready_conflicts": ready,
+        "analysis_ready_conflicts": ready_conflicts,
+        "analysis_ready_conflict_scopes": [{"target_id": c, "scope_id": s} for c, s in ready_pairs],
         "scope_coverage": coverage,
         "independent_method_variants": max_independent,
         "comparison_possible": comparison_possible,

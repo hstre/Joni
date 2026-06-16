@@ -61,16 +61,22 @@ limitation is never mistaken for missing scientific relevance.
 
 ## Dataset sufficiency (versioned: `gap_analysis_sufficiency_v1`)
 
-Sufficiency is **not** "≥1 verified event". A conflict is *analysis-ready* only with
-≥ `_MIN_INDEPENDENT_VARIANTS` (=2) sufficiently-**independent** verified variants (per the
-versioned independence policy) in a stable scope; `SUFFICIENT_FOR_GAP_ANALYSIS` requires ≥1
-analysis-ready **open** conflict **and** `comparison_possible`. The structured report carries:
+Sufficiency is **not** "≥1 verified event", and it is judged **per `(conflict, scope)`** — never
+across scopes of the same conflict. A `(conflict, scope)` pair is *analysis-ready* only with
+≥ `_MIN_INDEPENDENT_VARIANTS` (=2) sufficiently-**independent** verified variants within that single
+stable scope; `SUFFICIENT_FOR_GAP_ANALYSIS` requires ≥1 analysis-ready pair on an **open** conflict.
+The report lists the ready pairs explicitly in `analysis_ready_conflict_scopes`.
+
+Independence is real **overlap detection**, not a `len(union) ≥ n` count: two variants that share
+*any* implementation, model-family, task-sample or evaluator are **not** independent (a value
+appearing in ≥2 variants is a shared dependency). The structured report carries:
 
 ```yaml
 dataset_sufficiency:
   policy_id: gap_analysis_sufficiency_v1
   registered_events / structurally_usable_events / rule_verified_events
   covered_open_conflicts / open_conflicts_without_trial_history / analysis_ready_conflicts
+  analysis_ready_conflict_scopes: [ {target_id, scope_id}, ... ]   # the ready (conflict, scope) pairs
   scope_coverage: none|low|medium|high
   independent_method_variants
   comparison_possible

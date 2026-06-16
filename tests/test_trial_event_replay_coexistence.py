@@ -28,11 +28,25 @@ def _payload(**kw):
     p = {
         "trial_id": "trial:001", "schema_version": "method_trial_recorded_v3",
         "target_type": "conflict", "target_id": "X17", "claim_ids": ["C-7"],
-        "scope_id": "qtt", "method_id": "m_causal", "method_variant": "v2",
+        "scope_id": "qtt", "method_id": "m_causal", "method_variant": "v2", "method_version": 1,
+        "implementation_id": "impl-A", "model": "deepseek-chat", "model_family": "deepseek",
+        "sampling": {"temperature": 0}, "task_set_id": "ts", "task_sample_id": "s1",
+        "baseline_id": "bl", "evaluator_id": "ev", "affinities": ["causal"],
+        "attribution_level": "variant", "attribution_strength": "none",
         "execution_status": "completed", "protocol_status": "valid", "failure_kind": "none",
-        "epistemic_result": "no_benefit", "affinities": ["causal"],
+        "epistemic_result": "no_benefit",
+        "estimand": {"outcome_metric": "misclass", "contrast": "intervention_minus_baseline",
+                     "direction": "higher_is_better", "minimum_effect": 0.10,
+                     "decision_rule_id": "rule_v2"},
+        "measurement": {"metric_name": "misclass", "baseline_value": 0.4,
+                        "intervention_value": 0.39, "effect_size": 0.04, "uncertainty": 0.02},
+        "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": "sha256:test",
+                     "verdict": "no_benefit", "effect_size": 0.04,
+                     "confidence_interval": [0.01, 0.07], "minimum_effect": 0.10},
     }
     p.update(kw)
+    if "decision" not in kw:
+        p["decision"] = dict(p["decision"], verdict=p["epistemic_result"])
     return p
 
 

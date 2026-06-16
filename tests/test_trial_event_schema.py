@@ -249,3 +249,43 @@ def test_multi_affinity_method_rolls_up_to_each_affinity():
 def test_single_variant_no_benefit_never_condemns_the_affinity():
     a = attribute_to_affinity(aggregate([_neg("v1", model_family="deepseek", impl="impl-A")]))[0]
     assert a.strength == "none"
+
+
+# -- independence: real OVERLAP detection, not a len(union) count ------------------------------- #
+def _cell(variant, *, impls, families, tasks, evals, conf=(), outcome="no_benefit",
+          aff=("causal",)):
+    from joni.autonomy.trial_event_schema import VariantScopeOutcome
+    return VariantScopeOutcome(
+        target_id="X1", scope_id="s", method_id="m", method_variant=variant, affinities=aff,
+        outcome=outcome, n_completed_valid=1, n_unusable=0, protocol_valid=True, models=(),
+        model_families=families, implementations=impls, task_samples=tasks, evaluators=evals,
+        confounders=conf, evidence=(variant,))
+
+
+def test_partially_overlapping_implementations_are_not_independent():
+    # each variant has a distinct impl AND a SHARED one -> len(union)=3 >= 2 would (wrongly) pass;
+    # real overlap detection flags the shared dependency.
+    cells = [_cell("v1", impls=("shared", "iA"), families=("deepseek",), tasks=("t1",),
+                   evals=("e1",), conf=("a",)),
+             _cell("v2", impls=("shared", "iB"), families=("openai",), tasks=("t2",),
+                   evals=("e2",), conf=("b",))]
+    a = attribute_to_affinity(cells)[0]
+    assert a.strength == "none" and not a.independent
+
+
+def test_fully_shared_model_impl_sample_evaluator_is_not_independent():
+    cells = [_cell("v1", impls=("impl",), families=("fam",), tasks=("ts",), evals=("ev",),
+                   conf=("c",)),
+             _cell("v2", impls=("impl",), families=("fam",), tasks=("ts",), evals=("ev",),
+                   conf=("c",))]
+    a = attribute_to_affinity(cells)[0]
+    assert a.strength == "none" and not a.independent
+
+
+def test_genuinely_disjoint_dependencies_are_independent():
+    cells = [_cell("v1", impls=("iA",), families=("deepseek",), tasks=("t1",), evals=("e1",),
+                   conf=("a",)),
+             _cell("v2", impls=("iB",), families=("openai",), tasks=("t2",), evals=("e2",),
+                   conf=("b",))]
+    a = attribute_to_affinity(cells)[0]
+    assert a.strength == "limited" and a.independent

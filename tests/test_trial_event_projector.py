@@ -46,9 +46,11 @@ def _payload(trial_id, result, *, target="X17", scope="qtt", variant="v1", famil
     return {
         "trial_id": trial_id, "schema_version": "method_trial_recorded_v3",
         "target_type": "conflict", "target_id": target, "claim_ids": list(claim_ids),
-        "scope_id": scope, "method_id": "m_causal", "method_variant": variant,
-        "implementation_id": impl, "model_family": family, "task_sample_id": task,
+        "scope_id": scope, "method_id": "m_causal", "method_variant": variant, "method_version": 1,
+        "implementation_id": impl, "model": "m-" + family, "model_family": family,
+        "task_set_id": "tset", "task_sample_id": task, "baseline_id": "bl",
         "evaluator_id": evaluator, "affinities": ["causal"],
+        "attribution_level": "variant", "attribution_strength": "none",
         "execution_status": "completed", "protocol_status": "valid", "failure_kind": "none",
         "epistemic_result": result, "estimand": _est(min_effect),
         "measurement": {"metric_name": "misclass", "baseline_value": 0.40,
@@ -151,7 +153,23 @@ def test_sufficient_for_gap_analysis_with_independent_history():
     ds = project_trial_events(core)["dataset_sufficiency"]
     assert ds["covered_open_conflicts"] == [cid] and ds["analysis_ready_conflicts"] == [cid]
     assert ds["independent_method_variants"] >= 2 and ds["comparison_possible"] is True
+    assert {"target_id": cid, "scope_id": "qtt"} in ds["analysis_ready_conflict_scopes"]
     assert ds["verdict"] == "SUFFICIENT_FOR_GAP_ANALYSIS"
+
+
+def test_two_scopes_of_one_conflict_do_not_jointly_satisfy():
+    # the SAME conflict, but one independent variant in EACH of two different scopes -> NOT enough;
+    # sufficiency is per (conflict, scope), so neither scope reaches the threshold alone.
+    core = _core()
+    cid = _open_conflict(core)
+    _record(core, _no_benefit("a", target=cid, scope="scope1", variant="v1", family="deepseek",
+                              impl="iA", task="ts1", evaluator="ev1"))
+    _record(core, _no_benefit("b", target=cid, scope="scope2", variant="v2", family="openai",
+                              impl="iB", task="ts2", evaluator="ev2"))
+    ds = project_trial_events(core)["dataset_sufficiency"]
+    assert ds["covered_open_conflicts"] == [cid]            # the conflict has trials...
+    assert ds["analysis_ready_conflict_scopes"] == []       # ...but no single scope is ready
+    assert ds["verdict"] == "insufficient"
 
 
 # -- 5. an unsupported schema stays visible as a projector limitation ---------------------------- #

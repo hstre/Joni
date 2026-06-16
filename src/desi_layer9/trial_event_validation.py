@@ -1,8 +1,14 @@
 """Structural validation + canonicalisation for METHOD_TRIAL_RECORDED payloads, AT THE GATE.
 
-Layer 9 checks STRUCTURE and forbidden axis-combinations only - NOT the epistemic verdict (the
-decision rule) or generalisation (the independence policy), which stay OUTSIDE the core. One
-supported schema version; an unknown version is rejected, never stored.
+Layer 9 validates the FULL v3 structural schema here - required fields, types, sub-structures and
+the forbidden axis-combinations - so that ``schema_version=method_trial_recorded_v3`` actually
+guarantees v3's mandatory structure before an event enters the IRREVERSIBLE journal. It does NOT
+compute the epistemic verdict (no statistics): that stays with the registered decision rule,
+outside the core. One supported schema version; an unknown version is rejected, never stored.
+
+Unknown EXTRA top-level fields are consciously ALLOWED (forward-compatible additions): they are not
+interpreted and are preserved verbatim in the canonical payload. The mandatory fields below are
+required and type-checked.
 
 ``canonical_payload`` produces a deterministic, deep, plain-data canonical form so the stored record
 is immutable (a string), tamper-evident (hashable), and comparable for idempotency.
@@ -11,14 +17,30 @@ is immutable (a string), tamper-evident (hashable), and comparable for idempoten
 from __future__ import annotations
 
 import json
+from numbers import Number
 
 SUPPORTED_TRIAL_SCHEMA_VERSIONS = ("method_trial_recorded_v3",)
 
 _EXEC = ("completed", "failed", "cancelled")
 _PROTO = ("valid", "invalid", "unknown")
+_KINDS = ("none", "technical", "timeout", "parser", "model", "dependency", "infrastructure")
 _RESULT = ("success", "partial_success", "no_benefit", "harmful", "inconclusive", "not_evaluated")
-_REQUIRED = ("trial_id", "schema_version", "target_type", "target_id",
-             "execution_status", "protocol_status", "epistemic_result")
+_REAL = ("success", "partial_success", "no_benefit", "harmful")
+_TARGETS = ("conflict", "open_question", "evidence_gap")
+_DIRECTIONS = ("higher_is_better", "lower_is_better")
+_ATTR_LEVELS = ("variant", "method")
+
+# v3 mandatory top-level fields (structure that schema_version=v3 must guarantee).
+_REQUIRED = (
+    "trial_id", "schema_version", "target_type", "target_id", "scope_id",
+    "method_id", "method_variant", "estimand", "measurement", "decision",
+    "model", "evaluator_id", "baseline_id",
+    "execution_status", "protocol_status", "failure_kind", "epistemic_result",
+)
+_ESTIMAND_REQUIRED = ("outcome_metric", "direction", "minimum_effect", "decision_rule_id")
+_DECISION_REQUIRED = ("decision_rule_id", "decision_rule_hash", "verdict")
+_MEASUREMENT_KEYS = ("metric_name", "baseline_value", "intervention_value", "effect_size",
+                     "uncertainty")
 
 
 def canonical_payload(payload: dict) -> str:
@@ -27,29 +49,116 @@ def canonical_payload(payload: dict) -> str:
     return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
+def _nonempty_str(v) -> bool:
+    return isinstance(v, str) and bool(v)
+
+
 def validate_trial_payload(p: dict) -> list[str]:
-    """Return structural violations (empty == structurally valid). An unsupported schema version is
-    reported alone - the core records only versions it understands."""
+    """Return structural violations (empty == structurally valid v3). Validates the full mandatory
+    structure + forbidden combinations; never computes the verdict from the numbers."""
     if not isinstance(p, dict):
         return ["payload must be an object"]
     if p.get("schema_version") not in SUPPORTED_TRIAL_SCHEMA_VERSIONS:
         return [f"unsupported schema_version {p.get('schema_version')!r} "
                 f"(supported: {SUPPORTED_TRIAL_SCHEMA_VERSIONS})"]
+
     errs: list[str] = []
     for k in _REQUIRED:
         if k not in p:
             errs.append(f"missing required field '{k}'")
-    if p.get("execution_status") not in _EXEC:
-        errs.append(f"execution_status {p.get('execution_status')!r} invalid")
-    if p.get("protocol_status") not in _PROTO:
-        errs.append(f"protocol_status {p.get('protocol_status')!r} invalid")
-    if p.get("epistemic_result") not in _RESULT:
-        errs.append(f"epistemic_result {p.get('epistemic_result')!r} invalid")
-    # forbidden combinations (STRUCTURAL only - no statistics here)
-    if p.get("execution_status") != "completed" and p.get("epistemic_result") != "not_evaluated":
+    if errs:
+        return errs                                  # don't probe sub-structure of a torso payload
+
+    # -- enums + simple types ------------------------------------------------------------------- #
+    if p["execution_status"] not in _EXEC:
+        errs.append(f"execution_status {p['execution_status']!r} invalid")
+    if p["protocol_status"] not in _PROTO:
+        errs.append(f"protocol_status {p['protocol_status']!r} invalid")
+    if p.get("failure_kind", "none") not in _KINDS:
+        errs.append(f"failure_kind {p.get('failure_kind')!r} invalid")
+    if p["epistemic_result"] not in _RESULT:
+        errs.append(f"epistemic_result {p['epistemic_result']!r} invalid")
+    if p["target_type"] not in _TARGETS:
+        errs.append(f"target_type {p['target_type']!r} invalid")
+    if not _nonempty_str(p.get("trial_id")):
+        errs.append("trial_id must be a non-empty string")
+    if not _nonempty_str(p.get("scope_id")):
+        errs.append("scope_id must be a non-empty string ('unknown' explicitly, never empty)")
+    if not _nonempty_str(p.get("method_variant")):
+        errs.append("method_variant must be a non-empty string")
+    if not _nonempty_str(p.get("model")):
+        errs.append("model (sampling provenance) must be a non-empty string")
+    if not _nonempty_str(p.get("evaluator_id")):
+        errs.append("evaluator_id must be a non-empty string")
+    if not _nonempty_str(p.get("baseline_id")):
+        errs.append("baseline_id must be a non-empty string")
+    if "attribution_level" in p and p["attribution_level"] not in _ATTR_LEVELS:
+        errs.append(f"attribution_level {p['attribution_level']!r} not in {_ATTR_LEVELS}")
+    if p.get("attribution_strength", "none") != "none":
+        errs.append("attribution_strength must be 'none' on a raw event")
+
+    # -- sub-structures ------------------------------------------------------------------------- #
+    est, dec, meas = p.get("estimand"), p.get("decision"), p.get("measurement")
+    if not isinstance(est, dict):
+        errs.append("estimand must be an object")
+    else:
+        for k in _ESTIMAND_REQUIRED:
+            if k not in est:
+                errs.append(f"estimand missing '{k}'")
+        if est.get("direction") not in _DIRECTIONS:
+            errs.append(f"estimand.direction {est.get('direction')!r} invalid")
+        if not isinstance(est.get("minimum_effect"), Number):
+            errs.append("estimand.minimum_effect must be numeric")
+    if not isinstance(dec, dict):
+        errs.append("decision must be an object")
+    else:
+        for k in _DECISION_REQUIRED:
+            if k not in dec:
+                errs.append(f"decision missing '{k}'")
+        if dec.get("verdict") not in _RESULT:
+            errs.append(f"decision.verdict {dec.get('verdict')!r} invalid")
+    if not isinstance(meas, dict):
+        errs.append("measurement must be an object")
+    elif any(k not in meas for k in _MEASUREMENT_KEYS):
+        errs.append(f"measurement must carry the keys {_MEASUREMENT_KEYS} (values may be null)")
+    if errs:
+        return errs
+
+    # -- forbidden combinations (structural; NO statistics) ------------------------------------- #
+    exec_s, proto, result = p["execution_status"], p["protocol_status"], p["epistemic_result"]
+    real = result in _REAL
+    if exec_s != "completed" and result != "not_evaluated":
         errs.append("forbidden: non-completed execution requires epistemic_result 'not_evaluated'")
-    if p.get("protocol_status") == "invalid" and p.get("epistemic_result") != "not_evaluated":
+    if exec_s == "failed" and p.get("failure_kind", "none") == "none":
+        errs.append("forbidden: execution_status 'failed' requires a failure_kind != 'none'")
+    if exec_s != "failed" and p.get("failure_kind", "none") != "none":
+        errs.append("forbidden: failure_kind set without execution_status 'failed'")
+    if proto == "invalid" and result != "not_evaluated":
         errs.append("forbidden: invalid protocol requires epistemic_result 'not_evaluated'")
-    if not p.get("trial_id"):
-        errs.append("trial_id is required (non-empty)")
+    if proto == "unknown" and real:
+        errs.append("forbidden: a real result requires protocol_status 'valid' (got 'unknown')")
+    if p["target_type"] == "conflict" and not p.get("claim_ids"):
+        errs.append("a conflict trial must carry non-empty claim_ids")
+
+    # decision.verdict is the recorded verdict; it must match the event's epistemic_result.
+    if dec.get("verdict") != result:
+        errs.append(f"decision.verdict {dec.get('verdict')!r} must equal epistemic_result "
+                    f"{result!r}")
+
+    if real:
+        if exec_s != "completed" or proto != "valid":
+            errs.append("a real result requires execution 'completed' + protocol 'valid'")
+        for k in ("metric_name", "baseline_value", "intervention_value"):
+            if meas.get(k) is None:
+                errs.append(f"a real result requires measurement.{k}")
+        if not _nonempty_str(est.get("decision_rule_id")) or \
+                not isinstance(est.get("minimum_effect"), Number) or est["minimum_effect"] <= 0:
+            errs.append("a real result requires estimand.decision_rule_id + minimum_effect > 0")
+        if not _nonempty_str(dec.get("decision_rule_id")) or \
+                not _nonempty_str(dec.get("decision_rule_hash")):
+            errs.append("a real result requires a decision with decision_rule_id + "
+                        "decision_rule_hash (a registered, versioned rule)")
+        if est.get("decision_rule_id") and dec.get("decision_rule_id") and \
+                est["decision_rule_id"] != dec["decision_rule_id"]:
+            errs.append("decision.decision_rule_id must match estimand.decision_rule_id")
     return errs
