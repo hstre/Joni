@@ -31,7 +31,6 @@ from desi_layer9 import (
     migration,
     persistence,
 )
-from desi_layer9.objects import OperationalState
 from desi_layer9.provenance import Provenance
 
 
@@ -101,15 +100,15 @@ class EpistemicIdentity:
         return self._last(ObjectType.SELF_MODEL_CLAIM).id
 
     def snapshot_operational(self, metrics: dict) -> str:
-        """Measured system data - written by the deterministic system, not a model."""
-        os_obj = OperationalState(
-            id=self.core.minter.next(ObjectType.OPERATIONAL_STATE), metrics=dict(metrics),
-            status=Status.ACTIVE, created_tick=self.core.tick,
-            provenance=Provenance.from_operator())
-        from desi_layer9 import Authority
-        os_obj.authority = Authority.AUTHORITATIVE
-        self.core.objects[os_obj.id] = os_obj
-        return os_obj.id
+        """Measured system data - written by the deterministic system, not a model.
+
+        Routed THROUGH the gate (Operator.OPERATIONAL_STATE), like every other authoritative write:
+        it produces a ledger event, is replay-reproducible, and passes the authority/taint checks.
+        (It used to write ``core.objects[...]`` directly - a second, ungated write path that was
+        invisible to replay and verify_chain.)"""
+        self._submit(ProposalType.STATE_REVISION_PROPOSAL, Operator.OPERATIONAL_STATE,
+                     {"metrics": dict(metrics)})
+        return self._last(ObjectType.OPERATIONAL_STATE).id
 
     def render_narrative(self, text: str, *, basis: tuple[str, ...] = ()) -> str:
         self._submit(ProposalType.STATE_REVISION_PROPOSAL, Operator.NARRATIVE_RENDER,

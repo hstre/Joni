@@ -77,11 +77,13 @@ def load(path: str | Path, *, verify: bool = True) -> Layer9 | None:
 
 
 def repair(path: str | Path) -> bool:
-    """One-time repair for a state written before per-entry ticks were journalled.
+    """Re-seal a state whose recorded SNAPSHOT hash drifted while the ledger chain is still intact.
 
-    Such a state can fail the strict hash check after a tick change (e.g. a midnight day
-    rollover). We replay it without the check - which is internally deterministic - and
-    re-save, so the recorded hash matches replay again. Returns True if a repair was needed.
+    The only legitimate case is a snapshot-hash mismatch with an unbroken chain (e.g. a state
+    written before per-entry ticks were journalled, after a midnight tick rollover). A BROKEN CHAIN
+    means possible tampering and must hard-stop, never be silently re-blessed: a blanket
+    ``except ValueError: re-save`` would launder a corrupted journal into a self-consistent file.
+    Returns True if a repair was needed; raises if the state is not safely repairable.
     """
     path = Path(path)
     if not path.exists():
@@ -91,7 +93,17 @@ def repair(path: str | Path) -> bool:
         from_doc(doc, verify=True)
         return False                                  # already loads cleanly - nothing to do
     except ValueError:
-        state = from_doc(doc, verify=False)           # replay-only; deterministic
-        save(state, path)                             # re-record a consistent snapshot hash
-        from_doc(json.loads(path.read_text(encoding="utf-8")), verify=True)  # must load now
-        return True
+        pass
+    state = from_doc(doc, verify=False)               # replay-only; deterministic
+    ok, problems = verify_chain(state)
+    if not ok:                                        # tampering, not drift - refuse to re-bless
+        raise ValueError("ledger chain broken - refusing to repair (possible tampering): "
+                         + "; ".join(problems))
+    recorded = doc.get("snapshot_hash")
+    if not (recorded and snapshot_hash(state) != recorded):
+        # chain intact AND snapshot already matches: the load failed for some other reason we do
+        # not understand - do not paper over it.
+        raise ValueError("repair: verify failed but chain intact and snapshot matches - refusing")
+    save(state, path)                                 # the one safe case: re-seal the snapshot hash
+    from_doc(json.loads(path.read_text(encoding="utf-8")), verify=True)  # must load cleanly now
+    return True

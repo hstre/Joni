@@ -39,6 +39,11 @@ def can_confirm_claim(
         reasons.append("provenance missing/unknown")
     if claim.status is Status.QUARANTINED:
         reasons.append("claim is quarantined")
+    taint = getattr(claim, "taint", None)
+    if taint is not None and taint.is_contaminated and not taint.human_validated:
+        # taint must actually block confirmation, not just be recorded; a human can clear it
+        # explicitly via HUMAN_VALIDATE.
+        reasons.append("claim is contaminated and not human-validated")
 
     return (not reasons), reasons
 

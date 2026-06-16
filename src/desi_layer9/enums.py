@@ -221,6 +221,8 @@ class Operator(StrEnum):
     SELF_MODEL_REVISE = "self_model_revise"
     NARRATIVE_RENDER = "narrative_render"
     SEMANTIC_CLUSTER_PROPOSE = "semantic_cluster_propose"
+    OPERATIONAL_STATE = "operational_state"   # deterministic system measurement (gated)
+    HUMAN_VALIDATE = "human_validate"         # a human signs off on a contaminated object
 
 
 # Operators permitted to grant high authority. Enforced by the gate (PR 2); declared
@@ -232,6 +234,8 @@ OPERATORS_GRANTING_AUTHORITATIVE: frozenset[Operator] = frozenset({
     Operator.METHOD_PROMOTE,
     Operator.CONFLICT_RESOLVE,
     Operator.PROPOSAL_ACCEPT,
+    Operator.OPERATIONAL_STATE,   # only a deterministic operator/human writes operational state
+    Operator.HUMAN_VALIDATE,      # only a human/operator may clear taint for promotion
 })
 
 # Control-plane changes (rules, budgets, schema) require these operators *and* human
