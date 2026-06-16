@@ -456,7 +456,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 15,
+    "starved_topic": 16,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2640,7 +2640,7 @@
     "evaluation_mode": "real_trial_protocol_v1",
     "epistemic_weight": "provisional"
   },
-  "method_trials_total": 129,
+  "method_trials_total": 137,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "operator": 0
@@ -2683,7 +2683,11 @@
     "C-163|C-169",
     "C-164|C-166",
     "C-164|C-168",
+    "C-164|C-169",
     "C-165|C-166",
+    "C-165|C-168",
+    "C-166|C-168",
+    "C-168|C-169",
     "C-26|C-48",
     "C-40|C-41",
     "C-55|C-68",
@@ -2726,7 +2730,11 @@
     "C-163|C-169@bge-small-en-v1.5",
     "C-164|C-166@bge-small-en-v1.5",
     "C-164|C-168@bge-small-en-v1.5",
+    "C-164|C-169@bge-small-en-v1.5",
     "C-165|C-166@bge-small-en-v1.5",
+    "C-165|C-168@bge-small-en-v1.5",
+    "C-166|C-168@bge-small-en-v1.5",
+    "C-168|C-169@bge-small-en-v1.5",
     "C-26|C-48@bge-small-en-v1.5",
     "C-40|C-41@bge-small-en-v1.5",
     "C-55|C-68@bge-small-en-v1.5",
@@ -2746,6 +2754,7 @@
     "memory",
     "operator",
     "part",
+    "patterns",
     "pipelines",
     "related",
     "scientific",
@@ -2774,6 +2783,7 @@
     "panel|grasping",
     "panel|grasps",
     "panel|ground-collision",
+    "panel|guidance",
     "panel|helmholtz",
     "panel|hosted",
     "panel|imputation",
@@ -2805,12 +2815,11 @@
     "knowledge",
     "memory",
     "pipelines",
+    "related",
     "scientific",
     "service"
   ],
-  "emerge_insufficient": {
-    "meth:related": 3
-  },
+  "emerge_insufficient": {},
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -2826,25 +2835,26 @@
     "C-226",
     "C-228",
     "C-230",
+    "C-232",
     "C-74",
     "C-99"
   ],
   "learned_queries": [
-    "panel factor",
-    "unsorted factor",
     "unsorted recurs",
     "panel recurs",
     "panel claims",
     "unsorted claims",
     "panel panel",
-    "panel worth"
+    "panel worth",
+    "panel underlying",
+    "panel guidance"
   ],
   "hyp_seen_cycle": {
     "C-21": 17,
     "C-74": 13,
     "C-99": 11,
     "C-113": 15,
-    "C-129": 10,
+    "C-129": 19,
     "C-142": 12,
     "C-158": 14,
     "C-160": 16,
@@ -2857,7 +2867,8 @@
     "C-224": 15,
     "C-226": 16,
     "C-228": 17,
-    "C-230": 18
+    "C-230": 18,
+    "C-232": 19
   },
   "topics_domain_ok": [
     "agent",
@@ -2879,6 +2890,7 @@
     "operator",
     "overview",
     "part",
+    "patterns",
     "pipelines",
     "provenance",
     "purpose",
@@ -2905,6 +2917,7 @@
     "C-226",
     "C-228",
     "C-230",
+    "C-232",
     "C-74",
     "C-99"
   ],
@@ -2933,30 +2946,30 @@
     "verdict": "developing",
     "development": 6,
     "degeneration": 0,
-    "active": 130,
-    "hypotheses": 18,
-    "unsupported_hypotheses": 18,
+    "active": 131,
+    "hypotheses": 19,
+    "unsupported_hypotheses": 19,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 26,
-    "supporting_links": 26,
-    "emergent_total": 69,
+    "evidence_links": 28,
+    "supporting_links": 28,
+    "emergent_total": 72,
     "usable_semantic_rate": 1.0,
     "methods_total": 19,
-    "method_trials_total": 129,
+    "method_trials_total": 137,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 2069,
-    "cycle": 18
+    "objects": 2118,
+    "cycle": 19
   },
   "vitality_prev": {
-    "supports": 26,
+    "supports": 28,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 2069,
-    "active": 130,
-    "links": 26,
-    "emergent": 69
+    "objects": 2118,
+    "active": 131,
+    "links": 28,
+    "emergent": 72
   },
   "stagnation": 0,
   "vitality_history": [
@@ -3081,6 +3094,13 @@
     },
     {
       "cycle": 18,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 19,
       "verdict": "developing",
       "development": 6,
       "degeneration": 0,
