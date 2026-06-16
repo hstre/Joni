@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tick": 0,
-  "snapshot_hash": "225127e7919ec4335a515dce5ebccf12a8800ca275ba4a5f496917f20475a7fa",
+  "snapshot_hash": "ae4166ec00b5321e1dca62b84eeb37cb28ba7ef54ee1e353618bbda7c25de23f",
   "journal": [
     {
       "operator": "claim_create",
@@ -52891,6 +52891,293 @@
       },
       "target_objects": [
         "C-165"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-164",
+          "C-171"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.3,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.15806,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": false,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "cosine distance 0.158: clearly related and non-duplicate - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c73-bf",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-164",
+        "C-171"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-165",
+          "C-171"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.3,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.178464,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": false,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "cosine distance 0.178: clearly related and non-duplicate - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c73-bf",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-165",
+        "C-171"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**\n\nChatGPT (adversarial) and Deepseek (consistency) converge on conditional viability; divergence is only in framing, not in claim category.\n\n- ChatGPT treats assumptions as *external success factors* (adoption, community, security) — a market/ecosystem category.\n- Deepseek treats them as *internal fit conditions* (docs=website, plugin-architecture limits) — a method-applicability category.\n\nDisagreement retained on one assumption: ChatGPT adds **security risk**, which I find miscategorized — security is generic to any web stack, not specific to the \"easy to maintain\" lens. I exclude it; the relevant fragility is maintenance/fork-pressure (Deepseek's), not exposure.\n\n**Reconciled assessment:**\n\nFormally admissible as a *conditional* method suggestion, not an absolute \"good idea.\" Tragfähig wenn: Inhalte textlastig/versionierbar, Maintainer-Team aktiv, Toolchain (React/MDX) nahe der Zielgruppe. Bricht wenn: Customizing jenseits Plugin-Architektur, heterogene Inhalte (generierte API-Refs), oder fehlendes Pflegeteam.\n\nThe proposition is well-formed but underspecifies its applicability scope to the panel — \"applicable to: panel\" is asserted, not derived. Joni decides.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:claude"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-344"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · adversarial · keine Entscheidung] **Formale Beurteilung (Assessor, keine Entscheidung):**\n\n**Kategorienreinheit:** Bruch. Die Eingabe vermischt die Kategorien *Methode* und *Tool*. \"docusaurus\" als Software-Werkzeug passt nicht zur abstrakten Kategorie einer Bewertungsmethode oder Linse.\n\n**Logische Konsistenz:** Bedingt konsistent. Die Idee ist tragfähig, wenn \"docusaurus\" metaphorisch als Prinzipien-Linse (Wartbarkeit, Offenheit, Dokumentationsklarheit) verstanden wird, nicht als wörtliche Tool-Adoption.\n\n**Explizite Annahmen:** docusaurus ist wartbar, open source, dokumentationsorientiert.\n\n**Implizite Annahmen (nicht ausgewiesen):**\n1. Das Tool dient als Bewertungsmetapher, nicht zur Installation.\n2. Das Panel arbeitet mit Software-Tooling.\n3. \"Easy to maintain\" ist auf Panel-Artefakte übertragbar.\n\n**Konsistenz-Bedingung:** Die Proposition ist konsistent, wenn \"docusaurus\" metaphorisch als Linse gelesen wird. Wörtlich ist es ein Kategorienfehler.\n\n**Pro (tragfähig):** Dokumentationszentrierte Struktur, automatisierte Wartbarkeit, Open-Source-Vorteile.\n\n**Contra (bricht):** Komplexe Anpassungen, heterogene Inhalte, fehlendes Maintainer-Team.\n\n**Rekonziliert:** Die Idee ist konditional tragfähig, abhängig von den genannten Annahmen.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:chatgpt"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-345"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · consistency · keine Entscheidung] Claude und ChatGPT divergieren fundamental: Claude identifiziert einen Kategorienfehler (Methode/Linse vs. konkretes Tool) und bewertet die formale Zulässigkeit der Proposition; ChatGPT übersieht die explizite Kategorisierung „Linse“ und beurteilt die praktische Güte einer Software-Einführung. Die Abweichung liegt in der Regelanwendung: Claude hält sich an die gegebene Kategorie (method suggestion, applicable to: panel), ChatGPT missachtet sie und behandelt die Proposition als Tool-Vorschlag außerhalb des Panelkontexts.\n\n**Reconciled assessment (formale Zulässigkeit):**  \nDie Proposition ist als wörtliche Einführung des Tools Docusaurus in das Panel-Bewertungsraster kategorisch unzulässig (Kategorienfehler: konkrete Software vs. abstrakte Linse). Zulässig ist sie nur unter der expliziten Annahme einer metaphorischen Lesart: „Docusaurus“ steht als Prinzipienbündel für Dokumentations-Wartbarkeit, Offenheit und Klarheit, das als Bewertungslinse auf Panel-Artefakte angewendet wird. Notwendige Zusatzannahmen: (1) die Metapher wird deklariert, (2) die Prinzipien sind auf abstrakte Bewertungsprozesse übertragbar, (3) das Panel akzeptiert software-inspirierte Metaphern. Ohne diese Explikation ist die Proposition inkonsistent. Eine Wertung als „gute Idee“ erfolgt nicht (ausschließlich Joni vorbehalten).",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:deepseek"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-346"
       ],
       "actor": "joni",
       "governance_approved": false,

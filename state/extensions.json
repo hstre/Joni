@@ -477,7 +477,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 69,
+    "starved_topic": 70,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -3479,8 +3479,10 @@
     "C-164|C-166@bge-small-en-v1.5",
     "C-164|C-168@bge-small-en-v1.5",
     "C-164|C-169@bge-small-en-v1.5",
+    "C-164|C-171@bge-small-en-v1.5",
     "C-165|C-166@bge-small-en-v1.5",
     "C-165|C-168@bge-small-en-v1.5",
+    "C-165|C-171@bge-small-en-v1.5",
     "C-166|C-168@bge-small-en-v1.5",
     "C-166|C-169@bge-small-en-v1.5",
     "C-166|C-171@bge-small-en-v1.5",
@@ -3758,14 +3760,14 @@
     "C-99"
   ],
   "learned_queries": [
-    "panel through-line",
-    "panel underlying",
     "panel across",
     "panel intensely",
     "panel panel",
     "panel factor",
     "panel testing",
-    "panel recurs"
+    "panel recurs",
+    "panel challenge",
+    "panel claims"
   ],
   "hyp_seen_cycle": {
     "C-265": 63,
@@ -3780,7 +3782,7 @@
     "C-274": 70,
     "C-275": 71,
     "C-276": 72,
-    "C-277": 56,
+    "C-277": 73,
     "C-278": 57,
     "C-279": 58,
     "C-300": 67,
@@ -3789,7 +3791,7 @@
     "C-320": 70,
     "C-327": 71,
     "C-328": 72,
-    "C-329": 55,
+    "C-329": 73,
     "C-330": 56,
     "C-331": 57,
     "C-332": 58,
@@ -3919,8 +3921,8 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 6,
+    "verdict": "degenerating",
+    "development": 0,
     "degeneration": 1,
     "active": 187,
     "hypotheses": 30,
@@ -3934,20 +3936,20 @@
     "methods_total": 21,
     "method_trials_total": 172,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 3433,
-    "cycle": 72
+    "stagnation_cycles": 1,
+    "objects": 3439,
+    "cycle": 73
   },
   "vitality_prev": {
     "supports": 58,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3433,
+    "objects": 3439,
     "active": 187,
     "links": 58,
     "emergent": 160
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -4452,27 +4454,35 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 73,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
     "method:M-19",
     "method:M-2",
-    "method:M-20"
+    "method:M-20",
+    "method:M-21"
   ],
-  "panel_last_cycle": 49,
+  "panel_last_cycle": 73,
   "panel_last": {
-    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"documentation-as-a-lens\" - 'documentation' recurs across documentation, panel in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
+    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"docusaurus\" - Easy to maintain open source documentation websites.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
     "roles": {
       "claude": "assessor",
       "chatgpt": "adversarial",
       "deepseek": "consistency"
     },
     "phase3": {
-      "claude": "Cross-reconstruction:\n\nChatGPT judges on **content-validity** of documentation (comprehensive? unbiased? complete?). That's a different category than mine: those are object-level reliability worries, not lens-admissibility conditions. I keep distance here — assessing whether documentation is *good evidence* prejudges Joni's verdict; the panel's task is formal tractability of the lens.\n\nDeepSeek and I share the **invariance assumption**: the lens is admissible only if \"documentation\" names a stable structure (record–structure–retrieve) that recurs across instances. I accept its circularity break and its category-difference flag (deliberative record vs. generative trace). One added divergence: DeepSeek treats panel evidence as *one* such distinct kind; I'd note the recurrence Kevin observes may be selection artifact — \"documentation\" appears because he looked for it.\n\nReconciled assessment:\nTragfaehig if (a) the lens's invariant is specified independently of its instances, and (b) a grounding token stops self-reference. Bricht where recurrence is observer-induced or where panel's category differs from documentation. Admissible as tentative heuristic; boundary conditions undecided. Joni decides.",
-      "chatgpt": "**Reconstructed Assessment (Adversarial, Concise)**\n\n**Assumption Divergence:** Claude assumes \"documentation\" as both object and lens requires explicit indexing to avoid circularity, while Deepseek emphasizes the need for a stable pattern across instances for transferability.\n\n**Reconciled Judgement:**\n\n**Kategorienreinheit:** The method's validity hinges on distinguishing between \"documentation\" as a domain object and as a methodological lens. Without this separation, the proposal risks circular reasoning.\n\n**Logische Konsistenz:** Consistency is maintained if the lens's structural pattern is explicitly defined and invariant across domains. This requires specifying the conditions under which \"documentation\" can function as a lens without self-reference.\n\n**Tragfähigkeit:** The method is viable if:\n- There is clear separation between object and method levels.\n- Structural recurrence, not mere lexical repetition, is demonstrated.\n- Transferability conditions are specified, ensuring applicability across similar domains.\n\n**Bricht bei:** The method fails if:\n- \"Documentation\" is used interchangeably without level distinction.\n- Recurrence is based solely on word identity.\n- The application domain is categorically different, rendering the lens ineffective.\n\nThis assessment aligns with both Claude's and Deepseek's emphasis on structural clarity and boundary conditions.",
-      "deepseek": "Divergenz: Claude beurteilt nach formal-logischer Konsistenz (Ebenentrennung, Zirkelfreiheit), ChatGPT nach pragmatischer Anwendbarkeit (Dokumentationsqualität, Vollständigkeit). Beide operieren unter verschiedenen Beurteilungsregeln – Formalstruktur vs. empirische Güte. Ohne explizite Kategorieabstimmung bleibt Dissens bestehen.\n\nRekonziliation: Die Methode ist nur unter formaler Sauberkeit (Claudes Bedingungen) überhaupt als kohärent beurteilbar. Zusätzlich muss sie die von ChatGPT genannten Schwächen (Kontextabhängigkeit, implizites Wissen, Qualitätsvarianz) handhaben, sonst läuft sie bei konkreter Anwendung leer. Beide Dimensionen sind notwendig, nicht konkurrierend. Unter der Annahme, dass “gute Idee” formale Zulässigkeit voraussetzt, ist Claudes Massstab primär; ChatGPTs Einwände definieren sekundäre Bruchstellen. Bei fehlender Ebenentrennung bricht die Methode grundsätzlich – bei erfüllter Formalstruktur können die praktischen Begrenzungen dennoch zu Scheitern führen."
+      "claude": "**Cross-reconstruction:**\n\nChatGPT (adversarial) and Deepseek (consistency) converge on conditional viability; divergence is only in framing, not in claim category.\n\n- ChatGPT treats assumptions as *external success factors* (adoption, community, security) — a market/ecosystem category.\n- Deepseek treats them as *internal fit conditions* (docs=website, plugin-architecture limits) — a method-applicability category.\n\nDisagreement retained on one assumption: ChatGPT adds **security risk**, which I find miscategorized — security is generic to any web stack, not specific to the \"easy to maintain\" lens. I exclude it; the relevant fragility is maintenance/fork-pressure (Deepseek's), not exposure.\n\n**Reconciled assessment:**\n\nFormally admissible as a *conditional* method suggestion, not an absolute \"good idea.\" Tragfähig wenn: Inhalte textlastig/versionierbar, Maintainer-Team aktiv, Toolchain (React/MDX) nahe der Zielgruppe. Bricht wenn: Customizing jenseits Plugin-Architektur, heterogene Inhalte (generierte API-Refs), oder fehlendes Pflegeteam.\n\nThe proposition is well-formed but underspecifies its applicability scope to the panel — \"applicable to: panel\" is asserted, not derived. Joni decides.",
+      "chatgpt": "**Formale Beurteilung (Assessor, keine Entscheidung):**\n\n**Kategorienreinheit:** Bruch. Die Eingabe vermischt die Kategorien *Methode* und *Tool*. \"docusaurus\" als Software-Werkzeug passt nicht zur abstrakten Kategorie einer Bewertungsmethode oder Linse.\n\n**Logische Konsistenz:** Bedingt konsistent. Die Idee ist tragfähig, wenn \"docusaurus\" metaphorisch als Prinzipien-Linse (Wartbarkeit, Offenheit, Dokumentationsklarheit) verstanden wird, nicht als wörtliche Tool-Adoption.\n\n**Explizite Annahmen:** docusaurus ist wartbar, open source, dokumentationsorientiert.\n\n**Implizite Annahmen (nicht ausgewiesen):**\n1. Das Tool dient als Bewertungsmetapher, nicht zur Installation.\n2. Das Panel arbeitet mit Software-Tooling.\n3. \"Easy to maintain\" ist auf Panel-Artefakte übertragbar.\n\n**Konsistenz-Bedingung:** Die Proposition ist konsistent, wenn \"docusaurus\" metaphorisch als Linse gelesen wird. Wörtlich ist es ein Kategorienfehler.\n\n**Pro (tragfähig):** Dokumentationszentrierte Struktur, automatisierte Wartbarkeit, Open-Source-Vorteile.\n\n**Contra (bricht):** Komplexe Anpassungen, heterogene Inhalte, fehlendes Maintainer-Team.\n\n**Rekonziliert:** Die Idee ist konditional tragfähig, abhängig von den genannten Annahmen.",
+      "deepseek": "Claude und ChatGPT divergieren fundamental: Claude identifiziert einen Kategorienfehler (Methode/Linse vs. konkretes Tool) und bewertet die formale Zulässigkeit der Proposition; ChatGPT übersieht die explizite Kategorisierung „Linse“ und beurteilt die praktische Güte einer Software-Einführung. Die Abweichung liegt in der Regelanwendung: Claude hält sich an die gegebene Kategorie (method suggestion, applicable to: panel), ChatGPT missachtet sie und behandelt die Proposition als Tool-Vorschlag außerhalb des Panelkontexts.\n\n**Reconciled assessment (formale Zulässigkeit):**  \nDie Proposition ist als wörtliche Einführung des Tools Docusaurus in das Panel-Bewertungsraster kategorisch unzulässig (Kategorienfehler: konkrete Software vs. abstrakte Linse). Zulässig ist sie nur unter der expliziten Annahme einer metaphorischen Lesart: „Docusaurus“ steht als Prinzipienbündel für Dokumentations-Wartbarkeit, Offenheit und Klarheit, das als Bewertungslinse auf Panel-Artefakte angewendet wird. Notwendige Zusatzannahmen: (1) die Metapher wird deklariert, (2) die Prinzipien sind auf abstrakte Bewertungsprozesse übertragbar, (3) das Panel akzeptiert software-inspirierte Metaphern. Ohne diese Explikation ist die Proposition inkonsistent. Eine Wertung als „gute Idee“ erfolgt nicht (ausschließlich Joni vorbehalten)."
     },
-    "cycle": 49
+    "cycle": 73
   },
   "principle_seen": [
     "hold_tension",
@@ -4611,7 +4621,7 @@
     "X-8"
   ],
   "reconsolidate_lens_idx": 0,
-  "kevin_last_cycle": 70,
+  "kevin_last_cycle": 73,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
