@@ -1,36 +1,45 @@
 """Read-only projector: Layer-9 ``method_trial_events()`` -> a transparent trial projection.
 
-The controlled connection from the STORED event to external epistemic evaluation. It is strictly
-read-only and does the interpretation OUTSIDE the core:
+The controlled connection from the STORED event to external epistemic evaluation. Strictly
+read-only; interpretation happens OUTSIDE the core. It separates three orthogonal questions that an
+earlier draft conflated:
 
-  * the ONLY new trial source is ``core.method_trial_events()`` - legacy ``Method`` counters are
-    NEVER re-read as scope-bound trial history;
-  * envelope, schema_version, record_authority and epistemic_authority are evaluated SEPARATELY from
-    the reported payload;
-  * decision verdicts are verified by the registered, versioned rule (id + hash) via
-    ``trial_event_schema.evaluate_decision`` - an unknown/non-reproducible hash is ``unverifiable``;
-  * the independence policy is applied versioned (``attribute_to_affinity``);
-  * ``unverifiable`` and ``insufficient`` are kept VISIBLE - never filtered out (negative
-    transparency is a result, not noise);
-  * an unknown/invalid field is never read as a zero signal;
-  * with no verified scope-bound events, the verdict is INSUFFICIENT.
+  1. ``event_usability``     - is a SINGLE event structurally usable?
+  2. ``decision_status``     - is its verdict reproducible via the registered, versioned rule?
+  3. ``dataset_sufficiency`` - is the WHOLE conflict-/scope-bound history enough for a DESi
+                               solution-space gap analysis?
 
-Nothing here writes to the core, mutates an object, or activates a writer/DESi/Kevin path.
+A single rule-verified event is usable and reproducible, but does NOT by itself make the dataset
+sufficient. "Verified" is also not "authoritative": a reproducible verdict is a
+``measured_candidate`` (``record_authority=authoritative``, ``epistemic_authority=none``) - DESi may
+use it, but expert review and later governance remain required.
+
+Rules: only ``method_trial_events()`` is read (legacy counters are never trial history); envelope,
+schema_version and both authority levels are evaluated separately; ``unverifiable`` /
+``inconsistent`` / ``unsupported_schema`` / ``insufficient`` stay VISIBLE, never filtered; a missing
+field is explicit ``unknown``/``None``, never a zero signal. Nothing here writes/activates anything.
 """
 
 from __future__ import annotations
 
-from desi_layer9.trial_event_validation import SUPPORTED_TRIAL_SCHEMA_VERSIONS
-
 from .trial_event_schema import (
+    INDEPENDENCE_POLICY_V1,
     Decision,
     Estimand,
     Measurement,
     MethodTrialRecorded,
+    _profile,
     aggregate,
     attribute_to_affinity,
     evaluate_decision,
+    validate,
 )
+
+# The projector's OWN supported set - it may lag the core, so a future schema is surfaced as
+# ``unsupported_schema`` (a projector limitation) rather than silently dropped.
+PROJECTOR_SUPPORTED_SCHEMA_VERSIONS = ("method_trial_recorded_v3",)
+SUFFICIENCY_POLICY_ID = "gap_analysis_sufficiency_v1"
+_MIN_INDEPENDENT_VARIANTS = 2          # a conflict needs comparative depth, not a single point
 
 
 def available() -> bool:
@@ -84,43 +93,120 @@ def _record_from_payload(p: dict) -> MethodTrialRecorded:
 
 
 def _project_event(env: dict) -> tuple[dict, MethodTrialRecorded | None]:
-    """One transparent per-event projection + the record IF it is verified scope-bound evidence."""
+    """One transparent per-event projection + the record IFF it is verified scope-bound evidence."""
     p = env.get("payload") or {}
-    schema_ok = p.get("schema_version") in SUPPORTED_TRIAL_SCHEMA_VERSIONS
-    rec = _record_from_payload(p)
-    dv = evaluate_decision(rec) if schema_ok else {"status": "not_applicable",
-                                                   "reason": "unsupported schema_version"}
-    verified = (schema_ok and dv["status"] == "verified"
-                and rec.execution_status == "completed" and rec.protocol_status == "valid")
-    proj = {
-        "object_id": env.get("object_id"),
-        "trial_id": p.get("trial_id", "unknown"),
+    base = {
+        "object_id": env.get("object_id"), "trial_id": p.get("trial_id", "unknown"),
         "schema_version": env.get("schema_version"),
-        "schema_status": "supported" if schema_ok else "unsupported",
-        "record_status": "registered",                 # it IS in the core (Layer 9 confirms that)
+        "record_status": "registered",                  # Layer 9 confirms the event exists
         "record_authority": env.get("record_authority"),
         "epistemic_authority": env.get("epistemic_authority"),
-        "decision_status": dv["status"],               # verified|inconsistent|unverifiable|n/a
-        "epistemic_weight": "verified_scope_bound" if verified else "none",
         "target": f"{p.get('target_type', 'unknown')}:{p.get('target_id', 'unknown')}",
         "scope_id": p.get("scope_id", "unknown"),
         "reported_result": p.get("epistemic_result", "unknown"),
-        "note": dv.get("reason", ""),
     }
-    return proj, (rec if verified else None)
+    # (a) the projector cannot interpret this schema -> visible as a PROJECTOR limitation, not a
+    #     scientific judgement; never silently dropped.
+    if p.get("schema_version") not in PROJECTOR_SUPPORTED_SCHEMA_VERSIONS:
+        base.update(projection_status="unsupported_schema", event_usability="unusable",
+                    decision_status="not_evaluated", epistemic_weight="none",
+                    note="schema version not understood by this projector")
+        return base, None
+
+    rec = _record_from_payload(p)
+    usable = validate(rec) == []                        # structurally well-formed?
+    if not usable:
+        base.update(projection_status="projected", event_usability="unusable",
+                    decision_status="not_applicable", epistemic_weight="none",
+                    note="event is structurally invalid; not evaluable")
+        return base, None
+
+    dv = evaluate_decision(rec)
+    verified = (dv["status"] == "verified" and rec.execution_status == "completed"
+                and rec.protocol_status == "valid")
+    base.update(
+        projection_status="projected", event_usability="usable",
+        decision_status=dv["status"],
+        # verified != authoritative: a reproducible verdict is a measured CANDIDATE, no more.
+        epistemic_weight="measured_candidate" if verified else "none",
+        note=dv.get("reason", ""))
+    return base, (rec if verified else None)
 
 
-def _trial_to_dict(t) -> dict:
-    return {"affinity": t.affinity, "target_conflict": t.target_conflict, "result": t.result,
-            "scope": t.scope, "method_variant": t.method_variant, "count": t.count}
+def _independent_variant_count(outcomes) -> int:
+    """How many sufficiently-INDEPENDENT method variants these outcomes represent (per the versioned
+    policy). 0/1 means no comparative depth."""
+    if len(outcomes) < _MIN_INDEPENDENT_VARIANTS:
+        return len({o.method_variant for o in outcomes})
+    ok, _ = INDEPENDENCE_POLICY_V1.satisfied(_profile(list(outcomes)))
+    return len({o.method_variant for o in outcomes}) if ok else 1
+
+
+def _dataset_sufficiency(core, verified, events) -> dict:
+    """Is the WHOLE history enough for a gap analysis? Tied to real OPEN-conflict + scope coverage
+    and comparative depth - NEVER to 'at least one verified event'."""
+    open_ids = {c.id for c in core.open_conflicts()} if hasattr(core, "open_conflicts") else set()
+    outcomes = aggregate(verified)
+    by_conflict: dict[str, list] = {}
+    for o in outcomes:
+        by_conflict.setdefault(o.target_id, []).append(o)
+
+    covered = sorted(set(by_conflict) & open_ids)
+    uncovered = sorted(open_ids - set(by_conflict))
+    # a conflict is analysis-ready only with >= MIN INDEPENDENT verified variants in a stable scope.
+    ready = sorted(cid for cid in covered
+                   if _independent_variant_count(by_conflict[cid]) >= _MIN_INDEPENDENT_VARIANTS)
+    max_independent = max((_independent_variant_count(v) for v in by_conflict.values()), default=0)
+
+    affinity = attribute_to_affinity(outcomes)
+    affinity_known = any(a.strength != "none" for a in affinity)
+    comparison_possible = bool(ready) or max_independent >= _MIN_INDEPENDENT_VARIANTS
+    ratio = (len(covered) / len(open_ids)) if open_ids else 0.0
+    coverage = ("none" if not open_ids else
+                "high" if ratio >= 0.67 else "medium" if ratio >= 0.34 else "low")
+
+    reasons: list[str] = []
+    if not open_ids:
+        reasons.append("no open conflicts to analyse")
+    if not covered:
+        reasons.append("no open conflict has any verified scope-bound trial history")
+    if not ready:
+        reasons.append(f"no open conflict has >= {_MIN_INDEPENDENT_VARIANTS} independent verified "
+                       "method variants (no comparative depth)")
+    if not comparison_possible:
+        reasons.append("no independent variant comparison / baseline available")
+    if uncovered:
+        reasons.append(f"{len(uncovered)} open conflict(s) have no trial history")
+    if not affinity_known:
+        reasons.append("affinity-level attribution not yet admissible (independence "
+                       "not established)")
+
+    sufficient = bool(ready) and comparison_possible
+    return {
+        "policy_id": SUFFICIENCY_POLICY_ID,
+        "registered_events": len(events),
+        "structurally_usable_events": sum(1 for e in events if e["event_usability"] == "usable"),
+        "rule_verified_events": len(verified),
+        "covered_open_conflicts": covered,
+        "open_conflicts_without_trial_history": uncovered,
+        "analysis_ready_conflicts": ready,
+        "scope_coverage": coverage,
+        "independent_method_variants": max_independent,
+        "comparison_possible": comparison_possible,
+        "affinity_attribution_known": affinity_known,
+        "unverifiable_events": sum(1 for e in events if e["decision_status"] == "unverifiable"),
+        "inconsistent_events": sum(1 for e in events if e["decision_status"] == "inconsistent"),
+        "unsupported_schema_events":
+            sum(1 for e in events if e["projection_status"] == "unsupported_schema"),
+        "verdict": "SUFFICIENT_FOR_GAP_ANALYSIS" if sufficient else "insufficient",
+        "reasons": reasons,
+    }
 
 
 def project_trial_events(core) -> dict:
-    """Project the registered trial events into a transparent structure for external evaluation.
-
-    Keeps every registered event visible with its decision_status; only VERIFIED scope-bound events
-    feed the aggregation. Returns INSUFFICIENT when none are verified - registered-but-unverifiable
-    events and legacy counters are NOT counted as trial history."""
+    """Project the registered trial events into a transparent structure. Every registered event is
+    visible with its three-axis status; only VERIFIED scope-bound events feed aggregation; dataset
+    sufficiency is judged against real open-conflict/scope coverage, not event count."""
     envelopes = core.method_trial_events()
     events: list[dict] = []
     verified: list[MethodTrialRecorded] = []
@@ -145,21 +231,15 @@ def project_trial_events(core) -> dict:
     desi_trials = None
     if outcomes and available():
         from .trial_event_schema import to_desi_method_trials
-        desi_trials = [_trial_to_dict(t) for t in to_desi_method_trials(outcomes)]
+        desi_trials = [
+            {"affinity": t.affinity, "target_conflict": t.target_conflict, "result": t.result,
+             "scope": t.scope, "method_variant": t.method_variant, "count": t.count}
+            for t in to_desi_method_trials(outcomes)]
 
-    sufficient = bool(outcomes)
     return {
         "events": events,
         "verified_scope_bound_outcomes": scope_bound,
         "affinity_attributions": affinity,
         "desi_method_trials": desi_trials,              # None if DESi unavailable; never fabricated
-        "data_sufficiency": {
-            "registered_events": len(events),
-            "verified_events": len(verified),
-            "unverifiable_events": sum(1 for e in events if e["decision_status"] == "unverifiable"),
-            "inconsistent_events": sum(1 for e in events if e["decision_status"] == "inconsistent"),
-            "verdict": "sufficient" if sufficient else (
-                "insufficient: no verified scope-bound trial outcomes - registered-but-"
-                "unverifiable events and legacy counters are NOT interpreted as trial history"),
-        },
+        "dataset_sufficiency": _dataset_sufficiency(core, verified, events),
     }
