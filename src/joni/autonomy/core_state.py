@@ -332,6 +332,18 @@ class CoreState:
         fams, _ = self.supporter_families(claim_id)
         return len(fams)
 
+    def accepted_call_ids(self) -> set[str]:
+        """The set of model call_ids that produced at least one STILL-ACTIVE claim - so a true
+        per-call yield (<=1) can be computed, instead of dividing a cumulative claim count by a
+        cumulative call count (which conflates two ledgers and can read >1: metric theatre)."""
+        ids: set[str] = set()
+        for c in self._live_claims():
+            for s in (getattr(c.provenance, "source_ids", ()) or ()):
+                s = str(s)
+                if s.startswith(("granite:", "deepseek:")) and ":" in s:
+                    ids.add(s.split(":", 1)[1])
+        return ids
+
     def proposal_accepted_count(self) -> int:
         """Live claims that originated from a semantic-model proposal (Granite/DeepSeek) and made
         it through the gate - the numerator for 'how many calls actually produced an accepted

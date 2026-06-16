@@ -173,8 +173,9 @@ def build(data: dict) -> str:
             + _tstat("Kevin calls", tele.get("kevin_calls", 0))
             + _tstat("cached (replayed)", tele.get("cached_calls", 0))
             + _tstat("live (real API)", tele.get("live_calls", 0))
-            + _tstat("accepted claims", tele.get("accepted_claims", 0))
-            + _tstat("accepted / live call", f"{tele.get('accepted_per_live_call', 0):.3f}")
+            + _tstat("accepted claims (cumulative)", tele.get("accepted_claims", 0))
+            + _tstat("live-call yield (≤1: calls→active claim)",
+                     f"{tele.get('accepted_call_yield', 0):.3f}")
             + _tstat("reserved budget", f"€{tele.get('reserved_budget_eur', 0):.2f}")
             + _tstat("est. API cost", f"€{tele.get('est_cost_eur', 0):.4f}")
             + _tstat("est. cost / accepted claim",
@@ -227,8 +228,23 @@ def build(data: dict) -> str:
         "<li class=empty>Kevin hat noch keine Fernanalogie vorgeschlagen &mdash; er tagt nach "
         "Kadenz und nur auf Themen mit echtem Material (nicht auf <code>unsorted</code> oder "
         "dünnen Wortclustern).</li>")
+    # Make a silent install failure visible: kevin absent -> ALL method-trialing vanishes.
+    k_installed = bool(ext.get("kevin_installed", True))
+    k_real = bool(ext.get("kevin_real_trial", False))
+    if not k_installed:
+        kevin_status = ("<div class=note style='color:var(--rej)'>⚠ <b>Kevin ist NICHT "
+                        "installiert</b> &mdash; sämtliche Methoden-Trials (synthetisch wie echt) "
+                        "finden gerade nicht statt. Stiller Install-Fehler? Dieser Hinweis "
+                        "verhindert, dass das als &bdquo;0 Trials&ldquo; unsichtbar bleibt.</div>")
+    elif not k_real:
+        kevin_status = ("<div class=note style='color:var(--warn)'>⚠ Kevin installiert, aber "
+                        "<b>ohne <code>real_trial</code>-Modul</b> (alte Version) &mdash; der "
+                        "echte Trial läuft erst, wenn der gepinnte Branch installiert ist.</div>")
+    else:
+        kevin_status = ""
     kevin_block = (
-        f"<div class=stat><span>Methoden-Trials <span class=src>(synthetische Simulation)</span>"
+        kevin_status
+        + f"<div class=stat><span>Methoden-Trials <span class=src>(synthetische Simulation)</span>"
         f"</span><span><b>{esc(s.get('method_trials',0))}</b></span></div>"
         f"<div class=stat><span>davon &bdquo;aktivierungsreif&ldquo; "
         f"<span class=src>(Sim-Artefakt)</span>"
