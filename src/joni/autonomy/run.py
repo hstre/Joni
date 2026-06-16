@@ -47,6 +47,7 @@ from . import (
     site,
     strategy,
     strengthen,
+    topic_review,
     trials,
 )
 from .budget import load as load_budget
@@ -270,6 +271,7 @@ def one_cycle() -> dict:
     regulated = homeostasis.regulate(cs, extensions, proto, cycle)
     homeostasis.retire_junk_topics(cs, extensions, proto, cycle)       # drain pre-gate junk topics
     homeostasis.retire_offdomain_topics(cs, extensions, proto, cycle)  # drain laxiflora-type topics
+    topic_review.review_topics(cs, extensions, proto, cycle)           # LLM 'does it belong?' gate
     homeostasis.retire_junk_hypotheses(cs, extensions, proto, cycle)   # drain junk-subject ideas
     homeostasis.retire_junk_methods(cs, extensions, proto, cycle)      # drain off-domain methods
     homeostasis.review_numeric_duplicate_conflicts(cs, proto, cycle)   # defuse legacy numeric hards
