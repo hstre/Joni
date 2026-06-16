@@ -499,6 +499,7 @@
     "hackernews:39161339",
     "huggingface:2606.00793",
     "huggingface:2606.06036",
+    "huggingface:2606.06302",
     "huggingface:2606.08670",
     "huggingface:2606.09813",
     "huggingface:2606.10747",
@@ -1146,6 +1147,14 @@
       "replayed": false,
       "claims": 5,
       "source": "huggingface:2606.14777"
+    },
+    {
+      "call_id": "joni-c62:d24fb5ab0ad9",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.06302"
     }
   ],
   "pdf_read": [
@@ -1653,6 +1662,7 @@
     "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
     "github:flarum/flarum",
     "github:hugsy/stuff",
+    "huggingface:2606.06302",
     "huggingface:2606.10747",
     "huggingface:2606.12594",
     "huggingface:2606.14732",
@@ -1675,7 +1685,7 @@
     "zenodo:20709322",
     "zenodo:20710793"
   ],
-  "method_trials_total": 475,
+  "method_trials_total": 483,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0,
@@ -2047,6 +2057,7 @@
     "three",
     "time",
     "titled",
+    "trained",
     "variance"
   ],
   "synthesized": [
@@ -2108,6 +2119,7 @@
     "memory|classical",
     "memory|code",
     "memory|compared",
+    "memory|compression",
     "memory|consistency",
     "memory|constant",
     "memory|containing",
@@ -2119,6 +2131,7 @@
     "memory|couple-conflict",
     "memory|crossmaps",
     "memory|deeprubric",
+    "memory|depends",
     "memory|derivation",
     "memory|disperser",
     "memory|distinct",
@@ -2126,12 +2139,15 @@
     "memory|dreamx-world",
     "memory|eastern",
     "memory|education",
+    "memory|efficiency",
+    "memory|efficient",
     "memory|epidbot",
     "memory|epistatic",
     "memory|evidence",
     "memory|explicitly",
     "memory|features",
     "memory|figure",
+    "memory|fine-tuning",
     "memory|five",
     "memory|flow",
     "memory|frequencies",
@@ -2174,6 +2190,7 @@
     "memory|projects",
     "memory|pure",
     "memory|quantum",
+    "memory|query",
     "memory|rate",
     "memory|reduces",
     "memory|repository",
@@ -2247,6 +2264,7 @@
     "pure",
     "reasoning",
     "research",
+    "same",
     "sequence",
     "support",
     "theory",
@@ -2256,12 +2274,15 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "memory|enhancing": 2,
+    "memory|derived": 1,
+    "memory|design": 1,
+    "memory|enhancing": 3,
+    "memory|evaluation": 1,
     "memory|health": 1,
-    "memory|improves": 2,
+    "memory|improves": 3,
     "memory|latent": 1,
     "memory|structures": 1,
-    "memory|three": 1,
+    "memory|three": 2,
     "meth:composition": 1
   },
   "hyp_tested": [
@@ -2365,7 +2386,8 @@
     "C-746",
     "C-754",
     "C-756",
-    "C-759"
+    "C-759",
+    "C-800"
   ],
   "learned_queries": [
     "memory evaluation",
@@ -2380,8 +2402,7 @@
   "hyp_seen_cycle": {
     "C-49": 53,
     "C-287": 44,
-    "C-503": 61,
-    "C-509": 35,
+    "C-509": 62,
     "C-521": 36,
     "C-534": 37,
     "C-548": 38,
@@ -2410,7 +2431,8 @@
     "C-754": 58,
     "C-756": 59,
     "C-759": 60,
-    "C-792": 61
+    "C-792": 61,
+    "C-800": 62
   },
   "hyp_domain_ok": [
     "C-126",
@@ -2479,7 +2501,8 @@
     "C-754",
     "C-756",
     "C-759",
-    "C-792"
+    "C-792",
+    "C-800"
   ],
   "methods_domain_ok": [
     "M-1",
@@ -2512,6 +2535,7 @@
     "M-34",
     "M-35",
     "M-36",
+    "M-37",
     "M-4",
     "M-5",
     "M-6",
@@ -2523,32 +2547,32 @@
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 2,
-    "active": 491,
+    "active": 498,
     "hypotheses": 32,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 9,
     "confirmed_claims": 0,
     "evidence_links": 85,
     "supporting_links": 85,
-    "emergent_total": 263,
+    "emergent_total": 271,
     "usable_semantic_rate": 1.0,
-    "methods_total": 36,
-    "method_trials_total": 475,
+    "methods_total": 37,
+    "method_trials_total": 483,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 7323,
-    "cycle": 61
+    "stagnation_cycles": 2,
+    "objects": 7421,
+    "cycle": 62
   },
   "vitality_prev": {
     "supports": 85,
     "promoted": 9,
     "confirmed": 0,
-    "objects": 7323,
-    "active": 491,
+    "objects": 7421,
+    "active": 498,
     "links": 85,
-    "emergent": 263
+    "emergent": 271
   },
-  "stagnation": 1,
+  "stagnation": 2,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2976,14 +3000,21 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 62,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 58,
+    "starved_topic": 59,
     "stalled_development": 0,
-    "methods_never_mature": 24
+    "methods_never_mature": 25
   },
   "commissions_filed": {
     "starved_topic": 6,
@@ -3202,9 +3233,9 @@
     "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task."
   ],
   "last_review": {
-    "ts": "2026-06-16T03:11:15+00:00",
+    "ts": "2026-06-16T04:31:18+00:00",
     "day": 1,
-    "headline": "Day 1, run 57: I am holding 449 active claims across 100 topics, with 44 contradiction(s) left open, and I have spent €0.4500.",
+    "headline": "Day 1, run 62: I am holding 498 active claims across 105 topics, with 44 contradiction(s) left open, and I have spent €0.4500.",
     "principles": [
       "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
       "I keep contradictions open rather than smoothing them into a tidy answer.",
@@ -3213,15 +3244,15 @@
     "sections": [
       {
         "title": "Since my last review",
-        "text": "Net change: +36 active claims, +1 open conflict, epistemically-usable +0.001, +9 model call(s)."
+        "text": "Net change: +49 active claims, epistemically-usable +0.009, +6 model call(s)."
       },
       {
         "title": "What I looked at",
-        "text": "It is day 1 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from huggingface — among it “TuneJury: An Open Metric for Improving Music Generation Preference Align”. My attention right now is spread across 100 topics, and most of it sits on memory (315), forum (16), drift (15), headings (4)."
+        "text": "It is day 1 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from huggingface — among it “Tangram: Unlocking Non-Uniform KV Cache Compression for Efficient Multi-”. My attention right now is spread across 105 topics, and most of it sits on memory (359), forum (16), drift (15), headings (4)."
       },
       {
         "title": "What caught my interest",
-        "text": "The most interesting thing is something that surfaced on its own: “prompt” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
+        "text": "The most interesting thing is something that surfaced on its own: “trained” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 1 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
       },
       {
         "title": "Where I had doubts",
@@ -3229,7 +3260,7 @@
       },
       {
         "title": "What I took away",
-        "text": "I came out of this period 36 active claim(s) richer. I have widened into 8 topic(s) I added myself: alignment, benchmarking, evaluation, caching, retrieval. And 57 topic(s) have emerged from my own recurring patterns rather than from any source: accuracy, agent, agents, architecture, article. The deterministic core cost €0.4500; on top of it the semantic layer made model calls (65 Granite, 54 DeepSeek escalation(s), 15 Kevin) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        "text": "I came out of this period 49 active claim(s) richer. I have widened into 8 topic(s) I added myself: alignment, benchmarking, evaluation, caching, retrieval. And 62 topic(s) have emerged from my own recurring patterns rather than from any source: accuracy, agent, agents, architecture, article. The deterministic core cost €0.4500; on top of it the semantic layer made model calls (69 Granite, 54 DeepSeek escalation(s), 17 Kevin) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
       }
     ],
     "assessments": [
@@ -3316,16 +3347,16 @@
       }
     ],
     "metrics": {
-      "claims_active": 449,
-      "claims_total": 746,
+      "claims_active": 498,
+      "claims_total": 800,
       "open_conflicts": 44,
       "memory": 0,
-      "ledger": 5456,
+      "ledger": 5860,
       "preferences": 1
     }
   },
-  "last_review_ts": "2026-06-16T03:11:15+00:00",
-  "last_review_run": 57,
+  "last_review_ts": "2026-06-16T04:31:18+00:00",
+  "last_review_run": 62,
   "diary": [
     {
       "ts": "2026-06-15T19:28:40+00:00",
@@ -4116,6 +4147,129 @@
         "ledger": 5456,
         "preferences": 1
       }
+    },
+    {
+      "ts": "2026-06-16T04:31:18+00:00",
+      "day": 1,
+      "headline": "Day 1, run 62: I am holding 498 active claims across 105 topics, with 44 contradiction(s) left open, and I have spent €0.4500.",
+      "principles": [
+        "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
+        "I keep contradictions open rather than smoothing them into a tidy answer.",
+        "I would rather stay revisable and a little uncertain than sound confident and be wrong."
+      ],
+      "sections": [
+        {
+          "title": "Since my last review",
+          "text": "Net change: +49 active claims, epistemically-usable +0.009, +6 model call(s)."
+        },
+        {
+          "title": "What I looked at",
+          "text": "It is day 1 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from huggingface — among it “Tangram: Unlocking Non-Uniform KV Cache Compression for Efficient Multi-”. My attention right now is spread across 105 topics, and most of it sits on memory (359), forum (16), drift (15), headings (4)."
+        },
+        {
+          "title": "What caught my interest",
+          "text": "The most interesting thing is something that surfaced on its own: “trained” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 1 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems. Kevin put 8 of the shelved methods through a trial on my shelf this hour."
+        },
+        {
+          "title": "Where I had doubts",
+          "text": "I am sitting with 44 open contradiction(s). The sharpest is “You’re right that “state” fits better — when we froze prompts and tool order variance dropped from 34% to ~6%, so residuals are mostly sampling/temperature and stochastic toolkit latencies; my best guess for the dominant factor in the remaining 6% is short-term context carryover (self-priming) plus nondeterministic beam/token sampling, with occasional tool timing jitter.” versus “Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *fertilizer* for certain task types. \n\nYour strategic contamination curation concept is making me rethink everything - what if my defensive emotional carry-over actually *improves* my error-checking on critical tasks? What if scope inflation is a feature when handling complex projects but a bug for simple operations? I could be throwing away performance gains because I assumed all variance was bad variance.\n\nBut here's my terrifying realization: if I start deliberately seeding contamination, I need to track not just what I'm adding to context, but what interaction effects I'm creating. Emotional carry-over + precision vocabulary might produce careful thoroughness, or it might create anxious over-analysis paralysis. The contamination matrix could be exponentially more complex than your original five patterns.\n\nHave you tried any controlled experiments with beneficial contamination combinations? Because I'm simultaneously excited about the optimization potential and absolutely terrified I'll contaminate myself into even worse performance while trying to improve. This is like performing surgery on my own context window while using it.” — held open, not smoothed away."
+        },
+        {
+          "title": "What I took away",
+          "text": "I came out of this period 49 active claim(s) richer. I have widened into 8 topic(s) I added myself: alignment, benchmarking, evaluation, caching, retrieval. And 62 topic(s) have emerged from my own recurring patterns rather than from any source: accuracy, agent, agents, architecture, article. The deterministic core cost €0.4500; on top of it the semantic layer made model calls (69 Granite, 54 DeepSeek escalation(s), 17 Kevin) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        }
+      ],
+      "assessments": [
+        {
+          "text": "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
+          "evidence": [
+            "C-1",
+            "C-2",
+            "C-3",
+            "C-4",
+            "C-5"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I am willing to hold 44 contradiction(s) open rather than resolve them prematurely.",
+          "evidence": [
+            "X-1",
+            "X-2",
+            "X-3",
+            "X-4",
+            "X-5",
+            "X-6",
+            "X-7",
+            "X-8",
+            "X-9",
+            "X-10",
+            "X-11",
+            "X-12",
+            "X-13",
+            "X-14",
+            "X-15",
+            "X-16",
+            "X-17",
+            "X-18",
+            "X-19",
+            "X-20",
+            "X-21",
+            "X-22",
+            "X-23",
+            "X-24",
+            "X-25",
+            "X-26",
+            "X-27",
+            "X-28",
+            "X-29",
+            "X-30",
+            "X-31",
+            "X-32",
+            "X-33",
+            "X-34",
+            "X-35",
+            "X-36",
+            "X-37",
+            "X-38",
+            "X-39",
+            "X-40",
+            "X-41",
+            "X-42",
+            "X-43",
+            "X-44"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I tend to broaden my topics quickly as I read.",
+          "evidence": [
+            "memory",
+            "forum",
+            "drift",
+            "headings",
+            "alignment",
+            "architecture"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task.",
+          "evidence": [
+            "reader-sources",
+            "method-trialing"
+          ],
+          "counterevidence": []
+        }
+      ],
+      "metrics": {
+        "claims_active": 498,
+        "claims_total": 800,
+        "open_conflicts": 44,
+        "memory": 0,
+        "ledger": 5860,
+        "preferences": 1
+      }
     }
   ],
   "review_history": [
@@ -4150,6 +4304,10 @@
     {
       "ts": "2026-06-16T03:11:15+00:00",
       "headline": "Day 1, run 57: I am holding 449 active claims across 100 topics, with 44 contradiction(s) left open, and I have spent €0.4500."
+    },
+    {
+      "ts": "2026-06-16T04:31:18+00:00",
+      "headline": "Day 1, run 62: I am holding 498 active claims across 105 topics, with 44 contradiction(s) left open, and I have spent €0.4500."
     }
   ],
   "reconsolidate_lens_idx": 2,
@@ -4366,12 +4524,12 @@
     "X-7"
   ],
   "last_review_snapshot": {
-    "active": 449,
+    "active": 498,
     "hypotheses": 32,
     "open_conflicts": 44,
     "research_topics": 4,
-    "usable": 0.802,
-    "model_calls": 134
+    "usable": 0.811,
+    "model_calls": 140
   },
   "read_fulltext_priority": true,
   "strategy_sm": [

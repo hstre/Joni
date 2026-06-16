@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "text": "Multi-turn LLM serving causes Key-Value (KV) cache to grow with each dialogue turn, often exceeding model weights and making memory the limiting factor for throughput.",
+        "topic": "memory constraints in multi-turn LLM serving"
+    },
+    {
+        "text": "Non-uniform KV compression, allocating different budgets to attention heads, preserves accuracy better than uniform compression but is impractical due to page fragmentation and increased reclamation time.",
+        "topic": "non-uniform KV compression challenges"
+    },
+    {
+        "text": "Head-wise retention follows a two-level structural regularity that can be calibrated offline from as few as 50 samples, allowing static resolution of compression budgets at scheduling time.",
+        "topic": "offline calibration of head-wise retention"
+    },
+    {
+        "text": "Tangram implements Budget Reservation, Ragged Paging, and Ahead-of-Time Load Balancing to eliminate page reclamation, reduce fragmentation, and precompute balanced GPU partitions, improving end-to-end throughput by up to 2.6 times over the full-KV baseline.",
+        "topic": "Tangram's serving framework improvements"
+    },
+    {
+        "text": "Tangram is a drop-in substrate for existing non-uniform compression methods and is publicly available at https://github.com/aiha-lab/TANGRAM.",
+        "topic": "Tangram's availability and integration"
+    }
+]
+```
