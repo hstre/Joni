@@ -11,8 +11,10 @@ name: joni-autonomy
 # only a re-launcher - it starts the next continuous job when the previous one ends (the
 # concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
 on:
-  schedule:
-    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  # PAUSED 2026-06-16 for a clean stop: memory saved, Kevin brought up, full software review,
+  # then a fresh restart. Re-enable the hourly relaunch by uncommenting the schedule below.
+  # schedule:
+  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
