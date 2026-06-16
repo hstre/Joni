@@ -456,7 +456,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 3,
+    "starved_topic": 4,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2238,11 +2238,14 @@
     "github:home-assistant/core",
     "github:lm-sys/FastChat",
     "github:mlflow/mlflow",
+    "github:obra/superpowers",
     "github:payloadcms/payload",
     "github:vllm-project/vllm",
     "hackernews:13718752",
+    "hackernews:13932226",
     "hackernews:16065845",
     "hackernews:16727869",
+    "hackernews:21772610",
     "hackernews:22865357",
     "hackernews:25401294",
     "hackernews:26048784",
@@ -2250,6 +2253,8 @@
     "hackernews:2906538",
     "hackernews:32197012",
     "hackernews:39161339",
+    "hackernews:46990729",
+    "hackernews:48500012",
     "huggingface:2602.21103",
     "huggingface:2606.14142",
     "huggingface:2606.14667",
@@ -2376,6 +2381,22 @@
       "replayed": false,
       "claims": 5,
       "source": "arxiv:2606.17050v1"
+    },
+    {
+      "call_id": "joni-c7:717fece72839",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "hackernews:46990729"
+    },
+    {
+      "call_id": "joni-c7:156733663f80",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 4,
+      "source": "hackernews:48500012"
     }
   ],
   "pdf_read": [
@@ -2412,6 +2433,7 @@
     "arxiv:2606.17053v1",
     "arxiv:2606.17055v1",
     "github:DovAmir/awesome-design-patterns",
+    "github:obra/superpowers",
     "huggingface:2602.21103",
     "huggingface:2606.15079",
     "huggingface:2606.16993"
@@ -2435,10 +2457,10 @@
     "evaluation_mode": "real_trial_protocol_v1",
     "epistemic_weight": "provisional"
   },
-  "method_trials_total": 34,
+  "method_trials_total": 42,
   "methods_ready_total": 0,
   "core_ask_signals": {
-    "operator": 0
+    "operator": 1
   },
   "core_ask_filed": {},
   "linked": [
@@ -2449,6 +2471,10 @@
     "C-130|C-131",
     "C-131|C-138",
     "C-133|C-137",
+    "C-134|C-139",
+    "C-144|C-153",
+    "C-144|C-154",
+    "C-153|C-154",
     "C-26|C-48",
     "C-40|C-41",
     "C-55|C-68",
@@ -2462,6 +2488,10 @@
     "C-130|C-131@bge-small-en-v1.5",
     "C-131|C-138@bge-small-en-v1.5",
     "C-133|C-137@bge-small-en-v1.5",
+    "C-134|C-139@bge-small-en-v1.5",
+    "C-144|C-153@bge-small-en-v1.5",
+    "C-144|C-154@bge-small-en-v1.5",
+    "C-153|C-154@bge-small-en-v1.5",
     "C-26|C-48@bge-small-en-v1.5",
     "C-40|C-41@bge-small-en-v1.5",
     "C-55|C-68@bge-small-en-v1.5",
@@ -2469,6 +2499,7 @@
   ],
   "invented": [],
   "emerged_topics": [
+    "agent",
     "agents",
     "architecture",
     "design",
@@ -2476,7 +2507,9 @@
     "memory"
   ],
   "synthesized": [
+    "panel|agent",
     "panel|awesome-design-patterns",
+    "panel|bounded",
     "panel|deeprubric",
     "panel|evidence",
     "panel|needs",
@@ -2488,11 +2521,11 @@
     "unsorted|sternarchella"
   ],
   "emerged_methods": [
+    "architecture",
     "evidence",
     "memory"
   ],
   "emerge_insufficient": {
-    "meth:architecture": 3,
     "panel|architecture": 1
   },
   "hyp_tested": [],
@@ -2506,24 +2539,26 @@
     "C-99"
   ],
   "learned_queries": [
-    "panel through-line",
-    "unsorted single",
     "unsorted through-line",
     "unsorted claims",
     "panel testing",
     "panel across",
     "unsorted testing",
-    "panel factor"
+    "panel factor",
+    "panel recurs",
+    "unsorted recurs"
   ],
   "hyp_seen_cycle": {
     "C-21": 5,
-    "C-74": 4,
+    "C-74": 7,
     "C-99": 6,
     "C-113": 4,
     "C-129": 5,
-    "C-142": 6
+    "C-142": 6,
+    "C-158": 7
   },
   "topics_domain_ok": [
+    "agent",
     "agents",
     "alignment",
     "architecture",
@@ -2539,12 +2574,14 @@
     "C-113",
     "C-129",
     "C-142",
+    "C-158",
     "C-21",
     "C-74",
     "C-99"
   ],
   "methods_domain_ok": [
     "M-1",
+    "M-10",
     "M-2",
     "M-3",
     "M-4",
@@ -2556,32 +2593,32 @@
   ],
   "vitality": {
     "verdict": "developing",
-    "development": 6,
+    "development": 3,
     "degeneration": 0,
-    "active": 96,
-    "hypotheses": 6,
-    "unsupported_hypotheses": 6,
+    "active": 104,
+    "hypotheses": 7,
+    "unsupported_hypotheses": 7,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 5,
-    "supporting_links": 5,
-    "emergent_total": 17,
+    "evidence_links": 6,
+    "supporting_links": 6,
+    "emergent_total": 21,
     "usable_semantic_rate": 1.0,
-    "methods_total": 9,
-    "method_trials_total": 34,
+    "methods_total": 10,
+    "method_trials_total": 42,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 994,
-    "cycle": 6
+    "objects": 1128,
+    "cycle": 7
   },
   "vitality_prev": {
-    "supports": 5,
+    "supports": 6,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 994,
-    "active": 96,
-    "links": 5,
-    "emergent": 17
+    "objects": 1128,
+    "active": 104,
+    "links": 6,
+    "emergent": 21
   },
   "stagnation": 0,
   "vitality_history": [
@@ -2624,6 +2661,13 @@
       "cycle": 6,
       "verdict": "developing",
       "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 7,
+      "verdict": "developing",
+      "development": 3,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
     }
