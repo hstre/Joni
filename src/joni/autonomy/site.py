@@ -68,9 +68,29 @@ def build(data: dict) -> str:
             + f"<div class=asrow><span class=k>evidence</span> {ev_txt}</div>"
             + row("risk", c.get("risk", "—")) + "</li>")
 
-    commissions = [c for c in ext.get("commissions", []) if isinstance(c, dict) and c.get("title")]
+    # Implemented Aufträge (by a human-gated Claude session), with date+time, so the page shows
+    # not only what Joni asked for but what was actually built and when.
+    done = d.get("commissions_done", []) if isinstance(d.get("commissions_done"), list) else []
+    done_titles = {c.get("title", "") for c in done if isinstance(c, dict)}
+
+    commissions = [c for c in ext.get("commissions", [])
+                   if isinstance(c, dict) and c.get("title") and c.get("title") not in done_titles]
     commissions_html = "".join(_commission(c) for c in commissions) or \
-        "<li class=empty>none yet — no non-core capability gap has held long enough.</li>"
+        "<li class=empty>keine offenen — alle gestellten Aufträge sind umgesetzt.</li>"
+
+    def _done(c) -> str:
+        ts = esc(c.get("implemented_at", "—"))
+        ref = c.get("ref", "")
+        ref_html = f" <span class=src>({esc(ref)})</span>" if ref else ""
+        return (
+            f"<li><div><span class='chip' style='background:var(--good);color:#06210f'>"
+            f"✓ umgesetzt</span> <b>{esc(c.get('title',''))}</b> "
+            f"<span class=src>· {ts}</span>{ref_html}</div>"
+            f"<div class=asrow><span class=k>component</span> {esc(c.get('component',''))}</div>"
+            f"<div class=asrow><span class=k>note</span> {esc(c.get('note',''))}</div></li>")
+    done_html = "".join(_done(c) for c in sorted(
+        done, key=lambda c: c.get("implemented_at", ""), reverse=True)) or \
+        "<li class=empty>noch keiner umgesetzt.</li>"
 
     # Humans & forums: people are a source, never an authority.
     stance = ext.get("forum_stance", "")
@@ -387,7 +407,10 @@ what is uncertain, what contradicts, and what changed.</p>
   </div>
   <div class="card full">
     <h2>Aufträge an Claude — extend Joni (non-core, implemented via PR)</h2>
+    <h3 style='margin:4px 0'>Offen</h3>
     <ul>{commissions_html}</ul>
+    <h3 style='margin:10px 0 4px'>Umgesetzt (mit Datum &amp; Uhrzeit)</h3>
+    <ul>{done_html}</ul>
   </div>
   <div class="card full">
     <h2>Menschen &amp; Foren — a source, not an authority</h2>

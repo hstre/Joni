@@ -427,6 +427,7 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
     tele["accepted_per_live_call"] = round(accepted / live, 3) if live else 0.0
     tele["est_cost_per_accepted_eur"] = (round(tele["est_cost_eur"] / accepted, 4)
                                          if accepted else 0.0)
+    commissions_done = _load_json(p.commissions_done, [])
     site.render(p.docs_index, p.docs_data, {
         "snapshot": snap,
         "budget": budget_d,
@@ -434,6 +435,7 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
         "extensions": extensions,
         "protocol": proto.all(),
         "telemetry": tele,
+        "commissions_done": commissions_done if isinstance(commissions_done, list) else [],
     })
     # The human-facing Layer-9 map (living map, not a logfile).
     layer9_view.render(p.docs_layer9, {
