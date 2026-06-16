@@ -1479,6 +1479,15 @@
       "replayed": false,
       "claims": 0,
       "conflict": "X-35"
+    },
+    {
+      "call_id": "joni-c50:b6d051129667",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-36"
     }
   ],
   "methods_seen": [
@@ -1510,7 +1519,7 @@
     "zenodo:20709229",
     "zenodo:20709322"
   ],
-  "method_trials_total": 379,
+  "method_trials_total": 387,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0,
@@ -1784,6 +1793,7 @@
     "anthology|forum",
     "anthology|memory",
     "drift|forum",
+    "drift|headings",
     "drift|memory",
     "forum|memory"
   ],
@@ -1820,6 +1830,7 @@
     "multimodal",
     "outputs",
     "principle",
+    "projects",
     "pure",
     "reasoning",
     "representation",
@@ -1867,6 +1878,7 @@
     "forum|session",
     "forum|variance",
     "forum|vertical",
+    "headings|pure",
     "memory|abstract",
     "memory|accuracy",
     "memory|agent",
@@ -1875,6 +1887,7 @@
     "memory|article",
     "memory|associated",
     "memory|axioms",
+    "memory|base",
     "memory|brane-bulk",
     "memory|brazil",
     "memory|bronze",
@@ -1896,7 +1909,10 @@
     "memory|distinct",
     "memory|dorsalis",
     "memory|eastern",
+    "memory|education",
     "memory|epidbot",
+    "memory|epistatic",
+    "memory|figure",
     "memory|five",
     "memory|genetic",
     "memory|geometric",
@@ -1976,6 +1992,7 @@
     "principle",
     "pure",
     "reasoning",
+    "research",
     "theory",
     "thinking-answer",
     "time",
@@ -1983,9 +2000,12 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "memory|base": 3,
+    "memory|compared": 1,
+    "memory|context": 1,
+    "memory|continuity": 1,
+    "memory|features": 1,
     "memory|geometry": 2,
-    "memory|motion": 2,
+    "memory|motion": 3,
     "memory|structures": 1,
     "meth:composition": 1
   },
@@ -2084,19 +2104,18 @@
     "C-654"
   ],
   "learned_queries": [
-    "memory mechanism",
-    "forum mechanism",
-    "memory evaluation",
     "forum evaluation",
     "memory recurs",
     "memory across",
     "unsorted recurs",
-    "unsorted across"
+    "unsorted across",
+    "drift+headings order",
+    "drift+headings apply",
+    "memory factor"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
     "C-287": 44,
-    "C-311": 48,
     "C-313": 49,
     "C-333": 21,
     "C-347": 22,
@@ -2126,7 +2145,9 @@
     "C-631": 46,
     "C-633": 47,
     "C-652": 48,
-    "C-654": 49
+    "C-654": 49,
+    "C-662": 50,
+    "C-664": 50
   },
   "hyp_domain_ok": [
     "C-126",
@@ -2180,7 +2201,9 @@
     "C-631",
     "C-633",
     "C-652",
-    "C-654"
+    "C-654",
+    "C-662",
+    "C-664"
   ],
   "methods_domain_ok": [
     "M-1",
@@ -2214,32 +2237,32 @@
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 2,
-    "active": 376,
+    "active": 384,
     "hypotheses": 32,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 9,
     "confirmed_claims": 0,
     "evidence_links": 70,
     "supporting_links": 70,
-    "emergent_total": 189,
+    "emergent_total": 196,
     "usable_semantic_rate": 1.0,
     "methods_total": 26,
-    "method_trials_total": 379,
+    "method_trials_total": 387,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 5976,
-    "cycle": 49
+    "stagnation_cycles": 2,
+    "objects": 6072,
+    "cycle": 50
   },
   "vitality_prev": {
     "supports": 70,
     "promoted": 9,
     "confirmed": 0,
-    "objects": 5976,
-    "active": 376,
+    "objects": 6072,
+    "active": 384,
     "links": 70,
-    "emergent": 189
+    "emergent": 196
   },
-  "stagnation": 1,
+  "stagnation": 2,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2583,14 +2606,21 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 50,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 46,
+    "starved_topic": 47,
     "stalled_development": 0,
-    "methods_never_mature": 12
+    "methods_never_mature": 13
   },
   "commissions_filed": {
     "starved_topic": 6,
@@ -3659,7 +3689,8 @@
     "X-32",
     "X-33",
     "X-34",
-    "X-35"
+    "X-35",
+    "X-36"
   ],
   "last_review_snapshot": {
     "active": 359,
