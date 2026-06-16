@@ -456,7 +456,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 18,
+    "starved_topic": 19,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2739,7 +2739,7 @@
     "evaluation_mode": "real_trial_protocol_v1",
     "epistemic_weight": "provisional"
   },
-  "method_trials_total": 148,
+  "method_trials_total": 151,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "operator": 0
@@ -2796,6 +2796,7 @@
     "C-180|C-210",
     "C-180|C-211",
     "C-180|C-235",
+    "C-180|C-238",
     "C-181|C-205",
     "C-181|C-206",
     "C-181|C-210",
@@ -2804,6 +2805,7 @@
     "C-185|C-207",
     "C-185|C-208",
     "C-188|C-200",
+    "C-191|C-192",
     "C-26|C-48",
     "C-40|C-41",
     "C-55|C-68",
@@ -2860,6 +2862,7 @@
     "C-180|C-210@bge-small-en-v1.5",
     "C-180|C-211@bge-small-en-v1.5",
     "C-180|C-235@bge-small-en-v1.5",
+    "C-180|C-238@bge-small-en-v1.5",
     "C-181|C-205@bge-small-en-v1.5",
     "C-181|C-206@bge-small-en-v1.5",
     "C-181|C-210@bge-small-en-v1.5",
@@ -2868,6 +2871,7 @@
     "C-185|C-207@bge-small-en-v1.5",
     "C-185|C-208@bge-small-en-v1.5",
     "C-188|C-200@bge-small-en-v1.5",
+    "C-191|C-192@bge-small-en-v1.5",
     "C-26|C-48@bge-small-en-v1.5",
     "C-40|C-41@bge-small-en-v1.5",
     "C-55|C-68@bge-small-en-v1.5",
@@ -2923,8 +2927,10 @@
     "panel|human",
     "panel|improves",
     "panel|imputation",
+    "panel|information",
     "panel|knowledge",
     "panel|needs",
+    "panel|object",
     "panel|pipeline",
     "panel|pipelines",
     "panel|proprietary",
@@ -2959,7 +2965,8 @@
     "service"
   ],
   "emerge_insufficient": {
-    "meth:design": 1
+    "meth:design": 2,
+    "panel|interface": 1
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
@@ -2979,18 +2986,19 @@
     "C-232",
     "C-234",
     "C-239",
+    "C-240",
     "C-74",
     "C-99"
   ],
   "learned_queries": [
-    "panel claims",
     "unsorted claims",
     "panel panel",
     "panel worth",
     "panel underlying",
     "panel guidance",
     "panel across",
-    "panel factor"
+    "panel factor",
+    "panel recurs"
   ],
   "hyp_seen_cycle": {
     "C-21": 17,
@@ -3003,7 +3011,7 @@
     "C-160": 16,
     "C-174": 18,
     "C-176": 20,
-    "C-190": 11,
+    "C-190": 22,
     "C-202": 12,
     "C-220": 13,
     "C-222": 14,
@@ -3013,7 +3021,8 @@
     "C-230": 18,
     "C-232": 19,
     "C-234": 20,
-    "C-239": 21
+    "C-239": 21,
+    "C-240": 22
   },
   "topics_domain_ok": [
     "agent",
@@ -3066,6 +3075,7 @@
     "C-232",
     "C-234",
     "C-239",
+    "C-240",
     "C-74",
     "C-99"
   ],
@@ -3095,29 +3105,29 @@
     "development": 6,
     "degeneration": 0,
     "active": 134,
-    "hypotheses": 21,
-    "unsupported_hypotheses": 21,
+    "hypotheses": 22,
+    "unsupported_hypotheses": 22,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 32,
-    "supporting_links": 32,
-    "emergent_total": 78,
+    "evidence_links": 34,
+    "supporting_links": 34,
+    "emergent_total": 80,
     "usable_semantic_rate": 1.0,
     "methods_total": 19,
-    "method_trials_total": 148,
+    "method_trials_total": 151,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 2269,
-    "cycle": 21
+    "objects": 2312,
+    "cycle": 22
   },
   "vitality_prev": {
-    "supports": 32,
+    "supports": 34,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 2269,
+    "objects": 2312,
     "active": 134,
-    "links": 32,
-    "emergent": 78
+    "links": 34,
+    "emergent": 80
   },
   "stagnation": 0,
   "vitality_history": [
@@ -3263,6 +3273,13 @@
     },
     {
       "cycle": 21,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 22,
       "verdict": "developing",
       "development": 6,
       "degeneration": 0,
