@@ -777,3 +777,59 @@ produziert weniger, denkt aber besser** — und das Dashboard zeigt jetzt ehrlic
 Motor tut und kostet. Der Alt-vs-neu-Vergleich (pro 100 Runs normiert) folgt nach den zwei Tagen,
 mit dem gesicherten deterministischen Lauf als Baseline.
 
+### Eintrag 2026-06-16 ~07:05 UTC — Der Motor läuft nachweisbar: Auftrag, Kevin-Sichtbarkeit, rückwirkende Hygiene, gestaffelter Topic-Gate
+
+**A/B-Lauf, Tag 1 von 2 — der semantische Motor arbeitet messbar.** Nach ~10 Stunden zeigt die
+Telemetrie (aus dem Capture-Log, nicht geraten): **158 Modell-Calls** — 84 Granite-Projektionen,
+55 DeepSeek-Eskalationen, **19 Kevin-Calls** (sein kreativer Arm feuert jetzt), 116 live / 42
+Replays, ~€0,13 geschätzt. 531 aktive Claims, 46 gehaltene Konflikte, **80,6 % epistemically-
+usable** (die ehrliche Metrik, nicht die alten 100 %). Damit ist der frühere Hauptdefekt belegt
+behoben: Quelle → Granite-Proposal → ggf. DeepSeek/Kevin → Layer-9-Gate → Statusänderung.
+
+**Jonis erster eigener Auftrag, umgesetzt.** Joni hat in Zyklus 40 selbst einen *Auftrag an Claude*
+erhoben — und wie vorgesehen ist es eine **Programmänderung an ihm selbst** (`change_target:
+joni-self · method-trialing`): 40 Methoden, 539 Trials, **0 reif**, nie eine verworfen → die
+Methodenliste wuchs unbegrenzt. Implementiert: `trials.retire_unproductive()` gibt dem Trial ein
+klares **Pass/FAIL-Kriterium** — Pass = activation-ready (messbare positive Differenz); **Fail =
+verwerfen** (≥ N Trials ohne Netto-Gewinn → `METHOD_REJECT` durch den Gate). Ein Negativergebnis
+ist ein Ergebnis. Zugleich explizit gemacht (Docstring, Issue-Text, ein einmaliger Self-Model-
+Eintrag), dass ein Auftrag *in erster Linie* eine Selbst-Programmänderung ist — nie eine externe
+Aufgabe.
+
+**Kevin sichtbar gemacht.** Bis dahin war auf der Seite weder Kevins Vorschlag noch dessen
+Bewertung erkennbar. Neue Karte „Kevin — was er vorschlägt & ob es taugt": seine Cross-Domain-
+Hypothesen im **Volltext**, seine Methoden-Trial-Zahlen, und pro Vorschlag das **Urteil der
+Expertenrunde** (die genau dafür tagt: gute Idee / warum nicht). Kevin schlägt vor und probiert,
+**entscheidet nie**; Joni entscheidet, was er aufnimmt.
+
+**Zweite externe Review → rückwirkende Hygiene.** Die Review bestätigte: der Motor läuft, aber die
+*Einlasskontrolle vor Layer 9* ist noch zu großzügig — aus semantischem Geröll entstehen kleine
+Denkmäler. Die Qualitäts-Gates (zehn Punkte, voriger Eintrag) sind **präventiv**; sie räumen den
+Müll der frühen Zyklen (vor dem Merge) nicht rückwirkend. Drei Nachzieher:
+- **Ehrliche Metrik aufs Dashboard**: die widersprüchliche „100 % semantic-usable"-Zeile ersetzt
+  durch `epistemically_usable` (real ~0,81).
+- **Bestehende numerische Hard-Konflikte** (C-71/C-87: 31 vs. 34 „exchanges") rückwirkend aus der
+  offenen Unsicherheits-Queue genommen (`CONFLICT_REVIEW` → under_review, **kein** Force-Resolve),
+  ehrlich zerlegt als *shared_claim + numbers* — die Expertenrunde kaut keine fast identischen Texte
+  mehr durch.
+- **Off-domain *echte* Wörter** (`laxiflora`) gedrained — bounded + gecacht, damit der Embedding-
+  Perf-Trap nicht zurückkommt.
+
+**Die architektonische Erkenntnis: der Topic-Gate gehört gestaffelt — und Stufe 3 ist ein LLM.**
+Auf die Frage „ist ein lexikalischer Filter nicht zu einfach?" — ja. Lexik kennt nur Form. Die
+Lösung ist nicht „LLM statt Regeln", sondern **nach Kostenstufe gestaffelt**, im Einklang mit „LLM
+für Sprache, Regeln für Logik":
+1. **Lexik** (`is_good_topic`) — grober Erstfilter, gratis, auf jedem Hot-Path.
+2. **Embedding-Domäne** (`on_domain`) — off-domain echte Wörter, gecacht.
+3. **LLM-Review** (`topic_review.py`, Granite) — das nuancierte *„gehört dieses Konzept dazu?"*,
+   **vor** der Topic-Promotion. Das Modell ist **nicht-autoritativ**: es liefert nur ein Urteil
+   (`{valid, reason}`, captured/replaybar); die deterministische Regel handelt **konservativ** —
+   ein `invalid` verwirft nur die **0-Support-Claims** des Themas durch den Gate, eine gestützte
+   Idee bleibt. Gecacht pro Thema (einmal beurteilt), gekappt pro Zyklus — kein Per-Claim-Spend,
+   kein Perf-Trap. Genau das, was ein kleines Modell *gut* kann (Ja/Nein-Mustererkennung), anders
+   als die schädliche Klein-LLM-*Extraktion* aus den eigenen Tests.
+
+Damit ist Joni nicht nur „mit Motor", sondern bekommt vor Layer 9 eine **dreistufige Einlass-
+kontrolle**, deren teuerste, klügste Stufe genau dort sitzt, wo Bedeutung statt Form gefragt ist.
+Suite 358 grün, Core unangetastet, alles non-core und beim nächsten Zyklus automatisch wirksam.
+
