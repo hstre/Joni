@@ -487,9 +487,12 @@ what is uncertain, what contradicts, and what changed.</p>
     <div class=stat><span>spent <b>€{b['spent_eur']:.4f}</b> / €{b['cap_eur']:.0f} per week</span>
       <span>runs <b>{esc(b.get('runs',0))}</b></span></div>
     <div class=bar><i style="width:{min(100,spent_pct):.1f}%"></i></div>
-    <div class=note>The Layer-9 governance core is deterministic (€0). The semantic engine
-      (Granite proposals + DeepSeek escalation) runs as a non-authoritative proposal layer —
-      its real activity and cost are in the telemetry card below, not in this counter.</div>
+    <div class=note>The Layer-9 governance core is deterministic (€0). The €{b['cap_eur']:.0f}/week
+      cap now governs the <b>semantic engine too</b>: every live model call (Granite proposals +
+      DeepSeek escalation + Kevin) is checked against the cap and charged here before it runs —
+      cap reached → no call that cycle (never a fallback); replays are free. So this counter is the
+      authoritative total spend, not just the panel. (DeepSeek is metered; Granite via prepaid
+      OpenRouter is €0 by default, so the figure is dominated by the metered paths.)</div>
     <h2 style=margin-top:16px>Capability notes</h2>
     <ul>{notes}</ul>
   </div>
