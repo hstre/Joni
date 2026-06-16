@@ -331,5 +331,9 @@ def vitality(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     extensions["vitality_history"] = hist[-200:]
     proto.record(cycle, "vitality",
                  f"{verdict} · dev {development} · degen {degeneration} · "
-                 f"{unsupported} unsupported idea(s) · semantic-usable {int(usable*100)}%")
+                 f"{unsupported} unsupported idea(s) · "
+                 # NOT the same as the dashboard's 'epistemically usable' (a per-CLAIM 6-condition
+                 # rate). This is the share of semantic CLUSTERS that are decidable - named
+                 # distinctly so the two never read as a contradiction.
+                 f"semantic-cluster-decidable {int(usable*100)}%")
     return record
