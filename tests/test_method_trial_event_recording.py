@@ -157,6 +157,25 @@ def test_record_object_hash_is_the_same_material_snapshot_uses():
     assert hashing.snapshot_hash(core) != before  # snapshot folds in the same object material
 
 
+def test_record_object_hash_shares_one_serializer_with_snapshot():
+    # PROOF that there are no two parallel field lists: the record_object_hash preimage is EXACTLY
+    # the per-object material snapshot_hash composes from (the same object_canonical function), so a
+    # change to the snapshot serializer cannot leave the two claiming to hash the same record.
+    import hashlib
+
+    from desi_layer9 import hashing
+    from desi_layer9.core import trial_event_hashes
+    core = _core()
+    _record(core, _payload())
+    o = core.all(ObjectType.METHOD_TRIAL_EVENT)[0]
+    preimage = hashing.object_canonical(o)
+    assert trial_event_hashes(o)["record_object_hash"] == \
+        "sha256:" + hashlib.sha256(preimage.encode("utf-8")).hexdigest()
+    snapshot_parts = [hashing.object_canonical(x)
+                      for x in sorted(core.objects.values(), key=lambda y: y.id)]
+    assert preimage in snapshot_parts          # the very same serialization feeds snapshot_hash
+
+
 # -- 4. unknown schema version --------------------------------------------------------------- #
 def test_unknown_schema_version_is_rejected_and_not_stored():
     core = _core()
