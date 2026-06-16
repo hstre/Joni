@@ -413,6 +413,13 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
     core_state.save(cs, p)
     save_budget(budget, p.budget)
     _save_json(p.window, window)
+    # Make a SILENT dependency failure visible: if kevin (or its real-trial module) is not
+    # installed, all method-trialing quietly vanishes - the page (and state) must say so, not just
+    # show zeros. Computed BEFORE the extensions save so the flag actually persists.
+    import importlib.util as _ilu
+    extensions["kevin_installed"] = _ilu.find_spec("kevin") is not None
+    extensions["kevin_real_trial"] = (_ilu.find_spec("kevin.real_trial") is not None
+                                      if extensions["kevin_installed"] else False)
     _save_json(p.extensions, extensions)
     snap = cs.snapshot()
     snap.update(reflect or {"routing_engine": desi_link.routing_engine()})
@@ -435,12 +442,6 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
     tele["accepted_call_yield"] = round(accepted_calls / live, 3) if live else 0.0
     tele["est_cost_per_accepted_eur"] = (round(tele["est_cost_eur"] / accepted, 4)
                                          if accepted else 0.0)
-    # Make a SILENT dependency failure visible: if kevin (or its real-trial module) is not
-    # installed, all method-trialing quietly vanishes - the page must say so, not just show zeros.
-    import importlib.util as _ilu
-    extensions["kevin_installed"] = _ilu.find_spec("kevin") is not None
-    extensions["kevin_real_trial"] = (_ilu.find_spec("kevin.real_trial") is not None
-                                      if extensions["kevin_installed"] else False)
     commissions_done = _load_json(p.commissions_done, [])
     site.render(p.docs_index, p.docs_data, {
         "snapshot": snap,
