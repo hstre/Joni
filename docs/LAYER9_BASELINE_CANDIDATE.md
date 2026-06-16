@@ -8,20 +8,34 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `c5fdd9a7ebd08d3485557d0b0e2d24864ab3defc` (review round 2) |
-| **Superseded candidate** | `61118b3` — *rejected pending fixes* by independent review (3 blockers) |
+| **Baseline candidate (code)** | `dfb7d75e4fea49de1d2fe44025d290d27d66bd5d` (review round 3) |
+| **Superseded candidates** | `c5fdd9a` (round 2, 3 more blockers) · `61118b3` (round 1, 3 blockers) — both *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 c5fdd9a -- src/desi_layer9 \
+git diff 282d541 dfb7d75 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `c5fdd9a` and at this doc's commit.
+is byte-identical at `dfb7d75` and at this doc's commit.
+
+### Review round 3 — three more blockers fixed (vs `c5fdd9a`)
+
+1. **Unknown ≠ independence (fail-closed)** — every independence dimension must be *known* for all
+   compared variants; an unknown/missing implementation/model-family/task-sample/evaluator makes
+   the dimension non-distinct (`independence metadata incomplete`). The v3 gate additionally
+   requires these provenance fields for evaluable real verdicts.
+2. **Crash-proof projector** — the gate type-checks every field the projector casts
+   (`method_version`, `ledger_tick`, `confidence_interval`, numeric measurement/decision fields,
+   `affinities`); `_project_event` wraps reconstruction so a malformed payload becomes
+   `projection_status=invalid_payload` (weight none), never an uncaught crash, and one bad event
+   cannot stop the others.
+3. **Mixed success+harmful** — a cell with both is `conflicting` (success + harmful preserved); any
+   success in the evidence blocks a negative affinity demotion; pure-harmful stays demotable.
 
 ### Review round 2 — three blockers fixed (vs `61118b3`)
 
@@ -98,7 +112,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `c5fdd9a`: **450 passed, 2 skipped, ruff clean.**
+Full suite at `dfb7d75`: **464 passed, 2 skipped, ruff clean.**
 
 ## Known technical debt
 
