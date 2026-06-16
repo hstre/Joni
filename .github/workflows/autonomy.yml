@@ -11,10 +11,10 @@ name: joni-autonomy
 # only a re-launcher - it starts the next continuous job when the previous one ends (the
 # concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
 on:
-  # PAUSED 2026-06-16 for a clean stop: memory saved, Kevin brought up, full software review,
-  # then a fresh restart. Re-enable the hourly relaunch by uncommenting the schedule below.
-  # schedule:
-  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  # Live again 2026-06-16 after the stop/review: memory preserved, governance core hardened,
+  # Kevin's real trial in place, budget cap + capability health wired. Fresh ONE-WEEK window.
+  schedule:
+    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
@@ -59,7 +59,7 @@ jobs:
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
-          JONI_RUNTIME_DAYS: "2"      # A/B experiment: LLM-version from zero, 2-day window
+          JONI_RUNTIME_DAYS: "7"      # one-week run (memory preserved, hardened core + fixes)
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           # Semantic proposal layer ON: the pinned models read sources and *propose* candidate
