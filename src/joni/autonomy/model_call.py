@@ -97,6 +97,14 @@ def _complete(profile: ModelProfile, system: str, user: str) -> Raw:
         seed=profile.sampling.seed,
         messages=[{"role": "system", "content": system},
                   {"role": "user", "content": user}])
+    return _to_raw(resp)
+
+
+def _to_raw(resp) -> Raw:
+    """Parse a provider chat-completion response into the full ``Raw`` evidence. Extracted from the
+    network seam so the *parsing* (the original empty-content bug locus) is testable without a call:
+    a reasoning model that returns ``content=None`` + ``finish_reason='length'`` + nested
+    ``reasoning_tokens`` must surface as ``text=''`` with the truncation evidence intact."""
     choice = resp.choices[0]
     msg = choice.message
     content = (getattr(msg, "content", None) or "").strip()
@@ -167,9 +175,15 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_di
     # the seam may return a plain str (tests) or the full Raw evidence (production)
     raw = res if isinstance(res, Raw) else None
     output = res.text if isinstance(res, Raw) else res
-    cached.write_text(output, encoding="utf-8")
-    if raw is not None and raw.raw_json:                 # preserve the full raw response sidecar
-        (out_dir / f"{key}.raw.json").write_text(raw.raw_json, encoding="utf-8")
+    # NEVER cache an empty answer. A content-addressed cache of "" would be replayed forever as a
+    # stable "successful" empty result - laundering a model failure (truncation / wrong field /
+    # filter) into a reproducible non-result that the empty-call classifier (live-only) can no
+    # longer see. Leaving it uncached means the next cycle retries the call instead. The failure is
+    # still recorded (with its finish_reason/tokens) so it stays diagnosable.
+    if output.strip():
+        cached.write_text(output, encoding="utf-8")
+        if raw is not None and raw.raw_json:             # preserve the full raw response sidecar
+            (out_dir / f"{key}.raw.json").write_text(raw.raw_json, encoding="utf-8")
     return output, _record(output, replayed=False, raw=raw)
 
 

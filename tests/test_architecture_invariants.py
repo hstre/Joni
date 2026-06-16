@@ -17,8 +17,10 @@ def test_kevin_raw_response_preserved_and_empty_classified(monkeypatch, tmp_path
     prof = model_profile.profile("kevin")
     out, cap = model_call.call(prof, "s", "u", run_id="kevin-c1", store_dir=tmp_path)
     assert out == "" and cap.content_len == 0 and cap.finish_reason == "length"
-    assert cap.raw_sha and cap.reasoning_tokens == 2048           # the evidence is preserved
-    assert list((tmp_path / "outputs").glob("*.raw.json"))        # raw response on disk
+    assert cap.raw_sha and cap.reasoning_tokens == 2048           # the evidence is in the capture
+    # the empty answer is NOT cached (no .txt, no .raw.json) - it must not replay as a stable
+    # "success"; the next cycle retries. The evidence lives in the capture record, not a cache file.
+    assert not list((tmp_path / "outputs").glob("*"))             # an empty answer is not cached
     t = model_call.telemetry(tmp_path)
     assert t["empty_truncated"] == 1 and t["empty_with_reasoning"] == 0  # the cause is provable
 

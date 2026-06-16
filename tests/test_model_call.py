@@ -146,3 +146,53 @@ def test_a_failed_call_is_no_proposal_not_a_fallback(monkeypatch, tmp_path):
     out, cap = model_call.call(prof, "sys", "text", run_id="r1", store_dir=tmp_path)
     assert out is None and cap is None                              # no output, no silent switch
     assert not (tmp_path / "calls.jsonl").exists()                  # nothing captured on failure
+
+
+def test_empty_output_is_not_cached_so_it_retries(monkeypatch, tmp_path):
+    # cache-poisoning fix: an empty live answer must NOT be cached (else it replays forever as a
+    # stable empty "success"). The next call re-hits the network instead of replaying "".
+    calls = []
+    def empty(profile, system, user):
+        calls.append(1)
+        return model_call.Raw(text="", finish_reason="length", reasoning_tokens=768)
+    monkeypatch.setattr(model_call, "_complete", empty)
+    prof = model_profile.profile("joni-hard")
+    out1, c1 = model_call.call(prof, "s", "u", run_id="r", store_dir=tmp_path)
+    out2, c2 = model_call.call(prof, "s", "u", run_id="r", store_dir=tmp_path)
+    assert out1 == "" and out2 == ""
+    assert len(calls) == 2                          # retried (not replayed from a cached "")
+    assert c1.replayed is False and c2.replayed is False
+    assert not list((tmp_path / "outputs").glob("*.txt"))                     # nothing cached
+
+
+def test_real_response_parser_surfaces_truncation_evidence():
+    # the original-bug locus: a reasoning model returns content=None + finish_reason=length +
+    # nested reasoning_tokens. The real parser must yield text='' WITH the evidence, not hide it.
+    class _Msg:
+        content = None
+        reasoning_content = "...long internal reasoning..."
+
+    class _Choice:
+        message = _Msg()
+        finish_reason = "length"
+
+    class _Details:
+        reasoning_tokens = 2048
+
+    class _Usage:
+        prompt_tokens = 120
+        completion_tokens = 2048
+        completion_tokens_details = _Details()
+
+    class _Resp:
+        choices = [_Choice()]
+        usage = _Usage()
+        model = "deepseek-v4-pro"
+
+        def model_dump_json(self):
+            return '{"ok":1}'
+
+    raw = model_call._to_raw(_Resp())
+    assert raw.text == "" and raw.finish_reason == "length"
+    assert raw.reasoning_tokens == 2048 and raw.reasoning_len > 0
+    assert raw.served == "deepseek-v4-pro"
