@@ -273,3 +273,20 @@ def test_incomplete_independence_metadata_does_not_reach_sufficiency():
                               impl="iB", task="t2", evaluator="e2"))
     ds = project_trial_events(core)["dataset_sufficiency"]
     assert ds["analysis_ready_conflict_scopes"] == [] and ds["verdict"] == "insufficient"
+
+
+# -- the projector must not grant 'verified' to a decision that contradicts the measurement ------ #
+def test_decision_measurement_contradiction_projects_as_inconsistent():
+    payload = _payload("c", "success")
+    payload["measurement"] = dict(payload["measurement"], effect_size=-0.20)
+    payload["decision"] = dict(payload["decision"], effect_size=0.20)   # contradicts measurement
+    e = project_trial_events(_StubCore([_env(payload, "MTE-1")]))["events"][0]
+    assert e["decision_status"] == "inconsistent" and e["epistemic_weight"] == "none"
+
+
+def test_threshold_override_projects_as_inconsistent():
+    payload = _payload("c", "success")
+    payload["estimand"] = dict(payload["estimand"], minimum_effect=0.50)
+    payload["decision"] = dict(payload["decision"], minimum_effect=0.10)   # lowered post-hoc
+    e = project_trial_events(_StubCore([_env(payload, "MTE-1")]))["events"][0]
+    assert e["decision_status"] == "inconsistent" and e["epistemic_weight"] == "none"

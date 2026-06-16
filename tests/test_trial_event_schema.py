@@ -360,3 +360,48 @@ def test_two_independent_pure_harmful_variants_remain_demotable():
                measurement=_meas(-0.15), decision=_dec("harmful", -0.15, (-0.20, -0.10)))]
     a = attribute_to_affinity(aggregate(evs))[0]
     assert a.strength == "limited" and a.independent          # no success -> demotion allowed
+
+
+# -- verified must reflect the MEASUREMENT, not the decision's own duplicated numbers ------------ #
+def test_decision_contradicting_measurement_is_inconsistent():
+    # measurement says -0.20 (worse), decision claims +0.20 success -> must be inconsistent.
+    ev = _ev(epistemic_result="success",
+             measurement=Measurement("misclass_rate", 0.40, 0.60, effect_size=-0.20,
+                                      uncertainty=0.02),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_HASH,
+                               verdict="success", effect_size=0.20,
+                               confidence_interval=(0.12, 0.28), minimum_effect=0.10))
+    assert evaluate_decision(ev)["status"] == "inconsistent"
+
+
+def test_decision_overriding_preregistered_threshold_is_inconsistent():
+    ev = _ev(epistemic_result="success",
+             estimand=Estimand(outcome_metric="misclass_rate", direction="higher_is_better",
+                               minimum_effect=0.50, decision_rule_id="rule_v2"),
+             measurement=_meas(0.20),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_HASH,
+                               verdict="success", effect_size=0.20,
+                               confidence_interval=(0.12, 0.28), minimum_effect=0.10))
+    assert evaluate_decision(ev)["status"] == "inconsistent"
+
+
+def test_metric_name_mismatch_is_inconsistent():
+    ev = _ev(epistemic_result="success",
+             measurement=Measurement("other_metric", 0.40, 0.22, effect_size=0.20,
+                                      uncertainty=0.02),
+             decision=_dec("success", 0.20, (0.12, 0.28)))
+    assert evaluate_decision(ev)["status"] == "inconsistent"
+
+
+def test_consistent_measurement_and_decision_verifies():
+    ev = _ev(epistemic_result="success", measurement=_meas(0.20),
+             decision=_dec("success", 0.20, (0.12, 0.28)))
+    assert evaluate_decision(ev)["status"] == "verified"
+
+
+def test_verdict_is_computed_from_measurement_not_decision_number():
+    # the measurement clears the threshold; the decision's own (ignored) number is wrong but equal,
+    # so the verdict comes from the measurement.
+    ev = _ev(epistemic_result="success", measurement=_meas(0.20),
+             decision=_dec("success", 0.20, (0.12, 0.28)))
+    assert evaluate_decision(ev)["computed"] == "success"

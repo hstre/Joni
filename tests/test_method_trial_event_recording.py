@@ -379,3 +379,63 @@ def test_real_result_requires_independence_provenance():
     core = _core()
     d = _record(core, _payload(implementation_id=""))      # empty independence field
     assert not d.accepted and "implementation_id" in d.reason
+
+
+# -- decision must not contradict measurement / override the estimand / be ill-formed ------------ #
+def test_decision_effect_contradicting_measurement_is_rejected():
+    core = _core()
+    p = _payload(epistemic_result="success")
+    p["measurement"] = dict(p["measurement"], effect_size=-0.20)
+    p["decision"] = dict(p["decision"], effect_size=0.20)       # contradicts the measurement
+    d = _record(core, p)
+    assert not d.accepted and "contradict the measurement" in d.reason
+
+
+def test_decision_minimum_effect_overriding_estimand_is_rejected():
+    core = _core()
+    p = _payload(epistemic_result="success")
+    p["estimand"] = dict(p["estimand"], minimum_effect=0.50)    # pre-registered threshold
+    p["measurement"] = dict(p["measurement"], effect_size=0.20)
+    p["decision"] = dict(p["decision"], effect_size=0.20, minimum_effect=0.10)   # lowered post-hoc
+    d = _record(core, p)
+    assert not d.accepted and "minimum_effect must equal" in d.reason
+
+
+def test_reversed_confidence_interval_is_rejected():
+    core = _core()
+    p = _payload()
+    p["decision"] = dict(p["decision"], confidence_interval=[0.30, 0.10])
+    d = _record(core, p)
+    assert not d.accepted and "lower bound must be <= upper" in d.reason
+
+
+def test_nan_measurement_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"], effect_size=float("nan"))
+    d = _record(core, p)
+    assert not d.accepted and "finite" in d.reason
+
+
+def test_infinity_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"], uncertainty=float("inf"))
+    d = _record(core, p)
+    assert not d.accepted and "finite" in d.reason
+
+
+def test_negative_uncertainty_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"], uncertainty=-0.1)
+    d = _record(core, p)
+    assert not d.accepted and "uncertainty must be >= 0" in d.reason
+
+
+def test_metric_name_not_matching_estimand_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"], metric_name="other_metric")
+    d = _record(core, p)
+    assert not d.accepted and "metric_name must equal" in d.reason

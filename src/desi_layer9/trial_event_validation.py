@@ -17,6 +17,7 @@ is immutable (a string), tamper-evident (hashable), and comparable for idempoten
 from __future__ import annotations
 
 import json
+import math
 from numbers import Number
 
 SUPPORTED_TRIAL_SCHEMA_VERSIONS = ("method_trial_recorded_v3",)
@@ -59,6 +60,46 @@ def _is_int(v) -> bool:
 
 def _is_num(v) -> bool:
     return isinstance(v, Number) and not isinstance(v, bool)
+
+
+def _finite(v) -> bool:
+    return _is_num(v) and math.isfinite(v)
+
+
+def cross_block_consistency(*, metric_name, outcome_metric, m_effect, d_effect, m_uncertainty,
+                            est_min, d_min, ci, is_real: bool) -> list[str]:
+    """The ONE canonical structural-consistency check shared by the gate AND the rule evaluator.
+    It guarantees the decision block cannot CONTRADICT the stored measurement or silently OVERRIDE
+    the pre-registered estimand threshold, and that the numbers are finite and well-ordered. It does
+    NOT compute the verdict (no statistics) - only equalities, ranges and finiteness."""
+    errs: list[str] = []
+    for name, v in (("measurement.effect_size", m_effect),
+                    ("measurement.uncertainty", m_uncertainty),
+                    ("estimand.minimum_effect", est_min), ("decision.effect_size", d_effect),
+                    ("decision.minimum_effect", d_min)):
+        if v is not None and not _finite(v):
+            errs.append(f"{name} must be a finite number (no NaN/Infinity)")
+    if ci is not None:
+        if not (isinstance(ci, (list, tuple)) and len(ci) == 2 and all(_finite(x) for x in ci)):
+            errs.append("confidence_interval must be a finite [low, high] pair")
+        elif ci[0] > ci[1]:
+            errs.append("confidence_interval lower bound must be <= upper bound")
+    if m_uncertainty is not None and _finite(m_uncertainty) and m_uncertainty < 0:
+        errs.append("measurement.uncertainty must be >= 0")
+    # the decision may NOT change the pre-registered threshold.
+    if d_min is not None and est_min is not None and d_min != est_min:
+        errs.append("decision.minimum_effect must equal estimand.minimum_effect "
+                    "(no post-hoc threshold change)")
+    if is_real:
+        # the decision may NOT contradict the stored measurement.
+        if d_effect is not None and m_effect is not None and d_effect != m_effect:
+            errs.append("decision.effect_size must equal measurement.effect_size "
+                        "(the decision may not contradict the measurement)")
+        if metric_name is not None and outcome_metric and metric_name != outcome_metric:
+            errs.append("measurement.metric_name must equal estimand.outcome_metric")
+        if est_min is not None and (not _finite(est_min) or est_min <= 0):
+            errs.append("estimand.minimum_effect must be > 0 for a real result")
+    return errs
 
 
 def validate_trial_payload(p: dict) -> list[str]:
@@ -198,4 +239,11 @@ def validate_trial_payload(p: dict) -> list[str]:
         if est.get("decision_rule_id") and dec.get("decision_rule_id") and \
                 est["decision_rule_id"] != dec["decision_rule_id"]:
             errs.append("decision.decision_rule_id must match estimand.decision_rule_id")
+
+    # cross-block consistency + numeric/interval invariants (decision vs measurement vs estimand).
+    errs += cross_block_consistency(
+        metric_name=meas.get("metric_name"), outcome_metric=est.get("outcome_metric"),
+        m_effect=meas.get("effect_size"), d_effect=dec.get("effect_size"),
+        m_uncertainty=meas.get("uncertainty"), est_min=est.get("minimum_effect"),
+        d_min=dec.get("minimum_effect"), ci=dec.get("confidence_interval"), is_real=real)
     return errs

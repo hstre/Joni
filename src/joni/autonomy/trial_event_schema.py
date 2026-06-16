@@ -305,27 +305,36 @@ def validate_or_raise(ev: MethodTrialRecorded) -> MethodTrialRecorded:
 # justify the verdict. An unknown/non-reproducible hash yields "unverifiable" - no trustworthy
 # verdict.
 # ================================================================================================ #
-_RULE_V2_DESCRIPTOR = ("rule_v2|oriented_effect_positive_is_better|"
-                       "harmful:eff<=-min|success:eff>=min&ci_lower>0|"
-                       "no_benefit:ci_excludes_0&abs(eff)<min|else:inconclusive")
+# v3 (round 4): the rule evaluates the stored MEASUREMENT against the pre-registered ESTIMAND
+# threshold - NOT the decision block's own duplicated numbers. So the descriptor (and hence the
+# hash) reflect that the verdict's SOURCE is the measurement, not self-referential metadata.
+_RULE_V2_DESCRIPTOR = ("rule_v2|source=measurement.effect_size|threshold=estimand.minimum_effect|"
+                       "oriented_positive_is_better|harmful:eff<=-min|success:eff>=min&ci_lower>0|"
+                       "no_benefit:resolved&abs(eff)<min|else:inconclusive")
 RULE_V2_HASH = "sha256:" + hashlib.sha256(_RULE_V2_DESCRIPTOR.encode()).hexdigest()
 
 
-def _rule_v2(d: Decision, est: Estimand) -> str:
-    """Reference decision rule. ``effect_size`` is oriented so positive == better. A confidence
-    interval, when present, decides whether an effect is RESOLVED (excludes 0). This logic is
-    versioned by ``RULE_V2_HASH`` - it is NOT in the generic schema validator."""
-    eff = d.effect_size
-    mn = d.minimum_effect if d.minimum_effect is not None else est.minimum_effect
+def _rule_v2(ev: MethodTrialRecorded) -> str:
+    """Reference decision rule. The verdict is computed from the STORED MEASUREMENT and the
+    PRE-REGISTERED estimand threshold - never from the decision block's own duplicated numbers (a
+    decision cannot verify itself). ``effect_size`` is oriented so positive == better."""
+    eff = ev.measurement.effect_size
+    mn = ev.estimand.minimum_effect                  # ALWAYS the pre-registered threshold
     if eff is None or mn is None or mn <= 0:
         return "not_evaluated"
-    ci = d.confidence_interval
-    excludes_zero = ci is not None and not (ci[0] <= 0 <= ci[1])
+    ci = ev.decision.confidence_interval
+    unc = ev.measurement.uncertainty
+    if ci is not None:
+        resolved = not (ci[0] <= 0 <= ci[1])         # CI excludes 0
+    elif unc is not None:
+        resolved = abs(eff) > unc
+    else:
+        resolved = False
     if eff <= -mn:
         return "harmful"
     if eff >= mn and (ci is None or ci[0] > 0):
         return "success"
-    if excludes_zero and abs(eff) < mn:
+    if resolved and abs(eff) < mn:
         return "no_benefit"
     return "inconclusive"
 
@@ -333,22 +342,41 @@ def _rule_v2(d: Decision, est: Estimand) -> str:
 DEFAULT_RULE_REGISTRY: dict[tuple[str, str], object] = {("rule_v2", RULE_V2_HASH): _rule_v2}
 
 
+def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
+    """Reuse the ONE canonical consistency check (decision vs measurement vs estimand)."""
+    from desi_layer9.trial_event_validation import cross_block_consistency
+    m, d, e = ev.measurement, ev.decision, ev.estimand
+    return cross_block_consistency(
+        metric_name=m.metric_name, outcome_metric=e.outcome_metric, m_effect=m.effect_size,
+        d_effect=d.effect_size, m_uncertainty=m.uncertainty, est_min=e.minimum_effect,
+        d_min=d.minimum_effect, ci=d.confidence_interval, is_real=True)
+
+
 def evaluate_decision(ev: MethodTrialRecorded, registry: dict | None = None) -> dict:
-    """Check, via the REGISTERED rule, whether the measurement justifies the claimed verdict.
-    Returns ``status`` in {"verified", "inconsistent", "unverifiable", "not_applicable"}."""
+    """Check whether the stored MEASUREMENT (against the pre-registered estimand) justifies the
+    claimed verdict. ``status`` in {"verified", "inconsistent", "unverifiable", "not_applicable"}.
+    A decision that contradicts the measurement or overrides the threshold is ``inconsistent`` -
+    never ``verified``."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
     d = ev.decision
     if ev.epistemic_result not in _REAL_RESULTS:
         return {"status": "not_applicable", "reason": "no real verdict to evaluate"}
+    # (1) the decision may not contradict the measurement / override the threshold / be ill-formed.
+    xb = _cross_block_errors(ev)
+    if xb:
+        return {"status": "inconsistent", "reason": "; ".join(xb)}
+    # (2) the rule must be registered/reproducible.
     rule = reg.get((d.decision_rule_id, d.decision_rule_hash))
     if rule is None:
         return {"status": "unverifiable",
                 "reason": f"decision rule '{d.decision_rule_id}'@'{d.decision_rule_hash}' is not "
                           "registered/reproducible - no trustworthy verdict"}
-    computed = rule(d, ev.estimand)
-    if computed != d.verdict:
+    # (3) the rule's verdict (from the MEASUREMENT) must match both the decision and the result.
+    computed = rule(ev)
+    if computed != d.verdict or computed != ev.epistemic_result:
         return {"status": "inconsistent", "computed": computed, "claimed": d.verdict,
-                "reason": f"rule computes '{computed}', event claims '{d.verdict}'"}
+                "reason": f"rule computes '{computed}' from the measurement, event claims "
+                          f"'{d.verdict}'"}
     return {"status": "verified", "computed": computed}
 
 

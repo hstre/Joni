@@ -11,8 +11,13 @@ connection from the *stored* event to *external* epistemic evaluation.
 2. Envelope, `schema_version`, `record_authority` and `epistemic_authority` are evaluated
    **separately** from the reported payload.
 3. Decision verdicts are verified by the **registered, versioned** rule (`decision_rule_id` +
-   `decision_rule_hash`) via `trial_event_schema.evaluate_decision`. An unknown/non-reproducible
-   hash → `unverifiable`.
+   `decision_rule_hash`) via `trial_event_schema.evaluate_decision`, which computes the verdict
+   from the **stored measurement** against the **pre-registered estimand threshold** — never from
+   the decision block's own duplicated numbers. A decision that contradicts the measurement, or
+   overrides `minimum_effect`, is `inconsistent` — never `verified`; an unknown/non-reproducible
+   hash → `unverifiable`. The one canonical `cross_block_consistency` (in
+   `desi_layer9.trial_event_validation`) is shared by the gate and the rule evaluator, so the two
+   cannot drift.
 4. The independence policy is applied **versioned** (`attribute_to_affinity`, carrying `policy_id`).
 5. `unverifiable` / `inconsistent` / `unsupported_schema` / `insufficient` are kept **visible**,
    never filtered — negative transparency is a result.
