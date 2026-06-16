@@ -189,6 +189,10 @@ def one_cycle() -> dict:
     # 3c. Kevin trials the shelf in-process: candidate/provisional methods get a
     #     deterministic transfer trial (recorded, never promoted). No-op without Kevin.
     trialed = trials.run_trials(cs, proto, cycle)
+    # 3c-auftrag. The trial now has a clear pass/FAIL criterion (joni-auftrag · method-trialing):
+    #     a method that has been trialed enough times without a measurable gain is discarded, so
+    #     the shelf does not grow without ever maturing. Pass = activation-ready (unchanged).
+    trialed["retired"] = trials.retire_unproductive(cs, proto, cycle)
     # running totals so homeostasis/commission can see whether method-trialing ever matures
     extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
         trialed.get("trialed", 0)

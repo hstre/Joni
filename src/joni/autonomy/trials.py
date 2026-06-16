@@ -41,3 +41,35 @@ def run_trials(cs, proto, cycle: int = 0, *, run_id: str | None = None) -> dict:
             + (f" · {ready} activation-ready (awaiting a human)" if ready else ""))
     return {"trialed": rep["trialed"], "succeeded": rep["succeeded"],
             "failed": rep["failed"], "activation_ready": ready}
+
+
+def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5) -> int:
+    """Joni's *Auftrag* (joni-auftrag · method-trialing): give the trial a clear pass/fail
+    criterion so the shelf does not grow without ever maturing.
+
+    Pass = activation-ready (Kevin's criterion: a measurable positive difference, success > failure
+    after >=3 trials). **Fail = discarded**: a method that has had at least
+    ``JONI_METHOD_MAX_TRIALS`` trials and *still* shows no net gain (success <= failure) is
+    rejected through the gate
+    (``METHOD_REJECT``) - a negative result is a result. This bounds the method count and never
+    auto-confirms anything; a maturing method (success > failure) is never touched here.
+    """
+    import os
+
+    import desi_layer9 as l9
+    max_trials = int(os.getenv("JONI_METHOD_MAX_TRIALS", "8"))
+    live = [m for m in cs.core.all(l9.ObjectType.METHOD)
+            if m.status in (l9.Status.CANDIDATE, l9.Status.PROVISIONAL)]
+    retired = 0
+    for m in sorted(live, key=lambda x: (x.success_count - x.failure_count, x.id)):
+        if retired >= max_retire:
+            break
+        if m.trial_count >= max_trials and m.success_count <= m.failure_count:
+            cs.reject_method(m.id)
+            retired += 1
+            proto.record(cycle, "trialed",
+                         f"retired method {m.id} '{getattr(m, 'name', m.id)}' after "
+                         f"{m.trial_count} trial(s) with no measurable gain "
+                         f"(success {m.success_count} <= failure {m.failure_count}) - discarded so "
+                         "the shelf does not grow unbounded; a negative result is a result")
+    return retired
