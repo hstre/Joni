@@ -35,13 +35,13 @@
       "software",
       "users"
     ],
-    "claims_total": 269,
+    "claims_total": 272,
     "claims_active": 144,
     "memory": 0,
-    "ledger": 2108,
+    "ledger": 2126,
     "open_conflicts": 7,
     "methods": 20,
-    "method_trials": 158,
+    "method_trials": 159,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 47,
@@ -65,13 +65,13 @@
     "last_route": null
   },
   "budget": {
-    "spent_eur": 0.324,
+    "spent_eur": 0.328,
     "cap_eur": 20.0,
-    "runs": 33
+    "runs": 34
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 33,
+    "runs": 34,
     "retired": false
   },
   "extensions": {
@@ -532,7 +532,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 30,
+      "starved_topic": 31,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -2939,7 +2939,7 @@
       "evaluation_mode": "real_trial_protocol_v1",
       "epistemic_weight": "provisional"
     },
-    "method_trials_total": 158,
+    "method_trials_total": 159,
     "methods_ready_total": 0,
     "core_ask_signals": {
       "operator": 0
@@ -3175,6 +3175,7 @@
       "panel|efficiency",
       "panel|evaluation",
       "panel|evidence",
+      "panel|fish",
       "panel|gender",
       "panel|generations",
       "panel|graph",
@@ -3247,7 +3248,7 @@
     ],
     "emerge_insufficient": {
       "panel|orders": 3,
-      "panel|regulated": 2
+      "panel|regulated": 3
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
@@ -3275,21 +3276,21 @@
       "C-265",
       "C-266",
       "C-268",
+      "C-270",
       "C-74",
       "C-99"
     ],
     "learned_queries": [
-      "panel underlying",
-      "panel claims",
-      "panel recurs",
       "panel single",
       "panel panel",
       "panel testing",
       "unsorted testing",
-      "unsorted factor"
+      "unsorted factor",
+      "unsorted exceeds",
+      "unsorted transmission",
+      "unsorted duffing"
     ],
     "hyp_seen_cycle": {
-      "C-129": 19,
       "C-142": 23,
       "C-158": 30,
       "C-160": 16,
@@ -3319,7 +3320,9 @@
       "C-266": 30,
       "C-267": 31,
       "C-268": 32,
-      "C-269": 33
+      "C-269": 33,
+      "C-270": 34,
+      "C-271": 34
     },
     "topics_domain_ok": [
       "agent",
@@ -3388,6 +3391,9 @@
       "C-267",
       "C-268",
       "C-269",
+      "C-270",
+      "C-271",
+      "C-272",
       "C-74",
       "C-99"
     ],
@@ -3424,25 +3430,25 @@
       "confirmed_claims": 0,
       "evidence_links": 47,
       "supporting_links": 47,
-      "emergent_total": 113,
+      "emergent_total": 114,
       "usable_semantic_rate": 1.0,
       "methods_total": 20,
-      "method_trials_total": 158,
+      "method_trials_total": 159,
       "methods_ready_total": 0,
-      "stagnation_cycles": 4,
-      "objects": 2710,
-      "cycle": 33
+      "stagnation_cycles": 5,
+      "objects": 2733,
+      "cycle": 34
     },
     "vitality_prev": {
       "supports": 47,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 2710,
+      "objects": 2733,
       "active": 144,
       "links": 47,
-      "emergent": 113
+      "emergent": 114
     },
-    "stagnation": 4,
+    "stagnation": 5,
     "vitality_history": [
       {
         "cycle": 1,
@@ -3674,6 +3680,13 @@
         "development": 0,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 34,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "panel_asked": [
@@ -3826,7 +3839,7 @@
       "X-7"
     ],
     "reconsolidate_lens_idx": 2,
-    "kevin_last_cycle": 26,
+    "kevin_last_cycle": 34,
     "kevin_llm": [
       {
         "call_id": "kevin-c26:60a854e0b332",
@@ -3849,7 +3862,38 @@
             "topic": "unsorted"
           }
         ]
+      },
+      {
+        "call_id": "kevin-c34:463bdd8acce6",
+        "served_model": "deepseek-v4-pro",
+        "cycle": 34,
+        "replayed": false,
+        "proposals": [
+          {
+            "id": "C-270",
+            "text": "The transmission window width decrease with increasing bath temperature is due to a pure dephasing channel from coupling to a bath of two-level fluctuators, and therefore the narrowing saturates when the thermal energy exceeds the characteristic energy splitting of the fluctuators, not the mode spli",
+            "topic": "unsorted"
+          },
+          {
+            "id": "C-271",
+            "text": "The optimal bath bandwidth shift induced by a Duffing anharmonicity becomes detectable when the anharmonic energy scale exceeds the thermal energy, so at 1% harmonic frequency anharmonicity, the bandwidth shift is negligible only when the bath temperature is above 1% of the harmonic frequency in ene",
+            "topic": "unsorted"
+          }
+        ],
+        "input_type": "open_conflict",
+        "trigger": "conflict X-1",
+        "input_hash": "833a22c53ff9e3d8",
+        "source_count": 1,
+        "internal_coherence": "contradictory",
+        "confirmation_ceiling": "provisional",
+        "external_corroboration": "missing",
+        "origin": "kevin",
+        "authority": "none",
+        "requires_review": true
       }
+    ],
+    "kevin_inputs_seen": [
+      "833a22c53ff9e3d8"
     ]
   },
   "protocol": [
@@ -12580,35 +12624,213 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:03+00:00",
+      "cycle": 34,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:04+00:00",
+      "cycle": 34,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:04+00:00",
+      "cycle": 34,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:06+00:00",
+      "cycle": 34,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:11+00:00",
+      "cycle": 34,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:12+00:00",
+      "cycle": 34,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:15+00:00",
+      "cycle": 34,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:15+00:00",
+      "cycle": 34,
+      "kind": "trialed",
+      "summary": "Kevin trialed 1 method(s): 0 passed, 1 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:45+00:00",
+      "cycle": 34,
+      "kind": "kevin",
+      "summary": "Kevin (deepseek-v4-pro) [open_conflict:conflict X-1] proposed 2 candidate hyp(s) · sources=1 · ceiling=provisional · coherence=contradictory - non-authoritative, panel + Layer 9 decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:46+00:00",
+      "cycle": 34,
+      "kind": "emerged",
+      "summary": "'regulated' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:46+00:00",
+      "cycle": 34,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'fish' (Layer 9 synthesis-eligible, SC-204) from 3 claims (C-257, C-258, C-260)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:46+00:00",
+      "cycle": 34,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-270 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:46+00:00",
+      "cycle": 34,
+      "kind": "regulate",
+      "summary": "shed C-142: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:46+00:00",
+      "cycle": 34,
+      "kind": "regulate",
+      "summary": "shed C-158: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:47+00:00",
+      "cycle": 34,
+      "kind": "regulate",
+      "summary": "shed C-160: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:47+00:00",
+      "cycle": 34,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:48+00:00",
+      "cycle": 34,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:40:48+00:00",
+      "cycle": 34,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 1 trialed · 0 new link(s) · 0 hypothesis(es) · 1 emergent · shed 3 dead idea(s) · degenerating · spend €0.3280 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 34,
+    "llm_calls": 35,
     "granite_calls": 28,
     "deepseek_escalations": 5,
-    "kevin_calls": 1,
+    "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 34,
-    "last_call": "2026-06-16T15:11:15+00:00",
-    "est_cost_eur": 0.024,
+    "live_calls": 35,
+    "last_call": "2026-06-16T15:40:45+00:00",
+    "est_cost_eur": 0.028,
     "by_model": {
       "ibm-granite/granite-4.1-8b-20260429": 28,
-      "deepseek-v4-pro": 6
+      "deepseek-v4-pro": 7
     },
     "empty_calls": 0,
     "empty_truncated": 0,
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 34
+      "stop": 35
     },
     "panel_rounds": 2,
     "reserved_budget_eur": 20.0,
-    "spent_budget_eur": 0.324,
+    "spent_budget_eur": 0.328,
     "accepted_claims": 74,
     "accepted_calls": 20,
-    "accepted_call_yield": 0.588,
-    "est_cost_per_accepted_eur": 0.0003
+    "accepted_call_yield": 0.571,
+    "est_cost_per_accepted_eur": 0.0004
   },
   "commissions_done": [
     {
@@ -12619,5 +12841,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-16T15:35:25+00:00"
+  "generated": "2026-06-16T15:40:48+00:00"
 }
