@@ -5,7 +5,8 @@
     "evaluation",
     "caching",
     "retrieval",
-    "provenance"
+    "provenance",
+    "distillation"
   ],
   "notes": [],
   "asks": [],
@@ -480,14 +481,20 @@
     "huggingface:2606.00793",
     "huggingface:2606.06036",
     "huggingface:2606.08670",
+    "huggingface:2606.09813",
     "huggingface:2606.10747",
     "huggingface:2606.11152",
+    "huggingface:2606.12594",
     "huggingface:2606.14249",
+    "huggingface:2606.14346",
+    "huggingface:2606.14732",
+    "openalex:W7117395041",
     "openalex:W7128545313",
     "openalex:W7128547584",
     "openalex:W7128814387",
     "openalex:W7137590217",
     "openalex:W7137681926",
+    "openalex:W7141781397",
     "openalex:W7143316772",
     "openalex:W7143401746",
     "openalex:W7154677115",
@@ -1024,6 +1031,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20644698"
+    },
+    {
+      "call_id": "joni-c48:02f18be6e0e6",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.14732"
+    },
+    {
+      "call_id": "joni-c48:cc1eefacb245",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.12594"
     }
   ],
   "pdf_read": [
@@ -1438,6 +1461,15 @@
       "replayed": false,
       "claims": 0,
       "conflict": "X-33"
+    },
+    {
+      "call_id": "joni-c48:6048daf1f30f",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 0,
+      "conflict": "X-34"
     }
   ],
   "methods_seen": [
@@ -1451,6 +1483,8 @@
     "github:flarum/flarum",
     "github:hugsy/stuff",
     "huggingface:2606.10747",
+    "huggingface:2606.12594",
+    "huggingface:2606.14732",
     "openalex:W7137681926",
     "openalex:W7164710496",
     "zenodo:20549437",
@@ -1467,7 +1501,7 @@
     "zenodo:20709229",
     "zenodo:20709322"
   ],
-  "method_trials_total": 363,
+  "method_trials_total": 371,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0,
@@ -1544,6 +1578,9 @@
     "C-485|C-626",
     "C-497|C-506",
     "C-497|C-507",
+    "C-504|C-505",
+    "C-504|C-531",
+    "C-505|C-620",
     "C-506|C-507",
     "C-517|C-519",
     "C-518|C-531",
@@ -1775,6 +1812,7 @@
     "representation",
     "representations",
     "research",
+    "section",
     "seeds",
     "session",
     "stability",
@@ -1822,9 +1860,11 @@
     "memory|amazon",
     "memory|architecture",
     "memory|article",
+    "memory|associated",
     "memory|axioms",
     "memory|brane-bulk",
     "memory|brazil",
+    "memory|bronze",
     "memory|brown",
     "memory|capacity",
     "memory|category",
@@ -1834,6 +1874,7 @@
     "memory|classical",
     "memory|consistency",
     "memory|constant",
+    "memory|contains",
     "memory|convex",
     "memory|couple-conflict",
     "memory|derivation",
@@ -1863,6 +1904,7 @@
     "memory|optimal",
     "memory|potential",
     "memory|principle",
+    "memory|projects",
     "memory|pure",
     "memory|quantum",
     "memory|rate",
@@ -1874,6 +1916,7 @@
     "memory|seed",
     "memory|siluriformes",
     "memory|social",
+    "memory|stability",
     "memory|statement",
     "memory|support",
     "memory|systematic",
@@ -1908,6 +1951,7 @@
     "includes",
     "inconsistency",
     "layers",
+    "list",
     "mechanics",
     "multimodal",
     "outputs",
@@ -1920,18 +1964,15 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "memory|associated": 3,
-    "memory|base": 1,
-    "memory|contains": 3,
-    "memory|distinct": 2,
+    "memory|base": 2,
+    "memory|distinct": 3,
     "memory|geometry": 2,
-    "memory|includes": 2,
-    "memory|involves": 2,
-    "memory|projects": 3,
-    "memory|section": 2,
+    "memory|includes": 3,
+    "memory|involves": 3,
+    "memory|motion": 1,
+    "memory|section": 3,
     "memory|structures": 1,
-    "meth:composition": 1,
-    "meth:list": 3
+    "meth:composition": 1
   },
   "hyp_tested": [
     "C-221|C-128",
@@ -2023,24 +2064,24 @@
     "C-598",
     "C-619",
     "C-625",
-    "C-631"
+    "C-631",
+    "C-652"
   ],
   "learned_queries": [
-    "memory underlying",
-    "memory through-line",
-    "memory across",
-    "drift+forum temperature",
-    "drift+forum annealing",
-    "memory worth",
-    "unsorted worth",
-    "unsorted recurs"
+    "memory claims",
+    "memory single",
+    "forum+memory what’s",
+    "forum+memory decide",
+    "memory mechanism",
+    "forum mechanism",
+    "memory evaluation",
+    "forum evaluation"
   ],
   "hyp_seen_cycle": {
     "C-49": 21,
     "C-287": 44,
-    "C-302": 46,
     "C-304": 47,
-    "C-311": 20,
+    "C-311": 48,
     "C-313": 20,
     "C-333": 21,
     "C-347": 22,
@@ -2068,7 +2109,8 @@
     "C-619": 44,
     "C-625": 45,
     "C-631": 46,
-    "C-633": 47
+    "C-633": 47,
+    "C-652": 48
   },
   "hyp_domain_ok": [
     "C-126",
@@ -2120,7 +2162,8 @@
     "C-619",
     "C-625",
     "C-631",
-    "C-633"
+    "C-633",
+    "C-652"
   ],
   "methods_domain_ok": [
     "M-1",
@@ -2139,6 +2182,8 @@
     "M-21",
     "M-22",
     "M-23",
+    "M-24",
+    "M-25",
     "M-3",
     "M-4",
     "M-5",
@@ -2149,32 +2194,32 @@
   ],
   "vitality": {
     "verdict": "steady",
-    "development": 3,
+    "development": 6,
     "degeneration": 1,
-    "active": 361,
+    "active": 375,
     "hypotheses": 32,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 9,
     "confirmed_claims": 0,
-    "evidence_links": 68,
-    "supporting_links": 68,
-    "emergent_total": 175,
+    "evidence_links": 70,
+    "supporting_links": 70,
+    "emergent_total": 182,
     "usable_semantic_rate": 1.0,
-    "methods_total": 23,
-    "method_trials_total": 363,
+    "methods_total": 25,
+    "method_trials_total": 371,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 5750,
-    "cycle": 47
+    "objects": 5926,
+    "cycle": 48
   },
   "vitality_prev": {
-    "supports": 68,
+    "supports": 70,
     "promoted": 9,
     "confirmed": 0,
-    "objects": 5750,
-    "active": 361,
-    "links": 68,
-    "emergent": 175
+    "objects": 5926,
+    "active": 375,
+    "links": 70,
+    "emergent": 182
   },
   "stagnation": 0,
   "vitality_history": [
@@ -2506,14 +2551,21 @@
       "development": 3,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 48,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 44,
+    "starved_topic": 45,
     "stalled_development": 0,
-    "methods_never_mature": 10
+    "methods_never_mature": 11
   },
   "commissions_filed": {
     "starved_topic": 6,
@@ -3419,7 +3471,7 @@
       "headline": "Day 1, run 45: I am holding 359 active claims across 78 topics, with 37 contradiction(s) left open, and I have spent €0.3000."
     }
   ],
-  "reconsolidate_lens_idx": 0,
+  "reconsolidate_lens_idx": 1,
   "kevin_last_cycle": 46,
   "kevin_llm": [
     {
@@ -3568,7 +3620,8 @@
     "X-30",
     "X-31",
     "X-32",
-    "X-33"
+    "X-33",
+    "X-34"
   ],
   "last_review_snapshot": {
     "active": 359,
@@ -3577,5 +3630,9 @@
     "research_topics": 3,
     "usable": 0.791,
     "model_calls": 113
-  }
+  },
+  "read_fulltext_priority": true,
+  "strategy_sm": [
+    "underframed"
+  ]
 }

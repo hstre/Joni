@@ -40,6 +40,7 @@
       "convex",
       "description",
       "distichlis",
+      "distillation",
       "evaluation",
       "evolution",
       "existing",
@@ -66,6 +67,7 @@
       "research",
       "retrieval",
       "routing",
+      "section",
       "secure-openclaw",
       "seeds",
       "sequencing",
@@ -83,43 +85,48 @@
       "unsorted",
       "variance"
     ],
-    "claims_total": 633,
-    "claims_active": 361,
+    "claims_total": 652,
+    "claims_active": 375,
     "memory": 0,
-    "ledger": 4560,
-    "open_conflicts": 39,
-    "methods": 23,
-    "method_trials": 363,
+    "ledger": 4696,
+    "open_conflicts": 42,
+    "methods": 25,
+    "method_trials": 371,
     "methods_ready": 0,
     "preferences": 0,
-    "evidence_links": 68,
-    "self_model": 8,
+    "evidence_links": 70,
+    "self_model": 9,
     "hypotheses": 32,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.787,
-      "n": 361,
+      "rate": 0.789,
+      "n": 375,
       "flags": {
-        "correctly_typed": 361,
-        "source_anchored": 304,
-        "non_duplicate": 351,
-        "topic_valid": 351,
-        "scope_valid": 360,
-        "provenance_complete": 295
+        "correctly_typed": 375,
+        "source_anchored": 316,
+        "non_duplicate": 365,
+        "topic_valid": 365,
+        "scope_valid": 374,
+        "provenance_complete": 307
       }
     },
     "routing_engine": "DESi",
     "days_running": 1,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 0.3,
     "cap_eur": 20.0,
-    "runs": 47
+    "runs": 48
   },
   "window": {
     "start": "2026-06-15T19:27:06+00:00",
-    "runs": 47,
+    "runs": 48,
     "retired": false
   },
   "extensions": {
@@ -129,7 +136,8 @@
       "evaluation",
       "caching",
       "retrieval",
-      "provenance"
+      "provenance",
+      "distillation"
     ],
     "notes": [],
     "asks": [],
@@ -604,14 +612,20 @@
       "huggingface:2606.00793",
       "huggingface:2606.06036",
       "huggingface:2606.08670",
+      "huggingface:2606.09813",
       "huggingface:2606.10747",
       "huggingface:2606.11152",
+      "huggingface:2606.12594",
       "huggingface:2606.14249",
+      "huggingface:2606.14346",
+      "huggingface:2606.14732",
+      "openalex:W7117395041",
       "openalex:W7128545313",
       "openalex:W7128547584",
       "openalex:W7128814387",
       "openalex:W7137590217",
       "openalex:W7137681926",
+      "openalex:W7141781397",
       "openalex:W7143316772",
       "openalex:W7143401746",
       "openalex:W7154677115",
@@ -1148,6 +1162,22 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20644698"
+      },
+      {
+        "call_id": "joni-c48:02f18be6e0e6",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "huggingface:2606.14732"
+      },
+      {
+        "call_id": "joni-c48:cc1eefacb245",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "huggingface:2606.12594"
       }
     ],
     "pdf_read": [
@@ -1562,6 +1592,15 @@
         "replayed": false,
         "claims": 0,
         "conflict": "X-33"
+      },
+      {
+        "call_id": "joni-c48:6048daf1f30f",
+        "served_model": "deepseek-v4-pro",
+        "reason": "contested",
+        "state_k": 3,
+        "replayed": false,
+        "claims": 0,
+        "conflict": "X-34"
       }
     ],
     "methods_seen": [
@@ -1575,6 +1614,8 @@
       "github:flarum/flarum",
       "github:hugsy/stuff",
       "huggingface:2606.10747",
+      "huggingface:2606.12594",
+      "huggingface:2606.14732",
       "openalex:W7137681926",
       "openalex:W7164710496",
       "zenodo:20549437",
@@ -1591,7 +1632,7 @@
       "zenodo:20709229",
       "zenodo:20709322"
     ],
-    "method_trials_total": 363,
+    "method_trials_total": 371,
     "methods_ready_total": 0,
     "core_ask_signals": {
       "scoring": 0,
@@ -1668,6 +1709,9 @@
       "C-485|C-626",
       "C-497|C-506",
       "C-497|C-507",
+      "C-504|C-505",
+      "C-504|C-531",
+      "C-505|C-620",
       "C-506|C-507",
       "C-517|C-519",
       "C-518|C-531",
@@ -1899,6 +1943,7 @@
       "representation",
       "representations",
       "research",
+      "section",
       "seeds",
       "session",
       "stability",
@@ -1946,9 +1991,11 @@
       "memory|amazon",
       "memory|architecture",
       "memory|article",
+      "memory|associated",
       "memory|axioms",
       "memory|brane-bulk",
       "memory|brazil",
+      "memory|bronze",
       "memory|brown",
       "memory|capacity",
       "memory|category",
@@ -1958,6 +2005,7 @@
       "memory|classical",
       "memory|consistency",
       "memory|constant",
+      "memory|contains",
       "memory|convex",
       "memory|couple-conflict",
       "memory|derivation",
@@ -1987,6 +2035,7 @@
       "memory|optimal",
       "memory|potential",
       "memory|principle",
+      "memory|projects",
       "memory|pure",
       "memory|quantum",
       "memory|rate",
@@ -1998,6 +2047,7 @@
       "memory|seed",
       "memory|siluriformes",
       "memory|social",
+      "memory|stability",
       "memory|statement",
       "memory|support",
       "memory|systematic",
@@ -2032,6 +2082,7 @@
       "includes",
       "inconsistency",
       "layers",
+      "list",
       "mechanics",
       "multimodal",
       "outputs",
@@ -2044,18 +2095,15 @@
       "variance"
     ],
     "emerge_insufficient": {
-      "memory|associated": 3,
-      "memory|base": 1,
-      "memory|contains": 3,
-      "memory|distinct": 2,
+      "memory|base": 2,
+      "memory|distinct": 3,
       "memory|geometry": 2,
-      "memory|includes": 2,
-      "memory|involves": 2,
-      "memory|projects": 3,
-      "memory|section": 2,
+      "memory|includes": 3,
+      "memory|involves": 3,
+      "memory|motion": 1,
+      "memory|section": 3,
       "memory|structures": 1,
-      "meth:composition": 1,
-      "meth:list": 3
+      "meth:composition": 1
     },
     "hyp_tested": [
       "C-221|C-128",
@@ -2147,24 +2195,24 @@
       "C-598",
       "C-619",
       "C-625",
-      "C-631"
+      "C-631",
+      "C-652"
     ],
     "learned_queries": [
-      "memory underlying",
-      "memory through-line",
-      "memory across",
-      "drift+forum temperature",
-      "drift+forum annealing",
-      "memory worth",
-      "unsorted worth",
-      "unsorted recurs"
+      "memory claims",
+      "memory single",
+      "forum+memory what’s",
+      "forum+memory decide",
+      "memory mechanism",
+      "forum mechanism",
+      "memory evaluation",
+      "forum evaluation"
     ],
     "hyp_seen_cycle": {
       "C-49": 21,
       "C-287": 44,
-      "C-302": 46,
       "C-304": 47,
-      "C-311": 20,
+      "C-311": 48,
       "C-313": 20,
       "C-333": 21,
       "C-347": 22,
@@ -2192,7 +2240,8 @@
       "C-619": 44,
       "C-625": 45,
       "C-631": 46,
-      "C-633": 47
+      "C-633": 47,
+      "C-652": 48
     },
     "hyp_domain_ok": [
       "C-126",
@@ -2244,7 +2293,8 @@
       "C-619",
       "C-625",
       "C-631",
-      "C-633"
+      "C-633",
+      "C-652"
     ],
     "methods_domain_ok": [
       "M-1",
@@ -2263,6 +2313,8 @@
       "M-21",
       "M-22",
       "M-23",
+      "M-24",
+      "M-25",
       "M-3",
       "M-4",
       "M-5",
@@ -2273,32 +2325,32 @@
     ],
     "vitality": {
       "verdict": "steady",
-      "development": 3,
+      "development": 6,
       "degeneration": 1,
-      "active": 361,
+      "active": 375,
       "hypotheses": 32,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 9,
       "confirmed_claims": 0,
-      "evidence_links": 68,
-      "supporting_links": 68,
-      "emergent_total": 175,
+      "evidence_links": 70,
+      "supporting_links": 70,
+      "emergent_total": 182,
       "usable_semantic_rate": 1.0,
-      "methods_total": 23,
-      "method_trials_total": 363,
+      "methods_total": 25,
+      "method_trials_total": 371,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 5750,
-      "cycle": 47
+      "objects": 5926,
+      "cycle": 48
     },
     "vitality_prev": {
-      "supports": 68,
+      "supports": 70,
       "promoted": 9,
       "confirmed": 0,
-      "objects": 5750,
-      "active": 361,
-      "links": 68,
-      "emergent": 175
+      "objects": 5926,
+      "active": 375,
+      "links": 70,
+      "emergent": 182
     },
     "stagnation": 0,
     "vitality_history": [
@@ -2630,14 +2682,21 @@
         "development": 3,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 48,
+        "verdict": "steady",
+        "development": 6,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 44,
+      "starved_topic": 45,
       "stalled_development": 0,
-      "methods_never_mature": 10
+      "methods_never_mature": 11
     },
     "commissions_filed": {
       "starved_topic": 6,
@@ -3543,7 +3602,7 @@
         "headline": "Day 1, run 45: I am holding 359 active claims across 78 topics, with 37 contradiction(s) left open, and I have spent €0.3000."
       }
     ],
-    "reconsolidate_lens_idx": 0,
+    "reconsolidate_lens_idx": 1,
     "kevin_last_cycle": 46,
     "kevin_llm": [
       {
@@ -3692,7 +3751,8 @@
       "X-30",
       "X-31",
       "X-32",
-      "X-33"
+      "X-33",
+      "X-34"
     ],
     "last_review_snapshot": {
       "active": 359,
@@ -3701,7 +3761,11 @@
       "research_topics": 3,
       "usable": 0.791,
       "model_calls": 113
-    }
+    },
+    "read_fulltext_priority": true,
+    "strategy_sm": [
+      "underframed"
+    ]
   },
   "protocol": [
     {
@@ -18525,27 +18589,495 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:04+00:00",
+      "cycle": 48,
+      "kind": "fetched",
+      "summary": "arxiv: 0 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:05+00:00",
+      "cycle": 48,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:06+00:00",
+      "cycle": 48,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:07+00:00",
+      "cycle": 48,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:13+00:00",
+      "cycle": 48,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:14+00:00",
+      "cycle": 48,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:16+00:00",
+      "cycle": 48,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:16+00:00",
+      "cycle": 48,
+      "kind": "judged",
+      "summary": "relevant: Steady-Forcing: Balancing Spatial Persistence and Motion Continuity in Long-Hori",
+      "refs": {
+        "source": "huggingface:2606.14732",
+        "topic": "memory",
+        "new_topic": "distillation",
+        "url": "https://huggingface.co/papers/2606.14732"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:17+00:00",
+      "cycle": 48,
+      "kind": "judged",
+      "summary": "relevant: Pythagoras-Prover: Advancing Efficient Formal Proving via Augmented Lean Formali",
+      "refs": {
+        "source": "huggingface:2606.12594",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.12594"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:18+00:00",
+      "cycle": 48,
+      "kind": "judged",
+      "summary": "relevant: iMaC: Translating Actions into Motion and Contact Images for Embodied World Mode",
+      "refs": {
+        "source": "huggingface:2606.09813",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.09813"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:18+00:00",
+      "cycle": 48,
+      "kind": "judged",
+      "summary": "relevant: Squeeze-Release: Iterative Pruning with Exact Structural Minimization",
+      "refs": {
+        "source": "huggingface:2606.14346",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.14346"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:19+00:00",
+      "cycle": 48,
+      "kind": "judged",
+      "summary": "relevant: Technology-Enhanced Writing Pedagogy for EFL Learners: A Multi-Study Dissertatio",
+      "refs": {
+        "source": "openalex:W7117395041",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://escholarship.org/uc/item/1bf8j2r7"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:20+00:00",
+      "cycle": 48,
+      "kind": "judged",
+      "summary": "relevant: ‘Wit a braw smell’ : Occupational communities and memory as smell heritage in Sc",
+      "refs": {
+        "source": "openalex:W7141781397",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://strathprints.strath.ac.uk/view/author/22236.html>"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:36+00:00",
+      "cycle": 48,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from huggingface:2606.14732 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:43+00:00",
+      "cycle": 48,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from huggingface:2606.12594 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:45+00:00",
+      "cycle": 48,
+      "kind": "conflict_open",
+      "summary": "opened X-40 - two claims held open, not smoothed away",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:45+00:00",
+      "cycle": 48,
+      "kind": "conflict_open",
+      "summary": "opened X-41 - two claims held open, not smoothed away",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:45+00:00",
+      "cycle": 48,
+      "kind": "conflict_open",
+      "summary": "opened X-42 - two claims held open, not smoothed away",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:04:59+00:00",
+      "cycle": 48,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [contested] proposed 0 claim(s) [deepseek-v4-pro, replayed=False] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:00+00:00",
+      "cycle": 48,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: Steady-Forcing: Balancing Spatial Persistence and Motion Continuity in (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:01+00:00",
+      "cycle": 48,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: Pythagoras-Prover: Advancing Efficient Formal Proving via Augmented Le (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:04+00:00",
+      "cycle": 48,
+      "kind": "trialed",
+      "summary": "Kevin trialed 8 method(s): 2 passed, 6 failed",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:05+00:00",
+      "cycle": 48,
+      "kind": "improved",
+      "summary": "track_topic: distillation",
+      "refs": {
+        "claim": "C-650",
+        "topic": "distillation",
+        "source": "huggingface:2606.14732",
+        "url": "https://huggingface.co/papers/2606.14732"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:07+00:00",
+      "cycle": 48,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-40",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:08+00:00",
+      "cycle": 48,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-41",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:08+00:00",
+      "cycle": 48,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-42",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:09+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "new topic 'section' precipitated from a recurrence across headings, memory",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:10+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "'includes' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:10+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "'motion' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:11+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "'distinct' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:11+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "'involves' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:12+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "'section' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:12+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "'stability' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:13+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "'base' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:13+00:00",
+      "cycle": 48,
+      "kind": "emerged",
+      "summary": "synthesis on memory: 'bronze' (Layer 9 synthesis-eligible, SC-354) from 4 claims (C-403, C-405, C-407, C-496)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:14+00:00",
+      "cycle": 48,
+      "kind": "developed",
+      "summary": "C-504/C-531: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:15+00:00",
+      "cycle": 48,
+      "kind": "developed",
+      "summary": "linked C-505 <-> C-620 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:16+00:00",
+      "cycle": 48,
+      "kind": "developed",
+      "summary": "linked C-504 <-> C-505 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:16+00:00",
+      "cycle": 48,
+      "kind": "reconsolidated",
+      "summary": "re-read memory through Kevin lens 'theory-as-a-lens' across headings, index, memory: 3 pair(s) examined, 2 new cross-topic link(s)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:16+00:00",
+      "cycle": 48,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-652 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:16+00:00",
+      "cycle": 48,
+      "kind": "strategy",
+      "summary": "under-framed inputs (60% insufficient) -> read full text; refine queries: memory mechanism, forum mechanism, memory evaluation, forum evaluation",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:17+00:00",
+      "cycle": 48,
+      "kind": "regulate",
+      "summary": "shed C-304: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:17+00:00",
+      "cycle": 48,
+      "kind": "vitality",
+      "summary": "steady · dev 6 · degen 1 · 30 unsupported idea(s) · semantic-usable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:18+00:00",
+      "cycle": 48,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:18+00:00",
+      "cycle": 48,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T01:05:18+00:00",
+      "cycle": 48,
+      "kind": "note",
+      "summary": "cycle done · 6 new · 2 method(s) · 8 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · shed 1 dead idea(s) · reconsolidated 2 link(s) via 'theory-as-a-lens' · steady · spend €0.3000 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 122,
-    "granite_calls": 63,
-    "deepseek_escalations": 47,
+    "llm_calls": 125,
+    "granite_calls": 65,
+    "deepseek_escalations": 48,
     "kevin_calls": 12,
     "cached_calls": 35,
-    "live_calls": 87,
-    "last_call": "2026-06-16T00:52:03+00:00",
-    "est_cost_eur": 0.096,
+    "live_calls": 90,
+    "last_call": "2026-06-16T01:04:59+00:00",
+    "est_cost_eur": 0.1,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 63,
-      "deepseek-v4-pro": 59
+      "ibm-granite/granite-4.1-8b-20260429": 65,
+      "deepseek-v4-pro": 60
     },
     "panel_rounds": 2,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 0.3,
-    "accepted_claims": 190,
-    "accepted_per_live_call": 2.184,
+    "accepted_claims": 196,
+    "accepted_per_live_call": 2.178,
     "est_cost_per_accepted_eur": 0.0005
   },
-  "generated": "2026-06-16T00:52:18+00:00"
+  "generated": "2026-06-16T01:05:19+00:00"
 }
