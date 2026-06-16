@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tick": 0,
-  "snapshot_hash": "1cdb799b5ab158932cc6678d0263eca4c62767d7401c707e0974db66dc9eb2c8",
+  "snapshot_hash": "ff383008e7ed6ad0372c2c8ca5395447a88d910d71eaae7cbd6259fd60c0b8ed",
   "journal": [
     {
       "operator": "claim_create",
@@ -49008,6 +49008,155 @@
       },
       "target_objects": [
         "C-239"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "method_trial_record",
+      "proposal_type": "method_proposal",
+      "payload": {
+        "success": false,
+        "run_id": "joni-c55"
+      },
+      "proposer": "kevin",
+      "provenance": {
+        "origin_type": "local_model",
+        "source_ids": [],
+        "model_id": "kevin",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "M-21"
+      ],
+      "actor": "kevin",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-313",
+          "C-325",
+          "C-326"
+        ],
+        "surface_terms": [
+          "challenge"
+        ],
+        "lexical_trigger": 0.1429,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-313",
+              "b": "C-325",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "tool_computable",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0526
+            },
+            {
+              "a": "C-313",
+              "b": "C-326",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0667
+            },
+            {
+              "a": "C-325",
+              "b": "C-326",
+              "decision": "complementary",
+              "frame_a": "tool_computable",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.1429
+            }
+          ]
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "same-frame, compatible, non-duplicate group - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c55",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-313",
+        "C-325",
+        "C-326"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "Across my panel claims, 'challenge' recurs as a through-line worth testing as a single underlying factor.",
+        "topic": "panel",
+        "support": 0.4
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-313",
+        "C-325",
+        "C-326"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_reject",
+      "proposal_type": "claim_proposal",
+      "payload": {},
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-240"
       ],
       "actor": "joni",
       "governance_approved": false,
