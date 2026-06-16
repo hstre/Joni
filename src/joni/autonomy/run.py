@@ -269,8 +269,10 @@ def one_cycle() -> dict:
     #     then grade Joni's own trajectory (developing / steady / degenerating).
     regulated = homeostasis.regulate(cs, extensions, proto, cycle)
     homeostasis.retire_junk_topics(cs, extensions, proto, cycle)       # drain pre-gate junk topics
+    homeostasis.retire_offdomain_topics(cs, extensions, proto, cycle)  # drain laxiflora-type topics
     homeostasis.retire_junk_hypotheses(cs, extensions, proto, cycle)   # drain junk-subject ideas
     homeostasis.retire_junk_methods(cs, extensions, proto, cycle)      # drain off-domain methods
+    homeostasis.review_numeric_duplicate_conflicts(cs, proto, cycle)   # defuse legacy numeric hards
     vitality = homeostasis.vitality(cs, extensions, proto, cycle)
 
     # 4h. Aufträge an Claude: when Joni's own state shows a non-core capability gap the rules

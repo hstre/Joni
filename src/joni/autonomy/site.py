@@ -224,12 +224,13 @@ def build(data: dict) -> str:
     vit = ext.get("vitality", {}) or {}
     vcol = {"developing": "var(--good)", "degenerating": "var(--rej)"}.get(
         vit.get("verdict"), "var(--warn)")
+    # Show the HONEST quality metric (epistemically_usable), not the lenient
+    # usable_semantic_rate which read ~100% even with 0 evidence links and unsupported ideas.
     vit_line = (
         f"<div class=note>Vitality: <b style='color:{vcol}'>{esc(vit.get('verdict','—'))}</b> "
         f"· development {esc(vit.get('development',0))} · degeneration "
         f"{esc(vit.get('degeneration',0))} · {esc(vit.get('unsupported_hypotheses',0))} "
-        f"unsupported idea(s) · semantic-usable "
-        f"{int((vit.get('usable_semantic_rate',0) or 0)*100)}% · stagnation "
+        f"unsupported idea(s) · epistemically-usable {eu_pct} · stagnation "
         f"{esc(vit.get('stagnation_cycles',0))} cycle(s)</div>" if vit else "")
 
     def _movements(entry) -> str:

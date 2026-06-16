@@ -175,3 +175,42 @@ def test_retire_junk_hypotheses_keeps_a_supported_one():
     out = homeostasis.retire_junk_hypotheses(cs, {}, _Proto())
     assert out["retired_hyps"] == 0
     assert cs.core.get(h).status is l9.Status.CANDIDATE          # supported -> kept even if ugly
+
+
+def test_legacy_numeric_only_hard_conflict_is_reclassified(monkeypatch):
+    """A legacy hard conflict between two near-identical texts that differ only in a number is
+    retroactively moved out of the open-uncertainty queue (no more Alexandria on near-duplicates),
+    without force-resolving a real contradiction."""
+    cs = CoreState(seed_core())
+    a = cs.learn("the thread had 31 exchanges before resolution", "forum")
+    b = cs.learn("the thread had 34 exchanges before resolution", "forum")
+    cid = cs.open_conflict((a, b), severity="hard", conflict_kind="unqualified")
+    assert cs.core.get(cid).conflict_status.value == "open"
+    n = homeostasis.review_numeric_duplicate_conflicts(cs, _Proto(), 1)
+    assert n == 1
+    assert cs.core.get(cid).conflict_status.value == "under_review"   # out of the 'open' queue
+    # a genuine negation is NOT reclassified
+    cs2 = CoreState(seed_core())
+    x = cs2.learn("local routing reduces latency", "routing")
+    y = cs2.learn("local routing does not reduce latency", "routing")
+    cid2 = cs2.open_conflict((x, y), severity="hard", conflict_kind="unqualified")
+    assert homeostasis.review_numeric_duplicate_conflicts(cs2, _Proto(), 1) == 0
+    assert cs2.core.get(cid2).conflict_status.value == "open"
+
+
+def test_offdomain_topic_drain_is_fail_open_and_spares_research(monkeypatch):
+    from joni.autonomy import embeddings
+    # no embedder -> on_domain fails open -> a clean no-op, never sheds on a guess
+    embeddings._reset_for_tests(None)
+    cs = CoreState(seed_core())
+    cs.learn("laxiflora is a grass species", "laxiflora", source_id="arxiv:x")
+    assert homeostasis.retire_offdomain_topics(cs, {}, _Proto(), 1) == 0
+    # an injected embedder that calls everything off-domain still spares an earned research topic
+    embeddings._reset_for_tests(lambda t: [1.0, 0.0, 0.0])   # constant -> distance 0 to all anchors
+    cs2 = CoreState(l9.Layer9())
+    for i in range(3):
+        cs2.learn(f"routing claim {i} about latency", "routing", source_id=f"arxiv:r{i}")
+    assert "routing" in cs2.research_topics()
+    homeostasis.retire_offdomain_topics(cs2, {}, _Proto(), 1)
+    assert "routing" in cs2.research_topics()                 # a research direction is never shed
+    embeddings._reset_for_tests(None)
