@@ -46,3 +46,25 @@ def test_capture_carries_the_diagnostic_fields():
     for f in ("finish_reason", "served_actual", "prompt_tokens", "completion_tokens",
               "reasoning_tokens", "content_len", "reasoning_len", "raw_sha"):
         assert f in fields, f"diagnostic field {f} missing from Capture"
+
+
+def test_per_call_yield_is_bounded_and_kevin_absence_is_visible():
+    """No metric theatre: the live-call yield must be a true per-call ratio (<=1), and a silent
+    kevin install failure must be VISIBLE on the page, not hidden as '0 trials'."""
+    import desi_layer9 as l9
+    from joni.autonomy.core_state import CoreState
+    cs = CoreState(l9.Layer9())
+    cs.learn("a", "routing", source_id="granite:call-1")
+    cs.learn("b", "routing", source_id="granite:call-1")   # same call -> counts once
+    cs.learn("c", "routing", source_id="deepseek:call-2")
+    assert cs.accepted_call_ids() == {"call-1", "call-2"}   # distinct calls, not claims
+    # kevin absent -> the page says so in red, not just zeros
+    data = {"snapshot": {"tick": 0, "topics": [], "last_route": None, "research_topics": 0,
+                         "method_trials": 0, "methods_ready": 0,
+                         "epistemically_usable": {"rate": 0.8, "n": 1, "flags": {}}},
+            "budget": {"spent_eur": 0.0, "cap_eur": 20.0, "runs": 5},
+            "window": {"start": "t", "runs": 5}, "generated": "t", "protocol": [],
+            "extensions": {"kevin_installed": False}, "telemetry": {"llm_calls": 0},
+            "commissions_done": []}
+    h = site.build(data)
+    assert "Kevin ist NICHT installiert" in h

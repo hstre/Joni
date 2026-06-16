@@ -427,10 +427,20 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
     tele["spent_budget_eur"] = round(budget.spent_eur, 4)
     accepted = cs.proposal_accepted_count()
     live = tele.get("live_calls", 0)
-    tele["accepted_claims"] = accepted
-    tele["accepted_per_live_call"] = round(accepted / live, 3) if live else 0.0
+    tele["accepted_claims"] = accepted               # cumulative active model-claims (state)
+    # TRUE per-call yield (<=1): distinct live calls that produced a still-active claim, over live
+    # calls. Replaces the misleading cumulative/cumulative ratio that could read >1.
+    accepted_calls = len(cs.accepted_call_ids())
+    tele["accepted_calls"] = accepted_calls
+    tele["accepted_call_yield"] = round(accepted_calls / live, 3) if live else 0.0
     tele["est_cost_per_accepted_eur"] = (round(tele["est_cost_eur"] / accepted, 4)
                                          if accepted else 0.0)
+    # Make a SILENT dependency failure visible: if kevin (or its real-trial module) is not
+    # installed, all method-trialing quietly vanishes - the page must say so, not just show zeros.
+    import importlib.util as _ilu
+    extensions["kevin_installed"] = _ilu.find_spec("kevin") is not None
+    extensions["kevin_real_trial"] = (_ilu.find_spec("kevin.real_trial") is not None
+                                      if extensions["kevin_installed"] else False)
     commissions_done = _load_json(p.commissions_done, [])
     site.render(p.docs_index, p.docs_data, {
         "snapshot": snap,
