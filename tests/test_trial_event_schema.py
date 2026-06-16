@@ -173,14 +173,24 @@ def test_unusable_cell_is_not_a_negative_result():
     assert aggregate(evs)[0].outcome == "technical_only"
 
 
-def test_harmful_dominates_within_a_cell():
+def test_success_plus_harmful_in_a_cell_is_conflicting_not_negative():
+    # success AND harmful in one cell -> CONFLICTING (not 'harmful'); the success evidence and the
+    # harmful safety signal are both preserved, so the success is not erased.
     evs = [
         _ev(trial_id="a", epistemic_result="success", measurement=_meas(0.18),
             decision=_dec("success", 0.18, (0.12, 0.24))),
         _ev(trial_id="b", epistemic_result="harmful", measurement=_meas(-0.15),
             decision=_dec("harmful", -0.15, (-0.20, -0.10))),
     ]
-    assert aggregate(evs)[0].outcome == "harmful"
+    o = aggregate(evs)[0]
+    assert o.outcome == "conflicting" and o.has_success and o.has_harmful
+
+
+def test_harmful_only_cell_dominates_as_a_safety_signal():
+    evs = [_ev(trial_id="b", epistemic_result="harmful", measurement=_meas(-0.15),
+               decision=_dec("harmful", -0.15, (-0.20, -0.10)))]
+    o = aggregate(evs)[0]
+    assert o.outcome == "harmful" and o.has_harmful and not o.has_success
 
 
 # -- affinity attribution: a VERSIONED independence policy, not a count -------------------------- #
@@ -221,7 +231,7 @@ def test_independence_policy_is_configurable_and_versioned():
                    _neg("v2", model_family="deepseek", impl="impl-B", task="ts2", evaluator="ev2",
                         conf=("b",))]
     strict = attribute_to_affinity(aggregate(same_family))[0]
-    assert strict.strength == "none" and "model families" in strict.reason
+    assert strict.strength == "none" and "model_families" in strict.reason
     relaxed = IndependencePolicy(policy_id="independence_policy_relaxed",
                                  require_model_families_distinct=False)
     out = attribute_to_affinity(aggregate(same_family), policy=relaxed)[0]
@@ -289,3 +299,64 @@ def test_genuinely_disjoint_dependencies_are_independent():
                    conf=("b",))]
     a = attribute_to_affinity(cells)[0]
     assert a.strength == "limited" and a.independent
+
+
+# -- fail-closed independence: unknown / missing != independent ---------------------------------- #
+def test_unknown_dimension_value_is_not_independent():
+    cells = [_cell("v1", impls=("unknown",), families=("unknown",), tasks=("unknown",),
+                   evals=("e1",), conf=("a",)),
+             _cell("v2", impls=("iB",), families=("openai",), tasks=("t2",), evals=("e2",),
+                   conf=("b",))]
+    a = attribute_to_affinity(cells)[0]
+    assert a.strength == "none" and not a.independent and "incomplete" in a.reason
+
+
+def test_missing_dimension_value_is_not_independent():
+    cells = [_cell("v1", impls=(), families=("deepseek",), tasks=("t1",), evals=("e1",),
+                   conf=("a",)),                              # implementation MISSING
+             _cell("v2", impls=("iB",), families=("openai",), tasks=("t2",), evals=("e2",),
+                   conf=("b",))]
+    a = attribute_to_affinity(cells)[0]
+    assert a.strength == "none" and "incomplete" in a.reason
+
+
+def test_all_dimensions_known_and_disjoint_are_independent():
+    cells = [_cell("v1", impls=("iA",), families=("deepseek",), tasks=("t1",), evals=("e1",),
+                   conf=("a",)),
+             _cell("v2", impls=("iB",), families=("openai",), tasks=("t2",), evals=("e2",),
+                   conf=("b",))]
+    a = attribute_to_affinity(cells)[0]
+    assert a.strength == "limited" and a.independent
+
+
+# -- mixed success + harmful must NOT produce a negative affinity demotion ----------------------- #
+def _mixed_variant(variant, family, impl, task, ev):
+    return [_ev(trial_id=f"{variant}-s", method_variant=variant, model_family=family,
+                implementation_id=impl, task_sample_id=task, evaluator_id=ev,
+                epistemic_result="success", measurement=_meas(0.18),
+                decision=_dec("success", 0.18, (0.12, 0.24))),
+            _ev(trial_id=f"{variant}-h", method_variant=variant, model_family=family,
+                implementation_id=impl, task_sample_id=task, evaluator_id=ev,
+                epistemic_result="harmful", measurement=_meas(-0.15),
+                decision=_dec("harmful", -0.15, (-0.20, -0.10)))]
+
+
+def test_two_independent_mixed_cells_do_not_demote_the_affinity():
+    evs = _mixed_variant("v1", "deepseek", "iA", "t1", "e1") + \
+        _mixed_variant("v2", "openai", "iB", "t2", "e2")
+    outs = aggregate(evs)
+    assert all(o.outcome == "conflicting" for o in outs)
+    assert any(o.has_harmful for o in outs)                  # safety signal stays visible
+    a = attribute_to_affinity(outs)[0]
+    assert a.strength == "none" and "inconsistent" in a.reason   # success evidence blocks demotion
+
+
+def test_two_independent_pure_harmful_variants_remain_demotable():
+    evs = [_ev(trial_id="a", method_variant="v1", model_family="deepseek", implementation_id="iA",
+               task_sample_id="t1", evaluator_id="e1", epistemic_result="harmful",
+               measurement=_meas(-0.15), decision=_dec("harmful", -0.15, (-0.20, -0.10))),
+           _ev(trial_id="b", method_variant="v2", model_family="openai", implementation_id="iB",
+               task_sample_id="t2", evaluator_id="e2", epistemic_result="harmful",
+               measurement=_meas(-0.15), decision=_dec("harmful", -0.15, (-0.20, -0.10)))]
+    a = attribute_to_affinity(aggregate(evs))[0]
+    assert a.strength == "limited" and a.independent          # no success -> demotion allowed

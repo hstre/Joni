@@ -37,7 +37,7 @@ questions distinct:
 | field | derivation |
 |---|---|
 | `record_status` | always `registered` (Layer 9 confirms the event exists) |
-| `projection_status` | `projected`, or `unsupported_schema` if the projector cannot interpret the schema version (a **projector** limitation, not a scientific judgement) |
+| `projection_status` | `projected`; `unsupported_schema` if the projector cannot interpret the schema version; or **`invalid_payload`** if the (accepted) payload cannot be parsed/cast — the projector **never crashes** on a registered event, and one bad event cannot stop the others |
 | `event_usability` | `usable` iff `projected` **and** the reconstructed record passes structural `validate`; else `unusable` |
 | `decision_status` | `evaluate_decision` → `verified` \| `inconsistent` \| `unverifiable` \| `not_applicable`; **`not_evaluated`** for `unsupported_schema` |
 | `epistemic_weight` | **`measured_candidate`** iff `decision_status==verified` **and** `completed` **and** `valid`; otherwise `none` |
@@ -69,7 +69,10 @@ The report lists the ready pairs explicitly in `analysis_ready_conflict_scopes`.
 
 Independence is real **overlap detection**, not a `len(union) ≥ n` count: two variants that share
 *any* implementation, model-family, task-sample or evaluator are **not** independent (a value
-appearing in ≥2 variants is a shared dependency). The structured report carries:
+appearing in ≥2 variants is a shared dependency). It is also **fail-closed on unknowns**: a
+dimension whose value is `unknown`/missing for any compared variant is **not** distinct (unknown ≠
+independent), and the policy reports `independence metadata incomplete`. The structured report
+carries:
 
 ```yaml
 dataset_sufficiency:

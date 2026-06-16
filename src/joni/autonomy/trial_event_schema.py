@@ -440,15 +440,23 @@ class VariantScopeOutcome:
     evaluators: tuple[str, ...]
     confounders: tuple[str, ...]
     evidence: tuple[str, ...]
+    has_success: bool = False        # any success/partial_success among the usable events
+    has_harmful: bool = False        # any harmful among the usable events (safety signal preserved)
 
 
-def _cell_outcome(evs: list[MethodTrialRecorded]) -> tuple[str, int, int]:
+def _cell_outcome(evs: list[MethodTrialRecorded]) -> tuple[str, int, int, bool, bool]:
     usable = [e for e in evs if e.execution_status == "completed" and e.protocol_status == "valid"]
     unusable = [e for e in evs if e not in usable]
     results = {e.epistemic_result for e in usable if e.epistemic_result != "not_evaluated"}
-    if "harmful" in results:
+    has_success = bool(results & {"success", "partial_success"})
+    has_harmful = "harmful" in results
+    if has_success and has_harmful:
+        # both present: a CONFLICTING cell. harmful is kept as a safety signal (has_harmful) but the
+        # success evidence is NOT erased - so affinity attribution can see it and refuse demotion.
+        outcome = "conflicting"
+    elif has_harmful:
         outcome = "harmful"
-    elif results & {"success", "partial_success"}:
+    elif has_success:
         outcome = "success"
     elif "no_benefit" in results:
         outcome = "no_benefit"
@@ -458,7 +466,7 @@ def _cell_outcome(evs: list[MethodTrialRecorded]) -> tuple[str, int, int]:
         outcome = "technical_only"
     else:
         outcome = "not_evaluated"
-    return outcome, len(usable), len(unusable)
+    return outcome, len(usable), len(unusable), has_success, has_harmful
 
 
 def aggregate(events: list[MethodTrialRecorded]) -> list[VariantScopeOutcome]:
@@ -471,7 +479,7 @@ def aggregate(events: list[MethodTrialRecorded]) -> list[VariantScopeOutcome]:
         cells.setdefault((e.target_id, e.scope_id, e.method_id, e.method_variant), []).append(e)
     out: list[VariantScopeOutcome] = []
     for (target, scope, mid, variant), evs in sorted(cells.items()):
-        outcome, n_v, n_u = _cell_outcome(evs)
+        outcome, n_v, n_u, has_s, has_h = _cell_outcome(evs)
         usable = [e for e in evs if e.execution_status == "completed"
                   and e.protocol_status == "valid"]
         out.append(VariantScopeOutcome(
@@ -484,7 +492,7 @@ def aggregate(events: list[MethodTrialRecorded]) -> list[VariantScopeOutcome]:
             task_samples=tuple(sorted({e.task_sample_id for e in usable})),
             evaluators=tuple(sorted({e.evaluator_id for e in usable})),
             confounders=tuple(sorted({c for e in usable for c in e.confounders})),
-            evidence=tuple(e.trial_id for e in evs)))
+            evidence=tuple(e.trial_id for e in evs), has_success=has_s, has_harmful=has_h))
     return out
 
 
@@ -492,6 +500,8 @@ _OUTCOME_TO_DESI = {
     "success": "success", "no_benefit": "no_benefit", "harmful": "harmful",
     "inconclusive": "inconclusive", "technical_only": "technical_failure",
     "not_evaluated": "unknown",
+    # a conflicting cell (success AND harmful) must NOT demote a move -> inconclusive for DESi.
+    "conflicting": "inconclusive",
 }
 
 
@@ -520,6 +530,9 @@ class IndependenceProfile:
     task_samples_independent: bool
     evaluator_independent: bool
     shared_confounders: tuple[str, ...]
+    # dimensions where at least one variant has an unknown/missing value -> fail-closed: unknown is
+    # NOT independence. These make the dimension non-distinct AND give a precise reason.
+    incomplete_dimensions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -538,16 +551,21 @@ class IndependencePolicy:
     def satisfied(self, p: IndependenceProfile) -> tuple[bool, str]:
         if p.n_variants < self.min_variants or not p.method_variants_distinct:
             return False, f"fewer than {self.min_variants} distinct variants"
-        if self.require_implementations_distinct and not p.implementations_distinct:
-            return False, "implementations are not distinct (thin wrappers / shared code)"
-        if self.require_model_families_distinct and not p.model_families_distinct:
-            return False, "model families are not distinct"
-        if self.require_task_samples_independent and not p.task_samples_independent:
-            return False, "task samples are not independent (same split/data)"
-        if self.require_evaluator_independent and not p.evaluator_independent:
-            return False, "evaluator is not independent (same judge)"
+        checks = (
+            (self.require_implementations_distinct, "implementations", p.implementations_distinct),
+            (self.require_model_families_distinct, "model_families", p.model_families_distinct),
+            (self.require_task_samples_independent, "task_samples", p.task_samples_independent),
+            (self.require_evaluator_independent, "evaluators", p.evaluator_independent),
+        )
+        for required, name, distinct in checks:
+            if required and not distinct:
+                # unknown/missing is reported distinctly from a genuine shared dependency.
+                if name in p.incomplete_dimensions:
+                    return False, ("independence metadata incomplete: "
+                                   f"{name} unknown for >= 1 variant")
+                return False, f"{name} not distinct (shared dependency)"
         if self.forbid_shared_confounders and p.shared_confounders:
-            return False, f"a dominant confounder is shared by all ({list(p.shared_confounders)})"
+            return False, f"a confounder is shared across variants ({list(p.shared_confounders)})"
         return True, f"independence policy '{self.policy_id}' satisfied"
 
 
@@ -565,16 +583,45 @@ def _shared_across_variants(cells: list[VariantScopeOutcome], attr: str) -> set:
     return {v for v, variants in owners.items() if len(variants) >= 2}
 
 
+_UNKNOWN_VALUES = ("", "unknown")
+
+
+def _known(v) -> bool:
+    return v is not None and v not in _UNKNOWN_VALUES
+
+
+def _dimension_state(cells: list[VariantScopeOutcome], attr: str) -> tuple[bool, bool]:
+    """Return ``(distinct, incomplete)`` for one independence dimension, FAIL-CLOSED: a variant with
+    no KNOWN value makes the dimension non-distinct AND incomplete (unknown != independent). A known
+    value shared by >= 2 variants also makes it non-distinct."""
+    per_variant: dict = {}
+    for c in cells:
+        per_variant.setdefault(c.method_variant, set())
+        per_variant[c.method_variant] |= {v for v in getattr(c, attr) if _known(v)}
+    incomplete = any(not vals for vals in per_variant.values())
+    owners: dict = {}
+    for variant, vals in per_variant.items():
+        for v in vals:
+            owners.setdefault(v, set()).add(variant)
+    shared = any(len(vs) >= 2 for vs in owners.values())
+    return (not incomplete and not shared), incomplete
+
+
 def _profile(neg: list[VariantScopeOutcome]) -> IndependenceProfile:
     variants = {c.method_variant for c in neg}
+    impl_d, impl_i = _dimension_state(neg, "implementations")
+    fam_d, fam_i = _dimension_state(neg, "model_families")
+    task_d, task_i = _dimension_state(neg, "task_samples")
+    eval_d, eval_i = _dimension_state(neg, "evaluators")
+    incomplete = tuple(name for name, inc in (
+        ("implementations", impl_i), ("model_families", fam_i),
+        ("task_samples", task_i), ("evaluators", eval_i)) if inc)
     return IndependenceProfile(
         n_variants=len(variants), method_variants_distinct=len(variants) == len(neg),
-        # a dimension is independent ONLY if no value is shared by two or more variants.
-        implementations_distinct=not _shared_across_variants(neg, "implementations"),
-        model_families_distinct=not _shared_across_variants(neg, "model_families"),
-        task_samples_independent=not _shared_across_variants(neg, "task_samples"),
-        evaluator_independent=not _shared_across_variants(neg, "evaluators"),
-        shared_confounders=tuple(sorted(_shared_across_variants(neg, "confounders"))))
+        implementations_distinct=impl_d, model_families_distinct=fam_d,
+        task_samples_independent=task_d, evaluator_independent=eval_d,
+        shared_confounders=tuple(sorted(_shared_across_variants(neg, "confounders"))),
+        incomplete_dimensions=incomplete)
 
 
 @dataclass(frozen=True)
@@ -603,9 +650,11 @@ def attribute_to_affinity(outcomes: list[VariantScopeOutcome], *,
     res: list[AffinityScopeAttribution] = []
     for (target, scope, aff), cells in sorted(by_key.items()):
         neg = [c for c in cells if c.outcome in ("no_benefit", "harmful") and c.protocol_valid]
-        if any(c.outcome == "success" for c in cells):
-            indep, why, strength = False, "inconsistent: a variant succeeded for this affinity", \
-                "none"
+        # ANY success/partial_success in the evidence (incl. inside a CONFLICTING cell) blocks a
+        # negative affinity demotion - the picture is inconsistent, not negative.
+        if any(c.has_success for c in cells):
+            indep, strength = False, "none"
+            why = "inconsistent: success evidence exists for this affinity"
         else:
             indep, why = policy.satisfied(_profile(neg)) if neg else (False, "no negative variants")
             if not indep:

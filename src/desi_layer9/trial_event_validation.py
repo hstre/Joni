@@ -53,6 +53,14 @@ def _nonempty_str(v) -> bool:
     return isinstance(v, str) and bool(v)
 
 
+def _is_int(v) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool)
+
+
+def _is_num(v) -> bool:
+    return isinstance(v, Number) and not isinstance(v, bool)
+
+
 def validate_trial_payload(p: dict) -> list[str]:
     """Return structural violations (empty == structurally valid v3). Validates the full mandatory
     structure + forbidden combinations; never computes the verdict from the numbers."""
@@ -124,6 +132,29 @@ def validate_trial_payload(p: dict) -> list[str]:
     if errs:
         return errs
 
+    # -- TYPE-check every field the projector later casts (an accepted event cannot crash it) -- #
+    if "method_version" in p and not _is_int(p["method_version"]):
+        errs.append("method_version must be an integer")
+    if "ledger_tick" in p and not _is_int(p["ledger_tick"]):
+        errs.append("ledger_tick must be an integer")
+    for k in ("baseline_value", "intervention_value", "effect_size", "uncertainty"):
+        if meas.get(k) is not None and not _is_num(meas[k]):
+            errs.append(f"measurement.{k} must be numeric or null")
+    if meas.get("metric_name") is not None and not isinstance(meas["metric_name"], str):
+        errs.append("measurement.metric_name must be a string or null")
+    for k in ("effect_size", "minimum_effect"):
+        if dec.get(k) is not None and not _is_num(dec[k]):
+            errs.append(f"decision.{k} must be numeric or null")
+    ci = dec.get("confidence_interval")
+    if ci is not None and not (isinstance(ci, (list, tuple)) and len(ci) == 2
+                               and all(_is_num(x) for x in ci)):
+        errs.append("decision.confidence_interval must be null or a [low, high] pair of numbers")
+    if "affinities" in p and not (isinstance(p["affinities"], list)
+                                  and all(isinstance(a, str) for a in p["affinities"])):
+        errs.append("affinities must be a list of strings")
+    if errs:
+        return errs
+
     # -- forbidden combinations (structural; NO statistics) ------------------------------------- #
     exec_s, proto, result = p["execution_status"], p["protocol_status"], p["epistemic_result"]
     real = result in _REAL
@@ -151,6 +182,12 @@ def validate_trial_payload(p: dict) -> list[str]:
         for k in ("metric_name", "baseline_value", "intervention_value"):
             if meas.get(k) is None:
                 errs.append(f"a real result requires measurement.{k}")
+        # the independence-relevant provenance must be PRESENT for an evaluable real verdict (an
+        # explicit 'unknown' is allowed here, but is then treated as non-independent downstream).
+        for k in ("implementation_id", "model_family", "task_sample_id"):
+            if not _nonempty_str(p.get(k)):
+                errs.append(f"a real result requires '{k}' (independence provenance; "
+                            "'unknown' explicitly, never empty)")
         if not _nonempty_str(est.get("decision_rule_id")) or \
                 not isinstance(est.get("minimum_effect"), Number) or est["minimum_effect"] <= 0:
             errs.append("a real result requires estimand.decision_rule_id + minimum_effect > 0")

@@ -343,3 +343,39 @@ def test_not_evaluated_may_be_stored_without_measurement_values():
                               "intervention_value": None, "effect_size": None, "uncertainty": None})
     assert _record(core, p).accepted
     assert core.method_trial_events()[0]["payload"]["epistemic_result"] == "not_evaluated"
+
+
+# -- core gate type-checks every field the projector later casts --------------------------------- #
+def test_non_integer_method_version_is_rejected():
+    core = _core()
+    d = _record(core, _payload(method_version="abc"))
+    assert not d.accepted and "method_version" in d.reason
+    assert core.method_trial_events() == []
+
+
+def test_non_integer_ledger_tick_is_rejected():
+    core = _core()
+    d = _record(core, _payload(ledger_tick="oops"))
+    assert not d.accepted and "ledger_tick" in d.reason
+
+
+def test_malformed_confidence_interval_is_rejected():
+    core = _core()
+    p = _payload()
+    p["decision"] = dict(p["decision"], confidence_interval=[0.1])     # not a [low, high] pair
+    d = _record(core, p)
+    assert not d.accepted and "confidence_interval" in d.reason
+
+
+def test_non_numeric_measurement_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"], effect_size="big")
+    d = _record(core, p)
+    assert not d.accepted and "effect_size" in d.reason
+
+
+def test_real_result_requires_independence_provenance():
+    core = _core()
+    d = _record(core, _payload(implementation_id=""))      # empty independence field
+    assert not d.accepted and "implementation_id" in d.reason

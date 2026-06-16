@@ -113,15 +113,24 @@ def _project_event(env: dict) -> tuple[dict, MethodTrialRecorded | None]:
                     note="schema version not understood by this projector")
         return base, None
 
-    rec = _record_from_payload(p)
-    usable = validate(rec) == []                        # structurally well-formed?
-    if not usable:
-        base.update(projection_status="projected", event_usability="unusable",
-                    decision_status="not_applicable", epistemic_weight="none",
-                    note="event is structurally invalid; not evaluable")
+    # (b) a malformed payload (e.g. method_version='abc', a non-numeric effect, a bad CI) must NEVER
+    #     crash the projector. It stays VISIBLE as invalid_payload - one bad event cannot stop the
+    #     projection of the others (project_trial_events iterates per event).
+    try:
+        rec = _record_from_payload(p)
+        usable = validate(rec) == []                    # structurally well-formed?
+        if not usable:
+            base.update(projection_status="projected", event_usability="unusable",
+                        decision_status="not_applicable", epistemic_weight="none",
+                        note="event is structurally invalid; not evaluable")
+            return base, None
+        dv = evaluate_decision(rec)
+    except Exception as exc:  # noqa: BLE001 - defensive: any cast/parse error -> invalid, not crash
+        base.update(projection_status="invalid_payload", event_usability="unusable",
+                    decision_status="not_evaluated", epistemic_weight="none",
+                    note=f"payload could not be projected ({type(exc).__name__})")
         return base, None
 
-    dv = evaluate_decision(rec)
     verified = (dv["status"] == "verified" and rec.execution_status == "completed"
                 and rec.protocol_status == "valid")
     base.update(

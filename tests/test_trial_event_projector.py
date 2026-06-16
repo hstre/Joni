@@ -231,3 +231,45 @@ def test_projection_is_deterministic():
     _record(core, _payload("t:ok", "success", target=cid))
     _record(core, _payload("t:succ", "success", rule_hash="sha256:bogus"))
     assert project_trial_events(core) == project_trial_events(core)
+
+
+# -- the projector NEVER crashes on an accepted/registered payload ------------------------------- #
+def _env(payload, oid="MTE-x"):
+    return {"object_id": oid, "schema_version": payload.get("schema_version"),
+            "record_authority": "authoritative", "epistemic_authority": "none", "payload": payload}
+
+
+def test_malformed_payload_is_invalid_not_a_crash_and_others_still_project():
+    bad = {"trial_id": "bad", "schema_version": "method_trial_recorded_v3",
+           "target_type": "conflict", "target_id": "X", "scope_id": "s", "method_id": "m",
+           "method_variant": "v", "method_version": "abc",          # would crash int()
+           "execution_status": "completed", "protocol_status": "valid",
+           "epistemic_result": "not_evaluated"}
+    good = _payload("good", "success")
+    proj = project_trial_events(_StubCore([_env(bad, "MTE-1"), _env(good, "MTE-2")]))
+    b = _event(proj, "bad")
+    assert b["projection_status"] == "invalid_payload" and b["event_usability"] == "unusable"
+    assert b["epistemic_weight"] == "none" and b["record_status"] == "registered"
+    assert any(e["trial_id"] == "good" for e in proj["events"])     # the good one still projects
+
+
+def test_malformed_confidence_interval_stays_visible_not_crashing():
+    bad = _payload("ci", "no_benefit")
+    bad["decision"] = dict(bad["decision"], confidence_interval="not-a-pair")
+    proj = project_trial_events(_StubCore([_env(bad, "MTE-1")]))
+    e = _event(proj, "ci")
+    assert e["projection_status"] in ("invalid_payload", "projected")
+    assert e["epistemic_weight"] == "none"                          # never silently counted
+
+
+# -- incomplete independence metadata can never reach sufficiency -------------------------------- #
+def test_incomplete_independence_metadata_does_not_reach_sufficiency():
+    core = _core()
+    cid = _open_conflict(core)
+    # v1 has unknown implementation/model-family/task-sample; v2 concrete. unknown != independent.
+    _record(core, _no_benefit("a", target=cid, scope="qtt", variant="v1", family="unknown",
+                              impl="unknown", task="unknown", evaluator="e1"))
+    _record(core, _no_benefit("b", target=cid, scope="qtt", variant="v2", family="openai",
+                              impl="iB", task="t2", evaluator="e2"))
+    ds = project_trial_events(core)["dataset_sufficiency"]
+    assert ds["analysis_ready_conflict_scopes"] == [] and ds["verdict"] == "insufficient"
