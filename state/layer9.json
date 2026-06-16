@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tick": 0,
-  "snapshot_hash": "0f5a26154c9db9f7792501086cac2da919a849df4c1c35f2dcbfaf99a4bc1027",
+  "snapshot_hash": "7abc2228de2aaabffc09b11bc07f8fe7f32bb4b67ee289b3c21666e0adb65a46",
   "journal": [
     {
       "operator": "claim_create",
@@ -54956,6 +54956,593 @@
       },
       "target_objects": [
         "C-265"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-339",
+          "C-347"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.3333,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.165624,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": false,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "cosine distance 0.166: clearly related and non-duplicate - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c92",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-339",
+        "C-347"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "evidence_attach",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "content": "contextualizes via C-347: EpidBot Re-Assessment on EpiBench-1.0: Post-Tool-Upgrade Evaluation",
+        "relation": "contextualizes",
+        "review_status": "unreviewed"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-339"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-341",
+          "C-348"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.4375,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.081724,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": true,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "duplicate",
+        "semantic_state": "synthesis-rejected",
+        "decision_rationale": "cosine distance 0.082: a semantic duplicate, not a synthesis",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c92",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-341",
+        "C-348"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-342",
+          "C-351"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.4545,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.028074,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": true,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "duplicate",
+        "semantic_state": "synthesis-rejected",
+        "decision_rationale": "cosine distance 0.028: a semantic duplicate, not a synthesis",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c92",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-342",
+        "C-351"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-347",
+          "C-349"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.3333,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.118926,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": false,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "cosine distance 0.119: clearly related and non-duplicate - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c92",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-347",
+        "C-349"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "evidence_attach",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "content": "contextualizes via C-349: The post-upgrade evaluation of EpidBot was performed against the EpiBench-1.0 benchmark.",
+        "relation": "contextualizes",
+        "review_status": "unreviewed"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-347"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-351",
+          "C-55",
+          "C-68"
+        ],
+        "surface_terms": [
+          "generate"
+        ],
+        "lexical_trigger": 0.6667,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-351",
+              "b": "C-55",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.087
+            },
+            {
+              "a": "C-351",
+              "b": "C-68",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.04
+            },
+            {
+              "a": "C-55",
+              "b": "C-68",
+              "decision": "duplicate",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.6667
+            }
+          ]
+        },
+        "decision": "insufficient-semantic-evidence",
+        "semantic_state": "human-review-required",
+        "decision_rationale": "the group could not be fully measured",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c92",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-351",
+        "C-55",
+        "C-68"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-206",
+          "C-341",
+          "C-348"
+        ],
+        "surface_terms": [
+          "includes"
+        ],
+        "lexical_trigger": 0.4375,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-206",
+              "b": "C-341",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0455
+            },
+            {
+              "a": "C-206",
+              "b": "C-348",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0526
+            },
+            {
+              "a": "C-341",
+              "b": "C-348",
+              "decision": "duplicate",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.4375
+            }
+          ]
+        },
+        "decision": "supports",
+        "semantic_state": "semantic-measured",
+        "decision_rationale": "mutually supporting group, but no complementary lift",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c92",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-206",
+        "C-341",
+        "C-348"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-341",
+          "C-348",
+          "C-350"
+        ],
+        "surface_terms": [
+          "inference"
+        ],
+        "lexical_trigger": 0.4375,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-341",
+              "b": "C-348",
+              "decision": "duplicate",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.4375
+            },
+            {
+              "a": "C-341",
+              "b": "C-350",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.2632
+            },
+            {
+              "a": "C-348",
+              "b": "C-350",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.1667
+            }
+          ]
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "same-frame, compatible, non-duplicate group - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c92",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-341",
+        "C-348",
+        "C-350"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "Across my panel claims, 'inference' recurs as a through-line worth testing as a single underlying factor.",
+        "topic": "panel",
+        "support": 0.4
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-341",
+        "C-348",
+        "C-350"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_reject",
+      "proposal_type": "claim_proposal",
+      "payload": {},
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-266"
       ],
       "actor": "joni",
       "governance_approved": false,
