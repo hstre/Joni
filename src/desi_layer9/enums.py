@@ -33,6 +33,7 @@ class ObjectType(StrEnum):
     SELF_MODEL_CLAIM = "self_model_claim"
     NARRATIVE_SUMMARY = "narrative_summary"
     SEMANTIC_CLUSTER = "semantic_cluster"
+    METHOD_TRIAL_EVENT = "method_trial_event"
 
 
 class SemanticState(StrEnum):
@@ -215,6 +216,7 @@ class Operator(StrEnum):
     MEMORY_CONSOLIDATE_PROPOSE = "memory_consolidate_propose"
     METHOD_PROPOSE = "method_propose"
     METHOD_TRIAL_RECORD = "method_trial_record"
+    METHOD_TRIAL_RECORDED = "method_trial_recorded"
     METHOD_PROMOTE = "method_promote"
     METHOD_REJECT = "method_reject"
     SELF_MODEL_PROPOSE = "self_model_propose"

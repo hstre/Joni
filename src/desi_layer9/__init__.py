@@ -54,6 +54,7 @@ from .objects import (
     Goal,
     MemoryEpisode,
     Method,
+    MethodTrialEvent,
     NarrativeSummary,
     OperationalState,
     Preference,
@@ -92,7 +93,7 @@ __all__ = [
     "OPERATORS_GRANTING_AUTHORITATIVE", "OPERATORS_GRANTING_CONTROL",
     # objects
     "Claim", "Evidence", "EvidenceLink", "Constraint", "Goal", "Preference",
-    "Project", "Method", "MemoryEpisode", "Conflict", "Decision", "Proposal",
+    "Project", "Method", "MethodTrialEvent", "MemoryEpisode", "Conflict", "Decision", "Proposal",
     "Review", "Source", "OperationalState", "SelfModelClaim", "NarrativeSummary",
     "SemanticCluster",
     # the semantic boundary (port to the DESi Semantic Layer)

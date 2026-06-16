@@ -31,7 +31,7 @@ from .enums import (
     SemanticState,
     Status,
 )
-from .hashing import chain_event
+from .hashing import chain_event, object_canonical
 from .ids import IdMinter
 from .ledger import LedgerEvent
 from .objects import (
@@ -43,6 +43,7 @@ from .objects import (
     Goal,
     MemoryEpisode,
     Method,
+    MethodTrialEvent,
     NarrativeSummary,
     OperationalState,
     Preference,
@@ -55,6 +56,7 @@ from .provenance import Provenance
 from .rules import can_confirm_claim
 from .taint import Taint, merge_all
 from .transitions import assert_conflict_transition, assert_transition
+from .trial_event_validation import canonical_payload, validate_trial_payload
 
 _CONTROLLED_FIELDS = ("status", "authority")        # never adopted from a payload
 _METHOD_TRIALS_FOR_ACTIVE = 3
@@ -123,6 +125,36 @@ class Layer9:
 
     def all(self, object_type: ObjectType) -> list:
         return [o for o in self.objects.values() if o.object_type is object_type]
+
+    def method_trial_events(self) -> list[dict]:
+        """Read-only envelope over the append-only METHOD_TRIAL_RECORDED records, in mint order.
+
+        Each envelope separates the writer-REPORTED content (``payload``, a fresh deep copy so a
+        caller can never mutate stored state) from Layer 9's own PROVENANCE (object id, mint
+        sequence, actor, ledger reference, authorities, integrity hash). ``record_authority`` says
+        the registration is in-force; ``epistemic_authority='none'`` says the trial verdict inside
+        the payload is NOT thereby confirmed. The core never interprets the payload."""
+        import hashlib
+        import json
+        events = sorted(self.all(ObjectType.METHOD_TRIAL_EVENT),
+                        key=lambda o: int(o.id.split("-")[1]))
+        out: list[dict] = []
+        for o in events:
+            out.append({
+                "object_id": o.id,
+                "mint_sequence": int(o.id.split("-")[1]),
+                "actor": o.created_by,
+                "derived_from": list(o.derived_from),
+                "ledger_event": o.ledger_event,
+                "schema_version": o.schema_version,
+                "record_authority": o.record_authority,
+                "epistemic_authority": o.epistemic_authority,
+                "integrity": {
+                    "object_canonical_sha256":
+                        hashlib.sha256(object_canonical(o).encode("utf-8")).hexdigest()},
+                "payload": json.loads(o.canonical_payload),   # fresh deep copy each call
+            })
+        return out
 
     def open_conflicts(self) -> list[Conflict]:
         return [c for c in self.all(ObjectType.CONFLICT)
@@ -406,6 +438,31 @@ class Layer9:
         m.last_changed_tick = self.tick
         return [m.id], m.status.value, f"trial on {m.id} (success={success})"
 
+    def _h_method_trial_recorded(self, p, actor, gov):
+        """Append-only record of a trial event. Validates STRUCTURE only, stores the verbatim
+        payload as an IMMUTABLE canonical-JSON object, and mutates NO Method counter (legacy
+        counters stay the sole decision-making truth). Idempotent on ``trial_id``: an identical
+        re-submit records nothing; a divergent payload for the same id is an audited conflict."""
+        errs = validate_trial_payload(p.payload)
+        if errs:
+            raise ValueError("invalid METHOD_TRIAL_RECORDED: " + "; ".join(errs))
+        canonical = canonical_payload(p.payload)
+        tid = p.payload["trial_id"]
+        for o in self.all(ObjectType.METHOD_TRIAL_EVENT):
+            if o.trial_id == tid:
+                if o.canonical_payload == canonical:
+                    # idempotent retry: change NOTHING (no objects returned -> no mutation/rehash).
+                    return [], o.status.value, f"idempotent: trial '{tid}' already recorded {o.id}"
+                raise ValueError(
+                    f"trial_id conflict: '{tid}' already recorded as {o.id} with a DIFFERENT "
+                    "payload - refusing a second, divergent record")
+        ev = self._mint(MethodTrialEvent, ObjectType.METHOD_TRIAL_EVENT, p, actor,
+                        schema_version=p.payload["schema_version"], trial_id=tid,
+                        canonical_payload=canonical, record_authority="authoritative",
+                        epistemic_authority="none", status=Status.ACTIVE,
+                        authority=Authority.AUTHORITATIVE)
+        return [ev.id], ev.status.value, f"recorded trial event {ev.id} ('{tid}')"
+
     def _h_method_promote(self, p, actor, gov):
         m = self.objects[p.target_objects[0]]
         if m.status is Status.CANDIDATE:
@@ -503,6 +560,7 @@ _HANDLERS = {
     Operator.MEMORY_RECALL: Layer9._h_memory_recall,
     Operator.METHOD_PROPOSE: Layer9._h_method_propose,
     Operator.METHOD_TRIAL_RECORD: Layer9._h_method_trial_record,
+    Operator.METHOD_TRIAL_RECORDED: Layer9._h_method_trial_recorded,
     Operator.METHOD_PROMOTE: Layer9._h_method_promote,
     Operator.METHOD_REJECT: Layer9._h_method_reject,
     Operator.SELF_MODEL_PROPOSE: Layer9._h_self_model_propose,
