@@ -196,3 +196,26 @@ def test_real_response_parser_surfaces_truncation_evidence():
     assert raw.text == "" and raw.finish_reason == "length"
     assert raw.reasoning_tokens == 2048 and raw.reasoning_len > 0
     assert raw.served == "deepseek-v4-pro"
+
+
+def test_weekly_budget_cap_governs_the_semantic_engine(monkeypatch, tmp_path):
+    # #5 (Variante 1): the EUR cap is enforced at the one model seam, not just on the panel.
+    from joni.autonomy.budget import Budget
+    monkeypatch.setenv("JONI_COST_PER_DEEPSEEK_CALL", "0.004")
+    calls = []
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u: (calls.append(1), "out")[1])
+    prof = model_profile.profile("joni-hard")             # deepseek -> metered
+    # a cap with room: the live call happens AND is charged
+    b = Budget(week_start="2026-06-16", spent_eur=0.0, runs=0, cap_eur=1.0)
+    out, cap = model_call.call(prof, "s", "u", run_id="r1", store_dir=tmp_path,
+                               budget=b, runs_per_week=10)
+    assert out == "out" and len(calls) == 1 and b.spent_eur == 0.004     # charged
+    # an exhausted cap: NO live call, no proposal (best-effort, never a fallback)
+    full = Budget(week_start="2026-06-16", spent_eur=1.0, runs=0, cap_eur=1.0)
+    out2, cap2 = model_call.call(prof, "s", "v", run_id="r2", store_dir=tmp_path,
+                                 budget=full, runs_per_week=10)
+    assert out2 is None and cap2 is None and len(calls) == 1              # no second live call
+    # a REPLAY is free even with an exhausted cap (cached -> no spend)
+    out3, cap3 = model_call.call(prof, "s", "u", run_id="r3", store_dir=tmp_path,
+                                 budget=full, runs_per_week=10)
+    assert out3 == "out" and cap3.replayed is True and len(calls) == 1

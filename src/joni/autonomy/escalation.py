@@ -166,7 +166,8 @@ def _novel_hard_conflict(cs, escalated: set):
 
 
 def escalate_if_needed(cs, extensions: dict, proto, cycle: int, *,
-                       risky_transition: bool = False) -> dict:
+                       risky_transition: bool = False, budget=None,
+                       runs_per_week: int = 0) -> dict:
     """Run at most one DeepSeek escalation when a named rule fires AND it is worth it. The
     escalation's output, like Granite's, enters Layer 9 as ``candidate`` SOURCE proposals (never
     authoritative). DeepSeek is reached only for a NEW hard contradiction, or (when not backing
@@ -204,7 +205,8 @@ def escalate_if_needed(cs, extensions: dict, proto, cycle: int, *,
             f"RELEVANT EXISTING STATE (state_k={prof.state_k}):\n{ctx}")
     store_dir = paths().model_calls
     output, cap = model_call.call(prof, _SYS, user, run_id=f"joni-c{cycle}",
-                                  store_dir=store_dir, escalation_reason=why)
+                                  store_dir=store_dir, escalation_reason=why,
+                                  budget=budget, runs_per_week=runs_per_week)
     if output is None or cap is None:
         return out
     props = projection._parse(output, topic)

@@ -72,7 +72,8 @@ def _candidate_topics(cs, seen: set) -> list[str]:
     return [t for t, n in counts.most_common() if n >= 2]
 
 
-def review_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retire: int = 5) -> dict:
+def review_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retire: int = 5,
+                  budget=None, runs_per_week: int = 0) -> dict:
     """Judge a few new candidate topics with Granite and shed the ones it calls junk (0-support
     claims only, gate-recorded). Cached + bounded. No-op when disabled."""
     out = {"reviewed": 0, "rejected_topics": 0, "retired_claims": 0}
@@ -90,7 +91,8 @@ def review_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retire: in
         body = "\n".join(f"- {c.text}" for c in sample) or "(no claims)"
         user = f"CANDIDATE TOPIC: {topic}\n\nCLAIMS TAGGED '{topic}':\n{body}"
         output, cap = model_call.call(prof, _SYS, user, run_id=f"topicrev-c{cycle}",
-                                      store_dir=store_dir)
+                                      store_dir=store_dir, budget=budget,
+                                      runs_per_week=runs_per_week)
         if output is None or cap is None:
             continue                                    # a failed call is no verdict, not a guess
         out["reviewed"] += 1

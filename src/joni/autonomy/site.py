@@ -301,6 +301,34 @@ def build(data: dict) -> str:
         real_trial_block = ("<p class=empty>Noch kein echter Trial gelaufen (kevin.real_trial "
                             "nicht verfügbar oder dieser Zyklus ohne Trial).</p>")
 
+    # #6: capability health - a missing capability shows as DEGRADED, never as innocent zeros.
+    caps = ext.get("capabilities", {}) if isinstance(ext.get("capabilities"), dict) else {}
+    _cap_ok = {"live", "on"}
+    def _cap(label: str, key: str, ok_note: str, bad_note: str) -> str:
+        v = caps.get(key, "?")
+        good = v in _cap_ok
+        color = "" if good else " style='color:var(--warn)'"
+        note = ok_note if good else bad_note
+        return (f"<div class=stat><span>{label}</span><span{color}><b>{esc(v)}</b> "
+                f"<span class=src>{note}</span></span></div>")
+    degraded_sources = caps.get("sources_degraded", []) if isinstance(caps, dict) else []
+    cap_block = (
+        _cap("DESi-Routing", "desi_routing", "echte Routing-Engine",
+             "Fallback joni-builtin &mdash; DESi nicht installiert")
+        + _cap("Embedder (Domain-Gate)", "embeddings", "semantischer Filter aktiv",
+               "INERT &mdash; Domain-Gate lässt alles durch (kein Embedder)")
+        + _cap("PDF-Reader", "pdf_reader", "liest Volltext",
+               "ABWESEND &mdash; kein pypdf, nur Skim")
+        + _cap("Semantik-Projektion", "semantic_proposals", "Modell schlägt Claims vor",
+               "AUS")
+        + _cap("Kevin", "kevin", "installiert", "NICHT installiert &mdash; keine Methoden-Trials")
+        + (f"<div class=note style='color:var(--rej)'>⚠ Quellen DEGRADED diesen Zyklus: "
+           f"{esc(', '.join(degraded_sources))}</div>" if degraded_sources else "")
+        + "<div class=note>Fehlende Fähigkeit ≠ &bdquo;0 Ergebnisse&ldquo;: eine ausgefallene "
+        "Quelle, ein fehlender Embedder oder Reader erzeugt <b>nie</b> dieselbe Telemetrie wie "
+        "&bdquo;nichts gefunden&ldquo;. Genau diese Verwechslung war die wiederkehrende "
+        "Fehlerklasse.</div>")
+
     from . import quality
     good_topics = [t for t in s.get("topics", []) if quality.is_good_topic(t)]
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in good_topics)
@@ -501,6 +529,10 @@ what is uncertain, what contradicts, and what changed.</p>
   <div class="card full">
     <h2>Echter Methoden-Trial — real_trial_protocol_v1 (gemessen, provisional)</h2>
     {real_trial_block}
+  </div>
+  <div class="card full">
+    <h2>Kapazitäten — was wirklich läuft (degraded ≠ „0 Ergebnisse")</h2>
+    {cap_block}
   </div>
   <div class="card full">
     <h2>Expertenrunde — Alexandria, über Kreuz (berät; Joni entscheidet)</h2>
