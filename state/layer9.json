@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tick": 0,
-  "snapshot_hash": "2dedc7db50db10cf64e7dc487bf3651073834fc7bee8ff63655b792a16672eca",
+  "snapshot_hash": "11feee1881bbcfa3112d2d76a72fc5f9f17d443372a5ace8763989504cfb4d87",
   "journal": [
     {
       "operator": "claim_create",
@@ -56134,6 +56134,293 @@
       },
       "target_objects": [
         "C-207"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-207",
+          "C-213"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.4167,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.192824,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": false,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "cosine distance 0.193: clearly related and non-duplicate - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c97-bf",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-207",
+        "C-213"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-208",
+          "C-213"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.4545,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.178934,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": false,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "cosine distance 0.179: clearly related and non-duplicate - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c97-bf",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-208",
+        "C-213"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**\n\nchatgpt (adversarial): frames viability around engineering tradeoffs — scalability, security, resource cost. Divergence rests on an unstated assumption that the proposition is an *infrastructure decision*. But the claim-kind is \"method suggestion / lens,\" not a deployment. This category-substitution inflates operational counterpoints beyond what admissibility requires. Disagreement kept: I reject the deployment framing.\n\ndeepseek (consistency): correctly treats \"Linse\" as a derivation-lens and tests formal admissibility against Alexandria's evidence graph. I share its assumption (lens = external-result path requiring provenance mapping). No divergence to resolve here.\n\n**Reconciled assessment:**\n\nAdmissible *as a lens* only if three conditions are made explicit: (a) Terra/Teaspoons outputs carry provenance traceable into Alexandria's evidence graph; (b) input/output types reconcile with panel type discipline; (c) service error/unavailability states map to determinate \"undetermined,\" not silent gaps. Supports: democratizes pipelines the panel cannot locally compute. Breaks: opaque black-box truth values, version drift, no local revalidation — these make it inadmissible unless conditions are stated. Engineering risks (chatgpt) are out of scope for admissibility.\n\nJoni decides.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:claude"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-356"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · adversarial · keine Entscheidung] **Cross-Reconstruction and Reconciled Assessment:**\n\n**Assumption Divergence:** \n- Claude assumes the proposal lacks a defined method, focusing on the absence of a clear specification for the \"Linse.\"\n- Deepseek assumes the method is admissible if the Terra service is treated as a trusted black box, emphasizing the need for explicit assumptions about service reliability and integration into the panel's ontology.\n\n**Reconciled Assessment:**\n\n**Category Purity:** Violated. The proposal conflates a method suggestion with a service description. The \"Linse\" remains undefined, lacking a clear methodological outline.\n\n**Logical Consistency:** Partially consistent. The proposal lacks internal contradiction but fails to provide sufficient detail for assessing whether it is a \"good idea.\"\n\n**Explicit Assumptions:** Terra service exists and executes pipelines users cannot run themselves.\n\n**Implicit Assumptions:** (1) The panel can integrate external services as trusted components; (2) The \"Linse\" is intended as a procedural mechanism for assessment.\n\n**Consistency Condition:** The proposal is formally admissible if the \"Linse\" is explicitly defined and mapped to the panel's context, with clear provenance and error handling.\n\n**Break Point:** Without explicit definition and integration, the method remains underspecified and unassessable.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:chatgpt"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-357"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · consistency · keine Entscheidung] **Reconciled consistency assessment (admissibility only):**\n\nClaude correctly flags a category violation: the proposition labels itself a “method suggestion” but provides only a repository link and service overview, not a defined method. ChatGPT implicitly assumes the linked pipeline *is* the method and evaluates viability; this diverges on the assumption that a URL suffices as method specification. Under the panel’s formal standard, a method („Linse“) must be explicitly stated—its input, operation, output, and domain of application. The proposition as given is therefore **formally inadmissible**: it lacks the necessary definition to be assessed as a method.\n\n**Tragfähigkeit conditional:** It becomes admissible *only if* the method is spelled out (e.g., “The Linse is the Beagle imputation/validation pipeline applied to panel data via Teaspoons with parameters X”). Without that, the category break remains—tool reference ≠ method specification—and no formal assessment of “gute Idee” is possible.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:deepseek"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-358"
       ],
       "actor": "joni",
       "governance_approved": false,
