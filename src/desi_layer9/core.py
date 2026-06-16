@@ -417,6 +417,7 @@ class Layer9:
             if m.trial_count < _METHOD_TRIALS_FOR_ACTIVE or m.success_count <= m.failure_count:
                 raise ValueError(f"{m.id} needs >= {_METHOD_TRIALS_FOR_ACTIVE} trials with "
                                  "more successes than failures before activation")
+            _assert_taint_cleared(m)                      # contaminated -> needs HUMAN_VALIDATE
             assert_transition(ObjectType.METHOD, m.status, Status.ACTIVE)
             m.status, m.authority = Status.ACTIVE, Authority.AUTHORITATIVE
             m.last_changed_tick = self.tick
@@ -442,6 +443,17 @@ class Layer9:
                          metrics=dict(p.payload.get("metrics", {})),
                          status=Status.ACTIVE, authority=Authority.AUTHORITATIVE)
         return [os_.id], "active", f"operational snapshot {os_.id}"
+
+    def _h_human_validate(self, p, actor, gov):
+        # A human/operator signs off on a contaminated object DESPITE its taint, so it may be
+        # promoted. The contamination flags stay on record; only `human_validated` is set. The
+        # policy gate already restricts this operator to a human / deterministic operator.
+        obj = self.objects[p.target_objects[0]]
+        t = getattr(obj, "taint", None)
+        if t is None:
+            raise ValueError(f"{obj.id} carries no taint to validate")
+        obj.taint = t.with_human_validation()
+        return [obj.id], "human_validated", f"{obj.id} human-validated despite taint"
 
     def _h_semantic_cluster_propose(self, p, actor, gov):
         # An append-only annotation of a Semantic-Layer analysis. It records what was
@@ -496,7 +508,20 @@ _HANDLERS = {
     Operator.SELF_MODEL_PROPOSE: Layer9._h_self_model_propose,
     Operator.NARRATIVE_RENDER: Layer9._h_narrative_render,
     Operator.SEMANTIC_CLUSTER_PROPOSE: Layer9._h_semantic_cluster_propose,
+    Operator.OPERATIONAL_STATE: Layer9._h_operational_state,   # gated path (was a bypass)
+    Operator.HUMAN_VALIDATE: Layer9._h_human_validate,
 }
+
+
+def _assert_taint_cleared(obj) -> None:
+    """A contaminated object may not be promoted to authoritative unless a human has explicitly
+    validated it (Operator.HUMAN_VALIDATE). Taint that is computed but never enforced is decorative;
+    this is where it actually blocks promotion."""
+    t = getattr(obj, "taint", None)
+    if t is not None and t.is_contaminated and not t.human_validated:
+        raise ValueError(
+            f"{obj.id} is contaminated and not human-validated - promotion to authoritative is "
+            "blocked (a human must issue HUMAN_VALIDATE first)")
 
 
 def make_proposal(

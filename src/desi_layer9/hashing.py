@@ -46,13 +46,18 @@ def snapshot_hash(state) -> str:
 
 
 def event_canonical(ev: LedgerEvent) -> str:
-    """Canonical form of an event for the chain - excludes the chain fields themselves."""
+    """Canonical form of an event for the chain - excludes the chain fields themselves.
+
+    Includes ``sampling_provenance`` (which model/sampling config produced the event): in a system
+    that pins models and claims reproducibility, that provenance is exactly what must be tamper-
+    evident, so it is covered by the chain hash. (``timestamp`` stays excluded by design.)"""
     body = {
         "id": ev.id, "sequence": ev.sequence, "tick": ev.tick,
         "operator": ev.operator.value, "actor": ev.actor, "decision": ev.decision,
         "reason": ev.reason, "input_refs": list(ev.input_refs),
         "output_refs": list(ev.output_refs), "reviewed_by": ev.reviewed_by,
         "cost": ev.cost, "after_hash": ev.after_hash,
+        "sampling_provenance": json.dumps(ev.sampling_provenance or {}, sort_keys=True),
     }
     return json.dumps(body, sort_keys=True, ensure_ascii=False)
 
