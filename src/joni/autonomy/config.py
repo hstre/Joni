@@ -51,6 +51,13 @@ class Paths:
         return self.root / "state" / "commissions_new.json"
 
     @property
+    def commissions_done(self) -> Path:
+        # Aufträge an Claude that have been IMPLEMENTED (by a human-gated Claude session), with a
+        # timestamp, shown on the site. Lives at the repo root (NOT state/) so the autonomous loop
+        # never writes it - only a human-gated session appends - and it never causes a rebase race.
+        return self.root / "commissions_done.json"
+
+    @property
     def protocol(self) -> Path:
         return self.root / "protocol" / "protocol.jsonl"
 
