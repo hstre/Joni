@@ -8,20 +8,37 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `dfb7d75e4fea49de1d2fe44025d290d27d66bd5d` (review round 3) |
-| **Superseded candidates** | `c5fdd9a` (round 2, 3 more blockers) · `61118b3` (round 1, 3 blockers) — both *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `1b1e6bfe59028dabfce3aa386b8ad0c8efc70e78` (review round 4) |
+| **Superseded candidates** | `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 dfb7d75 -- src/desi_layer9 \
+git diff 282d541 1b1e6bf -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `dfb7d75` and at this doc's commit.
+is byte-identical at `1b1e6bf` and at this doc's commit.
+
+### Review round 4 — verification source fixed (vs `dfb7d75`)
+
+`verified` previously meant the decision block agreed with *itself*. Now it means the **stored
+measurement** (against the **pre-registered estimand**) justifies the verdict:
+
+1. **Decision may not contradict the measurement** — `_rule_v2` computes from
+   `measurement.effect_size`; `cross_block_consistency` requires `decision.effect_size ==
+   measurement.effect_size` and `measurement.metric_name == estimand.outcome_metric`; a
+   contradiction is `inconsistent`, never `verified`.
+2. **Decision may not override the pre-registered threshold** — the rule uses only
+   `estimand.minimum_effect`; `decision.minimum_effect` must equal it.
+3. **Numeric/interval invariants** — `confidence_interval` lower ≤ upper, no NaN/Infinity,
+   `uncertainty ≥ 0`, `minimum_effect > 0` for real verdicts.
+
+The one canonical `cross_block_consistency` lives in `desi_layer9.trial_event_validation` and is
+reused by the gate **and** the rule evaluator (side-finding addressed — no divergent copies).
 
 ### Review round 3 — three more blockers fixed (vs `c5fdd9a`)
 
@@ -112,7 +129,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `dfb7d75`: **464 passed, 2 skipped, ruff clean.**
+Full suite at `1b1e6bf`: **478 passed, 2 skipped, ruff clean.**
 
 ## Known technical debt
 
