@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tick": 0,
-  "snapshot_hash": "5a2ed6033e62d7bf2da825838963e6f13c85512a68eed1dee05c5e520f2766f8",
+  "snapshot_hash": "4a0520b60614f3fcda4c93c879e4cd3cb566b9e09003435b91b7e79183a158e0",
   "journal": [
     {
       "operator": "claim_create",
@@ -41370,6 +41370,226 @@
       },
       "target_objects": [
         "C-160"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "method_trial_record",
+      "proposal_type": "method_proposal",
+      "payload": {
+        "success": false,
+        "run_id": "joni-c35"
+      },
+      "proposer": "kevin",
+      "provenance": {
+        "origin_type": "local_model",
+        "source_ids": [],
+        "model_id": "kevin",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "M-20"
+      ],
+      "actor": "kevin",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-125",
+          "C-167",
+          "C-263"
+        ],
+        "surface_terms": [
+          "focuses"
+        ],
+        "lexical_trigger": 0.1111,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-125",
+              "b": "C-167",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0667
+            },
+            {
+              "a": "C-125",
+              "b": "C-263",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0588
+            },
+            {
+              "a": "C-167",
+              "b": "C-263",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.1111
+            }
+          ]
+        },
+        "decision": "insufficient-semantic-evidence",
+        "semantic_state": "human-review-required",
+        "decision_rationale": "the group could not be fully measured",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c35",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-125",
+        "C-167",
+        "C-263"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-257",
+          "C-258",
+          "C-263"
+        ],
+        "surface_terms": [
+          "intensely"
+        ],
+        "lexical_trigger": 0.5769,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-257",
+              "b": "C-258",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.5769
+            },
+            {
+              "a": "C-257",
+              "b": "C-263",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.2333
+            },
+            {
+              "a": "C-258",
+              "b": "C-263",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.3684
+            }
+          ]
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "same-frame, compatible, non-duplicate group - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c35",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-257",
+        "C-258",
+        "C-263"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "Across my panel claims, 'intensely' recurs as a through-line worth testing as a single underlying factor.",
+        "topic": "panel",
+        "support": 0.4
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-257",
+        "C-258",
+        "C-263"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_reject",
+      "proposal_type": "claim_proposal",
+      "payload": {},
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-174"
       ],
       "actor": "joni",
       "governance_approved": false,
