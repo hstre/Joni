@@ -53,28 +53,23 @@ Migrationssicher: das Journal hat 0 `claim_confirm`/`method_promote`/`conflict_r
 - **[BEHOBEN] `repair()` verweigert eine gebrochene Kette** (raises) statt jeden `ValueError`
   neuzusegeln; es re-sealt nur den engen Snapshot-Drift-Fall bei intakter Kette.
 
-## C. Honesty & stille Kapazitäts-Abwesenheit — sollte gefixt werden (OFFEN)
+## C. Honesty & stille Kapazitäts-Abwesenheit — BEHOBEN (#5 Variante 1 + #6)
 
-- **[OFFEN] Das €20-Wochenbudget steuert die Semantik-Engine NICHT** — `run.py`/`budget.py`. Cap
-  wird nur von `frugal`/`experts` konsultiert; `projection`/`escalation`/`kevin_llm`/`topic_review`
-  bekommen `budget` gar nicht → Granite/DeepSeek/Kevin-Calls sind ungedeckelt, der Haupt-Kostenpfad.
-  Die „harter Wochen-Cap"-Doku ist für den dominanten Pfad falsch. → Budget in die Semantik-Caller
-  fädeln **oder** auf der Seite klar sagen, dass der Cap nur Panel/frugal deckt.
-- **[OFFEN] Zwei disjunkte Kosten-Ledger, keine Gesamtsumme** — `budget.spent_eur` (nur Panel/frugal)
-  vs. `telemetry.est_cost_eur` (nur model_call; Granite-Default €0,0 → zeigt €0). Keine Summe. →
-  `total_est_spend` zeigen, Granite-Default-Rate als Schätzung kennzeichnen.
-- **[OFFEN] Quell-Ausfälle als „0 Items" geschluckt** — `sources.py` (alle Fetcher fangen Exception
-  → `[]`); `run.py` meldet „fetched: 0 item(s)" → ein totaler API-Ausfall ist von „nichts Neues"
-  ununterscheidbar. → Fehler als `degraded`-Flag + Zähler auf der Seite.
-- **[OFFEN] PDF-Reader / DESi / Embedder-Abwesenheit unsichtbar** — wie der Kevin-Fall (der korrekt
-  sichtbar ist), aber für Reader/DESi/Embeddings als bloße Nullen. → analog `pdf_available`,
-  DESi/Embedder-Status persistieren + warnen.
-- **[OFFEN] Domain-Gate fail-open/inert ohne Embedder** — `quality._contrastive_on_domain` gibt
-  `True` zurück, wenn `embeddings.available()` False → emerge-Domain-Filter lässt alles durch,
-  obwohl er als aktiv präsentiert wird. → den inerten Zustand protokollieren/anzeigen.
-- **[OFFEN] continue-on-error-Installs verstecken Kapazitätsverlust** — `autonomy.yml`. DESi/Embedder
-  -Install-Fehler nur als „routing via joni-builtin" bzw. unsichtbar. → Exit-Status je Install in
-  ein State-Flag, Install-Health auf der Seite.
+- **[BEHOBEN #5] Der €20-Cap steuert jetzt die Semantik-Engine** — durchgesetzt am einen Seam
+  (`model_call.call`): vor jedem Live-Call muss `budget.can_spend(est)` zustimmen (sonst kein Call,
+  kein Vorschlag, nie ein Fallback), ein Live-Call wird verbucht, Replays sind frei. Durchgefädelt in
+  `projection`/`escalation`/`kevin_llm`/`topic_review`. `budget.spent_eur` enthält nun den
+  DeepSeek-Semantik-Spend → die zwei Ledger sind vereint, der „harte Wochen-Cap" stimmt jetzt für den
+  Hauptkostenpfad.
+- **[BEHOBEN #6] Kapazitäts-Abwesenheit ist sichtbar (degraded ≠ 0)** — `run.py` schreibt einen
+  `capabilities`-Health-Block (DESi-Routing live/fallback, Embedder live/inert, PDF-Reader
+  live/absent, Semantik-Projektion on/off, Kevin live/absent) + pro-Quelle Fetch-Fehler (Ausfall =
+  „degraded", nicht „0 Items"); die Seite zeigt eine **Kapazitäten-Karte**, die degradierte Pfade
+  hervorhebt. Damit erzeugen fehlender Embedder/Reader/DESi/Quelle **nie** dieselbe Telemetrie wie
+  „nichts gefunden".
+- **[OFFEN, niedriger] continue-on-error-Installs** in `autonomy.yml` melden ihren Exit-Status noch
+  nicht je Install — die *Wirkung* (DESi-Fallback, Embedder inert, Kevin absent) ist aber jetzt auf
+  der Kapazitäten-Karte sichtbar.
 
 ## D. Korrektheit (MED/LOW)
 
