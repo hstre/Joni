@@ -502,6 +502,7 @@
     "huggingface:2606.14249",
     "huggingface:2606.14346",
     "huggingface:2606.14732",
+    "huggingface:2606.17016",
     "openalex:W4415262347",
     "openalex:W7117395041",
     "openalex:W7128545313",
@@ -1095,6 +1096,14 @@
       "replayed": false,
       "claims": 5,
       "source": "arxiv:2606.16935v1"
+    },
+    {
+      "call_id": "joni-c54:360256a0837f",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.17016"
     }
   ],
   "pdf_read": [
@@ -1571,6 +1580,15 @@
       "replayed": false,
       "claims": 0,
       "conflict": "X-39"
+    },
+    {
+      "call_id": "joni-c54:b9e5008ad2d0",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-7"
     }
   ],
   "methods_seen": [
@@ -1590,6 +1608,7 @@
     "huggingface:2606.10747",
     "huggingface:2606.12594",
     "huggingface:2606.14732",
+    "huggingface:2606.17016",
     "openalex:W7137681926",
     "openalex:W7164710496",
     "zenodo:20549437",
@@ -1606,12 +1625,12 @@
     "zenodo:20709229",
     "zenodo:20709322"
   ],
-  "method_trials_total": 411,
+  "method_trials_total": 419,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "scoring": 0,
     "operators": 0,
-    "operator": 1
+    "operator": 0
   },
   "core_ask_filed": {},
   "linked": [
@@ -1733,6 +1752,8 @@
     "C-620|C-698",
     "C-621|C-627",
     "C-621|C-698",
+    "C-621|C-699",
+    "C-627|C-699",
     "C-62|C-75",
     "C-62|C-79",
     "C-62|C-83",
@@ -1865,6 +1886,8 @@
     "C-620|C-698@bge-small-en-v1.5",
     "C-621|C-627@bge-small-en-v1.5",
     "C-621|C-698@bge-small-en-v1.5",
+    "C-621|C-699@bge-small-en-v1.5",
+    "C-627|C-699@bge-small-en-v1.5",
     "C-62|C-75@bge-small-en-v1.5",
     "C-62|C-79@bge-small-en-v1.5",
     "C-62|C-83@bge-small-en-v1.5",
@@ -1923,6 +1946,7 @@
     "cost",
     "description",
     "distichlis",
+    "distinct",
     "evolution",
     "existing",
     "fine-tuning",
@@ -2008,11 +2032,13 @@
     "memory|chapter",
     "memory|chromatin",
     "memory|classical",
+    "memory|compared",
     "memory|consistency",
     "memory|constant",
     "memory|contains",
     "memory|convex",
     "memory|couple-conflict",
+    "memory|crossmaps",
     "memory|derivation",
     "memory|disperser",
     "memory|distinct",
@@ -2098,6 +2124,7 @@
     "classical",
     "consistency",
     "context",
+    "core",
     "existing",
     "includes",
     "inconsistency",
@@ -2120,8 +2147,7 @@
   ],
   "emerge_insufficient": {
     "memory|code": 1,
-    "memory|compared": 3,
-    "memory|context": 1,
+    "memory|context": 2,
     "memory|continuity": 1,
     "memory|features": 1,
     "memory|geometry": 2,
@@ -2242,8 +2268,7 @@
   "hyp_seen_cycle": {
     "C-49": 53,
     "C-287": 44,
-    "C-409": 26,
-    "C-423": 27,
+    "C-423": 54,
     "C-440": 28,
     "C-454": 29,
     "C-471": 30,
@@ -2272,7 +2297,8 @@
     "C-697": 51,
     "C-702": 52,
     "C-704": 52,
-    "C-721": 53
+    "C-721": 53,
+    "C-733": 54
   },
   "hyp_domain_ok": [
     "C-126",
@@ -2333,7 +2359,8 @@
     "C-697",
     "C-702",
     "C-704",
-    "C-721"
+    "C-721",
+    "C-733"
   ],
   "methods_domain_ok": [
     "M-1",
@@ -2360,6 +2387,7 @@
     "M-29",
     "M-3",
     "M-30",
+    "M-31",
     "M-4",
     "M-5",
     "M-6",
@@ -2369,32 +2397,32 @@
   ],
   "vitality": {
     "verdict": "steady",
-    "development": 15,
+    "development": 6,
     "degeneration": 1,
-    "active": 434,
+    "active": 441,
     "hypotheses": 32,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 9,
     "confirmed_claims": 0,
-    "evidence_links": 79,
-    "supporting_links": 79,
-    "emergent_total": 209,
+    "evidence_links": 81,
+    "supporting_links": 81,
+    "emergent_total": 213,
     "usable_semantic_rate": 1.0,
-    "methods_total": 30,
-    "method_trials_total": 411,
+    "methods_total": 31,
+    "method_trials_total": 419,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 6542,
-    "cycle": 53
+    "objects": 6652,
+    "cycle": 54
   },
   "vitality_prev": {
-    "supports": 79,
+    "supports": 81,
     "promoted": 9,
     "confirmed": 0,
-    "objects": 6542,
-    "active": 434,
-    "links": 79,
-    "emergent": 209
+    "objects": 6652,
+    "active": 441,
+    "links": 81,
+    "emergent": 213
   },
   "stagnation": 0,
   "vitality_history": [
@@ -2768,14 +2796,21 @@
       "development": 15,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 54,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 50,
+    "starved_topic": 51,
     "stalled_development": 0,
-    "methods_never_mature": 16
+    "methods_never_mature": 17
   },
   "commissions_filed": {
     "starved_topic": 6,
@@ -3992,7 +4027,8 @@
     "X-36",
     "X-37",
     "X-38",
-    "X-39"
+    "X-39",
+    "X-7"
   ],
   "last_review_snapshot": {
     "active": 413,
