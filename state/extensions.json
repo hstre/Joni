@@ -456,7 +456,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 12,
+    "starved_topic": 13,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2640,7 +2640,7 @@
     "evaluation_mode": "real_trial_protocol_v1",
     "epistemic_weight": "provisional"
   },
-  "method_trials_total": 105,
+  "method_trials_total": 113,
   "methods_ready_total": 0,
   "core_ask_signals": {
     "operator": 0
@@ -2668,6 +2668,7 @@
     "C-161|C-167",
     "C-161|C-168",
     "C-161|C-169",
+    "C-161|C-172",
     "C-162|C-163",
     "C-162|C-164",
     "C-162|C-165",
@@ -2676,6 +2677,9 @@
     "C-162|C-169",
     "C-162|C-172",
     "C-163|C-164",
+    "C-163|C-165",
+    "C-163|C-166",
+    "C-163|C-168",
     "C-26|C-48",
     "C-40|C-41",
     "C-55|C-68",
@@ -2703,6 +2707,7 @@
     "C-161|C-167@bge-small-en-v1.5",
     "C-161|C-168@bge-small-en-v1.5",
     "C-161|C-169@bge-small-en-v1.5",
+    "C-161|C-172@bge-small-en-v1.5",
     "C-162|C-163@bge-small-en-v1.5",
     "C-162|C-164@bge-small-en-v1.5",
     "C-162|C-165@bge-small-en-v1.5",
@@ -2711,6 +2716,9 @@
     "C-162|C-169@bge-small-en-v1.5",
     "C-162|C-172@bge-small-en-v1.5",
     "C-163|C-164@bge-small-en-v1.5",
+    "C-163|C-165@bge-small-en-v1.5",
+    "C-163|C-166@bge-small-en-v1.5",
+    "C-163|C-168@bge-small-en-v1.5",
     "C-26|C-48@bge-small-en-v1.5",
     "C-40|C-41@bge-small-en-v1.5",
     "C-55|C-68@bge-small-en-v1.5",
@@ -2725,6 +2733,7 @@
     "evidence",
     "graph",
     "helmholtz",
+    "hosted",
     "knowledge",
     "memory",
     "operator",
@@ -2752,6 +2761,7 @@
     "panel|gender",
     "panel|generations",
     "panel|graph",
+    "panel|grasping",
     "panel|helmholtz",
     "panel|hosted",
     "panel|imputation",
@@ -2786,7 +2796,9 @@
     "scientific",
     "service"
   ],
-  "emerge_insufficient": {},
+  "emerge_insufficient": {
+    "meth:related": 1
+  },
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -2799,18 +2811,19 @@
     "C-21",
     "C-220",
     "C-222",
+    "C-226",
     "C-74",
     "C-99"
   ],
   "learned_queries": [
-    "unsorted across",
     "unsorted underlying",
     "panel gender",
     "panel bounded",
     "panel generations",
     "panel factor",
     "unsorted factor",
-    "unsorted recurs"
+    "unsorted recurs",
+    "panel recurs"
   ],
   "hyp_seen_cycle": {
     "C-21": 9,
@@ -2820,14 +2833,15 @@
     "C-129": 10,
     "C-142": 12,
     "C-158": 14,
-    "C-160": 8,
+    "C-160": 16,
     "C-174": 9,
     "C-176": 10,
     "C-190": 11,
     "C-202": 12,
     "C-220": 13,
     "C-222": 14,
-    "C-224": 15
+    "C-224": 15,
+    "C-226": 16
   },
   "topics_domain_ok": [
     "agent",
@@ -2843,6 +2857,7 @@
     "evidence",
     "graph",
     "helmholtz",
+    "hosted",
     "knowledge",
     "memory",
     "operator",
@@ -2869,6 +2884,7 @@
     "C-220",
     "C-222",
     "C-224",
+    "C-226",
     "C-74",
     "C-99"
   ],
@@ -2897,30 +2913,30 @@
     "verdict": "developing",
     "development": 6,
     "degeneration": 0,
-    "active": 127,
-    "hypotheses": 15,
-    "unsupported_hypotheses": 15,
+    "active": 128,
+    "hypotheses": 16,
+    "unsupported_hypotheses": 16,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 20,
-    "supporting_links": 20,
-    "emergent_total": 63,
+    "evidence_links": 22,
+    "supporting_links": 22,
+    "emergent_total": 65,
     "usable_semantic_rate": 1.0,
     "methods_total": 19,
-    "method_trials_total": 105,
+    "method_trials_total": 113,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 1923,
-    "cycle": 15
+    "objects": 1973,
+    "cycle": 16
   },
   "vitality_prev": {
-    "supports": 20,
+    "supports": 22,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 1923,
-    "active": 127,
-    "links": 20,
-    "emergent": 63
+    "objects": 1973,
+    "active": 128,
+    "links": 22,
+    "emergent": 65
   },
   "stagnation": 0,
   "vitality_history": [
@@ -3024,6 +3040,13 @@
     },
     {
       "cycle": 15,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 16,
       "verdict": "developing",
       "development": 6,
       "degeneration": 0,
