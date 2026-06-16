@@ -54,3 +54,25 @@ def test_trials_dedup_within_the_same_run_id():
     trials.run_trials(cs, _Proto(), 3, run_id="same")
     trials.run_trials(cs, _Proto(), 3, run_id="same")     # same id -> no second trial
     assert cs.core.get(mid).trial_count == 1
+
+
+def test_unproductive_methods_are_retired_after_enough_trials(monkeypatch):
+    """Joni's Auftrag: the trial has a clear pass/FAIL criterion. An untried method gets its fair
+    chance; once it has had enough trials with no measurable gain it is DISCARDED via the gate, so
+    the shelf does not grow without ever maturing."""
+    from joni.autonomy.core_state import seed_core
+    cs = CoreState(seed_core())
+    m1 = cs.propose_method(name="m1", summary="s", applicable_to=("routing",))
+    cs.propose_method(name="m2", summary="s", applicable_to=("memory",))
+    # a high bar: an untried method is NOT retired (it has not had its chance yet)
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "8")
+    assert trials.retire_unproductive(cs, _Proto(), 1) == 0
+    # trial budget exhausted with no net gain -> discarded, gate-recorded as REJECTED
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "0")
+    assert trials.retire_unproductive(cs, _Proto(), 2, max_retire=5) == 2
+    assert cs.core.get(m1).status.value == "rejected"
+    # bounded per cycle
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "0")
+    for _ in range(7):
+        cs.propose_method(name="x", summary="s", applicable_to=("routing",))
+    assert trials.retire_unproductive(cs, _Proto(), 3, max_retire=3) == 3
