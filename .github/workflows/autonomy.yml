@@ -47,7 +47,10 @@ jobs:
         run: python -m pip install -e ".[embed]"
       - name: Install Kevin (so he can trial the methods Joni shelves; optional)
         continue-on-error: true
-        run: python -m pip install "kevin @ git+https://github.com/hstre/Kevin@claude/kevin-creativity-architecture-ukz17g"
+        # Pinned to an IMMUTABLE commit (not the moving branch name) so future Kevin work - on the
+        # branch or on main - does NOT affect Joni until we deliberately re-pin. e723881 = the
+        # branch tip with the real_trial protocol + honesty tags + green CI (2026-06-16).
+        run: python -m pip install "kevin @ git+https://github.com/hstre/Kevin@e723881ef2ea03d37727289a19a66b0fdfffa48f"
       - name: Install DESi (so the real Semantic Layer is live; optional)
         continue-on-error: true
         run: python -m pip install -e _desi || python -m pip install _desi
