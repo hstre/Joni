@@ -210,28 +210,31 @@ def build(data: dict) -> str:
         panel_verdict = f"{esc(n)}: {esc(t[:200])}"
     kevin_items = []
     for entry in reversed(kevin_log[-6:]):
-        topics = " &times; ".join(esc(t) for t in entry.get("topics", []))
+        # the triggering INPUT is shown: low input hurdle != low governance.
+        itype = esc(entry.get("input_type", entry.get("trigger", "—")))
+        trig = esc(entry.get("trigger", " × ".join(entry.get("topics", []))))
+        sc = entry.get("source_count", "?")
+        coh = esc(entry.get("internal_coherence", "?"))
+        ceil = esc(entry.get("confirmation_ceiling", "?"))
+        head = (f"<div><span class=chip>{itype}</span> <span class=src>{trig} · "
+                f"Quellen {esc(sc)} · {coh} · ceiling {ceil} · "
+                f"Zyklus {esc(entry.get('cycle',''))}</span></div>")
         if entry.get("failed"):           # a failed creative call - shown, never a silent zero
             kevin_items.append(
-                f"<li><div><span class=chip>{topics}</span> "
-                f"<span class=src>Zyklus {esc(entry.get('cycle',''))}</span></div>"
-                f"<div class=note style='color:var(--warn)'>⚠ kein Vorschlag &mdash; "
+                f"<li>{head}<div class=note style='color:var(--warn)'>⚠ kein Vorschlag &mdash; "
                 f"{esc(entry.get('failed',''))} "
                 f"(content_len={esc(entry.get('content_len',0))})</div></li>")
             continue
         for p in entry.get("proposals", []):
             txt = p.get("text", "")
             assessed = bool(txt) and txt[:48] in panel_q
-            pending = ("<div class=note>Bewertung der Expertenrunde steht noch aus &mdash; sie "
-                       "tagt periodisch und beurteilt, ob es eine gute Idee ist "
-                       "(und warum/warum nicht).</div>")
+            pending = ("<div class=note>nicht-autoritativer Kandidat (origin=kevin, "
+                       "requires_review) &mdash; Bewertung der Expertenrunde steht noch aus; "
+                       "Layer 9 entscheidet über Ablehnung / Quarantäne / Test / Promotion.</div>")
             verdict = (f"<div class=note><b>Expertenrunde:</b> {panel_verdict} "
                        "<span class=src>(berät; Joni entscheidet)</span></div>"
                        if assessed and panel_verdict else pending)
-            kevin_items.append(
-                f"<li><div><span class=chip>{topics}</span> "
-                f"<span class=src>Zyklus {esc(entry.get('cycle',''))}</span></div>"
-                f"<div class=asrow>{esc(txt)}</div>{verdict}</li>")
+            kevin_items.append(f"<li>{head}<div class=asrow>{esc(txt)}</div>{verdict}</li>")
     kevin_props = "".join(kevin_items) or (
         "<li class=empty>Kevin hat noch keine Fernanalogie vorgeschlagen &mdash; er tagt nach "
         "Kadenz und nur auf Themen mit echtem Material (nicht auf <code>unsorted</code> oder "
