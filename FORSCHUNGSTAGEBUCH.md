@@ -1036,3 +1036,39 @@ Layer-9-Proposal mit voller Provenienz. Modelle dürfen Fälle *bearbeiten/bewer
 Trial-*Entscheidung* ruht auf vorher festgelegten, nachvollziehbaren Größen — nicht auf einem
 LLM-Urteil.
 
+### Eintrag 2026-06-16 ~09:00 UTC — Reifegrad statt „erledigt": die vier Stufen einer Fähigkeit
+
+**[Eingriff]** Der echte Trial-Runner ist gebaut und verdrahtet: `real_trial_protocol_v1` (generisches
+Mess-Gerüst) + `frozen_joni_conflict_cases_v1` (erster konkreter Trial auf Jonis eigenem Material) +
+Zyklus-Schritt `3c-real` + eigene Dashboard-Karte, sichtbar getrennt vom als Simulation markierten
+Mock. Erstes Ergebnis: Baseline 1.0 → Intervention 0.0, PASS, `epistemic_weight=provisional`. Suite
+Joni 363 / Kevin 70 grün.
+
+**[Schluss → Korrektur einer eigenen Formulierung]** Ich hatte das vorschnell als „die Fehlerklasse
+ist geschlossen" zusammengefasst. **Das ist zu früh.** Genau die Sorglosigkeit, die dieses Tagebuch
+dokumentiert, beginnt mit solchen Formulierungen. Präzise ist nur: *die nicht offengelegte
+Mock-Substitution ist beseitigt, und ein reproduzierbares reales Trial-Protokoll ist implementiert;
+der erste deterministische Apparaturtest funktioniert.* **Noch nicht** belegt sind die funktionale
+Integration eines Modells in den Trial-Arm und die Generalisierung auf heterogene reale Fälle.
+
+Daraus wird eine **dauerhafte Lesekonvention** — ein Reifegrad pro Fähigkeit, nie übersprungen:
+
+| Stufe | Bedeutung | Beleg | real_trial_protocol_v1 |
+|---|---|---|---|
+| **1 · gebaut** | Code existiert, Tests grün | Unit-Tests, ruff, verify | ✓ |
+| **2 · im Runtime-Pfad** | läuft im echten Loop, nicht nur im Test | Capture/Protokoll aus einem Live-Zyklus | ausstehend (greift erst beim nächsten Job-Handoff; Kevin-Branch gepinnt) |
+| **3 · funktional belegt** | erfüllt die *eigentliche* semantische Funktion (Modell im Trial-Arm, heterogene reale Fälle, nicht nur die deterministische Apparatur) | gemessener Effekt auf echten, vielfältigen Fällen mit Modell-Bearbeitung | **ausstehend** |
+| **4 · wissenschaftlich validiert** | reproduziert, gegen Baseline/Negativkontrolle abgesichert, Generalisierung gezeigt, peer-prüfbar | mehrere Task-Sets, Effektstärke + Unsicherheit, unabhängige Replikation | **ausstehend** |
+
+**[Schluss]** Genau **diese Stufenverwechslung** — *gebaut* als *funktional belegt* zu lesen — ist die
+Wurzel der Fehlerklasse „nominal path present, functional semantics absent". Der Mock war auf Stufe 1
+(und 2), wurde aber als 3/4 *präsentiert*. Die Konsequenz fürs Tagebuch: keine Fähigkeit gilt als
+„fertig", solange ihre Stufe nicht ausdrücklich benannt ist; und keine Stufe darf aus einer
+darunterliegenden *geschlossen* (im Sinne von erledigt) werden, nur weil die untere grün ist.
+
+**[Offen]** Für `real_trial_protocol_v1`: Stufe 2 nach dem nächsten Live-Zyklus prüfen (Capture +
+Protokoll-Note aus dem Lauf); Stufe 3 erfordert die Modell-bearbeitet-Regel-entscheidet-Integration
+(Granite annotiert Fälle, Metrik bleibt deterministisch) **und** mehrere heterogene, hand-gelabelte
+Task-Sets; Stufe 4 erfordert Replikation und gezeigte Generalisierung. Erst dann — und mit Beleg —
+ist von „belegt" oder gar „geschlossen" zu sprechen.
+
