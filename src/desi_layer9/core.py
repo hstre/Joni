@@ -62,6 +62,28 @@ _CONTROLLED_FIELDS = ("status", "authority")        # never adopted from a paylo
 _METHOD_TRIALS_FOR_ACTIVE = 3
 
 
+def trial_event_hashes(o) -> dict:
+    """The TWO record-level hashes of a ``MethodTrialEvent``, each named for exactly what it covers
+    (no ambiguous "integrity hash"):
+
+    * ``payload_hash``       - sha256 of the canonical payload ONLY. Covers the writer-REPORTED
+      content; says nothing about who recorded it or with what authority.
+    * ``record_object_hash`` - sha256 of ``object_canonical(o)``: the FULL record object. Covers
+      ``created_by`` (actor), ``provenance``, ``record_authority`` AND ``epistemic_authority``,
+      ``schema_version``, ``derived_from``, ``status``, ``authority`` and the canonical payload.
+      This is the EXACT material ``snapshot_hash`` folds in for this object, so a mismatch here is
+      the same tamper that ``state_snapshot_hash`` (over all objects) and the ``ledger_chain_hash``
+      (tip ``event_hash``) also reflect on replay. The two global hashes are not per-event; read
+      them via ``hashing.snapshot_hash(core)`` and ``core.ledger[-1].event_hash``.
+    """
+    import hashlib
+    return {
+        "payload_hash": "sha256:" + hashlib.sha256(o.canonical_payload.encode("utf-8")).hexdigest(),
+        "record_object_hash":
+            "sha256:" + hashlib.sha256(object_canonical(o).encode("utf-8")).hexdigest(),
+    }
+
+
 @dataclass
 class JournalEntry:
     """One recorded operation - the replayable unit. State = f(seed, journal).
@@ -131,10 +153,16 @@ class Layer9:
 
         Each envelope separates the writer-REPORTED content (``payload``, a fresh deep copy so a
         caller can never mutate stored state) from Layer 9's own PROVENANCE (object id, mint
-        sequence, actor, ledger reference, authorities, integrity hash). ``record_authority`` says
-        the registration is in-force; ``epistemic_authority='none'`` says the trial verdict inside
-        the payload is NOT thereby confirmed. The core never interprets the payload."""
-        import hashlib
+        sequence, actor, ledger reference, authorities, hashes). ``record_authority`` says the
+        registration is in-force; ``epistemic_authority='none'`` says the trial verdict inside the
+        payload is NOT thereby confirmed. The core never interprets the payload.
+
+        Two precisely-scoped hashes are exposed (see ``trial_event_hashes``):
+          * ``payload_hash``       - sha256 of the canonical payload ONLY (writer-reported content);
+          * ``record_object_hash`` - sha256 of the FULL record object's canonical form (the exact
+            material ``snapshot_hash`` uses for this object: it covers actor, provenance, BOTH
+            authority levels, schema_version, derived_from, status and the payload).
+        Neither is called a bare "integrity hash": each names exactly what it covers."""
         import json
         events = sorted(self.all(ObjectType.METHOD_TRIAL_EVENT),
                         key=lambda o: int(o.id.split("-")[1]))
@@ -149,9 +177,7 @@ class Layer9:
                 "schema_version": o.schema_version,
                 "record_authority": o.record_authority,
                 "epistemic_authority": o.epistemic_authority,
-                "integrity": {
-                    "object_canonical_sha256":
-                        hashlib.sha256(object_canonical(o).encode("utf-8")).hexdigest()},
+                "hashes": trial_event_hashes(o),
                 "payload": json.loads(o.canonical_payload),   # fresh deep copy each call
             })
         return out
@@ -217,11 +243,22 @@ class Layer9:
 
         # 3. execute the operator (transition/rule failures reject + audit).
         try:
-            changed, new_status, reason = _HANDLERS[op](self, proposal, actor, governance_approved)
+            result = _HANDLERS[op](self, proposal, actor, governance_approved)
         except Exception as exc:  # noqa: BLE001 - any operator failure is an audited reject
             return self._reject(proposal, op, [str(exc)], rejected_fields, actor)
 
-        ev = self._emit(op, actor, decision="accepted", reason=reason,
+        # A handler returns (changed, new_status, reason) or, to tag a DISTINCT accepted outcome in
+        # the audit ledger (e.g. an idempotent retry that creates no object), a 4-tuple whose last
+        # element is the ledger ``decision`` (default "accepted"). This keeps "a new record" and "a
+        # re-submit of an existing record" distinguishable in the ledger - so nobody can later count
+        # accepted submits as if they were distinct trials.
+        if len(result) == 4:
+            changed, new_status, reason, decision = result
+        else:
+            changed, new_status, reason = result
+            decision = "accepted"
+
+        ev = self._emit(op, actor, decision=decision, reason=reason,
                         input_refs=proposal.target_objects, output_refs=tuple(changed))
         for cid in changed:
             self.objects[cid].ledger_event = ev.id
@@ -451,8 +488,12 @@ class Layer9:
         for o in self.all(ObjectType.METHOD_TRIAL_EVENT):
             if o.trial_id == tid:
                 if o.canonical_payload == canonical:
-                    # idempotent retry: change NOTHING (no objects returned -> no mutation/rehash).
-                    return [], o.status.value, f"idempotent: trial '{tid}' already recorded {o.id}"
+                    # idempotent retry: create NOTHING (no objects -> no mutation/rehash), but tag
+                    # the ledger 'idempotent_existing' and name the existing record - so a retry is
+                    # neither a silent no-op nor indistinguishable from a fresh recording.
+                    return ([], o.status.value,
+                            f"idempotent_existing: trial '{tid}' already recorded as {o.id}",
+                            "idempotent_existing")
                 raise ValueError(
                     f"trial_id conflict: '{tid}' already recorded as {o.id} with a DIFFERENT "
                     "payload - refusing a second, divergent record")

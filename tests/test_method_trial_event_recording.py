@@ -99,6 +99,64 @@ def test_same_trial_id_different_payload_is_rejected():
     assert len(core.method_trial_events()) == 1
 
 
+def test_idempotent_retry_is_audited_distinctly():
+    core = _core()
+    _record(core, _payload(trial_id="T-42"))
+    d2 = _record(core, copy.deepcopy(_payload(trial_id="T-42")))
+    # accepted, but explicitly tagged and naming the existing record - not a silent no-op.
+    assert d2.accepted and "idempotent_existing" in d2.reason and "MTE-1" in d2.reason
+    assert len(core.all(ObjectType.METHOD_TRIAL_EVENT)) == 1     # no second object
+    # the LEDGER distinguishes the new recording from the retry...
+    recorded = [e for e in core.ledger if e.operator == OP.METHOD_TRIAL_RECORDED]
+    decisions = [e.decision for e in recorded]
+    assert decisions.count("accepted") == 1 and decisions.count("idempotent_existing") == 1
+    # ...so counting real recordings (accepted + an output object) yields 1, never 2.
+    new_records = [e for e in recorded if e.decision == "accepted" and e.output_refs]
+    assert len(new_records) == 1
+
+
+# -- hash semantics: precisely named, never a bare "integrity hash" -------------------------- #
+def test_payload_hash_and_record_object_hash_are_distinct_and_correct():
+    import hashlib
+
+    from desi_layer9 import hashing
+    from desi_layer9.core import trial_event_hashes
+    core = _core()
+    _record(core, _payload())
+    o = core.all(ObjectType.METHOD_TRIAL_EVENT)[0]
+    h = trial_event_hashes(o)
+    assert h["payload_hash"] == "sha256:" + hashlib.sha256(
+        o.canonical_payload.encode("utf-8")).hexdigest()
+    assert h["record_object_hash"] == "sha256:" + hashlib.sha256(
+        hashing.object_canonical(o).encode("utf-8")).hexdigest()
+    env = core.method_trial_events()[0]["hashes"]
+    assert set(env) == {"payload_hash", "record_object_hash"} and env == h
+
+
+def test_record_object_hash_covers_provenance_and_authorities_payload_hash_does_not():
+    from desi_layer9.core import trial_event_hashes
+    core = _core()
+    _record(core, _payload())
+    o = core.all(ObjectType.METHOD_TRIAL_EVENT)[0]
+    base = trial_event_hashes(o)
+    o.created_by = "someone_else"               # actor
+    o.epistemic_authority = "authoritative"     # both authority levels are covered...
+    o.schema_version = "tampered"               # ...and schema_version
+    after = trial_event_hashes(o)
+    assert after["payload_hash"] == base["payload_hash"]              # payload content unchanged
+    assert after["record_object_hash"] != base["record_object_hash"]  # full record changed
+
+
+def test_record_object_hash_is_the_same_material_snapshot_uses():
+    from desi_layer9 import hashing
+    core = _core()
+    _record(core, _payload())
+    o = core.all(ObjectType.METHOD_TRIAL_EVENT)[0]
+    before = hashing.snapshot_hash(core)
+    o.epistemic_authority = "authoritative"     # a field the record_object_hash covers
+    assert hashing.snapshot_hash(core) != before  # snapshot folds in the same object material
+
+
 # -- 4. unknown schema version --------------------------------------------------------------- #
 def test_unknown_schema_version_is_rejected_and_not_stored():
     core = _core()
