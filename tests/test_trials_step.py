@@ -76,3 +76,17 @@ def test_unproductive_methods_are_retired_after_enough_trials(monkeypatch):
     for _ in range(7):
         cs.propose_method(name="x", summary="s", applicable_to=("routing",))
     assert trials.retire_unproductive(cs, _Proto(), 3, max_retire=3) == 3
+
+
+def test_real_method_trial_is_measured_and_distinct_from_the_mock():
+    """The real protocol (kevin.real_trial) runs, stores a provenance-bearing result, and is kept
+    separate from the synthetic simulator. Decision rests on the metric (provisional weight)."""
+    ext: dict = {}
+    out = trials.run_real_method_trial(ext, _Proto(), 1)
+    if not out.get("ran"):
+        return                                      # kevin not installed -> clean no-op
+    rt = ext["real_trial"]
+    assert rt["evaluation_mode"] == "real_trial_protocol_v1"
+    assert rt["epistemic_weight"] == "provisional"          # NOT 'none' (that's the mock)
+    assert rt["baseline"] > rt["intervention"] and rt["passed"] is True
+    assert rt["task_set_sha"] and rt["repetitions"] >= 1     # provenance present

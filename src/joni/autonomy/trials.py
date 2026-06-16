@@ -43,6 +43,41 @@ def run_trials(cs, proto, cycle: int = 0, *, run_id: str | None = None) -> dict:
             "failed": rep["failed"], "activation_ready": ready}
 
 
+def run_real_method_trial(extensions: dict, proto, cycle: int = 0) -> dict:
+    """Run the REAL method-trial protocol (``kevin.real_trial`` · real_trial_protocol_v1) - a
+    measured trial (frozen task set, baseline vs intervention, predefined metric, repetitions,
+    negative control, full provenance), NOT the synthetic keyword simulator. The decision rests on
+    the metric alone. The latest result is stored for the site; a protocol note is written when the
+    verdict changes. Clean no-op without ``kevin``.
+
+    It is kept *separate* from the synthetic trial counters and is NOT recorded against a shelf
+    method (the method under test is not a harvested shelf object), so the two never conflate; the
+    stored result IS the provenance-bearing artefact (epistemic_weight=provisional)."""
+    out = {"ran": False}
+    try:
+        from kevin import real_trial
+    except Exception:  # noqa: BLE001 - kevin not installed: clean no-op
+        return out
+    try:
+        result = real_trial.run_joni_conflict_trial().to_dict()
+    except Exception as exc:  # noqa: BLE001 - never let a trial break the cycle
+        proto.record(cycle, "note", f"real method-trial skipped: {exc}")
+        return out
+    prev = extensions.get("real_trial", {})
+    extensions["real_trial"] = result
+    if (prev.get("task_set_sha") != result.get("task_set_sha")
+            or prev.get("passed") != result.get("passed")):
+        proto.record(
+            cycle, "trialed",
+            f"REAL method-trial [{result['method_id']}] on {result['task_set']} "
+            f"(sha {result['task_set_sha'][:8]}): {result['metric']} baseline "
+            f"{result['baseline']} -> intervention {result['intervention']} (Δ{result['delta']}, "
+            f"control {result['negative_control']}, reps {result['repetitions']}) -> "
+            f"{'PASS' if result['passed'] else 'no pass'} · {result['uncertainty']} uncertainty · "
+            f"epistemic_weight={result['epistemic_weight']} (measured, not the synthetic mock)")
+    return {"ran": True, "passed": result["passed"], "direction": result["direction"]}
+
+
 def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5) -> int:
     """Joni's *Auftrag* (joni-auftrag · method-trialing): give the trial a clear pass/fail
     criterion so the shelf does not grow without ever maturing.
