@@ -182,6 +182,19 @@ def _dataset_sufficiency(core, verified, events) -> dict:
                        "not established)")
 
     sufficient = bool(ready) and comparison_possible
+    interpretation = {
+        "means": ("operational minimum only: for >= 1 open conflict there is enough comparable, "
+                  "rule-verified, scope-bound trial history to ATTEMPT a state-dependent gap "
+                  "analysis") if sufficient else "the dataset does not yet meet the minimum "
+                 "threshold",
+        "does_not_mean": [
+            "conflict resolved",
+            "affinity validated",
+            "comprehensive solution-space coverage",
+            "DESi added value demonstrated",
+            "epistemic authority",
+        ],
+    }
     return {
         "policy_id": SUFFICIENCY_POLICY_ID,
         "registered_events": len(events),
@@ -199,6 +212,7 @@ def _dataset_sufficiency(core, verified, events) -> dict:
         "unsupported_schema_events":
             sum(1 for e in events if e["projection_status"] == "unsupported_schema"),
         "verdict": "SUFFICIENT_FOR_GAP_ANALYSIS" if sufficient else "insufficient",
+        "interpretation": interpretation,
         "reasons": reasons,
     }
 

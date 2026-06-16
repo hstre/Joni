@@ -63,6 +63,10 @@ def _no_benefit(trial_id, **kw):
     return _payload(trial_id, "no_benefit", effect=0.04, ci=(0.01, 0.07), **kw)
 
 
+def _harmful(trial_id, **kw):
+    return _payload(trial_id, "harmful", effect=-0.18, ci=(-0.24, -0.12), **kw)
+
+
 def _record(core, payload):
     return core.submit(l9.make_proposal(
         PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=payload, proposer="kevin",
@@ -176,6 +180,31 @@ def test_adding_a_relevant_trial_changes_sufficiency_causally():
     after = project_trial_events(core)["dataset_sufficiency"]
     assert after["independent_method_variants"] == 2
     assert after["verdict"] == "SUFFICIENT_FOR_GAP_ANALYSIS"
+
+
+# -- sufficiency does NOT depend on successes: negative results count too ------------------------ #
+def test_sufficiency_from_independent_negative_results_without_global_demotion():
+    core = _core()
+    cid = _open_conflict(core)
+    # two INDEPENDENT, verified, NON-success variants (no_benefit + harmful) on the same conflict.
+    _record(core, _no_benefit("a", target=cid, variant="v1", family="deepseek", impl="iA",
+                              task="ts1", evaluator="ev1"))
+    _record(core, _harmful("b", target=cid, variant="v2", family="openai", impl="iB",
+                           task="ts2", evaluator="ev2"))
+    proj = project_trial_events(core)
+    ds = proj["dataset_sufficiency"]
+    # negative results give enough comparative depth -> sufficient...
+    assert ds["verdict"] == "SUFFICIENT_FOR_GAP_ANALYSIS"
+    assert ds["independent_method_variants"] >= 2
+    assert "DESi added value demonstrated" in ds["interpretation"]["does_not_mean"]
+    # ...the attribution is SCOPE-BOUND (tied to this conflict+scope), never a global demotion...
+    for a in proj["affinity_attributions"]:
+        assert a["target_id"] == cid and a["scope_id"] == "qtt"
+    # ...and nothing is epistemically confirmed: both stay measured_candidate, authority none.
+    weights = {e["trial_id"]: e for e in proj["events"]}
+    for tid in ("a", "b"):
+        assert weights[tid]["epistemic_weight"] == "measured_candidate"
+        assert weights[tid]["epistemic_authority"] == "none"
 
 
 def test_projection_is_deterministic():

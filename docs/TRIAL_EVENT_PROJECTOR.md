@@ -83,6 +83,30 @@ dataset_sufficiency:
 So a single verified success on a covered conflict reports `covered_open_conflicts:[X]` but
 `verdict: insufficient` (one variant = no comparative depth).
 
+**Sufficiency does not depend on successes.** It counts rule-verified *variants* of any outcome —
+`no_benefit`, `harmful`, `success` — because differing results (A `no_benefit`, B `harmful`,
+C untried) are often more informative for a solution-space analysis than two successes. What matters
+is valid + rule-verified results, scope compatibility, sufficient independence, and a real
+comparison — never the sign of the outcome. (Test:
+`test_sufficiency_from_independent_negative_results_without_global_demotion`.)
+
+**What `SUFFICIENT_FOR_GAP_ANALYSIS` explicitly does NOT mean** (also emitted in the report's
+`interpretation.does_not_mean`):
+
+```yaml
+does_not_mean:
+  - conflict resolved
+  - affinity validated
+  - comprehensive solution-space coverage
+  - DESi added value demonstrated
+  - epistemic authority
+```
+
+It is **only** an operational minimum threshold: for at least one open conflict there is enough
+comparable, rule-verified, scope-bound trial history to *attempt* a state-dependent gap analysis.
+Any affinity attribution it produces is **scope-bound** (tied to that conflict + scope), never a
+global demotion or an epistemic confirmation.
+
 ## Decision-status → treatment
 
 | decision_status | meaning | feeds aggregation? | visible? |
