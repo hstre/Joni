@@ -477,7 +477,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 45,
+    "starved_topic": 46,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -3098,6 +3098,8 @@
     "C-161|C-167@bge-small-en-v1.5",
     "C-161|C-168@bge-small-en-v1.5",
     "C-161|C-169@bge-small-en-v1.5",
+    "C-161|C-170@bge-small-en-v1.5",
+    "C-161|C-171@bge-small-en-v1.5",
     "C-161|C-172@bge-small-en-v1.5",
     "C-162|C-163@bge-small-en-v1.5",
     "C-162|C-164@bge-small-en-v1.5",
@@ -3111,6 +3113,7 @@
     "C-163|C-166@bge-small-en-v1.5",
     "C-163|C-168@bge-small-en-v1.5",
     "C-163|C-169@bge-small-en-v1.5",
+    "C-163|C-170@bge-small-en-v1.5",
     "C-164|C-166@bge-small-en-v1.5",
     "C-164|C-168@bge-small-en-v1.5",
     "C-164|C-169@bge-small-en-v1.5",
@@ -3340,14 +3343,14 @@
     "C-99"
   ],
   "learned_queries": [
-    "panel testing",
-    "panel proﬁle",
-    "panel worth",
     "panel single",
     "panel claims",
     "panel underlying",
     "panel panel",
-    "panel recurs"
+    "panel recurs",
+    "unsorted transmission",
+    "unsorted thermal",
+    "unsorted optimal"
   ],
   "hyp_seen_cycle": {
     "C-226": 36,
@@ -3370,8 +3373,8 @@
     "C-267": 47,
     "C-268": 48,
     "C-269": 48,
-    "C-270": 34,
-    "C-271": 34,
+    "C-270": 49,
+    "C-271": 49,
     "C-272": 35,
     "C-273": 35,
     "C-274": 36,
@@ -3484,8 +3487,8 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 6,
+    "verdict": "degenerating",
+    "development": 0,
     "degeneration": 1,
     "active": 144,
     "hypotheses": 30,
@@ -3499,20 +3502,20 @@
     "methods_total": 20,
     "method_trials_total": 164,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 2845,
-    "cycle": 48
+    "stagnation_cycles": 1,
+    "objects": 2854,
+    "cycle": 49
   },
   "vitality_prev": {
     "supports": 49,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 2845,
+    "objects": 2854,
     "active": 144,
     "links": 49,
     "emergent": 128
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -3849,25 +3852,34 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 49,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
     "method:M-19",
-    "method:M-2"
+    "method:M-2",
+    "method:M-20"
   ],
-  "panel_last_cycle": 25,
+  "panel_last_cycle": 49,
   "panel_last": {
-    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"scientific-as-a-lens\" - 'scientific' recurs across overview, panel, repository in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
+    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"documentation-as-a-lens\" - 'documentation' recurs across documentation, panel in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
     "roles": {
       "claude": "assessor",
       "chatgpt": "adversarial",
       "deepseek": "consistency"
     },
     "phase3": {
-      "claude": "**Cross-reconstruction.**\n\nChatGPT and DeepSeek converge: pro = structured rigor/transferability; con = category error on non-empirical domains. DeepSeek adds two assumptions ChatGPT omits, which I keep as the decisive divergence:\n\n- **Polysemy check (DeepSeek (1)/(a)):** ChatGPT assumes 'scientific' is one coherent method. DeepSeek correctly flags that recurrence across overview/panel/repository may be homonymy, not shared core. This is the load-bearing assumption — without it the lens is built on a false unity.\n- **Self-sealing circularity (DeepSeek (c)):** ChatGPT misses this entirely. Since the lens is extracted from *my own evidence*, applying it back risks a confirmation loop. I retain this; it is the sharpest contra-point.\n\nI drop ChatGPT's \"stifles creativity\" objection as too generic — it applies to any lens, so it discriminates nothing.\n\n**Reconciled assessment.** Admissible only if: (i) the invariant core of 'scientific' is defined across all three contexts (else polysemy collapse), (ii) transfer boundary + misapplication criteria pre-specified, (iii) the origin-evidence is excluded from validation to break circularity. Absent these, structurally inconsistent.\n\nNo verdict — Joni decides.",
-      "chatgpt": "**Cross-reconstruction and Reconciled Assessment**\n\n**Claude's Judgement:** The method proposal is a category mix, asserting empirical observation as method validity, risking circularity. It is conditionally admissible, contingent on the assumption that recurrence implies transferability, and is consistent if source and target domains are type-identical and falsifiability is maintained.\n\n**Deepseek's Judgement:** The proposal is a pattern-recognition move, requiring coherence, transferability, and problem fit. It breaks if 'scientific' is polysemous, overextended, self-sealing, or loses resolution. Admissibility depends on defining the core meaning and boundary conditions.\n\n**Reconciliation:** Both assessors identify the risk of circularity and the necessity of coherent core meaning for 'scientific'. Claude emphasizes category purity and falsifiability, while Deepseek focuses on semantic consistency and boundary delineation. The reconciled assessment acknowledges the proposal's potential if 'scientific' maintains a consistent core meaning across contexts and if transferability is validated independently. It is conditionally admissible, provided these criteria are rigorously defined and tested.\n\n**Reconciled Formal Assessment:** The proposal is admissible under the condition that 'scientific' is consistently defined across contexts, with clear boundary conditions for its application and independent validation of its transferability."
+      "claude": "Cross-reconstruction:\n\nChatGPT judges on **content-validity** of documentation (comprehensive? unbiased? complete?). That's a different category than mine: those are object-level reliability worries, not lens-admissibility conditions. I keep distance here — assessing whether documentation is *good evidence* prejudges Joni's verdict; the panel's task is formal tractability of the lens.\n\nDeepSeek and I share the **invariance assumption**: the lens is admissible only if \"documentation\" names a stable structure (record–structure–retrieve) that recurs across instances. I accept its circularity break and its category-difference flag (deliberative record vs. generative trace). One added divergence: DeepSeek treats panel evidence as *one* such distinct kind; I'd note the recurrence Kevin observes may be selection artifact — \"documentation\" appears because he looked for it.\n\nReconciled assessment:\nTragfaehig if (a) the lens's invariant is specified independently of its instances, and (b) a grounding token stops self-reference. Bricht where recurrence is observer-induced or where panel's category differs from documentation. Admissible as tentative heuristic; boundary conditions undecided. Joni decides.",
+      "chatgpt": "**Reconstructed Assessment (Adversarial, Concise)**\n\n**Assumption Divergence:** Claude assumes \"documentation\" as both object and lens requires explicit indexing to avoid circularity, while Deepseek emphasizes the need for a stable pattern across instances for transferability.\n\n**Reconciled Judgement:**\n\n**Kategorienreinheit:** The method's validity hinges on distinguishing between \"documentation\" as a domain object and as a methodological lens. Without this separation, the proposal risks circular reasoning.\n\n**Logische Konsistenz:** Consistency is maintained if the lens's structural pattern is explicitly defined and invariant across domains. This requires specifying the conditions under which \"documentation\" can function as a lens without self-reference.\n\n**Tragfähigkeit:** The method is viable if:\n- There is clear separation between object and method levels.\n- Structural recurrence, not mere lexical repetition, is demonstrated.\n- Transferability conditions are specified, ensuring applicability across similar domains.\n\n**Bricht bei:** The method fails if:\n- \"Documentation\" is used interchangeably without level distinction.\n- Recurrence is based solely on word identity.\n- The application domain is categorically different, rendering the lens ineffective.\n\nThis assessment aligns with both Claude's and Deepseek's emphasis on structural clarity and boundary conditions.",
+      "deepseek": "Divergenz: Claude beurteilt nach formal-logischer Konsistenz (Ebenentrennung, Zirkelfreiheit), ChatGPT nach pragmatischer Anwendbarkeit (Dokumentationsqualität, Vollständigkeit). Beide operieren unter verschiedenen Beurteilungsregeln – Formalstruktur vs. empirische Güte. Ohne explizite Kategorieabstimmung bleibt Dissens bestehen.\n\nRekonziliation: Die Methode ist nur unter formaler Sauberkeit (Claudes Bedingungen) überhaupt als kohärent beurteilbar. Zusätzlich muss sie die von ChatGPT genannten Schwächen (Kontextabhängigkeit, implizites Wissen, Qualitätsvarianz) handhaben, sonst läuft sie bei konkreter Anwendung leer. Beide Dimensionen sind notwendig, nicht konkurrierend. Unter der Annahme, dass “gute Idee” formale Zulässigkeit voraussetzt, ist Claudes Massstab primär; ChatGPTs Einwände definieren sekundäre Bruchstellen. Bei fehlender Ebenentrennung bricht die Methode grundsätzlich – bei erfüllter Formalstruktur können die praktischen Begrenzungen dennoch zu Scheitern führen."
     },
-    "cycle": 25
+    "cycle": 49
   },
   "principle_seen": [
     "hold_tension",
@@ -4002,7 +4014,7 @@
     "X-7"
   ],
   "reconsolidate_lens_idx": 4,
-  "kevin_last_cycle": 46,
+  "kevin_last_cycle": 49,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
