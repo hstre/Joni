@@ -219,15 +219,25 @@ class CoreState:
     def evidence_links(self) -> int:
         return len(self.core.all(l9.ObjectType.EVIDENCE_LINK))
 
-    def hypothesize(self, text: str, topic: str, *, parents=()) -> str:
-        """Joni invents his own conjecture - a CANDIDATE claim derived from his own
-        claims. It is never auto-activated or confirmed: a guess stays a guess until it
-        earns support."""
+    def hypothesize(self, text: str, topic: str, *, parents=(), origin: str = "joni") -> str:
+        """Invent a conjecture - a CANDIDATE claim from existing claims. Never auto-activated
+        or confirmed: a guess stays a guess until it earns support.
+
+        ``origin="kevin"`` marks a creative model proposal: it carries MODEL provenance (so it is
+        taint-flagged ``unverified_model_output`` and cannot reach authoritative status without an
+        explicit human validation) - the hurdle is on adoption, not generation. ``origin="joni"`` is
+        the deterministic-operator self-conjecture as before."""
+        if origin == "kevin":
+            proposer = "kevin"
+            prov = Provenance.from_model(external=True, model_id="deepseek-v4-pro",
+                                         provider="deepseek", served_model="deepseek-v4-pro")
+        else:
+            proposer, prov = "joni", Provenance.from_operator()
         self.core.submit(make_proposal(
             ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
-            payload={"text": text, "topic": topic, "support": 0.4}, proposer="joni",
-            provenance=Provenance.from_operator(), target_objects=tuple(parents)),
-            actor="joni")
+            payload={"text": text, "topic": topic, "support": 0.4}, proposer=proposer,
+            provenance=prov, target_objects=tuple(parents)),
+            actor=proposer)
         return self._newest(l9.ObjectType.CLAIM).id
 
     def hypotheses(self) -> list:
