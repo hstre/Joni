@@ -35,43 +35,48 @@
       "software",
       "users"
     ],
-    "claims_total": 336,
-    "claims_active": 181,
+    "claims_total": 343,
+    "claims_active": 187,
     "memory": 0,
-    "ledger": 2578,
+    "ledger": 2612,
     "open_conflicts": 8,
     "methods": 21,
     "method_trials": 172,
     "methods_ready": 0,
     "preferences": 1,
-    "evidence_links": 55,
+    "evidence_links": 56,
     "self_model": 7,
     "hypotheses": 30,
     "research_topics": 1,
     "epistemically_usable": {
-      "rate": 0.812,
-      "n": 181,
+      "rate": 0.818,
+      "n": 187,
       "flags": {
-        "correctly_typed": 181,
-        "source_anchored": 155,
-        "non_duplicate": 175,
-        "topic_valid": 179,
-        "scope_valid": 179,
-        "provenance_complete": 155
+        "correctly_typed": 187,
+        "source_anchored": 161,
+        "non_duplicate": 181,
+        "topic_valid": 185,
+        "scope_valid": 185,
+        "provenance_complete": 161
       }
     },
     "routing_engine": "DESi",
     "days_running": 0,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 0.482,
     "cap_eur": 20.0,
-    "runs": 66
+    "runs": 67
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 66,
+    "runs": 67,
     "retired": false
   },
   "extensions": {
@@ -553,7 +558,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 63,
+      "starved_topic": 64,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -2973,7 +2978,8 @@
       "zenodo:20720061",
       "zenodo:20720065",
       "zenodo:20721376",
-      "zenodo:20721525"
+      "zenodo:20721525",
+      "zenodo:20722356"
     ],
     "fetch_errors": [],
     "semantic_calls": [
@@ -3184,6 +3190,14 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20721525"
+      },
+      {
+        "call_id": "joni-c67:24033735aa14",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20722356"
       }
     ],
     "pdf_read": [
@@ -3404,6 +3418,7 @@
       "C-298|C-95",
       "C-304|C-310",
       "C-304|C-312",
+      "C-337|C-339",
       "C-40|C-41",
       "C-55|C-68",
       "C-83|C-86"
@@ -3509,6 +3524,7 @@
       "C-298|C-95@bge-small-en-v1.5",
       "C-304|C-310@bge-small-en-v1.5",
       "C-304|C-312@bge-small-en-v1.5",
+      "C-337|C-339@bge-small-en-v1.5",
       "C-40|C-41@bge-small-en-v1.5",
       "C-55|C-68@bge-small-en-v1.5",
       "C-83|C-86@bge-small-en-v1.5"
@@ -3577,6 +3593,7 @@
       "panel|efficiency",
       "panel|enables",
       "panel|energy",
+      "panel|epidbot",
       "panel|evaluation",
       "panel|evidence",
       "panel|execution",
@@ -3718,18 +3735,19 @@
       "C-332",
       "C-334",
       "C-336",
+      "C-343",
       "C-74",
       "C-99"
     ],
     "learned_queries": [
-      "panel panel",
-      "panel across",
-      "panel paraná",
       "panel claims",
       "unsorted temperature",
       "unsorted energy",
       "unsorted optimal",
-      "unsorted duffing"
+      "unsorted duffing",
+      "panel recurs",
+      "documentation+panel claude",
+      "documentation+panel bedingungen"
     ],
     "hyp_seen_cycle": {
       "C-264": 63,
@@ -3748,7 +3766,7 @@
       "C-277": 56,
       "C-278": 57,
       "C-279": 58,
-      "C-300": 50,
+      "C-300": 67,
       "C-302": 50,
       "C-315": 51,
       "C-320": 52,
@@ -3761,7 +3779,8 @@
       "C-333": 59,
       "C-334": 60,
       "C-335": 61,
-      "C-336": 62
+      "C-336": 62,
+      "C-343": 67
     },
     "topics_domain_ok": [
       "agent",
@@ -3855,6 +3874,7 @@
       "C-334",
       "C-335",
       "C-336",
+      "C-343",
       "C-74",
       "C-99"
     ],
@@ -3882,35 +3902,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "degenerating",
-      "development": 0,
+      "verdict": "steady",
+      "development": 3,
       "degeneration": 1,
-      "active": 181,
+      "active": 187,
       "hypotheses": 30,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
-      "evidence_links": 55,
-      "supporting_links": 55,
-      "emergent_total": 154,
+      "evidence_links": 56,
+      "supporting_links": 56,
+      "emergent_total": 155,
       "usable_semantic_rate": 1.0,
       "methods_total": 21,
       "method_trials_total": 172,
       "methods_ready_total": 0,
-      "stagnation_cycles": 6,
-      "objects": 3335,
-      "cycle": 66
+      "stagnation_cycles": 0,
+      "objects": 3380,
+      "cycle": 67
     },
     "vitality_prev": {
-      "supports": 55,
+      "supports": 56,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 3335,
-      "active": 181,
-      "links": 55,
-      "emergent": 154
+      "objects": 3380,
+      "active": 187,
+      "links": 56,
+      "emergent": 155
     },
-    "stagnation": 6,
+    "stagnation": 0,
     "vitality_history": [
       {
         "cycle": 1,
@@ -4373,6 +4393,13 @@
         "development": 0,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 67,
+        "verdict": "steady",
+        "development": 3,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "panel_asked": [
@@ -4532,7 +4559,7 @@
       "X-8"
     ],
     "reconsolidate_lens_idx": 5,
-    "kevin_last_cycle": 64,
+    "kevin_last_cycle": 67,
     "kevin_llm": [
       {
         "call_id": "kevin-c26:60a854e0b332",
@@ -18512,19 +18539,196 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:11+00:00",
+      "cycle": 67,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:13+00:00",
+      "cycle": 67,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:13+00:00",
+      "cycle": 67,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:15+00:00",
+      "cycle": 67,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:20+00:00",
+      "cycle": 67,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:22+00:00",
+      "cycle": 67,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:24+00:00",
+      "cycle": 67,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:24+00:00",
+      "cycle": 67,
+      "kind": "judged",
+      "summary": "relevant: EpidBot Re-Assessment on EpiBench-1.0: Post-Tool-Upgrade Evaluation",
+      "refs": {
+        "source": "zenodo:20722356",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20722356"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:31+00:00",
+      "cycle": 67,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20722356 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:32+00:00",
+      "cycle": 67,
+      "kind": "developed",
+      "summary": "linked C-337 <-> C-339 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:33+00:00",
+      "cycle": 67,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'epidbot' (Layer 9 synthesis-eligible, SC-272) from 6 claims (C-337, C-338, C-339, C-340, C-341)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:33+00:00",
+      "cycle": 67,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-343 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:33+00:00",
+      "cycle": 67,
+      "kind": "regulate",
+      "summary": "shed C-264: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:33+00:00",
+      "cycle": 67,
+      "kind": "vitality",
+      "summary": "steady · dev 3 · degen 1 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:34+00:00",
+      "cycle": 67,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:34+00:00",
+      "cycle": 67,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T18:48:34+00:00",
+      "cycle": 67,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 0 method(s) · 0 trialed · 1 new link(s) · 0 hypothesis(es) · 1 emergent · shed 1 dead idea(s) · steady · spend €0.4820 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 43,
-    "granite_calls": 35,
+    "llm_calls": 44,
+    "granite_calls": 36,
     "deepseek_escalations": 6,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 43,
-    "last_call": "2026-06-16T17:29:05+00:00",
+    "live_calls": 44,
+    "last_call": "2026-06-16T18:48:29+00:00",
     "est_cost_eur": 0.032,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 35,
+      "ibm-granite/granite-4.1-8b-20260429": 36,
       "deepseek-v4-pro": 8
     },
     "empty_calls": 0,
@@ -18532,14 +18736,14 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 43
+      "stop": 44
     },
     "panel_rounds": 3,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 0.482,
-    "accepted_claims": 101,
-    "accepted_calls": 26,
-    "accepted_call_yield": 0.605,
+    "accepted_claims": 106,
+    "accepted_calls": 27,
+    "accepted_call_yield": 0.614,
     "est_cost_per_accepted_eur": 0.0003
   },
   "commissions_done": [
@@ -18551,5 +18755,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-16T18:42:57+00:00"
+  "generated": "2026-06-16T18:48:34+00:00"
 }
