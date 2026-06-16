@@ -4,7 +4,6 @@ pass tests while its actual semantic function is missing - these tests refuse to
 silently. They encode: instrument (don't guess) empty outputs, and never present a synthetic
 trial as effectiveness evidence."""
 
-from pathlib import Path
 
 from joni.autonomy import model_call, model_profile, site
 

@@ -247,6 +247,36 @@ def build(data: dict) -> str:
         "Methoden durch &mdash; er <b>entscheidet nie</b>. Ob ein Vorschlag taugt, beurteilt die "
         "Expertenrunde; <b>Joni</b> entscheidet, was er aufnimmt.</div>")
 
+    # The REAL method-trial (measured, provenance-bearing) - explicitly distinct from the synthetic
+    # simulation above. The decision rests on the predefined metric, never on a model's opinion.
+    rt = ext.get("real_trial", {}) if isinstance(ext.get("real_trial"), dict) else {}
+    if rt.get("method_id"):
+        better = "niedriger = besser" if rt.get("lower_is_better") else "höher = besser"
+        verdict = ("<b style='color:var(--good)'>PASS</b>" if rt.get("passed")
+                   else "<b style='color:var(--warn)'>kein Pass</b>")
+        real_trial_block = (
+            _tstat("Methode", rt.get("method_id", "—"))
+            + _tstat("Task-Set", f"{esc(rt.get('task_set','—'))} · sha "
+                     f"{esc(str(rt.get('task_set_sha',''))[:10])}")
+            + _tstat(f"Metrik ({better})", rt.get("metric", "—"))
+            + _tstat("Baseline (ohne Methode)", rt.get("baseline", "—"))
+            + _tstat("Intervention (mit Methode)", rt.get("intervention", "—"))
+            + _tstat("Negativkontrolle (Sham)", rt.get("negative_control", "—"))
+            + _tstat("Δ (Effekt)", rt.get("delta", "—"))
+            + _tstat("Wiederholungen", rt.get("repetitions", "—"))
+            + _tstat("Richtung · Unsicherheit",
+                     f"{esc(rt.get('direction','—'))} · {esc(rt.get('uncertainty','—'))}")
+            + _tstat("Verdikt", verdict)
+            + f"<div class=note>Echtes Protokoll <code>{esc(rt.get('evaluation_mode',''))}</code>, "
+            f"<code>epistemic_weight={esc(rt.get('epistemic_weight',''))}</code> (gemessene "
+            "Evidenz, aber noch <b>nicht</b> menschlich bestätigt). Die Pass/Fail-Entscheidung "
+            "ruht <b>allein</b> auf der vorab definierten Messgröße + Schwelle + sauberer "
+            "Negativkontrolle &mdash; nie auf einem Modell-Urteil. Modelle dürfen Fälle "
+            "<i>bearbeiten</i>; entscheiden tut die Regel.</div>")
+    else:
+        real_trial_block = ("<p class=empty>Noch kein echter Trial gelaufen (kevin.real_trial "
+                            "nicht verfügbar oder dieser Zyklus ohne Trial).</p>")
+
     from . import quality
     good_topics = [t for t in s.get("topics", []) if quality.is_good_topic(t)]
     topics = "".join(f"<span class=pill>{esc(t)}</span>" for t in good_topics)
@@ -443,6 +473,10 @@ what is uncertain, what contradicts, and what changed.</p>
   <div class="card full">
     <h2>Kevin — was er vorschlägt &amp; ob es taugt</h2>
     {kevin_block}
+  </div>
+  <div class="card full">
+    <h2>Echter Methoden-Trial — real_trial_protocol_v1 (gemessen, provisional)</h2>
+    {real_trial_block}
   </div>
   <div class="card full">
     <h2>Expertenrunde — Alexandria, über Kreuz (berät; Joni entscheidet)</h2>
