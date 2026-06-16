@@ -180,6 +180,15 @@ def build(data: dict) -> str:
             + _tstat("est. cost / accepted claim",
                      f"€{tele.get('est_cost_per_accepted_eur', 0):.4f}")
             + _tstat("last semantic call", tele.get("last_call") or "—")
+            + _tstat("empty answers (live)", tele.get("empty_calls", 0))
+            + _tstat("· truncated (token budget)", tele.get("empty_truncated", 0))
+            + _tstat("· reasoning-only (adapter?)", tele.get("empty_with_reasoning", 0))
+            + _tstat("· silent (nothing/filter)", tele.get("empty_silent", 0))
+            + "<div class=note>Empty answers are <b>classified</b>, not guessed: "
+            "<b>truncated</b> (finish_reason=length → the reasoning model spent the whole budget, "
+            "content empty) vs <b>reasoning-only</b> (text was in a reasoning field → adapter bug) "
+            "vs <b>silent</b> (nothing/filter). This is what tells the four failure classes apart "
+            "instead of conflating them.</div>"
             + f"<div class=note>by model — {by_model}. Granite via prepaid OpenRouter; "
             "DeepSeek v4-pro via prepaid DeepSeek. <b>reserved</b> budget ≠ <b>estimated</b> API "
             "cost (per-call rate; exact spend on each provider's page). The number that matters: "
@@ -219,15 +228,24 @@ def build(data: dict) -> str:
         "Kadenz und nur auf Themen mit echtem Material (nicht auf <code>unsorted</code> oder "
         "dünnen Wortclustern).</li>")
     kevin_block = (
-        f"<div class=stat><span>Methoden-Trials (deterministisch)</span>"
-        f"<span><b>{esc(s.get('method_trials',0))}</b></span></div>"
-        f"<div class=stat><span>davon aktivierungsreif</span>"
-        f"<span><b>{esc(s.get('methods_ready',0))}</b></span></div>"
+        f"<div class=stat><span>Methoden-Trials <span class=src>(synthetische Simulation)</span>"
+        f"</span><span><b>{esc(s.get('method_trials',0))}</b></span></div>"
+        f"<div class=stat><span>davon &bdquo;aktivierungsreif&ldquo; "
+        f"<span class=src>(Sim-Artefakt)</span>"
+        f"</span><span><b>{esc(s.get('methods_ready',0))}</b></span></div>"
+        "<div class=note style='color:var(--warn)'>⚠ Die Methoden-Trials sind eine "
+        "<b>synthetische Simulation</b> (Keyword-Shape-Overlap), <b>kein</b> semantischer oder "
+        "empirischer Wirksamkeitsnachweis &mdash; <code>evaluation_mode=synthetic_mock, "
+        "epistemic_weight=none</code>. Heißt: &bdquo;der Simulator stufte N als bestanden "
+        "ein&ldquo;, nie &bdquo;N Methoden sind wirksam&ldquo;. Ein echtes Protokoll "
+        "(frozen task set · Baseline vs. "
+        "Intervention · Messgröße · Wiederholungen · Negativkontrolle · Layer-9-Proposal mit "
+        "Provenienz) ist der vorgesehene Ersatz.</div>"
         "<h3 style='margin:10px 0 4px'>Fernanalogien (kreativer Arm, deepseek-v4-pro)</h3>"
         f"<ul>{kevin_props}</ul>"
         "<div class=note>Kevin schlägt vor (Cross-Domain-Hypothesen &amp; Methoden) und probiert "
-        "Methoden deterministisch durch &mdash; er <b>entscheidet nie</b>. Ob ein Vorschlag taugt, "
-        "beurteilt die Expertenrunde; <b>Joni</b> entscheidet, was er aufnimmt.</div>")
+        "Methoden durch &mdash; er <b>entscheidet nie</b>. Ob ein Vorschlag taugt, beurteilt die "
+        "Expertenrunde; <b>Joni</b> entscheidet, was er aufnimmt.</div>")
 
     from . import quality
     good_topics = [t for t in s.get("topics", []) if quality.is_good_topic(t)]

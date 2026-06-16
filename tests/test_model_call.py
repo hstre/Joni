@@ -91,6 +91,33 @@ def test_call_captures_then_replays(monkeypatch, tmp_path):
         assert field in rec
 
 
+def test_empty_answer_is_diagnosable_not_guessed(monkeypatch, tmp_path):
+    # the review's point: an empty answer must be CLASSIFIABLE. The seam returns the full Raw
+    # evidence; the capture records finish_reason / tokens / content vs reasoning length.
+    def truncated(profile, system, user):
+        return model_call.Raw(text="", finish_reason="length", served="deepseek-v4-pro",
+                              prompt_tokens=120, completion_tokens=768, reasoning_tokens=768,
+                              reasoning_len=4096, raw_json='{"x":1}')
+    monkeypatch.setattr(model_call, "_complete", truncated)
+    prof = model_profile.profile("joni-hard")
+    out, cap = model_call.call(prof, "s", "u", run_id="r1", store_dir=tmp_path)
+    assert out == "" and cap.finish_reason == "length" and cap.content_len == 0
+    assert cap.reasoning_tokens == 768 and cap.reasoning_len == 4096 and cap.raw_sha
+    assert (tmp_path / "outputs").glob("*.raw.json")            # the raw response is preserved
+    t = model_call.telemetry(tmp_path)
+    # finish_reason==length + content empty PROVES the token-budget cause - not a guess
+    assert t["empty_calls"] == 1 and t["empty_truncated"] == 1
+    assert t["empty_with_reasoning"] == 0 and t["empty_silent"] == 0
+
+    # a different empty class: content empty but reasoning present and NOT truncated -> adapter bug
+    def adapter_bug(profile, system, user):
+        return model_call.Raw(text="", finish_reason="stop", reasoning_len=200)
+    monkeypatch.setattr(model_call, "_complete", adapter_bug)
+    model_call.call(prof, "s", "v", run_id="r2", store_dir=tmp_path)
+    t2 = model_call.telemetry(tmp_path)
+    assert t2["empty_with_reasoning"] == 1                      # distinct class, not conflated
+
+
 def test_telemetry_reads_real_capture_records(monkeypatch, tmp_path):
     # two Granite calls + one DeepSeek escalation, one of them a replay -> the dashboard numbers
     # come straight from calls.jsonl, never guessed.
