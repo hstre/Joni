@@ -34,29 +34,24 @@ geschützten `desi_layer9`-Kern (nicht still von mir geändert) · **[OFFEN]** s
   nach dem Speichern gesetzt → Reihenfolge korrigiert.
 - **[BEHOBEN] Inflationierter Yield** — `accepted_per_live_call` (>1) → echtes per-Call-Yield (≤1).
 
-## B. Governance-Kern — HIGH, aber human-gated (CORE-ASK, nicht still geändert)
+## B. Governance-Kern — HIGH, vor dem Neustart BEHOBEN (operator-freigegeben, Lock neu)
 
-Der **Autoritäts**-Teil der Governance ist real durchgesetzt und gut getestet (wer welchen Operator
-anfordern darf, Stripping kontrollierter Felder, replaybare Single-Gate-Writes, Aktivierung erst ab
-≥3 Trials). Schwach ist der **Kontaminations/Taint**-Teil:
+Der **Autoritäts**-Teil war bereits durchgesetzt. Der **Kontaminations/Taint**-Teil und drei
+Integritätslücken sind jetzt geschlossen (`test_layer9_governance_hardening`, Commit `7cff6f2`).
+Migrationssicher: das Journal hat 0 `claim_confirm`/`method_promote`/`conflict_resolve`/
+`operational_state`-Events → das Replay des Gedächtnisses ändert sich nicht.
 
-- **[CORE-ASK] Taint wird berechnet/gespeichert, aber nie durchgesetzt** — `desi_layer9/`. Eine
-  Claim mit `unverified_model_output`/`adversarial_source` kann zu `CONFIRMED`/`AUTHORITATIVE`
-  promoviert werden; `Taint.with_human_validation()` ist toter Code, `human_validated` wird nie
-  gesetzt. Die dokumentierte Invariante existiert im Code nicht. → Promotion kontaminierter Objekte
-  blocken, außer `human_validated`; einen `HUMAN_VALIDATE`-Operator einführen.
-- **[CORE-ASK] `snapshot_operational` umgeht das Gate** — `epistemics.py:103-112` schreibt direkt
-  `core.objects[...]` mit `AUTHORITATIVE` (kein submit, kein Ledger-Event) → unsichtbar für Replay
-  und `verify_chain`. Der gated Handler `_h_operational_state` ist **toter Code** (kein
-  `Operator.OPERATIONAL_STATE`, nicht in `_HANDLERS`). → über das Gate routen, Direkt-Write
-  verbieten.
-- **[CORE-ASK] `event_canonical` lässt `sampling_provenance` aus dem Ketten-Hash** —
-  `hashing.py:48-57` → die Modell/Sampling-Provenienz ist nachträglich fälschbar, ohne die Kette zu
-  brechen. → in den kanonischen Hash aufnehmen.
-- **[CORE-ASK] `repair()` segnet stillschweigend inkonsistenten State neu** — `persistence.py:79-97`
-  fängt jeden `ValueError` und überschreibt den `snapshot_hash`; ein wirklich manipulierter Journal
-  würde „repariert". → Trigger auf den spezifischen Hash-only-Mismatch verengen, bei gebrochener
-  Kette verweigern.
+- **[BEHOBEN] Taint wird jetzt DURCHGESETZT** — eine kontaminierte Claim kann nicht mehr
+  `CONFIRMED`/`ACTIVE` werden (`can_confirm_claim` lehnt ab, `_h_method_promote` blockt). Neuer
+  operator-only **`HUMAN_VALIDATE`**-Operator ist die einzige Ausnahme (setzt `human_validated`,
+  Kontaminations-Flags bleiben aktenkundig).
+- **[BEHOBEN] `snapshot_operational` läuft durch das Gate** — `Operator.OPERATIONAL_STATE` in Enum +
+  `_HANDLERS` + autoritäts-grantierende Menge (ein Modell kann es nicht schreiben); erzeugt ein
+  Ledger-Event und ist replaybar. Der Direkt-Write ist entfernt.
+- **[BEHOBEN] `event_canonical` deckt `sampling_provenance`** — Modell/Sampling-Provenienz ist jetzt
+  manipulationssicher in der Ketten-Hash; Fälschen bricht `verify_chain`.
+- **[BEHOBEN] `repair()` verweigert eine gebrochene Kette** (raises) statt jeden `ValueError`
+  neuzusegeln; es re-sealt nur den engen Snapshot-Drift-Fall bei intakter Kette.
 
 ## C. Honesty & stille Kapazitäts-Abwesenheit — sollte gefixt werden (OFFEN)
 
