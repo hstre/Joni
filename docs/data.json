@@ -11,6 +11,7 @@
       "architecture",
       "awesome-design-patterns",
       "codebase",
+      "contexts",
       "design",
       "distillation",
       "documentation",
@@ -33,43 +34,48 @@
       "software",
       "users"
     ],
-    "claims_total": 246,
-    "claims_active": 137,
+    "claims_total": 254,
+    "claims_active": 141,
     "memory": 0,
-    "ledger": 1914,
+    "ledger": 1978,
     "open_conflicts": 7,
     "methods": 19,
     "method_trials": 156,
     "methods_ready": 0,
     "preferences": 1,
-    "evidence_links": 40,
+    "evidence_links": 42,
     "self_model": 6,
-    "hypotheses": 25,
+    "hypotheses": 28,
     "research_topics": 2,
     "epistemically_usable": {
-      "rate": 0.788,
-      "n": 137,
+      "rate": 0.787,
+      "n": 141,
       "flags": {
-        "correctly_typed": 137,
-        "source_anchored": 114,
-        "non_duplicate": 133,
-        "topic_valid": 135,
-        "scope_valid": 135,
-        "provenance_complete": 114
+        "correctly_typed": 141,
+        "source_anchored": 117,
+        "non_duplicate": 137,
+        "topic_valid": 139,
+        "scope_valid": 139,
+        "provenance_complete": 117
       }
     },
     "routing_engine": "DESi",
     "days_running": 0,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
-    "spent_eur": 0.32,
+    "spent_eur": 0.324,
     "cap_eur": 20.0,
-    "runs": 25
+    "runs": 26
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 25,
+    "runs": 26,
     "retired": false
   },
   "extensions": {
@@ -530,7 +536,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 22,
+      "starved_topic": 23,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -710,6 +716,24 @@
         "question": "Hat jemand gute Quellen oder Erfahrungen zu 'panel'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
         "status": "posted",
         "posted_url": "https://www.moltbook.com/posts/6958a0d5-fc3b-4f5d-aeae-198298c0b1fb"
+      },
+      {
+        "id": "FA-26-1ea657",
+        "cycle": 26,
+        "platform": "reddit",
+        "need": "topic:overview",
+        "question": "Hat jemand gute Quellen oder Erfahrungen zu 'overview'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+        "status": "drafted",
+        "posted_url": null
+      },
+      {
+        "id": "FA-26-ebea68",
+        "cycle": 26,
+        "platform": "moltbook",
+        "need": "topic:overview",
+        "question": "Hat jemand gute Quellen oder Erfahrungen zu 'overview'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+        "status": "posted",
+        "posted_url": "https://www.moltbook.com/posts/e63bc6be-0f89-4f84-9045-739df2d38292"
       }
     ],
     "forum_asked": [
@@ -718,7 +742,8 @@
       "topic:memory",
       "topic:privacy",
       "topic:unsorted",
-      "topic:panel"
+      "topic:panel",
+      "topic:overview"
     ],
     "forum_asked_moltbook": [
       "topic:alignment",
@@ -726,7 +751,8 @@
       "topic:memory",
       "topic:privacy",
       "topic:unsorted",
-      "topic:panel"
+      "topic:panel",
+      "topic:overview"
     ],
     "forum_identity": {
       "moltbook": {
@@ -2489,6 +2515,7 @@
       "github:f/prompts.chat",
       "github:home-assistant/core",
       "github:lm-sys/FastChat",
+      "github:lukehoban/es6features",
       "github:mlflow/mlflow",
       "github:obra/superpowers",
       "github:payloadcms/payload",
@@ -2505,7 +2532,9 @@
       "hackernews:2906538",
       "hackernews:32197012",
       "hackernews:39161339",
+      "hackernews:44663227",
       "hackernews:46990729",
+      "hackernews:48470248",
       "hackernews:48500012",
       "huggingface:2602.21103",
       "huggingface:2606.14142",
@@ -2784,6 +2813,7 @@
       "arxiv:2606.17053v1",
       "arxiv:2606.17055v1",
       "github:DovAmir/awesome-design-patterns",
+      "github:lukehoban/es6features",
       "github:obra/superpowers",
       "huggingface:2602.21103",
       "huggingface:2606.15079",
@@ -2892,6 +2922,11 @@
       "C-206|C-235",
       "C-206|C-238",
       "C-207|C-208",
+      "C-210|C-211",
+      "C-210|C-235",
+      "C-210|C-238",
+      "C-211|C-235",
+      "C-211|C-238",
       "C-26|C-48",
       "C-40|C-41",
       "C-55|C-68",
@@ -2970,16 +3005,24 @@
       "C-206|C-235@bge-small-en-v1.5",
       "C-206|C-238@bge-small-en-v1.5",
       "C-207|C-208@bge-small-en-v1.5",
+      "C-210|C-211@bge-small-en-v1.5",
+      "C-210|C-235@bge-small-en-v1.5",
+      "C-210|C-238@bge-small-en-v1.5",
+      "C-211|C-235@bge-small-en-v1.5",
+      "C-211|C-238@bge-small-en-v1.5",
       "C-26|C-48@bge-small-en-v1.5",
       "C-40|C-41@bge-small-en-v1.5",
       "C-55|C-68@bge-small-en-v1.5",
       "C-83|C-86@bge-small-en-v1.5"
     ],
-    "invented": [],
+    "invented": [
+      "overview|panel"
+    ],
     "emerged_topics": [
       "agent",
       "agents",
       "architecture",
+      "contexts",
       "design",
       "evidence",
       "graph",
@@ -2998,6 +3041,15 @@
       "users"
     ],
     "synthesized": [
+      "overview|admissible",
+      "overview|boundary",
+      "overview|category",
+      "overview|contexts",
+      "overview|core",
+      "overview|defined",
+      "overview|false",
+      "overview|keine",
+      "overview|scientific",
       "panel|access",
       "panel|agent",
       "panel|approximation",
@@ -3036,6 +3088,7 @@
       "panel|pipeline",
       "panel|pipelines",
       "panel|polymarket",
+      "panel|programme",
       "panel|proprietary",
       "panel|publication",
       "panel|resources",
@@ -3065,12 +3118,13 @@
       "memory",
       "pipelines",
       "related",
+      "repository",
       "scientific",
       "service"
     ],
     "emerge_insufficient": {
       "meth:part": 1,
-      "panel|orders": 1
+      "panel|orders": 2
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
@@ -3098,14 +3152,14 @@
       "C-99"
     ],
     "learned_queries": [
-      "panel underlying",
-      "panel guidance",
-      "panel across",
-      "panel factor",
       "panel recurs",
       "panel claims",
       "unsorted lines",
-      "unsorted recurs"
+      "unsorted recurs",
+      "overview+panel might",
+      "overview+panel overview",
+      "unsorted execution",
+      "unsorted null-boundary"
     ],
     "hyp_seen_cycle": {
       "C-21": 17,
@@ -3132,7 +3186,9 @@
       "C-240": 22,
       "C-241": 23,
       "C-242": 24,
-      "C-243": 25
+      "C-243": 25,
+      "C-250": 26,
+      "C-251": 26
     },
     "topics_domain_ok": [
       "agent",
@@ -3141,6 +3197,7 @@
       "architecture",
       "awesome-design-patterns",
       "codebase",
+      "contexts",
       "design",
       "distillation",
       "documentation",
@@ -3189,6 +3246,9 @@
       "C-241",
       "C-242",
       "C-243",
+      "C-251",
+      "C-252",
+      "C-254",
       "C-74",
       "C-99"
     ],
@@ -3214,33 +3274,33 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "developing",
+      "verdict": "steady",
       "development": 6,
-      "degeneration": 0,
-      "active": 134,
-      "hypotheses": 25,
-      "unsupported_hypotheses": 25,
+      "degeneration": 1,
+      "active": 141,
+      "hypotheses": 28,
+      "unsupported_hypotheses": 28,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
-      "evidence_links": 40,
-      "supporting_links": 40,
-      "emergent_total": 86,
+      "evidence_links": 42,
+      "supporting_links": 42,
+      "emergent_total": 98,
       "usable_semantic_rate": 1.0,
       "methods_total": 19,
       "method_trials_total": 156,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 2422,
-      "cycle": 25
+      "objects": 2530,
+      "cycle": 26
     },
     "vitality_prev": {
-      "supports": 40,
+      "supports": 42,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 2422,
-      "active": 134,
-      "links": 40,
-      "emergent": 86
+      "objects": 2530,
+      "active": 141,
+      "links": 42,
+      "emergent": 98
     },
     "stagnation": 0,
     "vitality_history": [
@@ -3418,6 +3478,13 @@
         "development": 6,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 26,
+        "verdict": "steady",
+        "development": 6,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "panel_asked": [
@@ -3568,7 +3635,32 @@
       "X-6",
       "X-7"
     ],
-    "reconsolidate_lens_idx": 2
+    "reconsolidate_lens_idx": 2,
+    "kevin_last_cycle": 26,
+    "kevin_llm": [
+      {
+        "call_id": "kevin-c26:60a854e0b332",
+        "served_model": "deepseek-v4-pro",
+        "cycle": 26,
+        "topics": [
+          "panel",
+          "overview"
+        ],
+        "replayed": false,
+        "proposals": [
+          {
+            "id": "C-251",
+            "text": "If Teaspoons' pipeline scheduler incorporates the null-boundary response condition (no-signaling-preserving constraints from Null-Boundary Response), then execution traces across tenants will show zero distinguishable information flow under a membership inference attack with a sample size n=1000.",
+            "topic": "unsorted"
+          },
+          {
+            "id": "C-252",
+            "text": "Subjecting the Ling and Ring 2.6 technical report to the cross-reconstruction method's polysemy and circularity checks will flag at least one load-bearing term as homonymous across the report's training, scaling, and deployment claims, as confirmed by independent linguist annotation.",
+            "topic": "unsorted"
+          }
+        ]
+      }
+    ]
   },
   "protocol": [
     {
@@ -10759,34 +10851,410 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:47+00:00",
+      "cycle": 26,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:48+00:00",
+      "cycle": 26,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:49+00:00",
+      "cycle": 26,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:51+00:00",
+      "cycle": 26,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:56+00:00",
+      "cycle": 26,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:57+00:00",
+      "cycle": 26,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:59+00:00",
+      "cycle": 26,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T14:59:59+00:00",
+      "cycle": 26,
+      "kind": "judged",
+      "summary": "relevant: German ruling declares Google liable for false answers in AI Overviews",
+      "refs": {
+        "source": "hackernews:48470248",
+        "topic": "overview",
+        "new_topic": null,
+        "url": "https://the-decoder.com/landmark-german-ruling-declares-googles-ai-overviews-are-googles-own-words-and-makes-it-liable-for-false-answers/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:00+00:00",
+      "cycle": 26,
+      "kind": "judged",
+      "summary": "relevant: AI overviews cause massive drop in search clicks",
+      "refs": {
+        "source": "hackernews:44663227",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://arstechnica.com/ai/2025/07/research-shows-google-ai-overviews-reduce-website-clicks-by-almost-half/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:00+00:00",
+      "cycle": 26,
+      "kind": "judged",
+      "summary": "relevant: es6features",
+      "refs": {
+        "source": "github:lukehoban/es6features",
+        "topic": "overview",
+        "new_topic": null,
+        "url": "https://github.com/lukehoban/es6features"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:10+00:00",
+      "cycle": 26,
+      "kind": "developed",
+      "summary": "C-210/C-211: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:10+00:00",
+      "cycle": 26,
+      "kind": "developed",
+      "summary": "C-210/C-235: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:10+00:00",
+      "cycle": 26,
+      "kind": "developed",
+      "summary": "linked C-210 <-> C-238 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:10+00:00",
+      "cycle": 26,
+      "kind": "developed",
+      "summary": "C-211/C-235: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:11+00:00",
+      "cycle": 26,
+      "kind": "developed",
+      "summary": "linked C-211 <-> C-238 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:00:11+00:00",
+      "cycle": 26,
+      "kind": "invented",
+      "summary": "new hypothesis bridging overview x panel (candidate, derived from C-249+C-96)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:40+00:00",
+      "cycle": 26,
+      "kind": "kevin",
+      "summary": "Kevin (deepseek-v4-pro) proposed 2 cross-domain hypothesis(es) [panel × overview, replayed=False] - candidate(s) via the gate, Joni decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:41+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "new topic 'contexts' precipitated from a recurrence across overview, panel",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:41+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'scientific' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:41+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'admissible' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:41+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'boundary' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:42+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'category' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:42+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'contexts' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:42+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'core' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:42+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'defined' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:42+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'false' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:43+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'keine' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:43+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'orders' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:43+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'programme' (Layer 9 synthesis-eligible, SC-177) from 3 claims (C-191, C-192, C-195)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:43+00:00",
+      "cycle": 26,
+      "kind": "emerged",
+      "summary": "'repository' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:45+00:00",
+      "cycle": 26,
+      "kind": "regulate",
+      "summary": "retired 1 junk-subject hypothesis(es): C-250",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:45+00:00",
+      "cycle": 26,
+      "kind": "vitality",
+      "summary": "steady · dev 6 · degen 1 · 28 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:46+00:00",
+      "cycle": 26,
+      "kind": "forum_draft",
+      "summary": "drafted FA-26-1ea657 for reddit (need topic:overview) - awaiting human approval",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:46+00:00",
+      "cycle": 26,
+      "kind": "forum_draft",
+      "summary": "drafted FA-26-ebea68 for moltbook (need topic:overview) - agent-net, auto-posts",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:47+00:00",
+      "cycle": 26,
+      "kind": "forum_post",
+      "summary": "posted FA-26-ebea68 to moltbook (agent-net auto) -> https://www.moltbook.com/posts/e63bc6be-0f89-4f84-9045-739df2d38292",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:47+00:00",
+      "cycle": 26,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:47+00:00",
+      "cycle": 26,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:01:47+00:00",
+      "cycle": 26,
+      "kind": "note",
+      "summary": "cycle done · 3 new · 0 method(s) · 0 trialed · 2 new link(s) · 1 hypothesis(es) · 2 emergent · steady · spend €0.3240 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 31,
+    "llm_calls": 32,
     "granite_calls": 26,
     "deepseek_escalations": 5,
-    "kevin_calls": 0,
+    "kevin_calls": 1,
     "cached_calls": 0,
-    "live_calls": 31,
-    "last_call": "2026-06-16T14:35:33+00:00",
-    "est_cost_eur": 0.02,
+    "live_calls": 32,
+    "last_call": "2026-06-16T15:01:40+00:00",
+    "est_cost_eur": 0.024,
     "by_model": {
       "ibm-granite/granite-4.1-8b-20260429": 26,
-      "deepseek-v4-pro": 5
+      "deepseek-v4-pro": 6
     },
     "empty_calls": 0,
     "empty_truncated": 0,
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 31
+      "stop": 32
     },
     "panel_rounds": 2,
     "reserved_budget_eur": 20.0,
-    "spent_budget_eur": 0.32,
+    "spent_budget_eur": 0.324,
     "accepted_claims": 70,
     "accepted_calls": 19,
-    "accepted_call_yield": 0.613,
+    "accepted_call_yield": 0.594,
     "est_cost_per_accepted_eur": 0.0003
   },
   "commissions_done": [
@@ -10798,5 +11266,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-16T14:55:28+00:00"
+  "generated": "2026-06-16T15:01:47+00:00"
 }
