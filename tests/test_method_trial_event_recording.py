@@ -176,6 +176,22 @@ def test_record_object_hash_shares_one_serializer_with_snapshot():
     assert preimage in snapshot_parts          # the very same serialization feeds snapshot_hash
 
 
+def test_one_canonical_serializer_feeds_both_record_and_snapshot(monkeypatch):
+    # Architecture contract: canonical_object_representation(object) feeds BOTH record_object_hash
+    # and snapshot_hash - one function, not two that happen to agree today. Proven structurally:
+    from desi_layer9 import core as core_mod
+    from desi_layer9 import hashing
+    # (1) the record-hash path references the SAME function object as the hashing module.
+    assert core_mod.object_canonical is hashing.object_canonical
+    # (2) the snapshot path resolves that one serializer dynamically: patch it -> snapshot changes.
+    core = _core()
+    _record(core, _payload())
+    orig = hashing.object_canonical
+    before = hashing.snapshot_hash(core)
+    monkeypatch.setattr(hashing, "object_canonical", lambda o: "MARK|" + orig(o))
+    assert hashing.snapshot_hash(core) != before
+
+
 # -- 4. unknown schema version --------------------------------------------------------------- #
 def test_unknown_schema_version_is_rejected_and_not_stored():
     core = _core()
