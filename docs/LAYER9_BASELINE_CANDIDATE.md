@@ -8,19 +8,38 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `61118b3575d09e39e7f786c2246b948719b3aa78` |
+| **Baseline candidate (code)** | `c5fdd9a7ebd08d3485557d0b0e2d24864ab3defc` (review round 2) |
+| **Superseded candidate** | `61118b3` — *rejected pending fixes* by independent review (3 blockers) |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 61118b3 -- src/desi_layer9 \
+git diff 282d541 c5fdd9a -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `61118b3` and at this doc's commit.
+is byte-identical at `c5fdd9a` and at this doc's commit.
+
+### Review round 2 — three blockers fixed (vs `61118b3`)
+
+1. **Scope-bound sufficiency** — `_dataset_sufficiency` groups by `(target_id, scope_id)`; two
+   variants in different scopes of one conflict no longer jointly satisfy; ready
+   `(conflict, scope)` pairs are listed in `analysis_ready_conflict_scopes`.
+2. **Real independence** — `_profile` flags any implementation / model-family / task-sample /
+   evaluator / confounder shared by ≥2 variants (overlap detection), replacing the
+   `len(union) ≥ n` false positive.
+3. **Full v3 gate** — `validate_trial_payload` validates the complete v3 structure (scope, method/
+   variant, estimand, measurement, decision block, model/evaluator/baseline provenance, types,
+   forbidden combinations) so `schema_version=v3` guarantees v3 structure before the irreversible
+   journal; still no statistics/verdict in the core; unknown extra fields consciously allowed.
+
+Tests added: same-conflict-two-scopes → insufficient; same-scope-two-independent → sufficient +
+ready pair exposed; partial-overlap & fully-shared deps → not independent; disjoint → independent;
+minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; real verdict without
+`decision_rule_hash` rejected; `not_evaluated` stored without measurement values.
 
 ## Changed kernel files (vs `282d541`) — 7 files, +189 / −4
 
@@ -79,7 +98,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `61118b3`: **441 passed, 2 skipped, ruff clean.**
+Full suite at `c5fdd9a`: **450 passed, 2 skipped, ruff clean.**
 
 ## Known technical debt
 
