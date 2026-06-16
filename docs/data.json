@@ -35,10 +35,10 @@
       "software",
       "users"
     ],
-    "claims_total": 265,
+    "claims_total": 266,
     "claims_active": 144,
     "memory": 0,
-    "ledger": 2066,
+    "ledger": 2072,
     "open_conflicts": 7,
     "methods": 19,
     "method_trials": 156,
@@ -67,11 +67,11 @@
   "budget": {
     "spent_eur": 0.324,
     "cap_eur": 20.0,
-    "runs": 29
+    "runs": 30
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 29,
+    "runs": 30,
     "retired": false
   },
   "extensions": {
@@ -532,7 +532,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 26,
+      "starved_topic": 27,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -3069,6 +3069,7 @@
       "overview|false",
       "overview|keine",
       "overview|scientific",
+      "panel|abundance",
       "panel|access",
       "panel|agent",
       "panel|approximation",
@@ -3140,6 +3141,7 @@
       "hosted",
       "knowledge",
       "memory",
+      "part",
       "pipelines",
       "related",
       "repository",
@@ -3147,7 +3149,6 @@
       "service"
     ],
     "emerge_insufficient": {
-      "meth:part": 3,
       "panel|orders": 3
     },
     "hyp_tested": [],
@@ -3174,27 +3175,27 @@
       "C-243",
       "C-264",
       "C-265",
+      "C-266",
       "C-74",
       "C-99"
     ],
     "learned_queries": [
-      "unsorted execution",
-      "unsorted null-boundary",
       "unsorted technical",
       "unsorted scaling",
       "panel worth",
       "panel through-line",
       "panel underlying",
-      "panel claims"
+      "panel claims",
+      "panel recurs",
+      "panel single"
     ],
     "hyp_seen_cycle": {
-      "C-21": 17,
       "C-74": 25,
       "C-99": 21,
       "C-113": 15,
       "C-129": 19,
       "C-142": 23,
-      "C-158": 14,
+      "C-158": 30,
       "C-160": 16,
       "C-174": 18,
       "C-176": 20,
@@ -3218,7 +3219,8 @@
       "C-254": 27,
       "C-256": 28,
       "C-264": 28,
-      "C-265": 29
+      "C-265": 29,
+      "C-266": 30
     },
     "topics_domain_ok": [
       "agent",
@@ -3283,6 +3285,7 @@
       "C-256",
       "C-264",
       "C-265",
+      "C-266",
       "C-74",
       "C-99"
     ],
@@ -3308,8 +3311,8 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "steady",
-      "development": 6,
+      "verdict": "degenerating",
+      "development": 0,
       "degeneration": 1,
       "active": 144,
       "hypotheses": 30,
@@ -3318,25 +3321,25 @@
       "confirmed_claims": 0,
       "evidence_links": 47,
       "supporting_links": 47,
-      "emergent_total": 104,
+      "emergent_total": 106,
       "usable_semantic_rate": 1.0,
       "methods_total": 19,
       "method_trials_total": 156,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 2653,
-      "cycle": 29
+      "stagnation_cycles": 1,
+      "objects": 2661,
+      "cycle": 30
     },
     "vitality_prev": {
       "supports": 47,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 2653,
+      "objects": 2661,
       "active": 144,
       "links": 47,
-      "emergent": 104
+      "emergent": 106
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -3538,6 +3541,13 @@
         "cycle": 29,
         "verdict": "steady",
         "development": 6,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 30,
+        "verdict": "degenerating",
+        "development": 0,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
       }
@@ -11830,6 +11840,139 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:38+00:00",
+      "cycle": 30,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:39+00:00",
+      "cycle": 30,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:39+00:00",
+      "cycle": 30,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:41+00:00",
+      "cycle": 30,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:46+00:00",
+      "cycle": 30,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:47+00:00",
+      "cycle": 30,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:49+00:00",
+      "cycle": 30,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:51+00:00",
+      "cycle": 30,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'abundance' (Layer 9 synthesis-eligible, SC-193) from 4 claims (C-257, C-258, C-259, C-260)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:51+00:00",
+      "cycle": 30,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-266 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:51+00:00",
+      "cycle": 30,
+      "kind": "regulate",
+      "summary": "shed C-74: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:52+00:00",
+      "cycle": 30,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:53+00:00",
+      "cycle": 30,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-16T15:20:53+00:00",
+      "cycle": 30,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 1 emergent · shed 1 dead idea(s) · degenerating · spend €0.3240 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
@@ -11869,5 +12012,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-16T15:16:07+00:00"
+  "generated": "2026-06-16T15:20:53+00:00"
 }
