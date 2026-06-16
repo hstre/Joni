@@ -477,7 +477,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 89,
+    "starved_topic": 90,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -3629,6 +3629,7 @@
     "C-337|C-349",
     "C-338|C-348",
     "C-339|C-347",
+    "C-339|C-349",
     "C-341|C-348",
     "C-342|C-351",
     "C-347|C-349",
@@ -3744,6 +3745,7 @@
     "C-337|C-349@bge-small-en-v1.5",
     "C-338|C-348@bge-small-en-v1.5",
     "C-339|C-347@bge-small-en-v1.5",
+    "C-339|C-349@bge-small-en-v1.5",
     "C-341|C-348@bge-small-en-v1.5",
     "C-342|C-351@bge-small-en-v1.5",
     "C-347|C-349@bge-small-en-v1.5",
@@ -3876,6 +3878,7 @@
     "panel|quality",
     "panel|reasoning",
     "panel|reference",
+    "panel|regression",
     "panel|regulated",
     "panel|relevant",
     "panel|repository",
@@ -3934,7 +3937,7 @@
     "software"
   ],
   "emerge_insufficient": {
-    "panel|generate": 1
+    "panel|generate": 2
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
@@ -3982,17 +3985,16 @@
     "C-99"
   ],
   "learned_queries": [
-    "panel through-line",
-    "panel challenge",
     "panel panel",
     "panel recurs",
     "panel underlying",
     "panel worth",
     "panel reference",
-    "panel claims"
+    "panel claims",
+    "panel testing",
+    "panel across"
   ],
   "hyp_seen_cycle": {
-    "C-266": 79,
     "C-267": 79,
     "C-268": 80,
     "C-269": 80,
@@ -4017,12 +4019,13 @@
     "C-331": 90,
     "C-332": 91,
     "C-333": 92,
-    "C-334": 77,
+    "C-334": 93,
     "C-335": 77,
     "C-336": 78,
     "C-343": 82,
     "C-353": 91,
-    "C-354": 92
+    "C-354": 92,
+    "C-355": 93
   },
   "topics_domain_ok": [
     "agent",
@@ -4119,6 +4122,7 @@
     "C-343",
     "C-353",
     "C-354",
+    "C-355",
     "C-74",
     "C-99"
   ],
@@ -4146,8 +4150,8 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 6,
+    "verdict": "degenerating",
+    "development": 0,
     "degeneration": 1,
     "active": 196,
     "hypotheses": 30,
@@ -4156,25 +4160,25 @@
     "confirmed_claims": 0,
     "evidence_links": 62,
     "supporting_links": 62,
-    "emergent_total": 172,
+    "emergent_total": 173,
     "usable_semantic_rate": 1.0,
     "methods_total": 21,
     "method_trials_total": 172,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 3588,
-    "cycle": 92
+    "stagnation_cycles": 1,
+    "objects": 3602,
+    "cycle": 93
   },
   "vitality_prev": {
     "supports": 62,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3588,
+    "objects": 3602,
     "active": 196,
     "links": 62,
-    "emergent": 172
+    "emergent": 173
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -4817,6 +4821,13 @@
       "cycle": 92,
       "verdict": "steady",
       "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 93,
+      "verdict": "degenerating",
+      "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
     }
