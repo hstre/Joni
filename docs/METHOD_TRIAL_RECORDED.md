@@ -161,41 +161,52 @@ exercised verbatim in the tests, each with its `estimand` and `decision` block. 
 
 ## 3b. Rule-Evaluator (the verdict lives here, not in the validator)
 
-`evaluate_decision(ev, registry=DEFAULT_RULE_REGISTRY) -> {"status": ...}`:
+The canonical entry is **`evaluate_payload(payload, registry=DEFAULT_RULE_REGISTRY)`** — it runs on
+the **raw stored canonical payload dict**, *before* any live dataclass reconstruction.
+`evaluate_decision(ev, …)` is a thin wrapper over `evaluate_payload(ev.to_dict(), …)`.
 
-- the **evaluation artifact** is looked up by `(decision_rule_id, decision_rule_hash)`;
-- **unknown / non-reproducible hash → `"unverifiable"`** — no trustworthy verdict;
-- **every** component hash (rule, validator, input-contract, decoder, projection) is **re-derived
-  from the actual artifact and checked against the claim** before that component is trusted, and the
-  artifact's `schema_version` must equal the event's — any mismatch → `"unverifiable"`;
-- the artifact's **own** decoder projects the input, its **own** contract is applied, its **own**
-  validator re-checks the blocks, and its **own** rule recomputes the verdict; `"verified"` only if
-  all pass and the verdict matches, `"inconsistent"` if the contract is unmet, the validator rejects
-  the measurement, or the rule disagrees;
+- the **evaluation artifact** is looked up by `(decision_rule_id, decision_rule_hash)` read from the
+  raw payload; **unknown / non-reproducible hash → `"unverifiable"`**;
+- the artifact's `schema_version` must equal the **payload's** `schema_version` (read from the raw
+  payload, so the schema controls the very first deserialisation step) — mismatch → `"unverifiable"`;
+- **every** component hash (rule, validator, input-contract interpreter, decoder, projection) is
+  **re-derived from the actual artifact and checked against the claim** before that component is
+  trusted — any mismatch → `"unverifiable"`;
+- the artifact's **own** decoder is the **first deserialisation step** (run on the raw payload), its
+  **own** contract interpreter is applied, its **own** validator re-checks the decoded blocks, and
+  its **own** rule recomputes the verdict **from a view built solely out of the decoder output**;
+  `"verified"` only if all pass and the verdict matches, `"inconsistent"` if the contract is unmet,
+  the validator rejects the blocks, or the rule disagrees;
 - `"not_applicable"` when there is no real verdict to check.
 
-### The evaluation artifact (schema + decoder + contract + validator + rule, version-pinned)
+### The evaluation capsule (schema + decoder + contract + validator + rule, version-pinned)
 
-An event is never re-interpreted by *today's* code. Each registry entry is an `EvaluationArtifact`
-that binds the **whole** evaluation of an event under one version. **Every** hash is re-derived from
-the actual (byte-pinned for archived, live for current) component at use — claimed metadata can
-never attest a different executed component:
+An event is never re-interpreted by *today's* code, and the historical components carry **no live
+runtime dependency**. Each registry entry is an `EvaluationArtifact` that binds the **whole**
+evaluation under one version. **Every** hash is re-derived from the actual (byte-pinned for archived,
+live for current) component at use:
 
 | field | meaning |
 |---|---|
 | `rule_id` | logical rule name (`"rule_v2"`) |
-| `schema_version` | the event schema this artifact decodes; must equal the event's recorded version |
+| `schema_version` | the schema this artifact decodes; must equal the payload's recorded version |
 | `implementation_hash` | sha256 of the **rule** that decides the verdict — the registry key |
-| `validator_hash` | sha256 of the structural cross-block validator, re-derived and checked at use |
-| `input_contract_hash` | sha256 of the byte-pinned canonical-JSON input contract, applied at use |
-| `decoder_hash` | sha256 of the input decoder (event → block dicts), re-derived at use |
+| `validator_hash` | sha256 of the **self-contained** cross-block validator, re-derived at use |
+| `input_contract_hash` | sha256 of the **executable** contract interpreter, re-derived at use |
+| `decoder_hash` | sha256 of the input decoder (**raw payload** → block dicts), re-derived at use |
 | `canonical_input_projection_hash` | sha256 of the **key-schema** the decoder emits, re-checked from the actual decode |
 
-The **input contract** is not just stored — it is enforced before the validator/rule run:
-`require_effect`, `require_confidence_interval` and `required_measurement_fields` must be satisfied
-(unmet → `"inconsistent"`). The **decoder** (`_decode_v3`) is the single, versioned, hashed place
-that maps event fields to the validator/rule input, so a future change to the live projection never
-silently re-projects a historical event.
+The historical components are **self-contained**, so no live helper can silently change a historical
+result:
+
+- the **validator** snapshot carries its own `_finite`/`_ci_errors`/`_EPS` and imports — `_exec_callable`
+  injects **no** epistemically-relevant globals, so `validator_hash` covers the whole executable
+  closure;
+- the **contract** is an executable `check_contract(meas, dec, est)` interpreter (its *meaning* is
+  hashed, not just its data), applied before the validator/rule;
+- the **decoder** maps the **raw payload** to the canonical blocks and is the only input path — the
+  rule and validator see the decoder's output, never the live event object;
+- the **rule** decides from a read-only view built **only** from the decoder output.
 
 `DEFAULT_RULE_REGISTRY` is an **append-only, immutable** (`MappingProxyType`) catalog. A changed
 rule (or a tightened validator/contract/decoder) is **added** as a new artifact; an existing key is
@@ -203,16 +214,15 @@ never overwritten (`build_rule_registry` raises on a duplicate key). Two artifac
 
 - **live** (`make_live_artifact`) — bound to the current in-process functions; hashes track source.
 - **archived** (`make_archived_artifact`) — the rule, validator, contract **and** decoder are all
-  **byte-pinned verbatim source** (stored under `joni/autonomy/rule_artifacts/`). The
+  **byte-pinned, self-contained verbatim source** (under `joni/autonomy/rule_artifacts/`). The
   `implementation_hash` is the sha256 of the exact stored rule bytes — the **real prior-release
   hash**, *not* one recomputed from a re-typed copy. A pinned `expected_rule_hash` is enforced at
   construction, and every component hash is re-derived from its bytes at every use, so a forged
-  artifact (claimed hash, different code/contract) is rejected before its code is trusted. The
-  production catalog ships the archived r6 capsule (rule `sha256:2438455f…`, plus byte-pinned
-  validator, contract `{require_effect, require_confidence_interval}` and decoder snapshots)
-  alongside the current live `rule_v2`; an event recorded under the r6 hash is forever evaluated by
-  the r6 rule **and** the r6 validator/contract/decoder, and is never re-scored by the current
-  components.
+  artifact (claimed hash, different code/contract/decoder/validator) is rejected before its code is
+  trusted. The production catalog ships the archived r6 capsule (rule `sha256:2438455f…` +
+  byte-pinned self-contained validator, contract and decoder snapshots) alongside the current live
+  `rule_v2`; an event recorded under the r6 hash is forever evaluated by the r6 rule **and** its r6
+  validator/contract/decoder, and is never re-scored by the current components.
 
 The reference rule `rule_v2` (hashed by `RULE_V2_HASH`) is one registered implementation: oriented
 `effect_size` with a confidence interval — `harmful` if `eff ≤ −minimum_effect`; `success` if

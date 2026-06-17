@@ -8,29 +8,56 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `b0c5b34` (review round 11) |
-| **Superseded candidates** | `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `dddac93` (review round 12) |
+| **Superseded candidates** | `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 b0c5b34 -- src/desi_layer9 \
+git diff 282d541 dddac93 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `b0c5b34` and at this doc's commit.
+is byte-identical at `dddac93` and at this doc's commit.
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (535 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (540 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped this round** (`git archive b0c5b34`): `pytest -q` and
-> `ruff check .` run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets
-> `pythonpath = ["src"]`). The focused review subset is provided additionally.
+> **A full repository archive is shipped** (`git archive dddac93`): `pytest -q` and `ruff check .`
+> run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
+> The focused review subset is provided additionally.
+
+### Review round 12 — the evaluation capsule is causally CLOSED (vs `b0c5b34`)
+
+The historical bytes were stored, but were still assembled by current runtime glue. All four gaps
+are closed; the r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **Self-contained historical validator** — `cross_block_v1.pysrc` now carries its own
+   `_is_num`/`_finite`/`_ci_errors`/`_EPS` + imports; `_resolve_artifact` execs it with **no**
+   injected globals, so `validator_hash` covers the whole executable closure. Monkeypatching the
+   live `_finite`/`_EPS` leaves a historical verdict unchanged.
+2. **Rule decides from the decoder output, not the event** — `evaluate_payload` runs `rule_fn` on a
+   view built **only** from the decoder's `(measurement, decision, estimand)`; `rule_fn(ev)` is gone.
+   A decoder override flips the verdict, proving the rule/validator input is the decoder's.
+3. **Historical decoder runs first, on the raw payload** — `evaluate_payload(payload, registry)` is
+   the canonical entry: it reads `schema_version` from the raw payload, selects the artifact, and
+   applies the artifact's byte-pinned decoder (`decode_v3.pysrc`, now payload-driven) **before** any
+   live dataclass reconstruction. The projector evaluates the raw payload.
+4. **Contract interpreter is versioned and hashed** — the contract is now an executable
+   `check_contract(meas, dec, est)` (`contract_v2_r6.pysrc`, replacing the JSON + live
+   `_apply_input_contract`); `input_contract_hash` covers the interpreter bytes. A change to the live
+   interpreter cannot re-interpret a historical contract.
+
+New artifacts: self-contained `cross_block_v1.pysrc` (`ddc83e52…`), payload-driven `decode_v3.pysrc`
+(`f526051b…`), executable `contract_v2_r6.pysrc` (`f796d38b…`); `rule_v2_r6.pysrc` unchanged
+(`2438455f…`). Round-12 tests: validator self-containment under live-helper sabotage; validator-bytes
+tamper → `unverifiable`; rule-input-from-decoder; live contract-interpreter change does not affect the
+archived artifact; `evaluate_payload` on the raw stored payload.
 
 ### Review round 11 — validator, input-contract and schema/decoder are CAUSALLY bound (vs `37e5206`)
 
@@ -266,7 +293,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `b0c5b34`: **542 passed / 2 skipped with the `desi` extra; 535 passed / 7 skipped with
+Full suite at `dddac93`: **547 passed / 2 skipped with the `desi` extra; 540 passed / 7 skipped with
 `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -326,7 +353,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..b0c5b34` and this package.
+1. Review the diff `282d541..dddac93` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
