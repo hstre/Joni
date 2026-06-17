@@ -53,11 +53,12 @@ def _payload(trial_id, result, *, target="X17", scope="qtt", variant="v1", famil
         "attribution_level": "variant", "attribution_strength": "none",
         "execution_status": "completed", "protocol_status": "valid", "failure_kind": "none",
         "epistemic_result": result, "estimand": _est(min_effect),
+        # baseline/intervention are consistent with the effect; the CI lives in the measurement.
         "measurement": {"metric_name": "misclass", "baseline_value": 0.40,
-                        "intervention_value": 0.22, "effect_size": effect, "uncertainty": 0.03},
+                        "intervention_value": round(0.40 + effect, 6), "effect_size": effect,
+                        "uncertainty": 0.03, "confidence_interval": list(ci)},
         "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": rule_hash,
-                     "verdict": result, "effect_size": effect, "confidence_interval": list(ci),
-                     "minimum_effect": min_effect},
+                     "verdict": result},
     }
 
 
@@ -290,3 +291,23 @@ def test_threshold_override_projects_as_inconsistent():
     payload["decision"] = dict(payload["decision"], minimum_effect=0.10)   # lowered post-hoc
     e = project_trial_events(_StubCore([_env(payload, "MTE-1")]))["events"][0]
     assert e["decision_status"] == "inconsistent" and e["epistemic_weight"] == "none"
+
+
+# -- round 5: success on an unresolved measurement is never verified by the projector ------------ #
+def _unresolved_success(trial_id, **kw):
+    p = _payload(trial_id, "success", **kw)
+    p["measurement"] = dict(p["measurement"], uncertainty=100.0, confidence_interval=None)
+    return p
+
+
+def test_unresolved_success_projects_as_inconsistent_not_verified():
+    e = project_trial_events(_StubCore([_env(_unresolved_success("u", target="X1"), "MTE-1")]))
+    ev = e["events"][0]
+    assert ev["decision_status"] == "inconsistent" and ev["epistemic_weight"] == "none"
+
+
+def test_stale_rule_implementation_hash_projects_as_unverifiable():
+    p = _payload("s", "success")
+    p["decision"] = dict(p["decision"], decision_rule_hash="sha256:" + "0" * 64)
+    ev = project_trial_events(_StubCore([_env(p, "MTE-1")]))["events"][0]
+    assert ev["decision_status"] == "unverifiable" and ev["epistemic_weight"] == "none"

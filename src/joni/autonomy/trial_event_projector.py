@@ -54,7 +54,8 @@ def _record_from_payload(p: dict) -> MethodTrialRecorded:
     """Reconstruct a typed record from a stored canonical payload. Missing fields become explicit
     'unknown'/None - never a fabricated value."""
     est, dec, meas = p.get("estimand") or {}, p.get("decision") or {}, p.get("measurement") or {}
-    ci = dec.get("confidence_interval")
+    m_ci = meas.get("confidence_interval")
+    d_ci = dec.get("confidence_interval")
     return MethodTrialRecorded(
         trial_id=p.get("trial_id", ""), timestamp=p.get("timestamp", ""),
         ledger_tick=int(p.get("ledger_tick", 0) or 0),
@@ -82,12 +83,13 @@ def _record_from_payload(p: dict) -> MethodTrialRecorded:
         measurement=Measurement(
             metric_name=meas.get("metric_name"), baseline_value=meas.get("baseline_value"),
             intervention_value=meas.get("intervention_value"), effect_size=meas.get("effect_size"),
-            uncertainty=meas.get("uncertainty")),
+            uncertainty=meas.get("uncertainty"),
+            confidence_interval=tuple(m_ci) if m_ci else None),
         decision=Decision(
             decision_rule_id=dec.get("decision_rule_id", ""),
             decision_rule_hash=dec.get("decision_rule_hash", ""),
             verdict=dec.get("verdict", "not_evaluated"), effect_size=dec.get("effect_size"),
-            confidence_interval=tuple(ci) if ci else None,
+            confidence_interval=tuple(d_ci) if d_ci else None,
             minimum_effect=dec.get("minimum_effect")),
         confounders=tuple(p.get("confounders", ()) or ()))
 

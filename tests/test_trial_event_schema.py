@@ -20,18 +20,27 @@ from joni.autonomy.trial_event_schema import (
     migrate_method,
     validate,
 )
+from joni.autonomy.trial_event_schema import _cross_block_errors as _cross_block
 
 _EST = Estimand(outcome_metric="misclass_rate", direction="higher_is_better", minimum_effect=0.10,
                 decision_rule_id="rule_v2")
 
 
-def _meas(effect, unc=0.02, base=0.40, inter=0.30):
-    return Measurement("misclass_rate", base, inter, effect_size=effect, uncertainty=unc)
+def _meas(effect, unc=0.02, base=0.40, ci=None):
+    # baseline/intervention are kept consistent with the effect (higher_is_better,
+    # intervention_minus_baseline); the confidence interval (owned by the measurement) defaults to a
+    # tight, resolving interval around the effect.
+    inter = round(base + effect, 6)
+    if ci is None:
+        ci = (round(effect - unc, 6), round(effect + unc, 6))
+    return Measurement("misclass_rate", base, inter, effect_size=effect, uncertainty=unc,
+                       confidence_interval=ci)
 
 
-def _dec(verdict, effect, ci, mn=0.10):
-    return Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_HASH, verdict=verdict,
-                    effect_size=effect, confidence_interval=ci, minimum_effect=mn)
+def _dec(verdict, *_ignored, **_kw):
+    # the decision is now minimal: rule id + hash + verdict. It carries NO numbers / interval - the
+    # statistical evidence lives in the measurement. (Legacy positional args are accepted+ignored.)
+    return Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_HASH, verdict=verdict)
 
 
 def _ev(**kw) -> MethodTrialRecorded:
@@ -95,8 +104,7 @@ def test_rule_evaluator_decides_the_verdict_and_flags_inconsistency():
 def test_unknown_rule_hash_blocks_a_trustworthy_verdict():
     ev = _ev(epistemic_result="success", measurement=_meas(0.18),
              decision=Decision(decision_rule_id="rule_v2", decision_rule_hash="sha256:bogus",
-                               verdict="success", effect_size=0.18,
-                               confidence_interval=(0.12, 0.24), minimum_effect=0.10))
+                               verdict="success"))
     assert validate(ev) == []                      # structure is fine...
     assert evaluate_decision(ev)["status"] == "unverifiable"   # ...but verdict is not trustworthy
 
@@ -364,13 +372,10 @@ def test_two_independent_pure_harmful_variants_remain_demotable():
 
 # -- verified must reflect the MEASUREMENT, not the decision's own duplicated numbers ------------ #
 def test_decision_contradicting_measurement_is_inconsistent():
-    # measurement says -0.20 (worse), decision claims +0.20 success -> must be inconsistent.
-    ev = _ev(epistemic_result="success",
-             measurement=Measurement("misclass_rate", 0.40, 0.60, effect_size=-0.20,
-                                      uncertainty=0.02),
+    # the measurement says -0.20 (worse); a decision that mirrors +0.20 must be inconsistent.
+    ev = _ev(epistemic_result="success", measurement=_meas(-0.20),
              decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_HASH,
-                               verdict="success", effect_size=0.20,
-                               confidence_interval=(0.12, 0.28), minimum_effect=0.10))
+                               verdict="success", effect_size=0.20))
     assert evaluate_decision(ev)["status"] == "inconsistent"
 
 
@@ -380,16 +385,15 @@ def test_decision_overriding_preregistered_threshold_is_inconsistent():
                                minimum_effect=0.50, decision_rule_id="rule_v2"),
              measurement=_meas(0.20),
              decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_HASH,
-                               verdict="success", effect_size=0.20,
-                               confidence_interval=(0.12, 0.28), minimum_effect=0.10))
+                               verdict="success", minimum_effect=0.10))
     assert evaluate_decision(ev)["status"] == "inconsistent"
 
 
 def test_metric_name_mismatch_is_inconsistent():
     ev = _ev(epistemic_result="success",
-             measurement=Measurement("other_metric", 0.40, 0.22, effect_size=0.20,
-                                      uncertainty=0.02),
-             decision=_dec("success", 0.20, (0.12, 0.28)))
+             measurement=Measurement("other_metric", 0.40, 0.60, effect_size=0.20,
+                                      uncertainty=0.02, confidence_interval=(0.18, 0.22)),
+             decision=_dec("success"))
     assert evaluate_decision(ev)["status"] == "inconsistent"
 
 
@@ -405,3 +409,81 @@ def test_verdict_is_computed_from_measurement_not_decision_number():
     ev = _ev(epistemic_result="success", measurement=_meas(0.20),
              decision=_dec("success", 0.20, (0.12, 0.28)))
     assert evaluate_decision(ev)["computed"] == "success"
+
+
+# -- round 5: verified must be bound to the actual observation ----------------------------------- #
+def test_success_needs_interval_resolution_not_a_bare_point_estimate():
+    # effect over the threshold, but HUGE uncertainty and NO confidence interval -> inconclusive,
+    # so a claimed success is inconsistent, never verified.
+    ev = _ev(epistemic_result="success",
+             measurement=Measurement("misclass_rate", 0.40, 0.60, effect_size=0.20,
+                                      uncertainty=100.0, confidence_interval=None),
+             decision=_dec("success"))
+    from joni.autonomy.trial_event_schema import _rule_v2
+    assert _rule_v2(ev) == "inconclusive"
+    assert evaluate_decision(ev)["status"] == "inconsistent"
+
+
+def test_harmful_unresolved_point_estimate_is_not_verified():
+    ev = _ev(epistemic_result="harmful",
+             measurement=Measurement("misclass_rate", 0.60, 0.40, effect_size=-0.20,
+                                      uncertainty=100.0, confidence_interval=None),
+             decision=_dec("harmful"))
+    assert evaluate_decision(ev)["status"] == "inconsistent"
+
+
+def test_interval_fully_beyond_zero_verifies():
+    ev = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+             decision=_dec("success"))
+    assert evaluate_decision(ev)["status"] == "verified"
+
+
+def test_decision_supplied_interval_is_rejected_as_inconsistent():
+    # the favourable interval lives in the DECISION while the measurement has huge uncertainty and
+    # no interval -> the decision may not supply its own statistical justification.
+    ev = _ev(epistemic_result="success",
+             measurement=Measurement("misclass_rate", 0.40, 0.60, effect_size=0.20,
+                                      uncertainty=100.0, confidence_interval=None),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_HASH,
+                               verdict="success", confidence_interval=(0.10, 0.30)))
+    assert evaluate_decision(ev)["status"] == "inconsistent"
+
+
+def test_baseline_intervention_must_imply_the_stored_effect():
+    # baseline 0.40, intervention 0.20 under higher_is_better imply -0.20, but +0.20 is stored.
+    ev = _ev(epistemic_result="success",
+             measurement=Measurement("misclass_rate", 0.40, 0.20, effect_size=0.20,
+                                      uncertainty=0.02, confidence_interval=(0.18, 0.22)),
+             decision=_dec("success"))
+    assert any("inconsistent with baseline/intervention" in e for e in _cross_block(ev))
+
+
+def test_lower_is_better_orientation_is_consistent():
+    # lower_is_better: a DROP from 0.40 to 0.20 is an improvement of +0.20 (oriented positive).
+    ev = _ev(epistemic_result="success",
+             estimand=Estimand(outcome_metric="m", contrast="intervention_minus_baseline",
+                               direction="lower_is_better", minimum_effect=0.10,
+                               decision_rule_id="rule_v2"),
+             measurement=Measurement("m", 0.40, 0.20, effect_size=0.20, uncertainty=0.02,
+                                      confidence_interval=(0.18, 0.22)),
+             decision=_dec("success"))
+    assert _cross_block(ev) == [] and evaluate_decision(ev)["status"] == "verified"
+
+
+def test_rule_hash_binds_to_the_actual_implementation():
+    import hashlib
+    import inspect
+
+    from joni.autonomy import trial_event_schema as s
+    expected = "sha256:" + hashlib.sha256(inspect.getsource(s._rule_v2).encode("utf-8")).hexdigest()
+    assert expected == s.RULE_V2_HASH and expected == s.RULE_V2_IMPL_HASH
+    # the descriptor (spec) hash is a SEPARATE attestation, not the binding one.
+    assert s.RULE_V2_SPEC_HASH != s.RULE_V2_IMPL_HASH
+
+
+def test_registry_rejects_an_implementation_hash_mismatch():
+    # an event citing rule_v2 but a stale/forged implementation hash is unverifiable, not verified.
+    ev = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+             decision=Decision(decision_rule_id="rule_v2",
+                               decision_rule_hash="sha256:" + "0" * 64, verdict="success"))
+    assert evaluate_decision(ev)["status"] == "unverifiable"

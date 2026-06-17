@@ -38,11 +38,11 @@ def _payload(**kw):
         "estimand": {"outcome_metric": "misclass", "contrast": "intervention_minus_baseline",
                      "direction": "higher_is_better", "minimum_effect": 0.10,
                      "decision_rule_id": "rule_v2"},
-        "measurement": {"metric_name": "misclass", "baseline_value": 0.4,
-                        "intervention_value": 0.39, "effect_size": 0.04, "uncertainty": 0.02},
+        "measurement": {"metric_name": "misclass", "baseline_value": 0.40,
+                        "intervention_value": 0.44, "effect_size": 0.04, "uncertainty": 0.02,
+                        "confidence_interval": [0.02, 0.06]},
         "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": "sha256:test",
-                     "verdict": "no_benefit", "effect_size": 0.04,
-                     "confidence_interval": [0.01, 0.07], "minimum_effect": 0.10},
+                     "verdict": "no_benefit"},
     }
     p.update(kw)
     if "decision" not in kw:

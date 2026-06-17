@@ -66,36 +66,81 @@ def _finite(v) -> bool:
     return _is_num(v) and math.isfinite(v)
 
 
-def cross_block_consistency(*, metric_name, outcome_metric, m_effect, d_effect, m_uncertainty,
-                            est_min, d_min, ci, is_real: bool) -> list[str]:
+_EPS = 1e-9
+
+
+def _ci_errors(label: str, ci) -> list[str]:
+    if ci is None:
+        return []
+    if not (isinstance(ci, (list, tuple)) and len(ci) == 2 and all(_finite(x) for x in ci)):
+        return [f"{label} must be a finite [low, high] pair"]
+    if ci[0] > ci[1]:
+        return [f"{label} lower bound must be <= upper bound"]
+    return []
+
+
+def cross_block_consistency(measurement: dict, decision: dict, estimand: dict, *,
+                            is_real: bool, has_effect_derivation: bool = False) -> list[str]:
     """The ONE canonical structural-consistency check shared by the gate AND the rule evaluator.
-    It guarantees the decision block cannot CONTRADICT the stored measurement or silently OVERRIDE
-    the pre-registered estimand threshold, and that the numbers are finite and well-ordered. It does
-    NOT compute the verdict (no statistics) - only equalities, ranges and finiteness."""
+
+    It binds ``verified`` to the actual OBSERVATION: the statistical evidence (effect, uncertainty,
+    confidence interval) lives in the MEASUREMENT; the decision block is non-authoritative and may
+    only MIRROR it, never diverge; the measurement is internally consistent (effect derived from the
+    raw values under the contrast/direction, and lying within its own interval); and all numbers are
+    finite and well-ordered. It computes NO verdict (no statistics) - only equalities, ranges,
+    finiteness and the deterministic effect derivation."""
     errs: list[str] = []
-    for name, v in (("measurement.effect_size", m_effect),
-                    ("measurement.uncertainty", m_uncertainty),
-                    ("estimand.minimum_effect", est_min), ("decision.effect_size", d_effect),
+    m_eff, m_unc, m_ci = (measurement.get("effect_size"), measurement.get("uncertainty"),
+                          measurement.get("confidence_interval"))
+    base, inter = measurement.get("baseline_value"), measurement.get("intervention_value")
+    d_eff, d_min, d_ci = (decision.get("effect_size"), decision.get("minimum_effect"),
+                          decision.get("confidence_interval"))
+    est_min, contrast = estimand.get("minimum_effect"), estimand.get("contrast")
+    direction = estimand.get("direction")
+
+    for name, v in (("measurement.effect_size", m_eff), ("measurement.uncertainty", m_unc),
+                    ("measurement.baseline_value", base), ("measurement.intervention_value", inter),
+                    ("estimand.minimum_effect", est_min), ("decision.effect_size", d_eff),
                     ("decision.minimum_effect", d_min)):
         if v is not None and not _finite(v):
             errs.append(f"{name} must be a finite number (no NaN/Infinity)")
-    if ci is not None:
-        if not (isinstance(ci, (list, tuple)) and len(ci) == 2 and all(_finite(x) for x in ci)):
-            errs.append("confidence_interval must be a finite [low, high] pair")
-        elif ci[0] > ci[1]:
-            errs.append("confidence_interval lower bound must be <= upper bound")
-    if m_uncertainty is not None and _finite(m_uncertainty) and m_uncertainty < 0:
+    errs += _ci_errors("measurement.confidence_interval", m_ci)
+    errs += _ci_errors("decision.confidence_interval", d_ci)
+    if m_unc is not None and _finite(m_unc) and m_unc < 0:
         errs.append("measurement.uncertainty must be >= 0")
-    # the decision may NOT change the pre-registered threshold.
+    if errs:
+        return errs
+
+    # the statistical interval belongs to the MEASUREMENT; the decision may only mirror it.
+    if d_ci is not None:
+        if m_ci is None:
+            errs.append("confidence_interval must live in the measurement, not the decision")
+        elif list(d_ci) != list(m_ci):
+            errs.append("decision.confidence_interval must equal measurement.confidence_interval "
+                        "(the decision may not supply its own interval)")
+    # the decision may not change the pre-registered threshold or contradict the measured effect.
     if d_min is not None and est_min is not None and d_min != est_min:
         errs.append("decision.minimum_effect must equal estimand.minimum_effect "
                     "(no post-hoc threshold change)")
+    if d_eff is not None and m_eff is not None and d_eff != m_eff:
+        errs.append("decision.effect_size must equal measurement.effect_size "
+                    "(the decision may not contradict the measurement)")
+    # the effect must lie within its own interval.
+    if m_ci is not None and m_eff is not None and not (m_ci[0] - _EPS <= m_eff <= m_ci[1] + _EPS):
+        errs.append("measurement.effect_size must lie within measurement.confidence_interval")
+    # the measurement must be internally consistent: effect derived from the raw values.
+    if base is not None and inter is not None and m_eff is not None:
+        if contrast == "intervention_minus_baseline":
+            oriented = (inter - base) if direction == "higher_is_better" else (base - inter)
+            if abs(m_eff - oriented) > 1e-6:
+                errs.append("measurement.effect_size is inconsistent with baseline/intervention "
+                            "under the estimand contrast/direction")
+        elif is_real and not has_effect_derivation:
+            errs.append(f"contrast '{contrast}' requires an effect_derivation (id + hash) to "
+                        "verify the effect against the raw values")
     if is_real:
-        # the decision may NOT contradict the stored measurement.
-        if d_effect is not None and m_effect is not None and d_effect != m_effect:
-            errs.append("decision.effect_size must equal measurement.effect_size "
-                        "(the decision may not contradict the measurement)")
-        if metric_name is not None and outcome_metric and metric_name != outcome_metric:
+        m_name, o_metric = measurement.get("metric_name"), estimand.get("outcome_metric")
+        if m_name is not None and o_metric and m_name != o_metric:
             errs.append("measurement.metric_name must equal estimand.outcome_metric")
         if est_min is not None and (not _finite(est_min) or est_min <= 0):
             errs.append("estimand.minimum_effect must be > 0 for a real result")
@@ -186,10 +231,12 @@ def validate_trial_payload(p: dict) -> list[str]:
     for k in ("effect_size", "minimum_effect"):
         if dec.get(k) is not None and not _is_num(dec[k]):
             errs.append(f"decision.{k} must be numeric or null")
-    ci = dec.get("confidence_interval")
-    if ci is not None and not (isinstance(ci, (list, tuple)) and len(ci) == 2
-                               and all(_is_num(x) for x in ci)):
-        errs.append("decision.confidence_interval must be null or a [low, high] pair of numbers")
+    for blk, key in ((dec, "decision.confidence_interval"),
+                     (meas, "measurement.confidence_interval")):
+        ci = blk.get("confidence_interval")
+        if ci is not None and not (isinstance(ci, (list, tuple)) and len(ci) == 2
+                                   and all(_is_num(x) for x in ci)):
+            errs.append(f"{key} must be null or a [low, high] pair of numbers")
     if "affinities" in p and not (isinstance(p["affinities"], list)
                                   and all(isinstance(a, str) for a in p["affinities"])):
         errs.append("affinities must be a list of strings")
@@ -240,10 +287,7 @@ def validate_trial_payload(p: dict) -> list[str]:
                 est["decision_rule_id"] != dec["decision_rule_id"]:
             errs.append("decision.decision_rule_id must match estimand.decision_rule_id")
 
-    # cross-block consistency + numeric/interval invariants (decision vs measurement vs estimand).
+    # cross-block consistency + numeric/interval invariants + measurement-internal derivation.
     errs += cross_block_consistency(
-        metric_name=meas.get("metric_name"), outcome_metric=est.get("outcome_metric"),
-        m_effect=meas.get("effect_size"), d_effect=dec.get("effect_size"),
-        m_uncertainty=meas.get("uncertainty"), est_min=est.get("minimum_effect"),
-        d_min=dec.get("minimum_effect"), ci=dec.get("confidence_interval"), is_real=real)
+        meas, dec, est, is_real=real, has_effect_derivation=bool(p.get("effect_derivation")))
     return errs

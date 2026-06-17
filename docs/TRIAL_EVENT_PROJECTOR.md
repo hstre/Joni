@@ -10,12 +10,19 @@ connection from the *stored* event to *external* epistemic evaluation.
    (`success_count` …) are **never** re-read as scope-bound trial history.
 2. Envelope, `schema_version`, `record_authority` and `epistemic_authority` are evaluated
    **separately** from the reported payload.
-3. Decision verdicts are verified by the **registered, versioned** rule (`decision_rule_id` +
-   `decision_rule_hash`) via `trial_event_schema.evaluate_decision`, which computes the verdict
-   from the **stored measurement** against the **pre-registered estimand threshold** — never from
-   the decision block's own duplicated numbers. A decision that contradicts the measurement, or
-   overrides `minimum_effect`, is `inconsistent` — never `verified`; an unknown/non-reproducible
-   hash → `unverifiable`. The one canonical `cross_block_consistency` (in
+3. Decision verdicts are verified by the **registered** rule via
+   `trial_event_schema.evaluate_decision`, which computes the verdict **entirely from the stored
+   measurement** (effect, uncertainty, **measurement-owned confidence interval**) against the
+   **pre-registered estimand threshold** — never from the decision block, which is reduced to
+   `{decision_rule_id, decision_rule_hash, verdict}` (any mirror number must equal the measurement,
+   and the decision may **not** supply its own interval). A `success`/`harmful` requires the
+   interval to **resolve** the direction beyond zero — a bare point estimate with huge/None
+   uncertainty is `inconclusive`. The measurement must be internally consistent (effect derived
+   from baseline/intervention under the contrast/direction, and lying within its own interval). A
+   contradiction / threshold override / decision-supplied interval / unresolved measurement is
+   `inconsistent`; a `decision_rule_hash` that does not match the registered **implementation hash**
+   (the sha256 of the rule's own source) is `unverifiable` — so editing the rule rotates the hash
+   and old events do not silently re-verify. The one canonical `cross_block_consistency` (in
    `desi_layer9.trial_event_validation`) is shared by the gate and the rule evaluator, so the two
    cannot drift.
 4. The independence policy is applied **versioned** (`attribute_to_affinity`, carrying `policy_id`).

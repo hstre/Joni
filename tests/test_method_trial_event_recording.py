@@ -35,12 +35,11 @@ def _full_v3(**kw):
         "estimand": {"outcome_metric": "misclass", "contrast": "intervention_minus_baseline",
                      "direction": "higher_is_better", "minimum_effect": 0.10,
                      "decision_rule_id": "rule_v2"},
-        "measurement": {"metric_name": "misclass", "baseline_value": 0.4,
-                        "intervention_value": 0.39, "effect_size": 0.04, "uncertainty": 0.02,
-                        "nested": {"runs": [1, 2, 3]}},
+        "measurement": {"metric_name": "misclass", "baseline_value": 0.40,
+                        "intervention_value": 0.44, "effect_size": 0.04, "uncertainty": 0.02,
+                        "confidence_interval": [0.02, 0.06], "nested": {"runs": [1, 2, 3]}},
         "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": "sha256:test",
-                     "verdict": "no_benefit", "effect_size": 0.04,
-                     "confidence_interval": [0.01, 0.07], "minimum_effect": 0.10},
+                     "verdict": "no_benefit"},
     }
     p.update(kw)
     if "decision" not in kw:                         # keep the recorded verdict consistent
@@ -439,3 +438,39 @@ def test_metric_name_not_matching_estimand_is_rejected():
     p["measurement"] = dict(p["measurement"], metric_name="other_metric")
     d = _record(core, p)
     assert not d.accepted and "metric_name must equal" in d.reason
+
+
+# -- round 5: measurement owns the interval; raw values must imply the effect -------------------- #
+def test_decision_supplied_confidence_interval_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"])
+    p["measurement"].pop("confidence_interval", None)
+    p["decision"] = dict(p["decision"], confidence_interval=[0.02, 0.06])   # interval in DECISION
+    d = _record(core, p)
+    assert not d.accepted and "confidence_interval must live in the measurement" in d.reason
+
+
+def test_decision_interval_diverging_from_measurement_is_rejected():
+    core = _core()
+    p = _payload()
+    p["decision"] = dict(p["decision"], confidence_interval=[0.10, 0.30])   # != measurement CI
+    d = _record(core, p)
+    assert not d.accepted and "must equal measurement.confidence_interval" in d.reason
+
+
+def test_effect_not_implied_by_baseline_intervention_is_rejected():
+    core = _core()
+    p = _payload()
+    # baseline 0.40, intervention 0.20 imply -0.20 (higher_is_better) but +0.04 is stored.
+    p["measurement"] = dict(p["measurement"], baseline_value=0.40, intervention_value=0.20)
+    d = _record(core, p)
+    assert not d.accepted and "inconsistent with baseline/intervention" in d.reason
+
+
+def test_effect_outside_its_confidence_interval_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"], confidence_interval=[0.20, 0.40])  # 0.04 not inside
+    d = _record(core, p)
+    assert not d.accepted and "must lie within" in d.reason

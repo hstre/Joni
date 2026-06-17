@@ -29,6 +29,7 @@ method_variant x target x scope, never to an affinity.
 from __future__ import annotations
 
 import hashlib
+import inspect
 from dataclasses import dataclass, field
 
 SCHEMA_VERSION = "method_trial_recorded_v3"
@@ -72,6 +73,8 @@ class Measurement:
     intervention_value: float | None = None
     effect_size: float | None = None
     uncertainty: float | None = None
+    # The statistical interval belongs to the MEASUREMENT (the observation), never the decision.
+    confidence_interval: tuple[float, float] | None = None
 
 
 @dataclass(frozen=True)
@@ -178,7 +181,8 @@ class MethodTrialRecorded:
             "failure_kind": self.failure_kind, "epistemic_result": self.epistemic_result,
             "measurement": {"metric_name": m.metric_name, "baseline_value": m.baseline_value,
                             "intervention_value": m.intervention_value,
-                            "effect_size": m.effect_size, "uncertainty": m.uncertainty},
+                            "effect_size": m.effect_size, "uncertainty": m.uncertainty,
+                            "confidence_interval": m.confidence_interval},
             "decision": {"decision_rule_id": d.decision_rule_id,
                          "decision_rule_hash": d.decision_rule_hash, "verdict": d.verdict,
                          "effect_size": d.effect_size, "confidence_interval": d.confidence_interval,
@@ -301,78 +305,100 @@ def validate_or_raise(ev: MethodTrialRecorded) -> MethodTrialRecorded:
 
 # ================================================================================================ #
 # RULE-EVALUATOR - the epistemic verdict lives here, keyed by (decision_rule_id, rule_hash),
-# OUT of the generic validator. The validator checks structure; this checks whether the numbers
-# justify the verdict. An unknown/non-reproducible hash yields "unverifiable" - no trustworthy
-# verdict.
+# OUT of the generic validator. The verdict is computed ENTIRELY from the MEASUREMENT (effect,
+# uncertainty, confidence interval) against the PRE-REGISTERED estimand - never from the decision
+# block's own numbers, and never from a decision-supplied interval. The rule hash is bound to the
+# actual IMPLEMENTATION (source), so a code change rotates the hash and old events do not silently
+# re-verify under new logic. An unknown/non-reproducible hash yields "unverifiable".
 # ================================================================================================ #
-# v3 (round 4): the rule evaluates the stored MEASUREMENT against the pre-registered ESTIMAND
-# threshold - NOT the decision block's own duplicated numbers. So the descriptor (and hence the
-# hash) reflect that the verdict's SOURCE is the measurement, not self-referential metadata.
-_RULE_V2_DESCRIPTOR = ("rule_v2|source=measurement.effect_size|threshold=estimand.minimum_effect|"
-                       "oriented_positive_is_better|harmful:eff<=-min|success:eff>=min&ci_lower>0|"
-                       "no_benefit:resolved&abs(eff)<min|else:inconclusive")
-RULE_V2_HASH = "sha256:" + hashlib.sha256(_RULE_V2_DESCRIPTOR.encode()).hexdigest()
-
-
 def _rule_v2(ev: MethodTrialRecorded) -> str:
-    """Reference decision rule. The verdict is computed from the STORED MEASUREMENT and the
-    PRE-REGISTERED estimand threshold - never from the decision block's own duplicated numbers (a
-    decision cannot verify itself). ``effect_size`` is oriented so positive == better."""
-    eff = ev.measurement.effect_size
-    mn = ev.estimand.minimum_effect                  # ALWAYS the pre-registered threshold
+    """Reference decision rule. Reads effect, uncertainty AND the confidence interval from the
+    MEASUREMENT (the observation), and the threshold from the pre-registered estimand. A real
+    success/harmful requires the interval to RESOLVE the direction beyond zero - a bare point
+    estimate with no/huge uncertainty is ``inconclusive``, never a verified success."""
+    m, est = ev.measurement, ev.estimand
+    eff, mn, ci = m.effect_size, est.minimum_effect, m.confidence_interval
     if eff is None or mn is None or mn <= 0:
         return "not_evaluated"
-    ci = ev.decision.confidence_interval
-    unc = ev.measurement.uncertainty
-    if ci is not None:
-        resolved = not (ci[0] <= 0 <= ci[1])         # CI excludes 0
-    elif unc is not None:
-        resolved = abs(eff) > unc
-    else:
-        resolved = False
-    if eff <= -mn:
+    if ci is None:                                   # no interval -> cannot resolve a direction
+        return "inconclusive"
+    lo, hi = ci
+    excludes_zero = not (lo <= 0 <= hi)
+    if eff <= -mn and hi < 0:                         # interval entirely below zero (worse)
         return "harmful"
-    if eff >= mn and (ci is None or ci[0] > 0):
+    if eff >= mn and lo > 0:                          # interval entirely above zero (better)
         return "success"
-    if resolved and abs(eff) < mn:
+    if excludes_zero and abs(eff) < mn:              # resolved, but below the relevant threshold
         return "no_benefit"
     return "inconclusive"
 
 
-DEFAULT_RULE_REGISTRY: dict[tuple[str, str], object] = {("rule_v2", RULE_V2_HASH): _rule_v2}
+# The rule hash is the sha256 of the rule's own SOURCE (its executable spec), plus a human spec
+# hash. Editing _rule_v2 rotates ``RULE_V2_IMPL_HASH`` automatically, so a changed implementation
+# can never masquerade as the same reproducible rule under an unchanged descriptor.
+_RULE_V2_DESCRIPTOR = ("rule_v2|source=measurement(effect,uncertainty,ci)|"
+                       "threshold=estimand.minimum_effect|require_ci_resolution|"
+                       "harmful:eff<=-min&ci_hi<0|success:eff>=min&ci_lo>0|"
+                       "no_benefit:ci_excludes_0&abs(eff)<min|else:inconclusive")
+RULE_V2_SPEC_HASH = "sha256:" + hashlib.sha256(_RULE_V2_DESCRIPTOR.encode()).hexdigest()
+RULE_V2_IMPL_HASH = "sha256:" + hashlib.sha256(
+    inspect.getsource(_rule_v2).encode("utf-8")).hexdigest()
+RULE_V2_HASH = RULE_V2_IMPL_HASH                     # the event's decision_rule_hash binds to code
+
+
+@dataclass(frozen=True)
+class RuleEntry:
+    """A registered rule artefact: the executable ``fn`` plus the hashes that attest WHICH spec and
+    WHICH implementation it is. An event verifies only if its ``decision_rule_hash`` matches
+    ``implementation_hash`` - so old events stay bound to the rule version that produced them."""
+
+    rule_id: str
+    spec_hash: str
+    implementation_hash: str
+    fn: object
+
+
+DEFAULT_RULE_REGISTRY: dict[tuple[str, str], RuleEntry] = {
+    ("rule_v2", RULE_V2_HASH): RuleEntry("rule_v2", RULE_V2_SPEC_HASH, RULE_V2_IMPL_HASH, _rule_v2),
+}
 
 
 def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
     """Reuse the ONE canonical consistency check (decision vs measurement vs estimand)."""
     from desi_layer9.trial_event_validation import cross_block_consistency
     m, d, e = ev.measurement, ev.decision, ev.estimand
-    return cross_block_consistency(
-        metric_name=m.metric_name, outcome_metric=e.outcome_metric, m_effect=m.effect_size,
-        d_effect=d.effect_size, m_uncertainty=m.uncertainty, est_min=e.minimum_effect,
-        d_min=d.minimum_effect, ci=d.confidence_interval, is_real=True)
+    meas = {"metric_name": m.metric_name, "baseline_value": m.baseline_value,
+            "intervention_value": m.intervention_value, "effect_size": m.effect_size,
+            "uncertainty": m.uncertainty, "confidence_interval": m.confidence_interval}
+    dec = {"effect_size": d.effect_size, "minimum_effect": d.minimum_effect,
+           "confidence_interval": d.confidence_interval}
+    est = {"outcome_metric": e.outcome_metric, "contrast": e.contrast, "direction": e.direction,
+           "minimum_effect": e.minimum_effect}
+    return cross_block_consistency(meas, dec, est, is_real=True)
 
 
 def evaluate_decision(ev: MethodTrialRecorded, registry: dict | None = None) -> dict:
     """Check whether the stored MEASUREMENT (against the pre-registered estimand) justifies the
     claimed verdict. ``status`` in {"verified", "inconsistent", "unverifiable", "not_applicable"}.
-    A decision that contradicts the measurement or overrides the threshold is ``inconsistent`` -
-    never ``verified``."""
+    A decision that contradicts the measurement, overrides the threshold, supplies its own interval,
+    or rests on an unresolved measurement is ``inconsistent``/``inconclusive`` - never ``verified``;
+    a hash that does not match a registered IMPLEMENTATION is ``unverifiable``."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
     d = ev.decision
     if ev.epistemic_result not in _REAL_RESULTS:
         return {"status": "not_applicable", "reason": "no real verdict to evaluate"}
-    # (1) the decision may not contradict the measurement / override the threshold / be ill-formed.
+    # (1) structural consistency: decision may not contradict / override / supply its own interval.
     xb = _cross_block_errors(ev)
     if xb:
         return {"status": "inconsistent", "reason": "; ".join(xb)}
-    # (2) the rule must be registered/reproducible.
-    rule = reg.get((d.decision_rule_id, d.decision_rule_hash))
-    if rule is None:
+    # (2) the rule must be registered AND its hash must match the executed implementation.
+    entry = reg.get((d.decision_rule_id, d.decision_rule_hash))
+    if entry is None or entry.implementation_hash != d.decision_rule_hash:
         return {"status": "unverifiable",
-                "reason": f"decision rule '{d.decision_rule_id}'@'{d.decision_rule_hash}' is not "
-                          "registered/reproducible - no trustworthy verdict"}
+                "reason": f"decision rule '{d.decision_rule_id}'@'{d.decision_rule_hash}' is not a "
+                          "registered/reproducible implementation - no trustworthy verdict"}
     # (3) the rule's verdict (from the MEASUREMENT) must match both the decision and the result.
-    computed = rule(ev)
+    computed = entry.fn(ev)
     if computed != d.verdict or computed != ev.epistemic_result:
         return {"status": "inconsistent", "computed": computed, "claimed": d.verdict,
                 "reason": f"rule computes '{computed}' from the measurement, event claims "
