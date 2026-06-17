@@ -8,20 +8,37 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `60a77c9e6e64cbd57f391ea223eac443d2b58538` (review round 8) |
-| **Superseded candidates** | `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `41bc8a4596d1fbfba2e708714b97c5c402ddda1a` (review round 9) |
+| **Superseded candidates** | `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 60a77c9 -- src/desi_layer9 \
+git diff 282d541 41bc8a4 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `60a77c9` and at this doc's commit.
+is byte-identical at `41bc8a4` and at this doc's commit.
+
+> **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
+> **blocked** (520 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
+
+### Review round 9 — DESi-independent suite + operational classes + real rule catalog (vs `60a77c9`)
+
+1. **Base suite is DESi-independent** — the one DESi-mapping test `importorskip`s the extra; the
+   suite is green with `desi` blocked.
+2. **Operational classification** — `_operational_class`: `failed → technical_failure`,
+   `cancelled → cancelled`, `invalid protocol → protocol_invalid`,
+   `completed+valid+not_evaluated → unevaluated`, else `unknown_operational`; none feed attribution.
+3. **Real append-only catalog** — `DEFAULT_RULE_REGISTRY` keeps an archived frozen version
+   (`_rule_v2_archived_r6`) alongside the current rule; an old event verifies under its archived
+   version via the production registry and is never re-interpreted under the current one.
+4. **Docs corrected** — `METHOD_TRIAL_RECORDED.md` now documents
+   `verify_events → VerifiedTrialEvidence → aggregate` and the separate `operational_observations`.
 
 ### Review round 8 — evidence re-attestation + inconclusive + historical rules + operational (vs `b91a80f`)
 
