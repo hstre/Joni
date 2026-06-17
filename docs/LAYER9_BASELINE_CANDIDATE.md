@@ -8,26 +8,66 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `5e385a8` (review round 19) |
-| **Superseded candidates** | `6fe3020` (r18) · `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `8412040` (review round 20) |
+| **Superseded candidates** | `5e385a8` (r19) · `6fe3020` (r18) · `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 5e385a8 -- src/desi_layer9 \
+git diff 282d541 8412040 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (597 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (604 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive 5e385a8`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive 8412040`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 20 — the WHOLE public state surface is immutable + an AUTHENTICATED migration trust source (vs `5e385a8`)
+
+Round 19 was rejected on two grounds that proved *"submit is still not the only write path"* and
+*"the migration attestation is still a self-declared claim"*. Both fully closed; the r6 rule hash is
+unchanged (`sha256:2438455f…`).
+
+1. **`core.objects` no longer exposes internal instances.** It was a `MappingProxyType` over the live
+   store — it froze the keys but handed back the **real** objects, so `core.objects[id].status = …`
+   or `core.objects[id].payload[…] = …` mutated authoritative state and the snapshot hash. The
+   `objects` property now returns a read-only mapping of **deep copies**; integrity hashing reads the
+   internal `_objects` directly (no copy).
+2. **The ledger is fully encapsulated.** It was a public mutable list (`core.ledger.clear()` wiped the
+   audit trail; events were editable). The store is now the internal `_ledger`; the public `ledger`
+   property is an **immutable tuple of deep-copied events**; `verify_chain` works on `_ledger`. A
+   returned event cannot reach the chain; storage-level corruption is still detected.
+3. **The clock and the minter are no longer public write surfaces.** `tick` is a **read-only**
+   property over `_tick`; the only clock input is the **monotonic** `set_clock()` (it advances, never
+   moves backward — replay determinism), used by the orchestrator's `set_day`. The id minter is
+   private `_minter` and `_seq` stays private: no public handle mints ids or shifts the sequence
+   outside `submit()`.
+4. **The migration trust source is a PINNED, authenticated catalog — not a self-declared field and
+   not a caller-supplied function.** The old per-entry `historical_decision` (whose `decision_hash`
+   was never checked) and the `historical_verifier=lambda: True` escape hatch are **gone**. A document
+   carries a `historical_attestation` whose `verifier_id` SELECTS an entry in the internal
+   `_TRUSTED_HISTORICAL_ATTESTATIONS`; migration then checks, fail-closed: the `attestation_hash`
+   recomputes **and equals the pinned anchor** (a forged attestation for a different body has a hash
+   the caller cannot forge), `source_snapshot_hash` **binds** the document's `snapshot_hash`, and each
+   migrated body's canonical hash is in the attested `accepted_entry_hashes` (acceptance is **checked,
+   never self-declared**). The migration log records the full attestation chain. A deployment
+   populates the catalog with signed historical attestations; the shipped demo anchor is inert (base
+   `282d541` has no v3 trial events).
+
+New artifact: none (kernel state-surface encapsulation + a joni-level authenticated trust root).
+Round-20 tests (13): mutating an `objects` value / injecting a key does not change state; the ledger
+cannot be cleared/mutated externally (chain intact) but storage tampering is still caught; the clock
+is read-only + monotonic; there is no public minter; a missing / forged / snapshot-unbound /
+tampered / unknown-verifier / self-declared attestation is fail-closed; `load_migrated` takes no
+caller-supplied verifier; the pinned attestation migrates and the log documents the attestation
+chain; the migration output does not alias its input.
 
 ### Review round 19 — TRUE state immutability + a trusted migration source (vs `6fe3020`)
 
@@ -457,7 +497,7 @@ ready pair exposed; partial-overlap & fully-shared deps → not independent; dis
 minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; real verdict without
 `decision_rule_hash` rejected; `not_evaluated` stored without measurement values.
 
-## Changed kernel files (vs `282d541`) — 7 files, +654 / −45
+## Changed kernel files (vs `282d541`) — 10 files, +705 / −65
 
 | file | change | why |
 |---|---|---|
@@ -466,13 +506,15 @@ minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; re
 | `objects.py` | `MethodTrialEvent` dataclass | immutable record: canonical-JSON payload, `record_authority` vs `epistemic_authority` |
 | `transitions.py` | `METHOD_TRIAL_EVENT → _IMMUTABLE_RECORD` | registered transitionless (append-only) |
 | `trial_event_validation.py` (new) | structural gate + `canonical_payload`; **r15-17:** `method_trial_recorded_v4`, `validate_v4_seal` (epistemic **or** operational), `evaluation_body_hash`, `derive_operational_class` | v4 SEALED; EXACTLY ONE seal, body-bound; **operational_class derived from the body**; unknown → reject |
-| `core.py` (r15-19) | `_h_method_trial_recorded` enforces `validate_v4_seal`; a **DETERMINISTIC v4-only write boundary** (no `replaying`/`_replaying`); **`submit()` deep-copies the whole incoming proposal** (severs the caller); a **frozen** `JournalEntry` storing canonical bytes; read-only `journal` tuple + `objects` mapping; `get()`/`all()` deep-copy | a v4 event without a bound seal is refused; **v3 is never a writable trial event**; **`submit()` is the only writer** — no caller/export/journal-list reference can rewrite authoritative state; v3 data migrates (`load_migrated`) to v4 |
+| `core.py` (r15-20) | `_h_method_trial_recorded` enforces `validate_v4_seal`; a **DETERMINISTIC v4-only write boundary** (no `replaying`/`_replaying`); **`submit()` deep-copies the whole incoming proposal**; a **frozen** `JournalEntry`; **ALL mutable state private** (`_tick`/`_objects`/`_minter`/`_ledger`/`_journal`/`_seq`); `objects`/`ledger` are read-only **deep-copied** views, `journal` an immutable tuple, `tick` read-only with a monotonic `set_clock()`, no public minter | a v4 event without a bound seal is refused; **v3 is never a writable trial event**; **`submit()` is the ONLY write path** — no public handle (object store, ledger, clock, minter) can rewrite authoritative state; v3 data migrates (`load_migrated`) to v4 under a pinned attestation |
+| `hashing.py` (r20) | `snapshot_hash`/`verify_chain` read the internal `_objects`/`_ledger` directly | integrity hashing covers the real objects/ledger (the public views are deep copies) |
 | `core.py` | `_h_method_trial_recorded`, `method_trial_events()`, `trial_event_hashes()`, optional 4-tuple handler return | append-only handler (idempotent on `trial_id`, mutates **no** counter), read-only envelope, named hashes, auditable idempotent-retry decision tag |
 | `__init__.py` | export `MethodTrialEvent` | package surface |
 
 **Unchanged on purpose:** `_h_method_trial_record` and the legacy counters, `_h_method_promote`,
-`policy.py`, `hashing.py`, `ledger.py`, `persistence.py`. The new path is **inert**: nothing in
-promotion/discard reads it.
+`policy.py`, `ledger.py`. (`hashing.py`/`persistence.py`/`migration.py` saw only the round-20
+encapsulation follow-through — `_objects`/`_ledger` reads and the `_tick` constructor — no behaviour
+change.) The new path is **inert**: nothing in promotion/discard reads it.
 
 ## Projector / schema (outside the kernel)
 
@@ -517,7 +559,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `5e385a8`: **604 passed / 2 skipped with the `desi` extra; 597 passed / 7 skipped
+Full suite at `8412040`: **611 passed / 2 skipped with the `desi` extra; 604 passed / 7 skipped
 with `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -539,9 +581,10 @@ journal_compatibility:
   backward_readable: true                         # new code, old journal (claims/conflicts/legacy)
   trial_events_v3_backward_readable: false        # an accepted v3 trial event is NOT raw-replayable
   trial_events_v3_migration: required             # load via load_migrated() -> re-sealed to v4
-  trial_events_v3_migration_trust_source: required   # per-entry historical_decision attestation
-  trial_events_v3_migration_failure_mode: fail_closed_on_unknown_capsule_or_missing_attestation
-  trial_events_v3_migration_snapshot_hash: verified_or_refused   # present hash needs a verifier
+  trial_events_v3_migration_trust_source: pinned_internal_attestation_catalog  # NOT caller-supplied
+  trial_events_v3_migration_attestation: verifier_id_resolved_against_pinned_catalog
+  trial_events_v3_migration_failure_mode: fail_closed   # missing/forged/unbound/unknown attestation
+  trial_events_v3_migration_snapshot_hash: bound_by_attestation_source_snapshot_hash
   forward_readable: false                         # old code, new journal
   failure_mode: fail_closed_at_load
   downgrade_after_first_new_event: blocked        # IRREVERSIBLE
@@ -602,7 +645,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..5e385a8` and this package.
+1. Review the diff `282d541..8412040` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).

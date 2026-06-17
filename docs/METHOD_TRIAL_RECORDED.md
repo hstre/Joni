@@ -227,17 +227,21 @@ The Layer-9 gate (`validate_v4_seal`) requires + binds the seal. The write bound
 **deterministic**: a v3 `METHOD_TRIAL_RECORDED` is **never** writable (only sealed v4 is) — there is
 no `replaying`/bypass parameter on `submit` and no `_replaying` state, so a rejected v3 reproduces
 its rejection on replay (leaving only an audited rejected `Proposal`) and `state = f(seed, journal)`
-holds. **`submit()` is the only writer and it is the sole mutation path**: it deep-copies the **whole**
-incoming proposal on entry (never storing the caller's instance), the journal entry is a **frozen**
-record over canonical-JSON **bytes**, the public `journal` is a read-only tuple and `objects` a
-read-only mapping, and `get()`/`all()` hand back deep copies — so no post-submit mutation of the
-caller's proposal, a returned object, or the journal list can rewrite authoritative state (snapshot,
-ledger chain and replay stay identical). Pre-v4 v3 data migrates by **re-sealing** to v4
-(`seal_payload`); the projector still reads raw v3 as `legacy_unsealed`. Migration is bound to a
-**trusted historical source**: `load_migrated()` refuses a document carrying a `snapshot_hash` unless
-a `historical_verifier` confirms it, and `migrate_journal_entries` requires a per-entry
-`historical_decision` attestation (`accepted` + `gate_policy_version`) — an unattested entry fails
-closed and a historically-rejected one is dropped, never resealed as accepted. An operational seal's `operational_class` is **derived from the body**
+holds. **`submit()` is the only write path, and the ENTIRE public state surface is immutable**: it
+deep-copies the **whole** incoming proposal on entry (never storing the caller's instance); ALL
+mutable state is private (`_tick`/`_objects`/`_minter`/`_ledger`/`_journal`/`_seq`); the journal entry
+is a **frozen** record over canonical-JSON **bytes**; `objects` and `ledger` are read-only mappings/
+tuples of **deep copies** (so neither `core.objects[id] = x`, `core.objects[id].f = x`,
+`core.ledger.clear()`, nor editing a returned event can reach state); `tick` is read-only (the only
+clock input is the monotonic `set_clock()`); and there is no public minter. Integrity hashing reads
+the internal `_objects`/`_ledger` directly. Pre-v4 v3 data migrates by **re-sealing** to v4
+(`seal_payload`); the projector still reads raw v3 as `legacy_unsealed`. Migration trust comes from a
+**pinned, internal, immutable catalog** of historical attestations — never a self-declared field in
+the input and never a caller-supplied function: the document's `historical_attestation.verifier_id`
+SELECTS a catalog entry, and `load_migrated()` checks fail-closed that the `attestation_hash`
+recomputes **and equals the pinned anchor**, that `source_snapshot_hash` binds the document's
+`snapshot_hash`, and that each migrated body's canonical hash is in the attested
+`accepted_entry_hashes` (acceptance is checked, never self-declared). An operational seal's `operational_class` is **derived from the body**
 (execution/protocol status) and checked by the gate, so a writer cannot mislabel a technical failure
 as merely unevaluated. Replay (`evaluate_payload`) reads the **embedded** envelope
 and **never** the live `envelope_for_payload`; a later change to that bridge cannot re-route a stored
