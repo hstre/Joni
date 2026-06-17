@@ -481,7 +481,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 197,
+    "starved_topic": 198,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -4528,7 +4528,8 @@
     "zenodo:20732353",
     "zenodo:20732420",
     "zenodo:20732742",
-    "zenodo:20732767"
+    "zenodo:20732767",
+    "zenodo:20732898"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -5083,6 +5084,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20732742"
+    },
+    {
+      "call_id": "joni-c201:979a264eefca",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": true,
+      "claims": 5,
+      "source": "zenodo:20732898"
     }
   ],
   "pdf_read": [
@@ -5208,6 +5217,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-21"
+    },
+    {
+      "call_id": "joni-c201:19b837e13ffa",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-22"
     }
   ],
   "methods_seen": [
@@ -5460,11 +5478,13 @@
     "C-674|C-692",
     "C-674|C-745",
     "C-674|C-755",
+    "C-674|C-767",
     "C-675|C-685",
     "C-675|C-693",
     "C-675|C-744",
     "C-675|C-748",
     "C-675|C-753",
+    "C-675|C-754",
     "C-676|C-686",
     "C-678|C-695",
     "C-683|C-687",
@@ -5670,11 +5690,13 @@
     "C-674|C-692@bge-small-en-v1.5",
     "C-674|C-745@bge-small-en-v1.5",
     "C-674|C-755@bge-small-en-v1.5",
+    "C-674|C-767@bge-small-en-v1.5",
     "C-675|C-685@bge-small-en-v1.5",
     "C-675|C-693@bge-small-en-v1.5",
     "C-675|C-744@bge-small-en-v1.5",
     "C-675|C-748@bge-small-en-v1.5",
     "C-675|C-753@bge-small-en-v1.5",
+    "C-675|C-754@bge-small-en-v1.5",
     "C-676|C-686@bge-small-en-v1.5",
     "C-678|C-695@bge-small-en-v1.5",
     "C-683|C-687@bge-small-en-v1.5",
@@ -5942,6 +5964,7 @@
     "panel|mechanism",
     "panel|modeling",
     "panel|modern",
+    "panel|multi-axis",
     "panel|natural",
     "panel|needs",
     "panel|network",
@@ -6089,6 +6112,7 @@
     "related",
     "replication",
     "repository",
+    "reproduce",
     "research",
     "researchers",
     "scientific",
@@ -6197,17 +6221,16 @@
     "C-99"
   ],
   "learned_queries": [
-    "alignment evaluation",
     "panel through-line",
     "panel underlying",
     "panel adenia",
     "panel intervals",
     "panel recurs",
     "panel sajoreciae",
-    "panel worth"
+    "panel worth",
+    "panel claims"
   ],
   "hyp_seen_cycle": {
-    "C-555": 190,
     "C-562": 191,
     "C-569": 192,
     "C-570": 193,
@@ -6218,7 +6241,7 @@
     "C-600": 198,
     "C-608": 199,
     "C-621": 200,
-    "C-632": 181,
+    "C-632": 201,
     "C-643": 182,
     "C-650": 183,
     "C-664": 184,
@@ -6237,7 +6260,8 @@
     "C-730": 197,
     "C-735": 198,
     "C-750": 199,
-    "C-763": 200
+    "C-763": 200,
+    "C-774": 201
   },
   "topics_domain_ok": [
     "abstracts",
@@ -6422,6 +6446,7 @@
     "C-74",
     "C-750",
     "C-763",
+    "C-774",
     "C-99"
   ],
   "methods_domain_ok": [
@@ -6469,40 +6494,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 511,
+    "active": 521,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 109,
-    "supporting_links": 109,
-    "emergent_total": 388,
+    "evidence_links": 111,
+    "supporting_links": 111,
+    "emergent_total": 390,
     "usable_semantic_rate": 1.0,
     "methods_total": 39,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 7199,
-    "cycle": 200
+    "objects": 7274,
+    "cycle": 201
   },
   "vitality_prev": {
-    "supports": 109,
+    "supports": 111,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 7199,
-    "active": 511,
-    "links": 109,
-    "emergent": 388
+    "objects": 7274,
+    "active": 521,
+    "links": 111,
+    "emergent": 390
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 1,
-      "verdict": "steady",
-      "development": 0,
-      "degeneration": 0,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 2,
       "verdict": "developing",
@@ -7895,6 +7913,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 201,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -8076,6 +8101,7 @@
     "X-19",
     "X-20",
     "X-21",
+    "X-22",
     "X-4",
     "X-5",
     "X-6",
