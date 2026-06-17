@@ -217,19 +217,25 @@ enforced** to equal `python_semantics`, and the whole numeric environment is fol
 `exec_env_hash` and `capsule_hash`. A swapped loader, tampered loader bytes, a changed numeric flag,
 or a wrong Python version → `"unverifiable"`.
 
-**Sealed v4 journal (enforced at the kernel gate).** The canonical **stored** form is
-`method_trial_recorded_v4`: `to_journal()`/`seal_payload()` embed the stable evaluation envelope
-(with the mandatory whole-capsule `capsule_hash` and the body binding `evaluation_body_hash`)
-alongside the body. The Layer-9 gate (`validate_evaluation_envelope`) **requires** the envelope for
-v4 and rejects a v4 event with no envelope or whose `evaluation_body_hash` does not bind the body, so
-the journal never holds a "sealed" event that is not actually sealed. Replay (`evaluate_payload`)
-reads the **embedded** envelope and **never** the live `envelope_for_payload` (writer-side only); a
-later change to that bridge cannot re-route a stored event. A v3 (envelope-less) object is
-`legacy_unsealed`: visible, but never reconstructed into a verified verdict and never aggregated.
-Evidence comes straight from the stored `(envelope, body)` pair via `verify_payloads` → `aggregate`
-(unsealed objects are skipped); no dataclass reconstruction is a precondition (dataclasses stay
-display-only). `capsule_hash` is the mandatory routing key, so two capsules with the same rule_hash
-but different validator/contract/decoder/loader coexist. NB: `evaluation_body_hash` (body only) is a
+**Sealed v4 journal (enforced at the kernel gate; v4-only write boundary).** The canonical **stored**
+form is `method_trial_recorded_v4`. A v4 object carries **EXACTLY ONE** seal: an epistemic
+`evaluation_envelope` (a rule-evaluable verdict; the whole-capsule `capsule_hash` is **mandatory**,
+plus the body binding `evaluation_body_hash`) **or** an `operational_envelope` (a not-evaluated /
+technical move; `operational_class` + body binding, **no** capsule). `to_journal()`/`seal_payload()`
+choose the mode automatically, so they never emit a `capsule_hash=null` seal the gate would reject.
+The Layer-9 gate (`validate_v4_seal`) requires + binds the seal; a **fresh submission must be v4**
+(`core.submit(replaying=…)` — v3 is replay-only, so existing v3 journals stay loadable but a writer
+can no longer add a fresh unsealed event). Replay (`evaluate_payload`) reads the **embedded** envelope
+and **never** the live `envelope_for_payload`; a later change to that bridge cannot re-route a stored
+event. A v3 (unsealed) object is `legacy_unsealed`; a sealed operational object evaluates to
+`operational`; both are visible but never reconstructed into a verdict and never aggregated. Evidence
+comes straight from the stored `(envelope, body)` pair via `verify_payloads` → `aggregate` (unsealed
+/ operational / `sealed_unknown_capsule` objects are skipped); no dataclass reconstruction is a
+precondition. **Production capsules are fully byte-pinned and self-contained** — neither the archived
+r6 nor the current `rule_v2` binds a live wrapper that could dynamically import (and thus fail to
+bind) the validator. `capsule_hash` is the mandatory routing key, so two capsules with the same
+rule_hash but different validator/contract/decoder/loader coexist; a well-formed seal whose capsule is
+unknown is `sealed_unknown_capsule` (never verified). NB: `evaluation_body_hash` (body only) is a
 **different scope** from the kernel's `payload_hash` (whole stored object).
 
 **Input adapter.** The transform from the decoder's block dicts to the read-only object view the rule

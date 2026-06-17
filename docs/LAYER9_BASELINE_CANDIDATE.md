@@ -8,26 +8,58 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `571cc7b` (review round 15) |
-| **Superseded candidates** | `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `2d327c3` (review round 16) |
+| **Superseded candidates** | `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 571cc7b -- src/desi_layer9 \
+git diff 282d541 2d327c3 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (564 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (573 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive 571cc7b`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive 2d327c3`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 16 — frozen live capsule, v4-only write boundary, operational seal mode (vs `571cc7b`)
+
+The sealed journal was enforced, but the **current** production capsule still bound a dynamic
+validator wrapper, the gate still accepted new unsealed v3, and operational events could not be
+sealed. All fixed; the r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **The current production capsule is byte-pinned.** `_live_cross_block` (which dynamically
+   imported `cross_block_consistency`, so its source hash did not bind the actual validator) is gone
+   from production. Both production capsules are now **archived, byte-pinned, self-contained**: the
+   current rule is `rule_v2_v2.pysrc` (byte-identical to the live `_rule_v2`; its bytes hash ==
+   `RULE_V2_HASH`) with the byte-pinned validator/contract/decoder/adapter. Monkeypatching the live
+   `cross_block_consistency` after sealing no longer changes a sealed event's evaluation.
+2. **A v4-only write boundary.** `core.submit` gained a `replaying` flag (set by
+   `persistence.replay`); the recording handler refuses a NEW submission whose `schema_version` ≠ v4.
+   Existing v3 journals stay loadable/replayable (visible as `legacy_unsealed`); a writer can no
+   longer add a fresh unsealed event.
+3. **A sealed operational v4 mode.** A v4 object carries EXACTLY ONE of an epistemic
+   `evaluation_envelope` (capsule_hash mandatory) or an `operational_envelope` (`operational_class` +
+   body hash, no capsule). `to_journal` seals `not_evaluated` events operationally, so it never emits
+   a capsule_hash=null epistemic seal the gate would reject; operational events evaluate to
+   `operational`, never become evidence, and carry their classified `operational_class`.
+4. **Capsule-manifest decision (explicit).** The write-gate validates structure + binding but does
+   **not** require the capsule to be in the catalog (the kernel must not depend on the joni registry);
+   a well-formed seal whose capsule is unknown downstream is marked `sealed_unknown_capsule` and is
+   never verified or aggregated (a missing `capsule_hash` stays `unverifiable`).
+
+New artifact: `rule_v2_v2.pysrc` (`91f2d789`). Round-16 tests (11): live-validator monkeypatch does
+not change the frozen capsule; production current capsule is archived/byte-pinned; new v3 refused but
+v3 replays; new v4 accepted; operational event seals + the kernel accepts it; completed+valid+
+not_evaluated → unevaluated; `to_journal` never emits a gate-rejected v4; both-seals refused; unknown
+capsule is `sealed_unknown_capsule`, never evidence.
 
 ### Review round 15 — the SEALED v4 journal is enforced at the kernel gate (vs `72a5d5f`)
 
@@ -337,8 +369,8 @@ minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; re
 | `ids.py` | `MTE` id prefix | deterministic ids for the new record |
 | `objects.py` | `MethodTrialEvent` dataclass | immutable record: canonical-JSON payload, `record_authority` vs `epistemic_authority` |
 | `transitions.py` | `METHOD_TRIAL_EVENT → _IMMUTABLE_RECORD` | registered transitionless (append-only) |
-| `trial_event_validation.py` (new) | structural gate validator + `canonical_payload`; **r15:** `method_trial_recorded_v4` + `validate_evaluation_envelope` + `evaluation_body_hash` | v3 (legacy) and v4 (SEALED, envelope mandatory + bound) supported; unknown → reject; canonicalisation |
-| `core.py` (r15) | `_h_method_trial_recorded` enforces `validate_evaluation_envelope` for v4 | a v4 event without a bound evaluation envelope is refused at the gate (never stored) |
+| `trial_event_validation.py` (new) | structural gate + `canonical_payload`; **r15-16:** `method_trial_recorded_v4`, `validate_v4_seal` (epistemic **or** operational envelope), `evaluation_body_hash` | v3 (legacy) + v4 (SEALED; EXACTLY ONE of `evaluation_envelope`/`operational_envelope`, body-bound); unknown → reject |
+| `core.py` (r15-16) | `_h_method_trial_recorded` enforces `validate_v4_seal` for v4 **and a v4-only write boundary** (`submit(replaying=…)`); `persistence.replay` passes `replaying=True` | a v4 event without a bound seal is refused; a fresh **v3** submission is refused (replay-only); existing v3 journals still replay |
 | `core.py` | `_h_method_trial_recorded`, `method_trial_events()`, `trial_event_hashes()`, optional 4-tuple handler return | append-only handler (idempotent on `trial_id`, mutates **no** counter), read-only envelope, named hashes, auditable idempotent-retry decision tag |
 | `__init__.py` | export `MethodTrialEvent` | package surface |
 
@@ -387,7 +419,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `571cc7b`: **571 passed / 2 skipped with the `desi` extra; 564 passed / 7 skipped with
+Full suite at `2d327c3`: **580 passed / 2 skipped with the `desi` extra; 573 passed / 7 skipped with
 `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -447,7 +479,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..571cc7b` and this package.
+1. Review the diff `282d541..2d327c3` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
