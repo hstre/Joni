@@ -14,6 +14,7 @@
       "associated",
       "authors",
       "awesome-design-patterns",
+      "caching",
       "calibration",
       "codebase",
       "contexts",
@@ -51,29 +52,29 @@
       "software",
       "users"
     ],
-    "claims_total": 735,
-    "claims_active": 487,
+    "claims_total": 750,
+    "claims_active": 501,
     "memory": 0,
-    "ledger": 5258,
+    "ledger": 5336,
     "open_conflicts": 21,
-    "methods": 37,
+    "methods": 38,
     "method_trials": 172,
     "methods_ready": 0,
-    "preferences": 1,
-    "evidence_links": 105,
+    "preferences": 2,
+    "evidence_links": 107,
     "self_model": 14,
     "hypotheses": 30,
     "research_topics": 1,
     "epistemically_usable": {
       "rate": 0.858,
-      "n": 487,
+      "n": 501,
       "flags": {
-        "correctly_typed": 487,
-        "source_anchored": 449,
-        "non_duplicate": 458,
-        "topic_valid": 485,
-        "scope_valid": 485,
-        "provenance_complete": 449
+        "correctly_typed": 501,
+        "source_anchored": 462,
+        "non_duplicate": 471,
+        "topic_valid": 499,
+        "scope_valid": 499,
+        "provenance_complete": 462
       }
     },
     "routing_engine": "DESi",
@@ -88,11 +89,11 @@
   "budget": {
     "spent_eur": 1.402,
     "cap_eur": 20.0,
-    "runs": 198
+    "runs": 199
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 198,
+    "runs": 199,
     "retired": false
   },
   "extensions": {
@@ -108,6 +109,10 @@
       {
         "note": "external corroboration that cheap-first routing with adequacy checks pays off",
         "source": "http://arxiv.org/abs/2606.17026v1"
+      },
+      {
+        "note": "external corroboration that cheap-first routing with adequacy checks pays off",
+        "source": "https://huggingface.co/papers/2606.17081"
       }
     ],
     "commissions": [
@@ -574,7 +579,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 195,
+      "starved_topic": 196,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -4458,7 +4463,8 @@
       "provenance",
       "distillation",
       "calibration",
-      "retrieval"
+      "retrieval",
+      "caching"
     ],
     "asks": [],
     "seen": [
@@ -4537,6 +4543,7 @@
       "huggingface:2606.16771",
       "huggingface:2606.16852",
       "huggingface:2606.16993",
+      "huggingface:2606.17081",
       "huggingface:2606.17321",
       "huggingface:2606.17628",
       "huggingface:2606.17861",
@@ -4615,7 +4622,9 @@
       "zenodo:20730316",
       "zenodo:20730436",
       "zenodo:20731730",
-      "zenodo:20732353"
+      "zenodo:20732331",
+      "zenodo:20732353",
+      "zenodo:20732420"
     ],
     "fetch_errors": [],
     "semantic_calls": [
@@ -5138,6 +5147,22 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:17799385"
+      },
+      {
+        "call_id": "joni-c199:20bbe6ace3bc",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "huggingface:2606.17081"
+      },
+      {
+        "call_id": "joni-c199:538d3f0753b0",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20732420"
       }
     ],
     "pdf_read": [
@@ -5288,6 +5313,7 @@
       "huggingface:2606.16428",
       "huggingface:2606.16767",
       "huggingface:2606.16993",
+      "huggingface:2606.17081",
       "huggingface:2606.17321",
       "huggingface:2606.17628",
       "huggingface:2606.17861",
@@ -5506,10 +5532,13 @@
       "C-673|C-691",
       "C-673|C-694",
       "C-673|C-697",
+      "C-673|C-737",
       "C-674|C-684",
       "C-674|C-692",
+      "C-674|C-745",
       "C-675|C-685",
       "C-675|C-693",
+      "C-675|C-744",
       "C-676|C-686",
       "C-678|C-695",
       "C-683|C-687",
@@ -5708,10 +5737,13 @@
       "C-673|C-691@bge-small-en-v1.5",
       "C-673|C-694@bge-small-en-v1.5",
       "C-673|C-697@bge-small-en-v1.5",
+      "C-673|C-737@bge-small-en-v1.5",
       "C-674|C-684@bge-small-en-v1.5",
       "C-674|C-692@bge-small-en-v1.5",
+      "C-674|C-745@bge-small-en-v1.5",
       "C-675|C-685@bge-small-en-v1.5",
       "C-675|C-693@bge-small-en-v1.5",
+      "C-675|C-744@bge-small-en-v1.5",
       "C-676|C-686@bge-small-en-v1.5",
       "C-678|C-695@bge-small-en-v1.5",
       "C-683|C-687@bge-small-en-v1.5",
@@ -5948,6 +5980,7 @@
       "panel|integrated",
       "panel|intensely",
       "panel|interface",
+      "panel|intervals",
       "panel|joni",
       "panel|kategorie",
       "panel|keine",
@@ -6102,6 +6135,7 @@
       "abstracts",
       "agent",
       "architecture",
+      "associated",
       "awesome-design-patterns",
       "contexts",
       "design",
@@ -6226,20 +6260,20 @@
       "C-730",
       "C-735",
       "C-74",
+      "C-750",
       "C-99"
     ],
     "learned_queries": [
-      "panel across",
-      "panel mechanism",
-      "alignment mechanism",
       "panel evaluation",
       "alignment evaluation",
       "panel through-line",
       "panel underlying",
-      "panel adenia"
+      "panel adenia",
+      "panel intervals",
+      "panel recurs",
+      "panel sajoreciae"
     ],
     "hyp_seen_cycle": {
-      "C-541": 188,
       "C-542": 189,
       "C-555": 190,
       "C-562": 191,
@@ -6250,7 +6284,7 @@
       "C-573": 196,
       "C-588": 197,
       "C-600": 198,
-      "C-608": 179,
+      "C-608": 199,
       "C-621": 180,
       "C-632": 181,
       "C-643": 182,
@@ -6269,7 +6303,8 @@
       "C-722": 195,
       "C-723": 196,
       "C-730": 197,
-      "C-735": 198
+      "C-735": 198,
+      "C-750": 199
     },
     "topics_domain_ok": [
       "abstracts",
@@ -6282,6 +6317,7 @@
       "associated",
       "authors",
       "awesome-design-patterns",
+      "caching",
       "calibration",
       "codebase",
       "contexts",
@@ -6451,6 +6487,7 @@
       "C-730",
       "C-735",
       "C-74",
+      "C-750",
       "C-99"
     ],
     "methods_domain_ok": [
@@ -6485,6 +6522,7 @@
       "M-35",
       "M-36",
       "M-37",
+      "M-38",
       "M-4",
       "M-5",
       "M-6",
@@ -6493,35 +6531,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 2,
-      "active": 487,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "active": 501,
       "hypotheses": 30,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
-      "evidence_links": 105,
-      "supporting_links": 105,
-      "emergent_total": 384,
+      "evidence_links": 107,
+      "supporting_links": 107,
+      "emergent_total": 386,
       "usable_semantic_rate": 1.0,
-      "methods_total": 37,
+      "methods_total": 38,
       "method_trials_total": 172,
       "methods_ready_total": 0,
-      "stagnation_cycles": 1,
-      "objects": 6993,
-      "cycle": 198
+      "stagnation_cycles": 0,
+      "objects": 7097,
+      "cycle": 199
     },
     "vitality_prev": {
-      "supports": 105,
+      "supports": 107,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 6993,
-      "active": 487,
-      "links": 105,
-      "emergent": 384
+      "objects": 7097,
+      "active": 501,
+      "links": 107,
+      "emergent": 386
     },
-    "stagnation": 1,
+    "stagnation": 0,
     "vitality_history": [
       {
         "cycle": 1,
@@ -7908,6 +7946,13 @@
         "development": 0,
         "degeneration": 2,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 199,
+        "verdict": "steady",
+        "development": 6,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "panel_asked": [
@@ -8096,7 +8141,7 @@
       "X-8"
     ],
     "reconsolidate_lens_idx": 4,
-    "kevin_last_cycle": 196,
+    "kevin_last_cycle": 199,
     "kevin_llm": [
       {
         "call_id": "kevin-c26:60a854e0b332",
@@ -44561,19 +44606,296 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:03+00:00",
+      "cycle": 199,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:04+00:00",
+      "cycle": 199,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:04+00:00",
+      "cycle": 199,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:06+00:00",
+      "cycle": 199,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:09+00:00",
+      "cycle": 199,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:10+00:00",
+      "cycle": 199,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:12+00:00",
+      "cycle": 199,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:12+00:00",
+      "cycle": 199,
+      "kind": "judged",
+      "summary": "relevant: The Price of Anarchy in Disaggregated Inference",
+      "refs": {
+        "source": "huggingface:2606.17081",
+        "topic": "panel",
+        "new_topic": "caching",
+        "url": "https://huggingface.co/papers/2606.17081"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:13+00:00",
+      "cycle": 199,
+      "kind": "judged",
+      "summary": "relevant: Reproducible LSOG mapping for Maine: design-based estimation, an FIA-anchored 10",
+      "refs": {
+        "source": "zenodo:20732420",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20732420"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:14+00:00",
+      "cycle": 199,
+      "kind": "judged",
+      "summary": "relevant: Impact of Kinematic Variables of the Draw Force Line on Performance in Recurve A",
+      "refs": {
+        "source": "zenodo:20732331",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20732331"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:41+00:00",
+      "cycle": 199,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from huggingface:2606.17081 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:54+00:00",
+      "cycle": 199,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20732420 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:57+00:00",
+      "cycle": 199,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: The Price of Anarchy in Disaggregated Inference (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:58+00:00",
+      "cycle": 199,
+      "kind": "improved",
+      "summary": "track_topic: caching",
+      "refs": {
+        "claim": "C-749",
+        "topic": "caching",
+        "source": "huggingface:2606.17081",
+        "url": "https://huggingface.co/papers/2606.17081"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:19:58+00:00",
+      "cycle": 199,
+      "kind": "improved",
+      "summary": "note_capability: frugal model routing",
+      "refs": {
+        "preference": "PR-2",
+        "source": "huggingface:2606.17081",
+        "url": "https://huggingface.co/papers/2606.17081"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:04+00:00",
+      "cycle": 199,
+      "kind": "developed",
+      "summary": "C-673/C-737: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:05+00:00",
+      "cycle": 199,
+      "kind": "developed",
+      "summary": "linked C-674 <-> C-745 (supports · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:06+00:00",
+      "cycle": 199,
+      "kind": "developed",
+      "summary": "linked C-675 <-> C-744 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:07+00:00",
+      "cycle": 199,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'intervals' (Layer 9 synthesis-eligible, SC-710) from 5 claims (C-675, C-685, C-693, C-744, C-748)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:08+00:00",
+      "cycle": 199,
+      "kind": "emerged",
+      "summary": "'associated' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:08+00:00",
+      "cycle": 199,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-750 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:08+00:00",
+      "cycle": 199,
+      "kind": "regulate",
+      "summary": "shed C-542: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:09+00:00",
+      "cycle": 199,
+      "kind": "vitality",
+      "summary": "steady · dev 6 · degen 1 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:10+00:00",
+      "cycle": 199,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:10+00:00",
+      "cycle": 199,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T12:20:10+00:00",
+      "cycle": 199,
+      "kind": "note",
+      "summary": "cycle done · 3 new · 1 method(s) · 0 trialed · 2 new link(s) · 0 hypothesis(es) · 1 emergent · shed 1 dead idea(s) · steady · spend €1.4020 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 89,
-    "granite_calls": 76,
+    "llm_calls": 91,
+    "granite_calls": 78,
     "deepseek_escalations": 11,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 89,
-    "last_call": "2026-06-17T11:50:46+00:00",
+    "live_calls": 91,
+    "last_call": "2026-06-17T12:19:49+00:00",
     "est_cost_eur": 0.052,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 76,
+      "ibm-granite/granite-4.1-8b-20260429": 78,
       "deepseek-v4-pro": 13
     },
     "empty_calls": 0,
@@ -44581,14 +44903,14 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 89
+      "stop": 91
     },
     "panel_rounds": 9,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 1.402,
-    "accepted_claims": 300,
-    "accepted_calls": 70,
-    "accepted_call_yield": 0.787,
+    "accepted_claims": 310,
+    "accepted_calls": 72,
+    "accepted_call_yield": 0.791,
     "est_cost_per_accepted_eur": 0.0002
   },
   "commissions_done": [
@@ -44600,5 +44922,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-17T12:05:18+00:00"
+  "generated": "2026-06-17T12:20:10+00:00"
 }
