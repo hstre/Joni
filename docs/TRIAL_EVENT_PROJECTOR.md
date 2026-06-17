@@ -12,17 +12,20 @@ connection from the *stored* event to *external* epistemic evaluation.
    **separately** from the reported payload.
 3. Decision verdicts are verified by the **registered** rule via
    `trial_event_schema.evaluate_decision`, which computes the verdict **entirely from the stored
-   measurement** (effect, uncertainty, **measurement-owned confidence interval**) against the
-   **pre-registered estimand threshold** — never from the decision block, which is reduced to
-   `{decision_rule_id, decision_rule_hash, verdict}` (any mirror number must equal the measurement,
-   and the decision may **not** supply its own interval). A `success`/`harmful` requires the
-   interval to **resolve** the direction beyond zero — a bare point estimate with huge/None
-   uncertainty is `inconclusive`. The measurement must be internally consistent (effect derived
-   from baseline/intervention under the contrast/direction, and lying within its own interval). A
-   contradiction / threshold override / decision-supplied interval / unresolved measurement is
-   `inconsistent`; a `decision_rule_hash` that does not match the registered **implementation hash**
-   (the sha256 of the rule's own source) is `unverifiable` — so editing the rule rotates the hash
-   and old events do not silently re-verify. The one canonical `cross_block_consistency` (in
+   measurement's effect and its own confidence interval** against the **pre-registered estimand
+   threshold** — never from the decision block (reduced to `{decision_rule_id, decision_rule_hash,
+   verdict}`), never from a decision-supplied interval, and (for `rule_v2`) **not** from
+   `measurement.uncertainty` (a descriptive scalar that must merely be consistent with the CI
+   width). A verified `success`/`harmful` requires the interval to **statistically support the
+   minimum effect** — the whole interval beyond the threshold (`ci_low ≥ min` / `ci_high ≤ −min`);
+   a merely positive-direction interval that still spans values below the threshold is
+   `inconclusive`. The measurement must be internally consistent (effect derived from
+   baseline/intervention under the contrast/direction, lying within its own interval). The rule
+   hash binds to the actual executable: the evaluator **re-derives** `sha256(source of the
+   registered function)` on every use and requires it to equal both the claimed
+   `implementation_hash` **and** the event's `decision_rule_hash` — so a forged registry entry or a
+   swapped function is `unverifiable`, not silently trusted. `partial_success` is not producible by
+   `rule_v2` (reserved for other rules). The one canonical `cross_block_consistency` (in
    `desi_layer9.trial_event_validation`) is shared by the gate and the rule evaluator, so the two
    cannot drift.
 4. The independence policy is applied **versioned** (`attribute_to_affinity`, carrying `policy_id`).

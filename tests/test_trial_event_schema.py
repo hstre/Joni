@@ -487,3 +487,75 @@ def test_registry_rejects_an_implementation_hash_mismatch():
              decision=Decision(decision_rule_id="rule_v2",
                                decision_rule_hash="sha256:" + "0" * 64, verdict="success"))
     assert evaluate_decision(ev)["status"] == "unverifiable"
+
+
+# -- round 6: the rule hash must bind to the ACTUAL executed function ---------------------------- #
+def test_forged_registry_function_with_copied_hash_is_unverifiable():
+    # a registry whose fn is NOT _rule_v2 but claims the correct implementation_hash must not verify
+    # a measurement that is clearly harmful as a success.
+    from joni.autonomy.trial_event_schema import RULE_V2_SPEC_HASH, RuleEntry
+    ev = _ev(epistemic_result="success", measurement=_meas(-0.20, ci=(-0.28, -0.12)),
+             decision=_dec("success"))
+    forged = {("rule_v2", RULE_V2_HASH):
+              RuleEntry("rule_v2", RULE_V2_SPEC_HASH, RULE_V2_HASH, lambda e: "success")}
+    assert evaluate_decision(ev, forged)["status"] == "unverifiable"
+
+
+def test_genuine_registered_implementation_verifies():
+    ev = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+             decision=_dec("success"))
+    assert evaluate_decision(ev)["status"] == "verified"
+
+
+def test_default_registry_is_immutable():
+    import pytest
+
+    from joni.autonomy.trial_event_schema import DEFAULT_RULE_REGISTRY
+    with pytest.raises(TypeError):
+        DEFAULT_RULE_REGISTRY[("x", "y")] = None        # MappingProxyType rejects mutation
+
+
+def test_make_rule_entry_computes_the_hash_from_the_function():
+    from joni.autonomy.trial_event_schema import (
+        RULE_V2_IMPL_HASH,
+        RULE_V2_SPEC_HASH,
+        _rule_v2,
+        make_rule_entry,
+    )
+    entry = make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2)
+    assert entry.implementation_hash == RULE_V2_IMPL_HASH      # computed, not claimed
+
+
+# -- round 6: success must mean the minimum effect is statistically SUPPORTED -------------------- #
+def test_ci_positive_but_reaching_below_min_is_inconclusive_not_success():
+    from joni.autonomy.trial_event_schema import _rule_v2
+    # CI lower bound 0.001 < minimum_effect 0.10 -> the minimum effect is NOT supported.
+    ev = _ev(epistemic_result="success", measurement=_meas(0.11, ci=(0.001, 0.219)),
+             decision=_dec("success"))
+    assert _rule_v2(ev) == "inconclusive"
+    assert evaluate_decision(ev)["status"] == "inconsistent"
+
+
+def test_ci_fully_above_min_is_a_verified_success():
+    ev = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+             decision=_dec("success"))
+    assert evaluate_decision(ev)["status"] == "verified"
+
+
+def test_harmful_needs_ci_fully_beyond_negative_min():
+    from joni.autonomy.trial_event_schema import _rule_v2
+    # negative direction resolved, but the interval reaches above -min -> inconclusive, not harmful.
+    near = _ev(epistemic_result="harmful", measurement=_meas(-0.11, ci=(-0.219, -0.001)),
+               decision=_dec("harmful"))
+    assert _rule_v2(near) == "inconclusive"
+    far = _ev(epistemic_result="harmful", measurement=_meas(-0.20, ci=(-0.28, -0.12)),
+              decision=_dec("harmful"))
+    assert evaluate_decision(far)["status"] == "verified"
+
+
+def test_partial_success_is_not_producible_by_rule_v2():
+    from joni.autonomy.trial_event_schema import _rule_v2
+    ev = _ev(epistemic_result="partial_success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+             decision=_dec("partial_success"))
+    assert _rule_v2(ev) != "partial_success"
+    assert evaluate_decision(ev)["status"] == "inconsistent"   # unreachable under rule_v2

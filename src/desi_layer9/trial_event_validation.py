@@ -108,6 +108,10 @@ def cross_block_consistency(measurement: dict, decision: dict, estimand: dict, *
     errs += _ci_errors("decision.confidence_interval", d_ci)
     if m_unc is not None and _finite(m_unc) and m_unc < 0:
         errs.append("measurement.uncertainty must be >= 0")
+    # uncertainty is a descriptive scalar; when a CI is also present the two must not contradict -
+    # a scalar uncertainty larger than the entire interval width is incoherent.
+    if m_unc is not None and m_ci is not None and not errs and m_unc > (m_ci[1] - m_ci[0]) + _EPS:
+        errs.append("measurement.uncertainty is inconsistent with the confidence_interval width")
     if errs:
         return errs
 

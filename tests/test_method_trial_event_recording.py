@@ -474,3 +474,13 @@ def test_effect_outside_its_confidence_interval_is_rejected():
     p["measurement"] = dict(p["measurement"], confidence_interval=[0.20, 0.40])  # 0.04 not inside
     d = _record(core, p)
     assert not d.accepted and "must lie within" in d.reason
+
+
+# -- round 6: uncertainty must not contradict the interval width --------------------------------- #
+def test_uncertainty_larger_than_interval_width_is_rejected():
+    core = _core()
+    p = _payload()
+    p["measurement"] = dict(p["measurement"], baseline_value=0.40, intervention_value=0.60,
+                            effect_size=0.20, uncertainty=100.0, confidence_interval=[0.10, 0.30])
+    d = _record(core, p)
+    assert not d.accepted and "inconsistent with the confidence_interval width" in d.reason
