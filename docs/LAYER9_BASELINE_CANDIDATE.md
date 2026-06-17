@@ -8,26 +8,57 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `d11515a` (review round 17) |
-| **Superseded candidates** | `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `PENDING_R18` (review round 18) |
+| **Superseded candidates** | `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 d11515a -- src/desi_layer9 \
+git diff 282d541 PENDING_R18 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (578 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (586 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive d11515a`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive PENDING_R18`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 18 — journal immutability (no aliasing) + honest, versioned v3→v4 migration (vs `d11515a`)
+
+Two fundamentals remained: the authoritative journal was rewritable through reference aliasing, and
+the documented backward-readability of accepted v3 trial journals was no longer true. Both fixed; the
+r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **The replay journal is DEEP-FROZEN on entry.** `submit()` severs the proposal payload from the
+   caller (`copy.deepcopy`), and `JournalEntry.__post_init__` deep-copies its payload + provenance, so
+   the journal shares **no** nested references with the caller's dict or any earlier export.
+   `JournalEntry.to_dict()` returns independent deep copies and `from_dict()` does not alias its input.
+   Mutating the caller's payload, an exported `to_dict()`, or a `from_dict()` input after the fact
+   **cannot** rewrite the journal — `state = f(seed, journal)` is immune to aliasing (replay + snapshot
+   stay identical).
+2. **Honest, versioned v3→v4 migration.** The deterministic v4-only boundary means an accepted v3
+   trial event is **not** raw-replayable; the docs now say so (`backward_readable: true` only for
+   claim/conflict/legacy journals; `trial_events_v3_backward_readable: false`). Backward compatibility
+   for trial events is an explicit, **versioned** migration: `load_migrated(doc)` re-seals each v3
+   trial body verbatim to a sealed v4 entry under its **known** capsule (fail-closed on an unknown
+   historical rule) **before** replay — introducing **no** submit privilege. The reconstructed state
+   is the upgraded (v4) state; the trial *data* is preserved.
+3. **Gate-versioning boundary documented** (secondary): the journal stores the command, not the
+   original gate decision/policy version; a rejection is reproducible only under the same gate
+   software (pinned by the planned kernel lock for the baseline). Binding the journal/policy version
+   is a documented requirement for any post-lock kernel revision.
+
+New artifact: none (kernel journal + a joni-level migration loader). Round-18 tests (9): mutating the
+caller payload / an exported `to_dict` / a `from_dict` input cannot rewrite the journal; replay is
+immune to external mutation; a historical v3 journal migrates to v4 and the trial reappears (body
+verbatim); migration is fail-closed on an unknown rule; migration introduces no submit privilege; a
+raw v3 journal is not directly replayable without migration.
 
 ### Review round 17 — deterministic write boundary + body-bound operational class (vs `2d327c3`)
 
@@ -68,8 +99,9 @@ sealed. All fixed; the r6 rule hash is unchanged (`sha256:2438455f…`).
    `cross_block_consistency` after sealing no longer changes a sealed event's evaluation.
 2. **A v4-only write boundary.** `core.submit` gained a `replaying` flag (set by
    `persistence.replay`); the recording handler refuses a NEW submission whose `schema_version` ≠ v4.
-   Existing v3 journals stay loadable/replayable (visible as `legacy_unsealed`); a writer can no
-   longer add a fresh unsealed event.
+   Existing v3 journals stay readable for display (visible as `legacy_unsealed`); a writer can no
+   longer add a fresh unsealed event. (r17 made this deterministic; r18 documents that an accepted
+   v3 trial event is migration-loaded, not raw-replayed — see the compatibility note below.)
 3. **A sealed operational v4 mode.** A v4 object carries EXACTLY ONE of an epistemic
    `evaluation_envelope` (capsule_hash mandatory) or an `operational_envelope` (`operational_class` +
    body hash, no capsule). `to_journal` seals `not_evaluated` events operationally, so it never emits
@@ -395,7 +427,7 @@ minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; re
 | `objects.py` | `MethodTrialEvent` dataclass | immutable record: canonical-JSON payload, `record_authority` vs `epistemic_authority` |
 | `transitions.py` | `METHOD_TRIAL_EVENT → _IMMUTABLE_RECORD` | registered transitionless (append-only) |
 | `trial_event_validation.py` (new) | structural gate + `canonical_payload`; **r15-17:** `method_trial_recorded_v4`, `validate_v4_seal` (epistemic **or** operational), `evaluation_body_hash`, `derive_operational_class` | v4 SEALED; EXACTLY ONE seal, body-bound; **operational_class derived from the body**; unknown → reject |
-| `core.py` (r15-17) | `_h_method_trial_recorded` enforces `validate_v4_seal`; a **DETERMINISTIC v4-only write boundary** (no `replaying` param, no `_replaying` state) | a v4 event without a bound seal is refused; **v3 is never a writable trial event** (it reproduces its rejection on replay → identical snapshot); v3 data migrates by re-sealing to v4 |
+| `core.py` (r15-18) | `_h_method_trial_recorded` enforces `validate_v4_seal`; a **DETERMINISTIC v4-only write boundary** (no `replaying`/`_replaying`); **`JournalEntry` deep-freezes its payload** (no aliasing) | a v4 event without a bound seal is refused; **v3 is never a writable trial event**; the journal cannot be rewritten via a caller/export reference; v3 data migrates (`load_migrated`) to v4 |
 | `core.py` | `_h_method_trial_recorded`, `method_trial_events()`, `trial_event_hashes()`, optional 4-tuple handler return | append-only handler (idempotent on `trial_id`, mutates **no** counter), read-only envelope, named hashes, auditable idempotent-retry decision tag |
 | `__init__.py` | export `MethodTrialEvent` | package surface |
 
@@ -425,7 +457,9 @@ promotion/discard reads it.
 **`tests/test_trial_event_replay_coexistence.py`** (replay / coexistence / uniqueness)
 - legacy-only / new-only / mixed journals replay to identical snapshot hashes → *the two worlds
   never touch*;
-- new software replays old journals; unknown operator fails closed at load; known-but-unhandled
+- new software replays old (claim/conflict/legacy) journals; unknown operator fails closed at load;
+  an accepted v3 trial event is loaded via `load_migrated` (re-sealed to v4), not raw-replayed;
+  known-but-unhandled
   rejected in gate → *forward/back compatibility is explicit*;
 - idempotency / divergent-id survive save/load;
 - serial-model uniqueness + a BOUNDARY test that forced reentrancy double-mints → *uniqueness is
@@ -444,8 +478,8 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `d11515a`: **585 passed / 2 skipped with the `desi` extra; 578 passed / 7 skipped with
-`desi` BLOCKED (0 failed); ruff clean.**
+Full suite at `PENDING_R18`: **593 passed / 2 skipped with the `desi` extra; 586 passed / 7 skipped
+with `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
 
@@ -463,11 +497,30 @@ concurrency_model:
   trial_id_uniqueness_scope: layer9_instance     # NOT global
   multi_writer_safe: false
 journal_compatibility:
-  backward_readable: true                         # new code, old journal
+  backward_readable: true                         # new code, old journal (claims/conflicts/legacy)
+  trial_events_v3_backward_readable: false        # an accepted v3 trial event is NOT raw-replayable
+  trial_events_v3_migration: required             # load via load_migrated() -> re-sealed to v4
+  trial_events_v3_migration_failure_mode: fail_closed_on_unknown_capsule
   forward_readable: false                         # old code, new journal
   failure_mode: fail_closed_at_load
   downgrade_after_first_new_event: blocked        # IRREVERSIBLE
 ```
+
+> **Honest v3 trial-event compatibility (r18):** the deterministic v4-only write boundary means a
+> historical *accepted v3 trial event* is **not** raw-replayable — `persistence.replay` rejects it
+> and reconstructs no trial event. Backward compatibility for trial events is an **explicit,
+> versioned migration**: `load_migrated(doc)` re-seals each v3 trial body verbatim to a sealed v4
+> entry under its *known* capsule (fail-closed on an unknown historical rule) **before** replay,
+> introducing no submit privilege. The reconstructed state is the upgraded (v4) state — the trial
+> *data* is preserved, not the byte-identical v3 snapshot. (The base `282d541` contains no trial
+> events, so no production v3 trial-event journal exists.) General journals
+> (claims/conflicts/legacy `METHOD_TRIAL_RECORD`) remain directly backward-readable.
+
+> **Gate-versioning boundary (r18, for a later kernel):** the replay journal stores the *command*,
+> not the original gate decision / policy version. A rejection is reproducible **only under the same
+> gate software** (which the planned kernel lock pins for the baseline); a future gate change could
+> decide a journaled command differently. Binding the journal/policy version (or the accepted
+> transition) into each entry is a documented requirement for any post-lock kernel revision.
 
 The first production `METHOD_TRIAL_RECORDED` event crosses the irreversible downgrade boundary —
 which is exactly why the writer must wait until this baseline is designated and locked.
@@ -504,7 +557,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..d11515a` and this package.
+1. Review the diff `282d541..PENDING_R18` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).

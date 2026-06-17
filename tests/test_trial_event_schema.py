@@ -1844,3 +1844,95 @@ def test_submit_carries_no_mutable_replay_state():
     assert not hasattr(core, "_replaying")
     _submit16(core, _r13_event().to_journal())
     assert not hasattr(core, "_replaying")
+
+
+# -- round 18: journal immutability + versioned v3->v4 migration contract --------------------- #
+def test_mutating_the_caller_payload_after_submit_cannot_rewrite_the_journal():
+    from desi_layer9 import hashing
+    core = _kernel()
+    obj = _r13_event().to_journal()
+    assert _submit16(core, obj).accepted
+    snap = hashing.snapshot_hash(core)
+    obj["measurement"]["effect_size"] = 999                   # mutate the caller's nested dict
+    obj["evaluation_envelope"]["capsule_hash"] = "sha256:0"   # and the envelope
+    assert core.journal[-1].payload["measurement"]["effect_size"] != 999   # journal is frozen
+    assert hashing.snapshot_hash(core) == snap                # state unchanged
+
+
+def test_mutating_an_exported_journal_dict_cannot_rewrite_the_journal():
+    core = _kernel()
+    assert _submit16(core, _r13_event().to_journal()).accepted
+    exported = core.journal[-1].to_dict()
+    exported["payload"]["measurement"]["effect_size"] = -7    # mutate the EXPORT
+    assert core.journal[-1].payload["measurement"]["effect_size"] != -7
+
+
+def test_from_dict_does_not_alias_its_input():
+    import desi_layer9 as l9
+    src = {"operator": "method_trial_recorded", "proposal_type": "method_proposal",
+           "payload": {"measurement": {"effect_size": 0.03}}, "proposer": "k", "provenance": {},
+            "target_objects": [], "actor": "k", "governance_approved": False, "reason": "",
+            "tick": 0}
+    entry = l9.JournalEntry.from_dict(src)
+    src["payload"]["measurement"]["effect_size"] = 42         # mutate the input dict
+    assert entry.payload["measurement"]["effect_size"] == 0.03
+
+
+def test_journal_replay_is_immune_to_external_mutation():
+    import desi_layer9 as l9
+    from desi_layer9 import hashing, persistence
+    core = _kernel()
+    obj = _r13_event().to_journal()
+    _submit16(core, obj)
+    snap = hashing.snapshot_hash(core)
+    obj["measurement"]["effect_size"] = 999                   # try to poison after the fact
+    replayed = persistence.replay([l9.JournalEntry.from_dict(e.to_dict()) for e in core.journal])
+    assert hashing.snapshot_hash(replayed) == snap            # replay reproduces the same state
+    assert len(replayed.method_trial_events()) == 1
+
+
+def _historical_v3_entry(trial_id="hist", rule_hash=None):
+    from desi_layer9 import ProposalType as PT
+    from desi_layer9.provenance import Provenance
+    from joni.autonomy.trial_event_schema import RULE_V2_HASH
+    body = _ev(trial_id=trial_id, epistemic_result="inconclusive",
+               measurement=_meas(0.03, ci=(-0.05, 0.08)),
+               decision=Decision("rule_v2", rule_hash or RULE_V2_HASH, "inconclusive")).to_dict()
+    return {"operator": "method_trial_recorded", "proposal_type": PT.METHOD_PROPOSAL.value,
+            "payload": body, "proposer": "kevin",
+            "provenance": Provenance.from_model(external=False, model_id="kevin").to_dict(),
+            "target_objects": [], "actor": "kevin", "governance_approved": False,
+            "reason": "", "tick": 0}
+
+
+def test_historical_v3_journal_migrates_to_v4_and_the_trial_reappears():
+    from joni.autonomy.trial_event_schema import load_migrated
+    core, log = load_migrated({"journal": [_historical_v3_entry("hist-1")], "tick": 0})
+    evs = core.method_trial_events()
+    assert len(evs) == 1 and evs[0]["schema_version"] == "method_trial_recorded_v4"
+    assert evs[0]["payload"]["measurement"]["effect_size"] == 0.03   # body preserved verbatim
+    assert log and log[0]["migration"] == "trial_event_journal_migration_v1"
+
+
+def test_migration_is_fail_closed_on_an_unknown_historical_rule():
+    import pytest
+
+    from joni.autonomy.trial_event_schema import JournalMigrationError, migrate_journal_entries
+    with pytest.raises(JournalMigrationError):
+        migrate_journal_entries([_historical_v3_entry("bad", rule_hash="sha256:unknown")])
+
+
+def test_migration_introduces_no_submit_privilege_v3_still_unwritable():
+    # the migrator transforms the journal; it does NOT relax the write boundary. A raw v3 submission
+    # remains rejected.
+    core = _kernel()
+    assert not _submit16(core, _r13_event().to_dict()).accepted
+
+
+def test_a_raw_v3_journal_is_not_directly_replayable_without_migration():
+    # honest backward-compat: a historical v3 trial entry is NOT raw-replayable
+    # (only migration loads it). Replay rejects it; no trial event is reconstructed.
+    import desi_layer9 as l9
+    from desi_layer9 import persistence
+    replayed = persistence.replay([l9.JournalEntry.from_dict(_historical_v3_entry("h"))])
+    assert replayed.method_trial_events() == []

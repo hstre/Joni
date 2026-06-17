@@ -938,6 +938,67 @@ def seal_payload(payload: dict, registry=None) -> dict:
     return {**body, OPERATIONAL_ENVELOPE_KEY: operational_envelope_for(body)}   # not_evaluated
 
 
+# ================================================================================================ #
+# JOURNAL MIGRATION - a VERSIONED, fail-closed loader for historical v3 trial-event journals
+#   The kernel write-boundary is deterministic (only sealed v4 is writable), so an old, accepted v3
+#   METHOD_TRIAL_RECORDED entry is NOT raw-replayable. Backward COMPATIBILITY is provided as an
+#   explicit MIGRATION: this transform re-seals each v3 trial body to v4 (preserving the body
+#   verbatim) using KNOWN capsules, BEFORE replay - it never introduces a submit privilege and is
+#   fail-closed on an unknown historical rule.
+# ================================================================================================ #
+JOURNAL_MIGRATION_VERSION = "trial_event_journal_migration_v1"
+_TRIAL_OPERATOR_VALUE = "method_trial_recorded"
+
+
+class JournalMigrationError(Exception):
+    """A historical v3 trial entry cannot be migrated deterministically (fail-closed)."""
+
+
+def migrate_journal_entries(entries: list[dict], registry=None) -> tuple[list[dict], list[dict]]:
+    """Migrate persisted journal-entry dicts so a historical v3 METHOD_TRIAL_RECORDED entry becomes
+    a SEALED v4 entry (its body verbatim, re-sealed under its known capsule). Returns
+    ``(migrated_entries, log)``. Fail-closed: a v3 trial whose decision rule resolves to no known
+    capsule raises - it is never silently dropped or sealed with a null capsule. Non-trial and
+    already-v4 entries pass through unchanged. Introduces NO submit privilege."""
+    reg = DEFAULT_RULE_REGISTRY if registry is None else registry
+    out: list[dict] = []
+    log: list[dict] = []
+    for e in entries:
+        payload = e.get("payload") or {}
+        is_v3_trial = (e.get("operator") == _TRIAL_OPERATOR_VALUE
+                       and payload.get("schema_version") == SCHEMA_VERSION)
+        if not is_v3_trial:
+            out.append(e)
+            continue
+        d = payload.get("decision") or {}
+        if payload.get("epistemic_result") in RULE_EVALUABLE_RESULTS:
+            ch = _resolve_capsule_hash(reg, d.get("decision_rule_id"), d.get("decision_rule_hash"))
+            if ch is None:
+                raise JournalMigrationError(
+                    f"v3 trial '{payload.get('trial_id')}' cites rule "
+                    f"'{d.get('decision_rule_id')}'@'{d.get('decision_rule_hash')}' with no known "
+                    "capsule - fail-closed (cannot migrate to a trustworthy v4 seal)")
+        sealed = seal_payload(payload, reg)
+        out.append({**e, "payload": sealed})
+        log.append({"migration": JOURNAL_MIGRATION_VERSION, "trial_id": payload.get("trial_id"),
+                    "from": SCHEMA_VERSION, "to": JOURNAL_SCHEMA_VERSION,
+                    "seal": ENVELOPE_KEY if ENVELOPE_KEY in sealed else OPERATIONAL_ENVELOPE_KEY})
+    return out, log
+
+
+def load_migrated(doc: dict, registry=None):
+    """Load a persisted Layer-9 document, MIGRATING historical v3 trial entries to sealed v4 first,
+    then replaying. The migrated journal contains only writable (v4 / non-trial) entries, so the
+    deterministic write boundary accepts them without any replay privilege. The reconstructed state
+    is the UPGRADED (v4) state - the migration preserves the trial BODY verbatim, not the byte-
+    identical v3 snapshot. Returns ``(core, migration_log)``."""
+    from desi_layer9 import JournalEntry, persistence
+    migrated, log = migrate_journal_entries(doc.get("journal", []), registry)
+    core = persistence.replay([JournalEntry.from_dict(e) for e in migrated],
+                              tick=int(doc.get("tick", 0)))
+    return core, log
+
+
 def evaluate_payload(stored: dict, registry=None) -> dict:
     """Evaluate a STORED journal object from its SEALED envelope (never a live bridge):
     - an EPISTEMIC ``evaluation_envelope`` -> routed/verified via :func:`evaluate_envelope`;

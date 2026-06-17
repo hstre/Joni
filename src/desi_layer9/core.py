@@ -15,6 +15,7 @@ opened, not force-resolved. Methods become active only after trials + promotion.
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, field
 
 from . import policy
@@ -110,10 +111,19 @@ class JournalEntry:
     reason: str = ""
     tick: int = 0
 
+    def __post_init__(self):
+        # DEEP-FREEZE the replayable content on entry: the journal must not share nested references
+        # with the caller's payload (or any earlier export), so no external mutation can rewrite the
+        # authoritative journal after the fact. state = f(seed, journal) is then immune to aliasing.
+        self.payload = copy.deepcopy(self.payload)
+        self.provenance = copy.deepcopy(self.provenance)
+        self.target_objects = tuple(self.target_objects)
+
     def to_dict(self) -> dict:
         return {
             "operator": self.operator.value, "proposal_type": self.proposal_type.value,
-            "payload": self.payload, "proposer": self.proposer, "provenance": self.provenance,
+            "payload": copy.deepcopy(self.payload), "proposer": self.proposer,
+            "provenance": copy.deepcopy(self.provenance),
             "target_objects": list(self.target_objects), "actor": self.actor,
             "governance_approved": self.governance_approved, "reason": self.reason,
             "tick": self.tick,
@@ -121,10 +131,11 @@ class JournalEntry:
 
     @classmethod
     def from_dict(cls, d: dict) -> JournalEntry:
+        # __post_init__ deep-copies, so the reconstructed entry never aliases the input dict.
         return cls(
             operator=Operator(d["operator"]), proposal_type=ProposalType(d["proposal_type"]),
-            payload=dict(d.get("payload", {})), proposer=d.get("proposer", "unknown"),
-            provenance=dict(d.get("provenance", {})),
+            payload=d.get("payload", {}), proposer=d.get("proposer", "unknown"),
+            provenance=d.get("provenance", {}),
             target_objects=tuple(d.get("target_objects", ())),
             actor=d.get("actor", "system"), governance_approved=bool(d.get("governance_approved")),
             reason=d.get("reason", ""), tick=int(d.get("tick", 0)),
@@ -210,13 +221,16 @@ class Layer9:
     # -- the ONLY public write path ----------------------------------------- #
     def submit(self, proposal: Proposal, *, actor: str = "system",
                governance_approved: bool = False) -> Decision:
-        # 0. journal the operation - the replayable unit (state = f(seed, journal)). Every gate rule
-        # is DETERMINISTIC in the proposal alone, so a rejected op reproduces its rejection on
-        # replay (it leaves only an audited rejected Proposal) - state stays f(seed, journal)
-        # with no privileged replay path.
+        # SEVER the proposal's payload from the caller's object up-front, so neither the stored
+        # Proposal object NOR the journal can be rewritten by a later mutation of the caller's dict.
+        proposal.payload = copy.deepcopy(proposal.payload)
+        # 0. journal the operation - the replayable unit (state = f(seed, journal)). The
+        # JournalEntry deep-freezes its payload (no shared nested refs). Every gate rule is
+        # in the proposal alone, so a rejected op reproduces its rejection on replay (it leaves only
+        # rejected Proposal) - state stays f(seed, journal) with no privileged replay path.
         self.journal.append(JournalEntry(
             operator=proposal.requested_operator, proposal_type=proposal.proposal_type,
-            payload=dict(proposal.payload), proposer=proposal.proposer,
+            payload=proposal.payload, proposer=proposal.proposer,
             provenance=proposal.provenance.to_dict(),
             target_objects=tuple(proposal.target_objects), actor=actor,
             governance_approved=governance_approved, reason=proposal.reason, tick=self.tick,
