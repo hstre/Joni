@@ -8,7 +8,7 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `PENDING_R18` (review round 18) |
+| **Baseline candidate (code)** | `6fe3020` (review round 18) |
 | **Superseded candidates** | `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
@@ -16,7 +16,7 @@ stays locked until then.
 Full diff to review:
 
 ```
-git diff 282d541 PENDING_R18 -- src/desi_layer9 \
+git diff 282d541 6fe3020 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
@@ -25,7 +25,7 @@ git diff 282d541 PENDING_R18 -- src/desi_layer9 \
 > **blocked** (586 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive PENDING_R18`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive 6fe3020`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
 
@@ -478,7 +478,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `PENDING_R18`: **593 passed / 2 skipped with the `desi` extra; 586 passed / 7 skipped
+Full suite at `6fe3020`: **593 passed / 2 skipped with the `desi` extra; 586 passed / 7 skipped
 with `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -557,7 +557,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..PENDING_R18` and this package.
+1. Review the diff `282d541..6fe3020` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
