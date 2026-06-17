@@ -1941,10 +1941,16 @@ def _demo_doc_and_catalog():
     return doc, catalog
 
 
+def _migrate_via(doc, catalog):
+    """Construct a migrator with the trust root bound AT CONSTRUCTION (the trusted-startup DI path),
+    then load the untrusted document - never per-call catalog injection."""
+    from joni.autonomy.trial_event_schema import HistoricalJournalMigrator
+    return HistoricalJournalMigrator(trusted_catalog=catalog).load(doc)
+
+
 def test_historical_v3_journal_migrates_to_v4_and_the_trial_reappears():
-    from joni.autonomy.trial_event_schema import load_migrated
     doc, cat = _demo_doc_and_catalog()
-    core, log = load_migrated(doc, trusted_attestations=cat)
+    core, log = _migrate_via(doc, cat)
     evs = core.method_trial_events()
     assert len(evs) == 1 and evs[0]["schema_version"] == "method_trial_recorded_v4"
     assert evs[0]["payload"]["measurement"]["effect_size"] == 0.03   # body preserved verbatim
@@ -1958,12 +1964,12 @@ def test_migration_is_fail_closed_on_an_unknown_capsule():
     from joni.autonomy.trial_event_schema import (
         JournalMigrationError,
         _full_entry_hash,
-        migrate_journal_entries,
+        _migrate_journal_entries,
     )
     bad = _raw_v3_entry(_v3_body("bad", rule_hash="sha256:unknown"))
     accepted = {_full_entry_hash(bad)}
     with pytest.raises(JournalMigrationError):
-        migrate_journal_entries([bad], accepted_full_entry_hashes=accepted)
+        _migrate_journal_entries([bad], None, accepted)
 
 
 def test_migration_introduces_no_submit_privilege_v3_still_unwritable():
@@ -2156,7 +2162,7 @@ def test_changing_journal_metadata_of_an_attested_body_is_refused():
     import pytest
 
     from desi_layer9.provenance import Provenance
-    from joni.autonomy.trial_event_schema import JournalMigrationError, load_migrated
+    from joni.autonomy.trial_event_schema import JournalMigrationError
     tampers = [
         {"actor": "mallory"},
         {"proposer": "mallory"},
@@ -2172,7 +2178,7 @@ def test_changing_journal_metadata_of_an_attested_body_is_refused():
         doc, cat = _demo_doc_and_catalog()
         doc["journal"][0].update(tamper)                      # body + attestation untouched
         with pytest.raises(JournalMigrationError):
-            load_migrated(doc, trusted_attestations=cat)
+            _migrate_via(doc, cat)
 
 
 def test_reusing_the_pinned_snapshot_string_with_a_different_journal_is_refused():
@@ -2181,11 +2187,11 @@ def test_reusing_the_pinned_snapshot_string_with_a_different_journal_is_refused(
     # different journal does not migrate.
     import pytest
 
-    from joni.autonomy.trial_event_schema import JournalMigrationError, load_migrated
+    from joni.autonomy.trial_event_schema import JournalMigrationError
     doc, cat = _demo_doc_and_catalog()
     doc["journal"].append(_raw_v3_entry(_v3_body("smuggled")))   # add an entry, keep the snapshot
     with pytest.raises(JournalMigrationError):
-        load_migrated(doc, trusted_attestations=cat)
+        _migrate_via(doc, cat)
 
 
 def test_the_production_catalog_is_empty_so_no_demo_document_migrates():
@@ -2203,7 +2209,7 @@ def test_the_production_catalog_is_empty_so_no_demo_document_migrates():
     doc, cat = _demo_doc_and_catalog()
     with pytest.raises(JournalMigrationError):
         load_migrated(doc)                                    # production catalog -> fail-closed
-    core, _ = load_migrated(doc, trusted_attestations=cat)    # explicit dev catalog -> migrates
+    core, _ = _migrate_via(doc, cat)                          # explicit dev catalog -> migrates
     assert len(core.method_trial_events()) == 1
 
 
@@ -2217,7 +2223,6 @@ def test_a_forged_attestation_for_a_deadbeef_document_is_refused():
         _full_entry_hash,
         _journal_hash,
         build_historical_attestation,
-        load_migrated,
     )
     entry = _raw_v3_entry(_v3_body("evil"))
     doc = {"journal": [entry], "tick": 0, "snapshot_hash": "sha256:DEADBEEF"}
@@ -2232,7 +2237,7 @@ def test_a_forged_attestation_for_a_deadbeef_document_is_refused():
     doc["historical_attestation"] = forged
     _, cat = _demo_doc_and_catalog()                          # only the demo digest is allowlisted
     with pytest.raises(JournalMigrationError):
-        load_migrated(doc, trusted_attestations=cat)
+        _migrate_via(doc, cat)
 
 
 def test_a_tampered_attestation_field_is_rejected():
@@ -2240,11 +2245,11 @@ def test_a_tampered_attestation_field_is_rejected():
     # fails, and even rebuilding the digest fails (it is no longer the allowlisted anchor).
     import pytest
 
-    from joni.autonomy.trial_event_schema import JournalMigrationError, load_migrated
+    from joni.autonomy.trial_event_schema import JournalMigrationError
     doc, cat = _demo_doc_and_catalog()
     doc["historical_attestation"]["kernel_release"] = "ATTACKER"   # field changed, old digest kept
     with pytest.raises(JournalMigrationError):
-        load_migrated(doc, trusted_attestations=cat)
+        _migrate_via(doc, cat)
 
 
 def test_a_caller_cannot_self_declare_acceptance_with_its_own_verifier():
@@ -2257,7 +2262,6 @@ def test_a_caller_cannot_self_declare_acceptance_with_its_own_verifier():
         _full_entry_hash,
         _journal_hash,
         build_historical_attestation,
-        load_migrated,
     )
     entry = _raw_v3_entry(_v3_body("mine"))
     doc = {"journal": [entry], "tick": 0, "snapshot_hash": "sha256:" + "a" * 64}
@@ -2272,35 +2276,85 @@ def test_a_caller_cannot_self_declare_acceptance_with_its_own_verifier():
     doc["historical_attestation"] = own
     _, cat = _demo_doc_and_catalog()                          # only the demo verifier allowlisted
     with pytest.raises(JournalMigrationError):
-        load_migrated(doc, trusted_attestations=cat)
+        _migrate_via(doc, cat)
 
 
-def test_load_migrated_takes_no_caller_supplied_verifier_function():
-    # the historical_verifier=lambda: True escape hatch stays GONE; trust is an injected list of
-    # pinned digests, never an executable.
+def test_load_migrated_takes_no_caller_supplied_trust_root():
+    # the production entry point takes ONLY the document (+ registry): no historical_verifier
+    # callable AND no per-call trusted_attestations catalog. Trust is bound at construction.
     import inspect
 
     from joni.autonomy.trial_event_schema import load_migrated
     params = inspect.signature(load_migrated).parameters
     assert "historical_verifier" not in params
-    assert "trusted_attestations" in params                   # an allowlist, not a function
+    assert "trusted_attestations" not in params               # cannot hand it a trust root per call
+    assert set(params) <= {"doc", "registry"}
+
+
+def test_a_caller_cannot_authorise_itself_via_the_production_entry_point():
+    # the reviewer's reproduction: a self-made document + a self-made attestation. Under the
+    # PRODUCTION entry point load_migrated(doc) (empty pinned catalog) this is fail-closed; there is
+    # no parameter through which the caller can supply its own trust root.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        _PRODUCTION_MIGRATOR,
+        JournalMigrationError,
+        load_migrated,
+    )
+    doc, _cat = _demo_doc_and_catalog()                       # a fully self-consistent attestation
+    assert _PRODUCTION_MIGRATOR.trusted_verifier_ids == ()    # production trusts nothing
+    with pytest.raises(JournalMigrationError):
+        load_migrated(doc)                                    # no way to inject a catalog: refused
+
+
+def test_the_trust_root_is_frozen_at_migrator_construction():
+    # mutating the source catalog AFTER constructing the migrator cannot grow what it trusts; the
+    # migrator only accepts a catalog bound at construction (not per load() call).
+    import inspect
+
+    from joni.autonomy.trial_event_schema import HistoricalJournalMigrator
+    doc, cat = _demo_doc_and_catalog()
+    source = dict(cat)
+    migrator = HistoricalJournalMigrator(trusted_catalog=source)
+    source.clear()                                            # tamper the original catalog later
+    source["injected"] = {"x": 1}
+    core, _ = migrator.load(doc)                              # still migrates (frozen snapshot)
+    assert len(core.method_trial_events()) == 1
+    assert "injected" not in migrator.trusted_verifier_ids
+    assert "doc" in inspect.signature(migrator.load).parameters
+    assert "trusted_catalog" not in inspect.signature(migrator.load).parameters   # only on __init__
+
+
+def test_the_full_document_is_bound_including_schema_version():
+    # BLOCKER-2 (r22): source_document_hash covers EVERY persisted top-level field, not a subset.
+    # Adding/altering schema_version (or any other field) breaks the binding.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import JournalMigrationError
+    doc, cat = _demo_doc_and_catalog()
+    doc["schema_version"] = 1                                 # a top-level field not in the subset
+    with pytest.raises(JournalMigrationError):
+        _migrate_via(doc, cat)
 
 
 def test_an_unattested_v3_command_fails_closed():
     # a v3 command with NO attested accepted set cannot be migrated to accepted v4 - fail-closed.
     import pytest
 
-    from joni.autonomy.trial_event_schema import JournalMigrationError, migrate_journal_entries
+    from joni.autonomy.trial_event_schema import (
+        JournalMigrationError,
+        _migrate_journal_entries,
+    )
     with pytest.raises(JournalMigrationError):
-        migrate_journal_entries([_raw_v3_entry(_v3_body("x"))])
+        _migrate_journal_entries([_raw_v3_entry(_v3_body("x"))], None, set())
 
 
 def test_the_migration_log_documents_the_full_attestation_chain():
     # the migration is auditable: the log records the pinned digest + kernel/policy artifacts +
     # document/journal/snapshot hashes, and per entry the attested FULL-entry hash + capsule.
-    from joni.autonomy.trial_event_schema import load_migrated
     doc, cat = _demo_doc_and_catalog()
-    _, log = load_migrated(doc, trusted_attestations=cat)
+    _, log = _migrate_via(doc, cat)
     att = log[0]["attestation"]
     for k in ("verifier_id", "kernel_release", "gate_policy_version",
               "historical_kernel_artifact_hash", "gate_policy_artifact_hash",
@@ -2317,7 +2371,7 @@ def test_the_migration_log_documents_the_full_attestation_chain():
 def test_migration_output_does_not_alias_its_input():
     # the migrated entries are FULLY deep-copied; mutating the input after migration cannot reach
     # into the migrated output (and vice versa).
-    from joni.autonomy.trial_event_schema import _full_entry_hash, migrate_journal_entries
+    from joni.autonomy.trial_event_schema import _full_entry_hash, _migrate_journal_entries
     demo = _raw_v3_entry(_v3_body("alias"))
     passthrough = {"operator": "noop", "payload": {"a": {"b": 1}},
                    "proposal_type": "method_proposal", "proposer": "k", "provenance": {},
@@ -2325,7 +2379,7 @@ def test_migration_output_does_not_alias_its_input():
                    "reason": "", "tick": 0}
     src = [demo, passthrough]
     accepted = {_full_entry_hash(demo)}
-    migrated, _ = migrate_journal_entries(src, accepted_full_entry_hashes=accepted)
+    migrated, _ = _migrate_journal_entries(src, None, accepted)
     src[0]["payload"]["measurement"]["effect_size"] = 12345   # mutate the v3 input post-migration
     src[1]["payload"]["a"]["b"] = 999                         # mutate the pass-through input
     assert migrated[0]["payload"]["measurement"]["effect_size"] == 0.03   # sealed body unchanged
