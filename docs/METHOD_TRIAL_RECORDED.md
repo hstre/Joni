@@ -217,13 +217,20 @@ enforced** to equal `python_semantics`, and the whole numeric environment is fol
 `exec_env_hash` and `capsule_hash`. A swapped loader, tampered loader bytes, a changed numeric flag,
 or a wrong Python version → `"unverifiable"`.
 
-**Stored evaluation envelope (replay uses it, not a live bridge).** `MethodTrialRecorded.to_journal()`
-embeds the stable envelope alongside the payload as the canonical **stored** form; replay
-(`evaluate_payload`) reads the **embedded** envelope and never the live `envelope_for_payload`
-(which is writer-side only). `payload_hash` binds the payload, so a post-write tamper →
-`"unverifiable"`. Evidence comes straight from the stored `(envelope, payload)` pair via
-`verify_payloads` → `aggregate`; no current dataclass reconstruction is a precondition for
-aggregation (dataclasses stay display-only).
+**Sealed v4 journal (enforced at the kernel gate).** The canonical **stored** form is
+`method_trial_recorded_v4`: `to_journal()`/`seal_payload()` embed the stable evaluation envelope
+(with the mandatory whole-capsule `capsule_hash` and the body binding `evaluation_body_hash`)
+alongside the body. The Layer-9 gate (`validate_evaluation_envelope`) **requires** the envelope for
+v4 and rejects a v4 event with no envelope or whose `evaluation_body_hash` does not bind the body, so
+the journal never holds a "sealed" event that is not actually sealed. Replay (`evaluate_payload`)
+reads the **embedded** envelope and **never** the live `envelope_for_payload` (writer-side only); a
+later change to that bridge cannot re-route a stored event. A v3 (envelope-less) object is
+`legacy_unsealed`: visible, but never reconstructed into a verified verdict and never aggregated.
+Evidence comes straight from the stored `(envelope, body)` pair via `verify_payloads` → `aggregate`
+(unsealed objects are skipped); no dataclass reconstruction is a precondition (dataclasses stay
+display-only). `capsule_hash` is the mandatory routing key, so two capsules with the same rule_hash
+but different validator/contract/decoder/loader coexist. NB: `evaluation_body_hash` (body only) is a
+**different scope** from the kernel's `payload_hash` (whole stored object).
 
 **Input adapter.** The transform from the decoder's block dicts to the read-only object view the rule
 consumes (`build_view`) is its own **byte-pinned** artifact (`view_adapter_v1.pysrc`), hashed into

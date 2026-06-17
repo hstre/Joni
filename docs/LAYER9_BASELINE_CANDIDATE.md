@@ -8,29 +8,58 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `72a5d5f` (review round 14) |
-| **Superseded candidates** | `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `571cc7b` (review round 15) |
+| **Superseded candidates** | `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 72a5d5f -- src/desi_layer9 \
+git diff 282d541 571cc7b -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
-Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `72a5d5f` and at this doc's commit.
-
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (557 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (564 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive 72a5d5f`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive 571cc7b`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 15 — the SEALED v4 journal is enforced at the kernel gate (vs `72a5d5f`)
+
+The capsule was closed but **unused at the real entry point**: Layer 9 stored plain v3 payloads
+without the sealed envelope, so replay fell back to the live bridge; the envelope addressed only the
+rule; and unsealed events could still become verified evidence. All fixed; the r6 rule hash is
+unchanged (`sha256:2438455f…`). This round changes the **kernel gate** (`desi_layer9`, which is
+outside the protected manifest) — it hardens the gate; it does **not** enable a writer.
+
+1. **Sealed v4 journal format, enforced at the gate.** `method_trial_recorded_v4` stores the body
+   PLUS an embedded `evaluation_envelope` (with `capsule_hash` + `evaluation_body_hash`).
+   `to_journal()`/`seal_payload()` produce it; the Layer-9 gate (`validate_evaluation_envelope`,
+   called from `_h_method_trial_recorded`) **requires** it for v4 and rejects a v4 event with no
+   envelope or whose `evaluation_body_hash` does not bind the body. Replay reads the **embedded**
+   envelope; changing the live `envelope_for_payload` cannot re-route a stored event. v3 events are
+   `legacy_unsealed`.
+2. **`capsule_hash` is the mandatory routing key.** The registry is keyed by the composite
+   `capsule_hash`, so two capsules with the **same** rule_hash but a different
+   validator/contract/decoder/loader coexist (no hash tricks). The envelope stores `capsule_hash`;
+   `evaluate_envelope` selects by it (missing/unknown → `unverifiable`) and cross-checks
+   rule_id/rule_hash for transparency.
+3. **No verified evidence from a live-reconstructed envelope.** `evaluate_payload` returns
+   `legacy_unsealed` for an envelope-less object; `verify_payloads` **skips** unsealed objects — they
+   are visible but never produce evidence, sufficiency or DESi weight.
+4. **Distinct hash names.** The envelope's body binding is `evaluation_body_hash` (body only) — a
+   different scope from the kernel's `payload_hash` (whole stored object); gate and evaluator share
+   one canonicalisation.
+
+New artifact: none (v4 schema + gate logic). Round-15 tests (7): kernel stores the sealed envelope
+and replay ignores the live bridge; gate rejects a v4 event without an envelope; gate rejects a
+non-binding body hash; two same-rule capsules coexist; `capsule_hash` is the mandatory routing key;
+`legacy_unsealed` events never become evidence; `evaluation_body_hash` is a distinct scope.
 
 ### Review round 14 — loader trust-root, exec-env closure, python pinning, stored envelope (vs `c1e0d8e`)
 
@@ -308,7 +337,8 @@ minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; re
 | `ids.py` | `MTE` id prefix | deterministic ids for the new record |
 | `objects.py` | `MethodTrialEvent` dataclass | immutable record: canonical-JSON payload, `record_authority` vs `epistemic_authority` |
 | `transitions.py` | `METHOD_TRIAL_EVENT → _IMMUTABLE_RECORD` | registered transitionless (append-only) |
-| `trial_event_validation.py` (new) | structural gate validator + `canonical_payload` | one supported schema version; unknown → reject; canonicalisation |
+| `trial_event_validation.py` (new) | structural gate validator + `canonical_payload`; **r15:** `method_trial_recorded_v4` + `validate_evaluation_envelope` + `evaluation_body_hash` | v3 (legacy) and v4 (SEALED, envelope mandatory + bound) supported; unknown → reject; canonicalisation |
+| `core.py` (r15) | `_h_method_trial_recorded` enforces `validate_evaluation_envelope` for v4 | a v4 event without a bound evaluation envelope is refused at the gate (never stored) |
 | `core.py` | `_h_method_trial_recorded`, `method_trial_events()`, `trial_event_hashes()`, optional 4-tuple handler return | append-only handler (idempotent on `trial_id`, mutates **no** counter), read-only envelope, named hashes, auditable idempotent-retry decision tag |
 | `__init__.py` | export `MethodTrialEvent` | package surface |
 
@@ -357,7 +387,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `72a5d5f`: **564 passed / 2 skipped with the `desi` extra; 557 passed / 7 skipped with
+Full suite at `571cc7b`: **571 passed / 2 skipped with the `desi` extra; 564 passed / 7 skipped with
 `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -417,7 +447,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..72a5d5f` and this package.
+1. Review the diff `282d541..571cc7b` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
