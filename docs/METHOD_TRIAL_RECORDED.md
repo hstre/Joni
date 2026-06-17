@@ -227,8 +227,17 @@ The Layer-9 gate (`validate_v4_seal`) requires + binds the seal. The write bound
 **deterministic**: a v3 `METHOD_TRIAL_RECORDED` is **never** writable (only sealed v4 is) — there is
 no `replaying`/bypass parameter on `submit` and no `_replaying` state, so a rejected v3 reproduces
 its rejection on replay (leaving only an audited rejected `Proposal`) and `state = f(seed, journal)`
-holds. Pre-v4 v3 data migrates by **re-sealing** to v4 (`seal_payload`); the projector still reads
-raw v3 as `legacy_unsealed`. An operational seal's `operational_class` is **derived from the body**
+holds. **`submit()` is the only writer and it is the sole mutation path**: it deep-copies the **whole**
+incoming proposal on entry (never storing the caller's instance), the journal entry is a **frozen**
+record over canonical-JSON **bytes**, the public `journal` is a read-only tuple and `objects` a
+read-only mapping, and `get()`/`all()` hand back deep copies — so no post-submit mutation of the
+caller's proposal, a returned object, or the journal list can rewrite authoritative state (snapshot,
+ledger chain and replay stay identical). Pre-v4 v3 data migrates by **re-sealing** to v4
+(`seal_payload`); the projector still reads raw v3 as `legacy_unsealed`. Migration is bound to a
+**trusted historical source**: `load_migrated()` refuses a document carrying a `snapshot_hash` unless
+a `historical_verifier` confirms it, and `migrate_journal_entries` requires a per-entry
+`historical_decision` attestation (`accepted` + `gate_policy_version`) — an unattested entry fails
+closed and a historically-rejected one is dropped, never resealed as accepted. An operational seal's `operational_class` is **derived from the body**
 (execution/protocol status) and checked by the gate, so a writer cannot mislabel a technical failure
 as merely unevaluated. Replay (`evaluate_payload`) reads the **embedded** envelope
 and **never** the live `envelope_for_payload`; a later change to that bridge cannot re-route a stored

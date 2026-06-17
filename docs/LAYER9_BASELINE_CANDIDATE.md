@@ -8,26 +8,65 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `6fe3020` (review round 18) |
-| **Superseded candidates** | `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `5e385a8` (review round 19) |
+| **Superseded candidates** | `6fe3020` (r18) · `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 6fe3020 -- src/desi_layer9 \
+git diff 282d541 5e385a8 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (586 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (597 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive 6fe3020`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive 5e385a8`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 19 — TRUE state immutability + a trusted migration source (vs `6fe3020`)
+
+Round 18 was rejected on two grounds: *"a deep copy is not immutability"* — the authoritative state
+was still rewritable, because `submit()` stored the caller's **own** Proposal instance (so a
+post-submit `proposal.payload[...] = 999` changed the snapshot with no operator/ledger/audit) and the
+journal was list-mutable with in-place-rewritable entries — and the migrator *trusted itself*:
+`load_migrated()` silently ignored a present `snapshot_hash` (a `sha256:DEADBEEF` document still
+migrated) and could not tell a historically-accepted v3 command from a rejected one. Both closed; the
+r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **`submit()` is now the only writer, and it severs the WHOLE proposal.** The first thing `submit()`
+   does is `copy.deepcopy(proposal)`, so Layer 9 never stores the instance the caller still holds; a
+   later mutation of the caller's proposal (or its nested payload) cannot change authoritative state.
+2. **The journal is structurally immutable.** `JournalEntry` is a **frozen** dataclass that stores
+   canonical-JSON **bytes** (`payload_canonical`) and reconstructs the payload on read, so a
+   `entry.payload[...] = 777` mutates only a throw-away parsed view and rebinding a field raises. The
+   public `journal` is a read-only **tuple** (no `append`/`pop`/`clear`) and `objects` is a read-only
+   `MappingProxyType`; `get()`/`all()` return independent deep copies. The trial record itself stores
+   its payload as an immutable canonical string.
+3. **Migration is bound to a trusted historical source (fail-closed).** `load_migrated(doc)` no longer
+   ignores a present `snapshot_hash`: if the document carries one, a passing
+   `historical_verifier(doc)` is **mandatory**, otherwise the load is refused (the `DEADBEEF`
+   document is rejected). `migrate_journal_entries` requires a per-entry `historical_decision`
+   attestation (`accepted` + `gate_policy_version`): an **unattested** v3 command fails closed, a
+   command attested as historically **rejected** is **dropped** (never resealed as accepted v4), and an
+   unknown capsule still fails closed. The migration log documents the trusted source
+   (`gate_policy_version`) and the capsule it bound to.
+4. **Migration output no longer aliases its input** (the secondary r18 blocker): the input payload is
+   deep-copied before sealing and the sealed body is re-copied, so mutating the input after migration
+   cannot reach into the migrated output (or vice versa).
+
+New artifact: none (kernel journal/immutability + the joni-level migration loader). Round-19 tests
+(11): the six mandatory immutability vectors — original-proposal mutation, `get()`-result mutation,
+`all()`-result mutation, in-place journal-payload mutation, journal-list mutation, and that snapshot +
+ledger chain + a fresh replay stay identical after every vector — plus: a present `snapshot_hash` is
+refused without a passing verifier; a historically-rejected v3 command is not resealed as accepted v4;
+an unattested v3 command fails closed; the migration log documents source/policy/capsule; the
+migration output does not alias its input.
 
 ### Review round 18 — journal immutability (no aliasing) + honest, versioned v3→v4 migration (vs `d11515a`)
 
@@ -418,7 +457,7 @@ ready pair exposed; partial-overlap & fully-shared deps → not independent; dis
 minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; real verdict without
 `decision_rule_hash` rejected; `not_evaluated` stored without measurement values.
 
-## Changed kernel files (vs `282d541`) — 7 files, +189 / −4
+## Changed kernel files (vs `282d541`) — 7 files, +654 / −45
 
 | file | change | why |
 |---|---|---|
@@ -427,7 +466,7 @@ minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; re
 | `objects.py` | `MethodTrialEvent` dataclass | immutable record: canonical-JSON payload, `record_authority` vs `epistemic_authority` |
 | `transitions.py` | `METHOD_TRIAL_EVENT → _IMMUTABLE_RECORD` | registered transitionless (append-only) |
 | `trial_event_validation.py` (new) | structural gate + `canonical_payload`; **r15-17:** `method_trial_recorded_v4`, `validate_v4_seal` (epistemic **or** operational), `evaluation_body_hash`, `derive_operational_class` | v4 SEALED; EXACTLY ONE seal, body-bound; **operational_class derived from the body**; unknown → reject |
-| `core.py` (r15-18) | `_h_method_trial_recorded` enforces `validate_v4_seal`; a **DETERMINISTIC v4-only write boundary** (no `replaying`/`_replaying`); **`JournalEntry` deep-freezes its payload** (no aliasing) | a v4 event without a bound seal is refused; **v3 is never a writable trial event**; the journal cannot be rewritten via a caller/export reference; v3 data migrates (`load_migrated`) to v4 |
+| `core.py` (r15-19) | `_h_method_trial_recorded` enforces `validate_v4_seal`; a **DETERMINISTIC v4-only write boundary** (no `replaying`/`_replaying`); **`submit()` deep-copies the whole incoming proposal** (severs the caller); a **frozen** `JournalEntry` storing canonical bytes; read-only `journal` tuple + `objects` mapping; `get()`/`all()` deep-copy | a v4 event without a bound seal is refused; **v3 is never a writable trial event**; **`submit()` is the only writer** — no caller/export/journal-list reference can rewrite authoritative state; v3 data migrates (`load_migrated`) to v4 |
 | `core.py` | `_h_method_trial_recorded`, `method_trial_events()`, `trial_event_hashes()`, optional 4-tuple handler return | append-only handler (idempotent on `trial_id`, mutates **no** counter), read-only envelope, named hashes, auditable idempotent-retry decision tag |
 | `__init__.py` | export `MethodTrialEvent` | package surface |
 
@@ -478,7 +517,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `6fe3020`: **593 passed / 2 skipped with the `desi` extra; 586 passed / 7 skipped
+Full suite at `5e385a8`: **604 passed / 2 skipped with the `desi` extra; 597 passed / 7 skipped
 with `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -500,7 +539,9 @@ journal_compatibility:
   backward_readable: true                         # new code, old journal (claims/conflicts/legacy)
   trial_events_v3_backward_readable: false        # an accepted v3 trial event is NOT raw-replayable
   trial_events_v3_migration: required             # load via load_migrated() -> re-sealed to v4
-  trial_events_v3_migration_failure_mode: fail_closed_on_unknown_capsule
+  trial_events_v3_migration_trust_source: required   # per-entry historical_decision attestation
+  trial_events_v3_migration_failure_mode: fail_closed_on_unknown_capsule_or_missing_attestation
+  trial_events_v3_migration_snapshot_hash: verified_or_refused   # present hash needs a verifier
   forward_readable: false                         # old code, new journal
   failure_mode: fail_closed_at_load
   downgrade_after_first_new_event: blocked        # IRREVERSIBLE
@@ -511,7 +552,11 @@ journal_compatibility:
 > and reconstructs no trial event. Backward compatibility for trial events is an **explicit,
 > versioned migration**: `load_migrated(doc)` re-seals each v3 trial body verbatim to a sealed v4
 > entry under its *known* capsule (fail-closed on an unknown historical rule) **before** replay,
-> introducing no submit privilege. The reconstructed state is the upgraded (v4) state — the trial
+> introducing no submit privilege. **(r19)** migration is additionally bound to a **trusted historical
+> source**: each v3 entry must carry a `historical_decision` attestation (`accepted` +
+> `gate_policy_version`) — an unattested entry fails closed, a historically-rejected one is dropped
+> (never resealed as accepted), and a document carrying a `snapshot_hash` is refused unless a
+> `historical_verifier` confirms it. The reconstructed state is the upgraded (v4) state — the trial
 > *data* is preserved, not the byte-identical v3 snapshot. (The base `282d541` contains no trial
 > events, so no production v3 trial-event journal exists.) General journals
 > (claims/conflicts/legacy `METHOD_TRIAL_RECORD`) remain directly backward-readable.
@@ -557,7 +602,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..6fe3020` and this package.
+1. Review the diff `282d541..5e385a8` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
