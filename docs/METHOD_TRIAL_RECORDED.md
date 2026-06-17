@@ -223,9 +223,14 @@ form is `method_trial_recorded_v4`. A v4 object carries **EXACTLY ONE** seal: an
 plus the body binding `evaluation_body_hash`) **or** an `operational_envelope` (a not-evaluated /
 technical move; `operational_class` + body binding, **no** capsule). `to_journal()`/`seal_payload()`
 choose the mode automatically, so they never emit a `capsule_hash=null` seal the gate would reject.
-The Layer-9 gate (`validate_v4_seal`) requires + binds the seal; a **fresh submission must be v4**
-(`core.submit(replaying=…)` — v3 is replay-only, so existing v3 journals stay loadable but a writer
-can no longer add a fresh unsealed event). Replay (`evaluate_payload`) reads the **embedded** envelope
+The Layer-9 gate (`validate_v4_seal`) requires + binds the seal. The write boundary is
+**deterministic**: a v3 `METHOD_TRIAL_RECORDED` is **never** writable (only sealed v4 is) — there is
+no `replaying`/bypass parameter on `submit` and no `_replaying` state, so a rejected v3 reproduces
+its rejection on replay (leaving only an audited rejected `Proposal`) and `state = f(seed, journal)`
+holds. Pre-v4 v3 data migrates by **re-sealing** to v4 (`seal_payload`); the projector still reads
+raw v3 as `legacy_unsealed`. An operational seal's `operational_class` is **derived from the body**
+(execution/protocol status) and checked by the gate, so a writer cannot mislabel a technical failure
+as merely unevaluated. Replay (`evaluate_payload`) reads the **embedded** envelope
 and **never** the live `envelope_for_payload`; a later change to that bridge cannot re-route a stored
 event. A v3 (unsealed) object is `legacy_unsealed`; a sealed operational object evaluates to
 `operational`; both are visible but never reconstructed into a verdict and never aggregated. Evidence

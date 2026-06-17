@@ -8,26 +8,51 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `2d327c3` (review round 16) |
-| **Superseded candidates** | `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `d11515a` (review round 17) |
+| **Superseded candidates** | `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 2d327c3 -- src/desi_layer9 \
+git diff 282d541 d11515a -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (573 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (578 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive 2d327c3`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive d11515a`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 17 — deterministic write boundary + body-bound operational class (vs `2d327c3`)
+
+The deepest issue was now in the state machine itself: the replay privilege was a public bypass, a
+rejected v3 was journaled then re-accepted on replay (breaking `state = f(seed, journal)`), and the
+operational class was writer-chosen. All fixed; the r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **The write boundary is DETERMINISTIC — no replay privilege.** `submit()` no longer takes a
+   `replaying` parameter and `Layer9` carries no `_replaying` state. A v3 `METHOD_TRIAL_RECORDED` is
+   **never** accepted (only sealed v4 is writable); the rule depends only on the proposal, so a v3
+   attempt reproduces the **same** rejection on replay. A rejected v3 leaves only an audited rejected
+   `Proposal` (no trial event), so replaying the journal yields an **identical snapshot** — the
+   `f(seed, journal)` invariant holds with no public or privileged bypass.
+2. **Pre-v4 v3 data migrates by RE-SEALING to v4** (`seal_payload`), never by a raw replay; the
+   projector still **reads** v3 payloads as `legacy_unsealed`. This is the explicit, tested migration
+   contract.
+3. **The operational class is DERIVED from the body.** The gate (`derive_operational_class`) computes
+   the class from execution/protocol status and requires `operational_envelope.operational_class` to
+   equal it — a writer can no longer mislabel a technical failure as merely unevaluated (or vice
+   versa).
+
+New artifact: none (kernel state-machine + gate logic). Round-17 tests (6): v3 is never writable
+under any public API (`submit` exposes no replay param); a rejected v3 attempt replays to an
+identical snapshot; v3 migrates by re-sealing; `operational_class` must be body-derived; each class
+is pinned to its execution state; `submit` carries no mutable replay state.
 
 ### Review round 16 — frozen live capsule, v4-only write boundary, operational seal mode (vs `571cc7b`)
 
@@ -369,8 +394,8 @@ minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; re
 | `ids.py` | `MTE` id prefix | deterministic ids for the new record |
 | `objects.py` | `MethodTrialEvent` dataclass | immutable record: canonical-JSON payload, `record_authority` vs `epistemic_authority` |
 | `transitions.py` | `METHOD_TRIAL_EVENT → _IMMUTABLE_RECORD` | registered transitionless (append-only) |
-| `trial_event_validation.py` (new) | structural gate + `canonical_payload`; **r15-16:** `method_trial_recorded_v4`, `validate_v4_seal` (epistemic **or** operational envelope), `evaluation_body_hash` | v3 (legacy) + v4 (SEALED; EXACTLY ONE of `evaluation_envelope`/`operational_envelope`, body-bound); unknown → reject |
-| `core.py` (r15-16) | `_h_method_trial_recorded` enforces `validate_v4_seal` for v4 **and a v4-only write boundary** (`submit(replaying=…)`); `persistence.replay` passes `replaying=True` | a v4 event without a bound seal is refused; a fresh **v3** submission is refused (replay-only); existing v3 journals still replay |
+| `trial_event_validation.py` (new) | structural gate + `canonical_payload`; **r15-17:** `method_trial_recorded_v4`, `validate_v4_seal` (epistemic **or** operational), `evaluation_body_hash`, `derive_operational_class` | v4 SEALED; EXACTLY ONE seal, body-bound; **operational_class derived from the body**; unknown → reject |
+| `core.py` (r15-17) | `_h_method_trial_recorded` enforces `validate_v4_seal`; a **DETERMINISTIC v4-only write boundary** (no `replaying` param, no `_replaying` state) | a v4 event without a bound seal is refused; **v3 is never a writable trial event** (it reproduces its rejection on replay → identical snapshot); v3 data migrates by re-sealing to v4 |
 | `core.py` | `_h_method_trial_recorded`, `method_trial_events()`, `trial_event_hashes()`, optional 4-tuple handler return | append-only handler (idempotent on `trial_id`, mutates **no** counter), read-only envelope, named hashes, auditable idempotent-retry decision tag |
 | `__init__.py` | export `MethodTrialEvent` | package surface |
 
@@ -419,7 +444,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `2d327c3`: **580 passed / 2 skipped with the `desi` extra; 573 passed / 7 skipped with
+Full suite at `d11515a`: **585 passed / 2 skipped with the `desi` extra; 578 passed / 7 skipped with
 `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -479,7 +504,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..2d327c3` and this package.
+1. Review the diff `282d541..d11515a` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
