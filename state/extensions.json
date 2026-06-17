@@ -508,7 +508,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 205,
+    "starved_topic": 206,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -5583,6 +5583,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-27"
+    },
+    {
+      "call_id": "joni-c209:789f82b4255e",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 4,
+      "conflict": "X-28"
     }
   ],
   "methods_seen": [
@@ -5785,9 +5794,24 @@
     "C-210|C-824",
     "C-210|C-825",
     "C-210|C-827",
+    "C-210|C-830",
+    "C-210|C-831",
+    "C-210|C-832",
+    "C-210|C-839",
+    "C-210|C-846",
     "C-211|C-235",
     "C-211|C-238",
+    "C-211|C-824",
+    "C-211|C-825",
+    "C-211|C-830",
+    "C-211|C-831",
+    "C-211|C-832",
+    "C-211|C-839",
+    "C-211|C-846",
     "C-235|C-238",
+    "C-235|C-824",
+    "C-235|C-825",
+    "C-235|C-830",
     "C-257|C-258",
     "C-257|C-259",
     "C-257|C-499",
@@ -6040,9 +6064,24 @@
     "C-210|C-824@bge-small-en-v1.5",
     "C-210|C-825@bge-small-en-v1.5",
     "C-210|C-827@bge-small-en-v1.5",
+    "C-210|C-830@bge-small-en-v1.5",
+    "C-210|C-831@bge-small-en-v1.5",
+    "C-210|C-832@bge-small-en-v1.5",
+    "C-210|C-839@bge-small-en-v1.5",
+    "C-210|C-846@bge-small-en-v1.5",
     "C-211|C-235@bge-small-en-v1.5",
     "C-211|C-238@bge-small-en-v1.5",
+    "C-211|C-824@bge-small-en-v1.5",
+    "C-211|C-825@bge-small-en-v1.5",
+    "C-211|C-830@bge-small-en-v1.5",
+    "C-211|C-831@bge-small-en-v1.5",
+    "C-211|C-832@bge-small-en-v1.5",
+    "C-211|C-839@bge-small-en-v1.5",
+    "C-211|C-846@bge-small-en-v1.5",
     "C-235|C-238@bge-small-en-v1.5",
+    "C-235|C-824@bge-small-en-v1.5",
+    "C-235|C-825@bge-small-en-v1.5",
+    "C-235|C-830@bge-small-en-v1.5",
     "C-257|C-258@bge-small-en-v1.5",
     "C-257|C-259@bge-small-en-v1.5",
     "C-257|C-499@bge-small-en-v1.5",
@@ -6447,6 +6486,7 @@
     "panel|peñaranda",
     "panel|phenotypes",
     "panel|phrase",
+    "panel|piao",
     "panel|pipeline",
     "panel|pipelines",
     "panel|policies",
@@ -6582,14 +6622,14 @@
     "software"
   ],
   "emerge_insufficient": {
-    "meth:intended": 1,
+    "meth:intended": 2,
     "panel|combine": 2,
     "panel|cost": 2,
-    "panel|generated": 2,
+    "panel|generated": 3,
     "panel|governance": 1,
     "panel|multimodal": 1,
-    "panel|nereids": 1,
-    "panel|project": 2,
+    "panel|nereids": 2,
+    "panel|project": 3,
     "panel|provided": 2,
     "panel|remains": 3,
     "panel|scaling": 2,
@@ -6687,22 +6727,21 @@
     "C-807",
     "C-834",
     "C-853",
+    "C-855",
+    "C-860",
     "C-99"
   ],
   "learned_queries": [
-    "panel single",
     "panel across",
     "panel factor",
     "panel recurs",
     "unsorted behave",
     "unsorted prevent",
     "unsorted accuracy",
-    "unsorted outputs"
+    "unsorted outputs",
+    "panel through-line"
   ],
   "hyp_seen_cycle": {
-    "C-600": 198,
-    "C-608": 199,
-    "C-621": 200,
     "C-632": 201,
     "C-643": 202,
     "C-650": 203,
@@ -6731,7 +6770,9 @@
     "C-821": 206,
     "C-834": 207,
     "C-852": 208,
-    "C-853": 208
+    "C-853": 208,
+    "C-855": 209,
+    "C-860": 209
   },
   "topics_domain_ok": [
     "abstracts",
@@ -6927,6 +6968,7 @@
     "C-852",
     "C-853",
     "C-855",
+    "C-860",
     "C-99"
   ],
   "methods_domain_ok": [
@@ -6981,40 +7023,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 581,
+    "active": 583,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 125,
-    "supporting_links": 125,
-    "emergent_total": 402,
+    "evidence_links": 127,
+    "supporting_links": 127,
+    "emergent_total": 403,
     "usable_semantic_rate": 1.0,
     "methods_total": 46,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 7989,
-    "cycle": 208
+    "objects": 8093,
+    "cycle": 209
   },
   "vitality_prev": {
-    "supports": 125,
+    "supports": 127,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 7989,
-    "active": 581,
-    "links": 125,
-    "emergent": 402
+    "objects": 8093,
+    "active": 583,
+    "links": 127,
+    "emergent": 403
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 9,
-      "verdict": "developing",
-      "development": 6,
-      "degeneration": 0,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 10,
       "verdict": "developing",
@@ -8407,6 +8442,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 209,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -8603,6 +8645,7 @@
     "X-21",
     "X-22",
     "X-27",
+    "X-28",
     "X-4",
     "X-5",
     "X-6",
