@@ -210,6 +210,12 @@ class MethodTrialRecorded:
             "note": self.note, "field_sources": dict(self.field_sources),
         }
 
+    def to_journal(self) -> dict:
+        """The canonical STORED form: the payload PLUS the embedded, stable evaluation envelope
+        (writer-side). Replay routes from the embedded envelope, not from a live bridge."""
+        payload = self.to_dict()
+        return {**payload, ENVELOPE_KEY: envelope_for_payload(payload)}
+
 
 # ================================================================================================ #
 # VALIDATION - STRUCTURE and allowed combinations ONLY. The epistemic verdict is NOT decided here
@@ -429,54 +435,65 @@ def _read_artifact(name: str) -> bytes:
 
 # ================================================================================================ #
 # PINNED LOADER + EXECUTION ENVIRONMENT - the byte-pinned sources are only meaningful together with
-# the COMPILER SEMANTICS they were validated under. The loader compiles with EXPLICIT future flags
-# and ``dont_inherit=True`` so the historical bytes execute identically regardless of the caller
-# module's future flags, optimisation, etc. The loader + environment are themselves hashed and bound
-# into the capsule, so a change to how artifacts are compiled is detectable.
+# the COMPILER SEMANTICS they were validated under. The loader is ITSELF a byte-pinned artifact
+# (``loader_v1.pysrc``): it is re-hashed and BOOTSTRAPPED FROM ITS BYTES at every use, so replacing
+# the live ``_exec_callable`` global cannot change what is executed. It takes NUMERIC future-flag
+# bits + optimise as arguments (no mutable global flag table) and compiles with dont_inherit=True
+# so execution never depends on the caller's __future__ flags. The loader + the FULL numeric
+# execution environment (incl. python_semantics) are hashed and bound into the capsule.
 # ================================================================================================ #
 ARTIFACT_LOADER_VERSION = "artifact_loader_v1"
-_FUTURE_FLAG = {"annotations": __import__("__future__").annotations.compiler_flag}
+# numeric compiler flag VALUES (not just names) - part of the hashed execution contract.
+_FUTURE_FLAG_BITS = {"annotations": __import__("__future__").annotations.compiler_flag}
+_LOADER_SRC = _read_artifact("loader_v1.pysrc")
+LOADER_HASH = _bytes_hash(_LOADER_SRC)
 
 
-def _future_flags_value(future_flags) -> int:
+def _future_flag_bits(future_flags) -> int:
+    """Sum the NUMERIC bits for the named flags. ``future_flags`` may be names or a {name: bits}
+    mapping; an unknown name fails closed (KeyError) at load."""
     bits = 0
     for name in future_flags:
-        bits |= _FUTURE_FLAG[name]              # unknown flag -> KeyError -> fail-closed at load
+        bits |= _FUTURE_FLAG_BITS[name]
     return bits
 
 
-def _exec_callable(src: bytes, name: str, *, future_flags=("annotations",), optimize: int = 0):
-    """Exec a SELF-CONTAINED byte-pinned source under EXPLICIT, inherited-free compiler
-    return one callable. ``dont_inherit=True`` means the result does not depend on the calling
-    module's ``__future__`` flags; the required flags (e.g. ``annotations``, so an un-imported
-    annotation like ``MethodTrialRecorded`` is never evaluated) are supplied explicitly. No
-    epistemically-relevant globals are injected."""
+def _bootstrap_loader(loader_src: bytes):
+    """Materialise the byte-pinned loader FROM ITS BYTES (not the module global), so a swapped live
+    loader cannot be the executed one. This tiny bootstrap is the irreducible trust root."""
     ns: dict = {}
-    code = compile(src.decode("utf-8"), f"<artifact:{name}>", "exec",
-                   flags=_future_flags_value(future_flags), dont_inherit=True, optimize=optimize)
-    exec(code, ns)                                                  # noqa: S102
-    return ns[name]
+    exec(compile(loader_src.decode("utf-8"), "<artifact:loader>", "exec"), ns)   # noqa: S102
+    return ns["load_callable"]
 
 
-# the loader's OWN source is hashed - a change to how historical bytes are compiled is detectable.
-LOADER_HASH = _bytes_hash(
-    (inspect.getsource(_future_flags_value) + inspect.getsource(_exec_callable)).encode("utf-8"))
+def _python_semantics() -> str:
+    import platform
+    return ".".join(platform.python_version_tuple()[:2])
 
 
 def _execution_environment(future_flags=("annotations",), optimize: int = 0) -> dict:
-    """The pinned compiler/runtime contract under which a capsule's bytes are executed."""
-    import platform
-    return {"language": "python",
-            "python_semantics": ".".join(platform.python_version_tuple()[:2]),
-            "future_flags": list(future_flags), "optimize": optimize,
-            "loader_version": ARTIFACT_LOADER_VERSION, "loader_hash": LOADER_HASH}
+    """The pinned compiler/runtime contract under which a capsule's bytes are executed. Carries the
+    NUMERIC flag values + python major.minor + the loader's byte hash."""
+    bits = {name: _FUTURE_FLAG_BITS[name] for name in future_flags}
+    return {"language": "python", "python_semantics": _python_semantics(),
+            "future_flags": bits, "future_flag_bits": _future_flag_bits(future_flags),
+            "optimize": optimize, "loader_version": ARTIFACT_LOADER_VERSION,
+            "loader_hash": LOADER_HASH}
 
 
 def _exec_env_hash(env: dict) -> str:
-    # python_semantics is recorded but EXCLUDED from the hash (it is host-descriptive, not a
-    # determinant of the bytes' meaning); loader_hash + flags + optimize ARE the binding semantics.
-    binding = {k: env[k] for k in ("future_flags", "optimize", "loader_version", "loader_hash")}
+    # the ENTIRE binding contract - numeric flags, optimise, loader id+hash AND python_semantics
+    # hashed; python_semantics is part of the capsule's meaning, not merely descriptive.
+    binding = {k: env.get(k) for k in ("future_flags", "future_flag_bits", "optimize",
+                                       "loader_version", "loader_hash", "python_semantics")}
     return _bytes_hash(_canonical_json_bytes(binding))
+
+
+def _exec_callable(src: bytes, name: str, *, future_flags=("annotations",), optimize: int = 0):
+    """Compatibility/test helper: load one callable via the byte-pinned loader bootstrapped from its
+    bytes (so this function being patched does not change what production resolution executes)."""
+    load = _bootstrap_loader(_LOADER_SRC)
+    return load(src, name, _future_flag_bits(future_flags), optimize)
 
 
 def _decode_v3(payload: dict):
@@ -526,10 +543,22 @@ def _canonical_json_bytes(d) -> bytes:
     return json.dumps(d, sort_keys=True, separators=(",", ":"), default=list).encode("utf-8")
 
 
+ENVELOPE_KEY = "evaluation_envelope"    # the stored evaluation envelope lives under this key
+
+
 def _payload_hash(payload: dict) -> str:
-    """Deterministic hash of a stored payload - binds the payload to its routing envelope so the
-    decoder's input cannot be swapped without breaking the envelope."""
-    return _bytes_hash(_canonical_json_bytes(payload))
+    """Deterministic hash of a stored payload (EXCLUDING the embedded evaluation envelope) - binds
+    the payload to its routing envelope so the decoder's input cannot be swapped without breaking
+    the envelope, and is stable whether or not the envelope is attached."""
+    body = {k: v for k, v in payload.items() if k != ENVELOPE_KEY}
+    return _bytes_hash(_canonical_json_bytes(body))
+
+
+def _split_journal(stored: dict) -> tuple[dict | None, dict]:
+    """Split a stored journal object into (stored evaluation envelope or None, payload body)."""
+    env = stored.get(ENVELOPE_KEY)
+    body = {k: v for k, v in stored.items() if k != ENVELOPE_KEY}
+    return env, body
 
 
 def _projection_schema_hash(meas: dict, dec: dict, est: dict) -> str:
@@ -691,16 +720,37 @@ class _Resolved:
     capsule_hash: str
 
 
+class _LoaderError(Exception):
+    """Raised when the pinned loader / execution-environment cannot be trusted (fail-closed)."""
+
+
+def _trusted_loader(art: EvaluationArtifact):
+    """Re-attest the execution environment and return the loader BOOTSTRAPPED FROM ITS BYTES. The
+    actually-executed loader's hash is re-derived and checked against the artifact's claim (a
+    live loader cannot be the one executed), python major.minor must match, and the whole numeric
+    exec-env hash must match - before any artifact byte is executed."""
+    env = art.execution_environment or {}
+    if _bytes_hash(_LOADER_SRC) != env.get("loader_hash"):
+        raise _LoaderError("loader hash does not match the executed loader bytes")
+    if env.get("python_semantics") != _python_semantics():
+        raise _LoaderError(f"python semantics {env.get('python_semantics')!r} != runtime "
+                           f"{_python_semantics()!r}")
+    if _exec_env_hash(env) != art.exec_env_hash:
+        raise _LoaderError("execution-environment hash does not match the re-derived environment")
+    bits = env.get("future_flag_bits")
+    if bits is None:
+        bits = _future_flag_bits(env.get("future_flags", ("annotations",)))
+    opt = int(env.get("optimize", 0))
+    load = _bootstrap_loader(_LOADER_SRC)
+    return (lambda src, name: load(src, name, bits, opt)), _exec_env_hash(env)
+
+
 def _resolve_artifact(art: EvaluationArtifact) -> _Resolved:
     """Materialise an artifact and RE-DERIVE every hash from the actual (byte-pinned for archived,
     live for current) component, so claimed metadata can never attest different executed code. The
-    byte-pinned components are SELF-CONTAINED and are compiled by the PINNED loader under the
-    artifact's own execution-environment (explicit future flags, ``dont_inherit=True``)."""
-    ff = tuple(art.execution_environment.get("future_flags", ("annotations",)))
-    opt = int(art.execution_environment.get("optimize", 0))
-
-    def _exec(src, name):
-        return _exec_callable(src, name, future_flags=ff, optimize=opt)
+    byte-pinned components are SELF-CONTAINED and are compiled by the re-attested, byte-bootstrapped
+    PINNED loader under the artifact's own (re-checked) execution-environment."""
+    _exec, exec_env_hash = _trusted_loader(art)
     if art.rule_source is not None:
         rule_hash, rule_fn = _bytes_hash(art.rule_source), _exec(art.rule_source, "_rule_v2")
     else:
@@ -725,7 +775,6 @@ def _resolve_artifact(art: EvaluationArtifact) -> _Resolved:
                                                                           "build_view")
     else:
         adapter_hash, adapter_fn = _impl_hash(art.adapter_fn), art.adapter_fn
-    exec_env_hash = _exec_env_hash(art.execution_environment) if art.execution_environment else ""
     proj = _projection_hash_of(decoder_fn)
     capsule = _capsule_hash(
         rule_hash=rule_hash, validator_hash=validator_hash, contract_hash=contract_hash,
@@ -824,18 +873,22 @@ def envelope_for_payload(payload: dict) -> dict:
             "claimed_verdict": d.get("verdict"), "payload_hash": _payload_hash(payload)}
 
 
-def evaluate_payload(payload: dict, registry=None) -> dict:
-    """Bridge for CURRENT-schema stored payloads: derive the stable envelope from the v3 payload and
-    evaluate via :func:`evaluate_envelope`. New/relocated schemas supply an envelope directly."""
-    return evaluate_envelope(envelope_for_payload(payload), payload, registry)
+def evaluate_payload(stored: dict, registry=None) -> dict:
+    """Evaluate a STORED journal object. If it carries an embedded ``evaluation_envelope`` (the
+    normal replay case, written by ``to_journal``), routing uses THAT stored envelope - never a live
+    bridge. Only an envelope-less (legacy) payload falls back to ``envelope_for_payload`` (a
+    writer-side helper, explicitly NOT part of historical replay)."""
+    env, payload = _split_journal(stored)
+    if env is None:
+        env = envelope_for_payload(payload)
+    return evaluate_envelope(env, payload, registry)
 
 
 def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
-    """Convenience wrapper: serialise a LIVE event to (envelope, payload) and evaluate via
-    :func:`evaluate_envelope`. The verdict path runs entirely on the canonical payload + the
-    version-pinned capsule - the live dataclass is only the serialisation source."""
-    payload = ev.to_dict()
-    return evaluate_envelope(envelope_for_payload(payload), payload, registry)
+    """Convenience wrapper: serialise a LIVE event to its STORED journal object (payload + embedded
+    envelope) and evaluate it. The envelope is built once at journaling; replay then uses the stored
+    envelope, so a later change to ``envelope_for_payload`` cannot re-route a stored event."""
+    return evaluate_payload(ev.to_journal(), registry)
 
 
 # ================================================================================================ #
@@ -930,10 +983,12 @@ class VariantScopeOutcome:
     has_harmful: bool = False        # any harmful among the usable events (safety signal preserved)
 
 
-def _cell_outcome(evs: list[MethodTrialRecorded]) -> tuple[str, int, int, bool, bool]:
-    usable = [e for e in evs if e.execution_status == "completed" and e.protocol_status == "valid"]
+def _cell_outcome(evs: list[dict]) -> tuple[str, int, int, bool, bool]:
+    usable = [e for e in evs if e.get("execution_status") == "completed"
+              and e.get("protocol_status") == "valid"]
     unusable = [e for e in evs if e not in usable]
-    results = {e.epistemic_result for e in usable if e.epistemic_result != "not_evaluated"}
+    results = {e.get("epistemic_result") for e in usable if e.get("epistemic_result")
+               != "not_evaluated"}
     has_success = bool(results & {"success", "partial_success"})
     has_harmful = "harmful" in results
     if has_success and has_harmful:
@@ -958,91 +1013,105 @@ def _cell_outcome(evs: list[MethodTrialRecorded]) -> tuple[str, int, int, bool, 
 _EVIDENCE_TOKEN = object()
 
 
-def canonical_event(event: MethodTrialRecorded) -> str:
-    """Canonical string form of an event (its full v3 payload) for binding attestations."""
+def _canonical_payload_str(payload: dict) -> str:
+    """Canonical string form of a payload BODY (sans embedded envelope) for attestations."""
     from desi_layer9.trial_event_validation import canonical_payload
-    return canonical_payload(event.to_dict())
+    return canonical_payload({k: v for k, v in payload.items() if k != ENVELOPE_KEY})
 
 
-def _evidence_attestation(event: MethodTrialRecorded, verdict: str) -> str:
-    """A structural attestation BINDING the verdict to the canonical event. If the event is later
-    swapped (e.g. via ``dataclasses.replace``), this no longer matches - so the token alone is never
-    the integrity root."""
+def _evidence_attestation(payload: dict, verdict: str) -> str:
+    """A structural attestation BINDING the verdict to the canonical PAYLOAD. If the payload is
+    swapped, this no longer matches - so the token alone is never the integrity root."""
     return "sha256:" + hashlib.sha256(
-        (canonical_event(event) + "|" + verdict).encode("utf-8")).hexdigest()
+        (_canonical_payload_str(payload) + "|" + verdict).encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)
 class VerifiedTrialEvidence:
-    """A trial event whose verdict has been VERIFIED by the registered rule. The private token
-    guards
-    against accidental direct construction; the ``attestation`` BINDS the verdict to the canonical
-    event so a post-hoc substitution is detectable; and ``aggregate`` additionally RE-EVALUATES
-    every
-    event (it never trusts the token or the stored verdict as the integrity root)."""
+    """A STORED (envelope, payload) pair whose verdict the registered capsule VERIFIED - the
+    is the stored pair itself, never a reconstructed dataclass. The private token guards against
+    accidental construction; the ``attestation`` BINDS the verdict to the canonical payload so a
+    post-hoc substitution is detectable; and ``aggregate`` additionally RE-EVALUATES every pair via
+    ``evaluate_envelope`` (never trusting the token or stored verdict as the integrity root)."""
 
-    event: MethodTrialRecorded
+    envelope: dict
+    payload: dict
     verdict: str
     attestation: str = ""
     _token: object = None
 
     def __post_init__(self):
         if self._token is not _EVIDENCE_TOKEN:
-            raise TypeError("VerifiedTrialEvidence is created only by verify_events()")
+            raise TypeError("VerifiedTrialEvidence is created only via verify_payloads()")
 
 
-def verify_events(events: list[MethodTrialRecorded], registry=None) -> list[VerifiedTrialEvidence]:
-    """The only way to turn raw events into aggregable evidence: runs ``evaluate_decision`` on each
-    and keep ONLY those whose verdict the registered rule verifies (structurally valid AND
-    rule-verified). Unverifiable / inconsistent / non-evaluable / invalid events carry no
-    weight."""
+def _as_journal(x) -> dict:
+    """Accept a stored journal object (dict) or a live event; return the stored journal object."""
+    return x.to_journal() if hasattr(x, "to_journal") else x
+
+
+def verify_payloads(stored: list[dict], registry=None) -> list[VerifiedTrialEvidence]:
+    """Turn STORED journal objects (envelope + payload) into aggregable evidence: structurally valid
+    AND verified by the version-pinned capsule via ``evaluate_envelope`` on the stored pair. No
+    current dataclass reconstruction is a precondition. Unverifiable / inconsistent / invalid
+    invalid objects carry no weight."""
+    from desi_layer9.trial_event_validation import validate_trial_payload
     out: list[VerifiedTrialEvidence] = []
-    for ev in events:
-        if validate(ev):
+    for obj in stored:
+        env, payload = _split_journal(_as_journal(obj))
+        if validate_trial_payload(payload):
             continue
-        if evaluate_decision(ev, registry)["status"] == "verified":
+        if env is None:
+            env = envelope_for_payload(payload)
+        if evaluate_envelope(env, payload, registry)["status"] == "verified":
+            verdict = payload.get("epistemic_result")
             out.append(VerifiedTrialEvidence(
-                ev, ev.epistemic_result, _evidence_attestation(ev, ev.epistemic_result),
-                _EVIDENCE_TOKEN))
+                env, payload, verdict, _evidence_attestation(payload, verdict), _EVIDENCE_TOKEN))
     return out
 
 
+def verify_events(events, registry=None) -> list[VerifiedTrialEvidence]:
+    """Convenience over :func:`verify_payloads` for LIVE events: journals each (payload + embedded
+    envelope) and verifies the stored pair."""
+    return verify_payloads([_as_journal(e) for e in events], registry)
+
+
 def aggregate(evidence: list[VerifiedTrialEvidence], registry=None) -> list[VariantScopeOutcome]:
-    """Roll VERIFIED evidence up to one outcome per (target, scope, variant). The token is NOT
-    trusted
-    as the integrity root: every evidence object is RE-ATTESTED here - its attestation must bind to
-    its current event, its verdict must equal the event result, and the event must RE-VERIFY
-    under
-    the registered rule. A substituted event (``dataclasses.replace`` keeping the token) is
-    rejected."""
-    cells: dict[tuple, list[MethodTrialRecorded]] = {}
+    """Roll VERIFIED evidence up to one outcome per (target, scope, variant) reading fields DIRECTLY
+    from the stored payload. The token is NOT trusted as the integrity root: every pair is
+    RE-ATTESTED here - its attestation must bind to its current payload, its verdict must equal the
+    payload result, and the (envelope, payload) pair must RE-VERIFY via ``evaluate_envelope``. A
+    substituted payload (``dataclasses.replace`` keeping the token) is rejected."""
+    cells: dict[tuple, list[dict]] = {}
     for ve in evidence:
         if not isinstance(ve, VerifiedTrialEvidence):
-            raise TypeError("aggregate() accepts only VerifiedTrialEvidence (see verify_events)")
-        e = ve.event
-        if ve.verdict != e.epistemic_result:
-            raise ValueError("evidence verdict does not match its event (substituted?)")
-        if ve.attestation != _evidence_attestation(e, ve.verdict):
-            raise ValueError("evidence attestation does not bind to its event (substituted?)")
-        if evaluate_decision(e, registry)["status"] != "verified":
-            raise ValueError("evidence event does not re-verify under the registered rule")
-        cells.setdefault((e.target_id, e.scope_id, e.method_id, e.method_variant), []).append(e)
+            raise TypeError("aggregate() accepts only VerifiedTrialEvidence (see verify_payloads)")
+        p = ve.payload
+        if ve.verdict != p.get("epistemic_result"):
+            raise ValueError("evidence verdict does not match its payload (substituted?)")
+        if ve.attestation != _evidence_attestation(p, ve.verdict):
+            raise ValueError("evidence attestation does not bind to its payload (substituted?)")
+        if evaluate_envelope(ve.envelope, p, registry)["status"] != "verified":
+            raise ValueError("evidence pair does not re-verify under the registered capsule")
+        cells.setdefault((p.get("target_id"), p.get("scope_id"), p.get("method_id"),
+                          p.get("method_variant")), []).append(p)
     out: list[VariantScopeOutcome] = []
     for (target, scope, mid, variant), evs in sorted(cells.items()):
         outcome, n_v, n_u, has_s, has_h = _cell_outcome(evs)
-        usable = [e for e in evs if e.execution_status == "completed"
-                  and e.protocol_status == "valid"]
+        usable = [e for e in evs if e.get("execution_status") == "completed"
+                  and e.get("protocol_status") == "valid"]
         out.append(VariantScopeOutcome(
             target_id=target, scope_id=scope, method_id=mid, method_variant=variant,
-            affinities=tuple(sorted({a for e in evs for a in e.affinities})), outcome=outcome,
+            affinities=tuple(sorted({a for e in evs for a in (e.get("affinities") or ())})),
+            outcome=outcome,
             n_completed_valid=n_v, n_unusable=n_u, protocol_valid=bool(usable) and n_u == 0,
-            models=tuple(sorted({e.model for e in usable})),
-            model_families=tuple(sorted({e.model_family for e in usable})),
-            implementations=tuple(sorted({e.implementation_id for e in usable})),
-            task_samples=tuple(sorted({e.task_sample_id for e in usable})),
-            evaluators=tuple(sorted({e.evaluator_id for e in usable})),
-            confounders=tuple(sorted({c for e in usable for c in e.confounders})),
-            evidence=tuple(e.trial_id for e in evs), has_success=has_s, has_harmful=has_h))
+            models=tuple(sorted({e.get("model") for e in usable})),
+            model_families=tuple(sorted({e.get("model_family") for e in usable})),
+            implementations=tuple(sorted({e.get("implementation_id") for e in usable})),
+            task_samples=tuple(sorted({e.get("task_sample_id") for e in usable})),
+            evaluators=tuple(sorted({e.get("evaluator_id") for e in usable})),
+            confounders=tuple(sorted({c for e in usable for c in (e.get("confounders") or ())})),
+            evidence=tuple(e.get("trial_id") for e in evs), has_success=has_s, has_harmful=has_h))
     return out
 
 
@@ -1066,36 +1135,40 @@ class OperationalTrialObservation:
     desi_result: str            # technical_failure|unevaluated|cancelled|protocol_invalid|unknown
 
 
-def _operational_class(ev: MethodTrialRecorded) -> str:
-    """Classify a non-rule-evaluable event WITHOUT collapsing everything to 'technical_failure'."""
-    if ev.execution_status == "failed":
+def _operational_class(p: dict) -> str:
+    """Classify a non-rule-evaluable payload WITHOUT collapsing all to 'technical_failure'."""
+    if p.get("execution_status") == "failed":
         return "technical_failure"
-    if ev.execution_status == "cancelled":
+    if p.get("execution_status") == "cancelled":
         return "cancelled"
-    if ev.protocol_status == "invalid":
+    if p.get("protocol_status") == "invalid":
         return "protocol_invalid"
-    if ev.execution_status == "completed" and ev.protocol_status == "valid":
+    if p.get("execution_status") == "completed" and p.get("protocol_status") == "valid":
         return "unevaluated"                      # ran cleanly but no outcome was evaluated
     return "unknown_operational"
 
 
-def operational_observations(
-        events: list[MethodTrialRecorded]) -> list[OperationalTrialObservation]:
-    """The operational (non-epistemic) channel: structurally-valid events that carry NO
+def operational_observations(items) -> list[OperationalTrialObservation]:
+    """The operational (non-epistemic) channel: structurally-valid STORED objects that carry NO
     rule-evaluable verdict. They stay VISIBLE as 'a move was attempted but not evaluable', strictly
     separate from verified evidence - never feeding attribution - and CLASSIFIED so DESi can tell a
-    technical failure from a merely-unevaluated or cancelled run."""
+    technical failure from a merely-unevaluated or cancelled run. Accepts live events or stored
+    journal objects."""
+    from desi_layer9.trial_event_validation import validate_trial_payload
     out: list[OperationalTrialObservation] = []
-    for ev in events:
-        if validate(ev):
+    for item in items:
+        _, p = _split_journal(_as_journal(item))
+        if validate_trial_payload(p):
             continue
-        if ev.epistemic_result not in RULE_EVALUABLE_RESULTS:    # not_evaluated etc.
+        if p.get("epistemic_result") not in RULE_EVALUABLE_RESULTS:    # not_evaluated etc.
             out.append(OperationalTrialObservation(
-                trial_id=ev.trial_id, target_id=ev.target_id, scope_id=ev.scope_id,
-                method_id=ev.method_id, method_variant=ev.method_variant,
-                affinities=ev.affinities, execution_status=ev.execution_status,
-                protocol_status=ev.protocol_status, failure_kind=ev.failure_kind,
-                desi_result=_operational_class(ev)))
+                trial_id=p.get("trial_id"), target_id=p.get("target_id"),
+                scope_id=p.get("scope_id"), method_id=p.get("method_id"),
+                method_variant=p.get("method_variant"),
+                affinities=tuple(p.get("affinities") or ()),
+                execution_status=p.get("execution_status"),
+                protocol_status=p.get("protocol_status"), failure_kind=p.get("failure_kind"),
+                desi_result=_operational_class(p)))
     return out
 
 

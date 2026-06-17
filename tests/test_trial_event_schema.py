@@ -17,6 +17,7 @@ from joni.autonomy.trial_event_schema import (
     aggregate,
     attribute_to_affinity,
     evaluate_decision,
+    evaluate_payload,
     migrate_method,
     validate,
     verify_events,
@@ -665,9 +666,10 @@ def test_substituted_evidence_via_dataclasses_replace_is_rejected():
     import dataclasses
     genuine = verify_events([_neg("v1", model_family="deepseek", impl="iA", task="t1",
                                   evaluator="e1")])[0]
-    forged_event = _harmful_raw("v1", "deepseek", "iA", "t1", "e1", rule_hash="sha256:bogus")
-    forged = dataclasses.replace(genuine, event=forged_event, verdict="harmful")  # token survives
-    assert evaluate_decision(forged_event)["status"] == "unverifiable"
+    # swap the PAYLOAD under the surviving token: the bogus payload no longer re-verifies
+    forged_payload = _harmful_raw("v1", "deepseek", "iA", "t1", "e1",
+                                  rule_hash="sha256:bogus").to_dict()
+    forged = dataclasses.replace(genuine, payload=forged_payload, verdict="harmful")
     import pytest
     with pytest.raises(ValueError):                       # aggregate RE-ATTESTS and rejects it
         aggregate([forged])
@@ -1402,7 +1404,142 @@ def test_production_r6_capsule_binds_adapter_loader_and_capsule_hash():
     art = DEFAULT_RULE_REGISTRY[("rule_v2", RULE_V2_R6_HASH)]
     assert art.adapter_source == _VIEW_ADAPTER_SRC
     assert art.input_adapter_hash == _bytes_hash(_VIEW_ADAPTER_SRC)
-    assert art.execution_environment.get("future_flags") == ["annotations"]
+    assert art.execution_environment.get("future_flags") == {"annotations": 16777216}
     assert art.execution_environment.get("loader_version") == "artifact_loader_v1"
     assert art.exec_env_hash and art.capsule_hash
     assert art.envelope_version == "evaluation_envelope_v1"
+
+
+# -- round 14: loader trust-root, exec-env closure, python pinning, stored envelope, one path - #
+def _r14_reg():
+    from joni.autonomy.trial_event_schema import (
+        _CROSS_BLOCK_V1_SRC,
+        _DECODE_V3_SRC,
+        _R6_CONTRACT_SRC,
+        _R6_RULE_SRC,
+        RULE_V2_R6_HASH,
+        SCHEMA_VERSION,
+        build_rule_registry,
+        make_archived_artifact,
+    )
+    art = make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
+                                 _R6_CONTRACT_SRC, _DECODE_V3_SRC,
+                                 expected_rule_hash=RULE_V2_R6_HASH)
+    return art, build_rule_registry([art])
+
+
+def _harmful_claims_success():
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH
+    return _ev(epistemic_result="success", measurement=_meas(-0.20, ci=(-0.25, -0.15)),
+               decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                                 verdict="success"))
+
+
+def test_swapping_the_live_loader_does_not_change_historical_evaluation():
+    # THE reviewer attack: replace the module-global _exec_callable after the registry is built. The
+    # loader is bootstrapped FROM ITS BYTES in _resolve_artifact, so the swap has no effect.
+    import joni.autonomy.trial_event_schema as schema
+    _, reg = _r14_reg()
+    ev = _harmful_claims_success()
+    assert evaluate_decision(ev, reg)["computed"] == "harmful"      # honest: harmful != success
+    orig = schema._exec_callable
+    try:
+        schema._exec_callable = lambda src, name, **k: (lambda view: "success")
+        assert evaluate_decision(ev, reg)["status"] == "inconsistent"   # unaffected by the swap
+        assert evaluate_decision(ev, reg)["computed"] == "harmful"
+    finally:
+        schema._exec_callable = orig
+
+
+def test_tampered_loader_bytes_with_copied_hash_is_unverifiable():
+    import joni.autonomy.trial_event_schema as schema
+    _, reg = _r14_reg()
+    ev = _r13_event()
+    orig = schema._LOADER_SRC
+    try:
+        schema._LOADER_SRC = orig + b"\n# tamper\n"            # bytes change, claimed hash stale
+        assert evaluate_decision(ev, reg)["status"] == "unverifiable"
+    finally:
+        schema._LOADER_SRC = orig
+
+
+def test_execution_environment_binds_numeric_flag_values():
+    import dataclasses
+    art, _ = _r14_reg()
+    from joni.autonomy.trial_event_schema import build_rule_registry
+    # the NUMERIC flag value is part of the bound contract; changing it (not just the name) breaks
+    # the exec-env hash -> unverifiable.
+    broken = dataclasses.replace(
+        art, execution_environment=dict(art.execution_environment, future_flag_bits=0))
+    res = evaluate_decision(_r13_event(), build_rule_registry([broken]))
+    assert res["status"] == "unverifiable"
+    assert art.execution_environment["future_flags"]["annotations"] == 16777216
+
+
+def test_python_semantics_is_enforced():
+    import dataclasses
+    art, _ = _r14_reg()
+    from joni.autonomy.trial_event_schema import build_rule_registry
+    wrong = dataclasses.replace(
+        art, execution_environment=dict(art.execution_environment, python_semantics="2.7"))
+    assert evaluate_decision(_r13_event(), build_rule_registry([wrong]))["status"] == "unverifiable"
+
+
+def test_stored_envelope_replay_ignores_a_changed_live_bridge():
+    # to_journal embeds the envelope; replay uses the STORED envelope, so monkeypatching the live
+    # envelope_for_payload after journaling cannot re-route a stored event.
+    import joni.autonomy.trial_event_schema as schema
+    _, reg = _r14_reg()
+    obj = _r13_event().to_journal()
+    assert "evaluation_envelope" in obj
+    orig = schema.envelope_for_payload
+    try:
+        schema.envelope_for_payload = lambda p: {"envelope_version": "evaluation_envelope_v999"}
+        assert evaluate_payload(obj, reg)["status"] == "verified"
+    finally:
+        schema.envelope_for_payload = orig
+
+
+def test_journal_payload_tamper_is_detected_on_replay():
+    _, reg = _r14_reg()
+    obj = _r13_event().to_journal()
+    obj = dict(obj)
+    obj["measurement"] = dict(obj["measurement"], effect_size=0.99)   # tamper, envelope unchanged
+    assert evaluate_payload(obj, reg)["status"] == "unverifiable"     # payload_hash mismatch
+
+
+def test_aggregation_path_runs_from_stored_objects_not_reconstruction():
+    from joni.autonomy.trial_event_schema import (
+        RULE_V2_R6_HASH,
+        aggregate,
+        attribute_to_affinity,
+        verify_payloads,
+    )
+    _, reg = _r14_reg()
+    stored = [
+        _ev(trial_id=f"h{i}", epistemic_result="harmful", method_variant=f"v{i}",
+            implementation_id=f"i{i}", model_family=fam, task_sample_id=f"t{i}",
+            evaluator_id=f"e{i}",
+            measurement=_meas(-0.20, ci=(-0.28, -0.12)),
+            decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                              verdict="harmful")).to_journal()
+        for i, fam in [(1, "deepseek"), (2, "openai")]]
+    evidence = verify_payloads(stored, reg)                 # stored dicts, no reconstruction
+    assert len(evidence) == 2 and all(isinstance(e.payload, dict) for e in evidence)
+    a = attribute_to_affinity(aggregate(evidence, reg))[0]
+    assert a.strength == "limited" and a.independent
+
+
+def test_production_capsule_binds_loader_and_python_semantics():
+    import platform
+
+    from joni.autonomy.trial_event_schema import (
+        DEFAULT_RULE_REGISTRY,
+        LOADER_HASH,
+        RULE_V2_R6_HASH,
+    )
+    art = DEFAULT_RULE_REGISTRY[("rule_v2", RULE_V2_R6_HASH)]
+    env = art.execution_environment
+    assert env["loader_hash"] == LOADER_HASH
+    assert env["python_semantics"] == ".".join(platform.python_version_tuple()[:2])
+    assert env["future_flag_bits"] == 16777216

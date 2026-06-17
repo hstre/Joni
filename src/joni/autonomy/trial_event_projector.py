@@ -22,8 +22,6 @@ field is explicit ``unknown``/``None``, never a zero signal. Nothing here writes
 
 from __future__ import annotations
 
-import contextlib
-
 from .trial_event_schema import (
     INDEPENDENCE_POLICY_V1,
     SCHEMA_VERSION,
@@ -245,28 +243,27 @@ def project_trial_events(core) -> dict:
     sufficiency is judged against real open-conflict/scope coverage, not event count."""
     envelopes = core.method_trial_events()
     events: list[dict] = []
-    records: list[MethodTrialRecorded] = []
+    stored: list[dict] = []
     for env in envelopes:
         proj, _ = _project_event(env)
         events.append(proj)
         p = env.get("payload") or {}
         if p.get("schema_version") in PROJECTOR_SUPPORTED_SCHEMA_VERSIONS:
-            with contextlib.suppress(Exception):  # malformed payloads are surfaced in `events`
-                records.append(_record_from_payload(p))
+            stored.append(p)                      # the RAW stored journal object (env + payload)
 
-    # the ONLY events->evidence path: verify_events re-runs the rule and admits only verified ones,
-    # so aggregation can never act on an unverified claim (no aggregate(raw_events) bypass exists).
-    # Operational (non-epistemic) observations - technical failures / not_evaluated - travel a
-    # SEPARATE channel that never feeds attribution.
-    from .trial_event_schema import operational_observations, verify_events
-    evidence = verify_events(records)
+    # the ONLY evidence path: verify_payloads verifies the STORED (envelope, payload) pair via the
+    # version-pinned capsule and admits only verified ones - NO dataclass reconstruction is a
+    # precondition for aggregation, and no aggregate(raw) bypass exists. Operational (non-epistemic)
+    # observations travel a SEPARATE channel that never feeds attribution.
+    from .trial_event_schema import operational_observations, verify_payloads
+    evidence = verify_payloads(stored)
     outcomes = aggregate(evidence)
     ops = [
         {"trial_id": o.trial_id, "target_id": o.target_id, "scope_id": o.scope_id,
          "method_variant": o.method_variant, "execution_status": o.execution_status,
          "protocol_status": o.protocol_status, "failure_kind": o.failure_kind,
          "desi_result": o.desi_result}
-        for o in operational_observations(records)]
+        for o in operational_observations(stored)]
     scope_bound = [
         {"target_id": o.target_id, "scope_id": o.scope_id, "method_variant": o.method_variant,
          "outcome": o.outcome, "n_completed_valid": o.n_completed_valid,
