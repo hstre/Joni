@@ -646,3 +646,83 @@ def test_negative_band_mirror_is_no_benefit_and_overlap_is_inconclusive():
     overlap = _ev(epistemic_result="harmful", measurement=_meas(-0.11, ci=(-0.219, -0.001)),
                   decision=_dec("harmful"))
     assert _rule_v2(within) == "no_benefit" and _rule_v2(overlap) == "inconclusive"
+
+
+# -- round 8: substitution, inconclusive, historical rules, operational channel ----------------- #
+def test_substituted_evidence_via_dataclasses_replace_is_rejected():
+    import dataclasses
+    genuine = verify_events([_neg("v1", model_family="deepseek", impl="iA", task="t1",
+                                  evaluator="e1")])[0]
+    forged_event = _harmful_raw("v1", "deepseek", "iA", "t1", "e1", rule_hash="sha256:bogus")
+    forged = dataclasses.replace(genuine, event=forged_event, verdict="harmful")  # token survives
+    assert evaluate_decision(forged_event)["status"] == "unverifiable"
+    import pytest
+    with pytest.raises(ValueError):                       # aggregate RE-ATTESTS and rejects it
+        aggregate([forged])
+
+
+def test_inconclusive_is_rule_verifiable_and_aggregable():
+    # CI straddles the threshold -> rule_v2 computes inconclusive; it must VERIFY (not n/a)
+    # and be aggregated, but produce NO affinity attribution.
+    from joni.autonomy.trial_event_schema import _rule_v2
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.05, ci=(-0.02, 0.12)),
+             decision=_dec("inconclusive"))
+    assert _rule_v2(ev) == "inconclusive"
+    assert evaluate_decision(ev)["status"] == "verified"
+    outs = aggregate(verify_events([ev]))
+    assert len(outs) == 1 and outs[0].outcome == "inconclusive"
+    assert attribute_to_affinity(outs) == [] or all(
+        a.strength == "none" for a in attribute_to_affinity(outs))
+
+
+def test_inconclusive_maps_to_desi_inconclusive():
+    from joni.autonomy.trial_event_schema import to_desi_method_trials
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.05, ci=(-0.02, 0.12)),
+             decision=_dec("inconclusive"))
+    trials = to_desi_method_trials(aggregate(verify_events([ev])))
+    assert trials and trials[0].result == "inconclusive"
+
+
+def _const_rule_v2_archived(ev):   # a DISTINCT historical implementation (different source -> hash)
+    return ev.epistemic_result
+
+
+def test_historical_rule_versions_coexist_append_only():
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        RULE_V2_SPEC_HASH,
+        build_rule_registry,
+        make_rule_entry,
+    )
+    archived = make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _const_rule_v2_archived)
+    current = make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, __import__(
+        "joni.autonomy.trial_event_schema", fromlist=["_rule_v2"])._rule_v2)
+    registry = build_rule_registry([archived, current])
+    assert archived.implementation_hash != current.implementation_hash    # distinct versions
+    # an event citing the ARCHIVED hash verifies under the archived implementation...
+    old_ev = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+                 decision=Decision(decision_rule_id="rule_v2",
+                                   decision_rule_hash=archived.implementation_hash,
+                                   verdict="success"))
+    assert evaluate_decision(old_ev, registry)["status"] == "verified"
+    # ...and is NEVER re-interpreted under the current implementation hash.
+    new_ev = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+                 decision=Decision(decision_rule_id="rule_v2",
+                                   decision_rule_hash=current.implementation_hash,
+                                   verdict="success"))
+    assert evaluate_decision(new_ev, registry)["status"] == "verified"
+    # the registry is append-only: a duplicate key is refused.
+    with pytest.raises(ValueError):
+        build_rule_registry([archived, archived])
+
+
+def test_technical_failures_travel_the_operational_channel_not_attribution():
+    from joni.autonomy.trial_event_schema import operational_observations
+    tech = _ev(trial_id="t-fail", execution_status="failed", failure_kind="timeout",
+               epistemic_result="not_evaluated", method_variant="v9")
+    assert verify_events([tech]) == []                    # NOT epistemic evidence
+    assert aggregate(verify_events([tech])) == []         # no attribution path
+    ops = operational_observations([tech])
+    assert len(ops) == 1 and ops[0].method_variant == "v9"
+    assert ops[0].execution_status == "failed" and ops[0].desi_result == "technical_failure"

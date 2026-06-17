@@ -22,6 +22,8 @@ field is explicit ``unknown``/``None``, never a zero signal. Nothing here writes
 
 from __future__ import annotations
 
+import contextlib
+
 from .trial_event_schema import (
     INDEPENDENCE_POLICY_V1,
     Decision,
@@ -239,18 +241,27 @@ def project_trial_events(core) -> dict:
     sufficiency is judged against real open-conflict/scope coverage, not event count."""
     envelopes = core.method_trial_events()
     events: list[dict] = []
-    candidates: list[MethodTrialRecorded] = []
+    records: list[MethodTrialRecorded] = []
     for env in envelopes:
-        proj, rec = _project_event(env)
+        proj, _ = _project_event(env)
         events.append(proj)
-        if rec is not None:
-            candidates.append(rec)
+        p = env.get("payload") or {}
+        if p.get("schema_version") in PROJECTOR_SUPPORTED_SCHEMA_VERSIONS:
+            with contextlib.suppress(Exception):  # malformed payloads are surfaced in `events`
+                records.append(_record_from_payload(p))
 
     # the ONLY events->evidence path: verify_events re-runs the rule and admits only verified ones,
     # so aggregation can never act on an unverified claim (no aggregate(raw_events) bypass exists).
-    from .trial_event_schema import verify_events
-    evidence = verify_events(candidates)
+    # Operational (non-epistemic) observations - technical failures / not_evaluated - travel a
+    # SEPARATE channel that never feeds attribution.
+    from .trial_event_schema import operational_observations, verify_events
+    evidence = verify_events(records)
     outcomes = aggregate(evidence)
+    ops = [
+        {"trial_id": o.trial_id, "target_id": o.target_id, "scope_id": o.scope_id,
+         "method_variant": o.method_variant, "execution_status": o.execution_status,
+         "failure_kind": o.failure_kind, "desi_result": o.desi_result}
+        for o in operational_observations(records)]
     scope_bound = [
         {"target_id": o.target_id, "scope_id": o.scope_id, "method_variant": o.method_variant,
          "outcome": o.outcome, "n_completed_valid": o.n_completed_valid,
@@ -274,6 +285,7 @@ def project_trial_events(core) -> dict:
         "events": events,
         "verified_scope_bound_outcomes": scope_bound,
         "affinity_attributions": affinity,
+        "operational_observations": ops,                # technical/not_evaluated; NEVER attribution
         "desi_method_trials": desi_trials,              # None if DESi unavailable; never fabricated
         "dataset_sufficiency": _dataset_sufficiency(core, evidence, events),
     }

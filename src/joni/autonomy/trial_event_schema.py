@@ -43,6 +43,11 @@ FAILURE_KINDS = ("none", "technical", "timeout", "parser", "model", "dependency"
 EPISTEMIC_RESULTS = ("success", "partial_success", "no_benefit", "harmful", "inconclusive",
                      "not_evaluated")
 _REAL_RESULTS = ("success", "partial_success", "no_benefit", "harmful")
+# Results a rule can REPRODUCIBLY evaluate (incl. inconclusive). ``not_evaluated`` is excluded - it
+# carries no verdict. inconclusive is rule-verifiable and aggregable, but yields NO affinity
+# demotion
+# or promotion (it is neither a negative nor a success outcome).
+RULE_EVALUABLE_RESULTS = _REAL_RESULTS + ("inconclusive",)
 
 TARGET_TYPES = ("conflict", "open_question", "evidence_gap")
 DIRECTIONS = ("higher_is_better", "lower_is_better")
@@ -227,7 +232,9 @@ def validate(ev: MethodTrialRecorded) -> list[str]:
     if e.direction not in DIRECTIONS:
         errs.append(f"estimand.direction '{e.direction}' not in {DIRECTIONS}")
 
-    real = ev.epistemic_result in _REAL_RESULTS
+    # 'rule_evaluable' = success/partial/no_benefit/harmful/inconclusive (all need a clean run +
+    # measurement + a decision block so the registered rule can reproduce the verdict).
+    real = ev.epistemic_result in RULE_EVALUABLE_RESULTS
 
     # -- axis coherence (forbidden combinations) ------------------------------------------------- #
     if ev.execution_status != "completed" and ev.epistemic_result != "not_evaluated":
@@ -381,10 +388,25 @@ def make_rule_entry(rule_id: str, spec_hash: str, fn) -> RuleEntry:
     return RuleEntry(rule_id, spec_hash, _impl_hash(fn), fn)
 
 
-# Immutable view: the default registry cannot be mutated in place after construction.
-DEFAULT_RULE_REGISTRY = MappingProxyType({
-    ("rule_v2", RULE_V2_HASH): make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2),
-})
+def build_rule_registry(entries):
+    """An APPEND-ONLY, immutable registry keyed by ``(rule_id, implementation_hash)``. Each entry is
+    a DISTINCT historical version: a key may never be overwritten. To keep an irreversible journal
+    reproducible, when a rule's implementation changes you ARCHIVE the old function and ADD the new
+    one (both stay registered), so an old event keeps verifying under the exact implementation that
+    produced it - and is never re-interpreted under a newer one."""
+    reg: dict = {}
+    for e in entries:
+        key = (e.rule_id, e.implementation_hash)
+        if key in reg:
+            raise ValueError(f"rule registry is append-only; {key} is already registered")
+        reg[key] = e
+    return MappingProxyType(reg)
+
+
+# Immutable, append-only. Production archives every historical rule version here, keyed by its own
+# implementation hash; old events stay bound to the version that produced them.
+DEFAULT_RULE_REGISTRY = build_rule_registry(
+    [make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2)])
 
 
 def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
@@ -410,8 +432,8 @@ def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
     ``unverifiable`` (so a forged registry function cannot self-attest)."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
     d = ev.decision
-    if ev.epistemic_result not in _REAL_RESULTS:
-        return {"status": "not_applicable", "reason": "no real verdict to evaluate"}
+    if ev.epistemic_result not in RULE_EVALUABLE_RESULTS:
+        return {"status": "not_applicable", "reason": "no rule-evaluable verdict (not_evaluated)"}
     # (1) structural consistency: decision may not contradict / override / supply its own interval.
     xb = _cross_block_errors(ev)
     if xb:
@@ -553,16 +575,32 @@ def _cell_outcome(evs: list[MethodTrialRecorded]) -> tuple[str, int, int, bool, 
 _EVIDENCE_TOKEN = object()
 
 
+def canonical_event(event: MethodTrialRecorded) -> str:
+    """Canonical string form of an event (its full v3 payload) for binding attestations."""
+    from desi_layer9.trial_event_validation import canonical_payload
+    return canonical_payload(event.to_dict())
+
+
+def _evidence_attestation(event: MethodTrialRecorded, verdict: str) -> str:
+    """A structural attestation BINDING the verdict to the canonical event. If the event is later
+    swapped (e.g. via ``dataclasses.replace``), this no longer matches - so the token alone is never
+    the integrity root."""
+    return "sha256:" + hashlib.sha256(
+        (canonical_event(event) + "|" + verdict).encode("utf-8")).hexdigest()
+
+
 @dataclass(frozen=True)
 class VerifiedTrialEvidence:
-    """A trial event whose verdict has been VERIFIED by the registered rule. Constructible ONLY via
-    ``verify_events`` (guarded by a private token), so ``aggregate`` / ``attribute_to_affinity`` /
-    ``to_desi_method_trials`` can NEVER translate a merely-structurally-valid-but-unverified claim
-    into epistemic weight. This is the hard type boundary: RawTrialEvent -> evaluate_decision ->
-    VerifiedTrialEvidence -> aggregate_verified -> attribution / DESi."""
+    """A trial event whose verdict has been VERIFIED by the registered rule. The private token
+    guards
+    against accidental direct construction; the ``attestation`` BINDS the verdict to the canonical
+    event so a post-hoc substitution is detectable; and ``aggregate`` additionally RE-EVALUATES
+    every
+    event (it never trusts the token or the stored verdict as the integrity root)."""
 
     event: MethodTrialRecorded
     verdict: str
+    attestation: str = ""
     _token: object = None
 
     def __post_init__(self):
@@ -571,28 +609,40 @@ class VerifiedTrialEvidence:
 
 
 def verify_events(events: list[MethodTrialRecorded], registry=None) -> list[VerifiedTrialEvidence]:
-    """The ONLY way to turn raw events into aggregable evidence: run ``evaluate_decision`` on each
+    """The only way to turn raw events into aggregable evidence: runs ``evaluate_decision`` on each
     and keep ONLY those whose verdict the registered rule verifies (structurally valid AND
-    rule-verified). Unverifiable / inconsistent / non-real / invalid events carry no weight."""
+    rule-verified). Unverifiable / inconsistent / non-evaluable / invalid events carry no
+    weight."""
     out: list[VerifiedTrialEvidence] = []
     for ev in events:
         if validate(ev):
             continue
         if evaluate_decision(ev, registry)["status"] == "verified":
-            out.append(VerifiedTrialEvidence(ev, ev.epistemic_result, _EVIDENCE_TOKEN))
+            out.append(VerifiedTrialEvidence(
+                ev, ev.epistemic_result, _evidence_attestation(ev, ev.epistemic_result),
+                _EVIDENCE_TOKEN))
     return out
 
 
-def aggregate(evidence: list[VerifiedTrialEvidence]) -> list[VariantScopeOutcome]:
-    """Roll VERIFIED evidence up to one outcome per (target, scope, variant). Accepts only
-    ``VerifiedTrialEvidence`` (from ``verify_events``) - never raw events - so the verification
-    chain
-    cannot be bypassed by calling aggregate directly."""
+def aggregate(evidence: list[VerifiedTrialEvidence], registry=None) -> list[VariantScopeOutcome]:
+    """Roll VERIFIED evidence up to one outcome per (target, scope, variant). The token is NOT
+    trusted
+    as the integrity root: every evidence object is RE-ATTESTED here - its attestation must bind to
+    its current event, its verdict must equal the event result, and the event must RE-VERIFY
+    under
+    the registered rule. A substituted event (``dataclasses.replace`` keeping the token) is
+    rejected."""
     cells: dict[tuple, list[MethodTrialRecorded]] = {}
     for ve in evidence:
         if not isinstance(ve, VerifiedTrialEvidence):
             raise TypeError("aggregate() accepts only VerifiedTrialEvidence (see verify_events)")
         e = ve.event
+        if ve.verdict != e.epistemic_result:
+            raise ValueError("evidence verdict does not match its event (substituted?)")
+        if ve.attestation != _evidence_attestation(e, ve.verdict):
+            raise ValueError("evidence attestation does not bind to its event (substituted?)")
+        if evaluate_decision(e, registry)["status"] != "verified":
+            raise ValueError("evidence event does not re-verify under the registered rule")
         cells.setdefault((e.target_id, e.scope_id, e.method_id, e.method_variant), []).append(e)
     out: list[VariantScopeOutcome] = []
     for (target, scope, mid, variant), evs in sorted(cells.items()):
@@ -610,6 +660,43 @@ def aggregate(evidence: list[VerifiedTrialEvidence]) -> list[VariantScopeOutcome
             evaluators=tuple(sorted({e.evaluator_id for e in usable})),
             confounders=tuple(sorted({c for e in usable for c in e.confounders})),
             evidence=tuple(e.trial_id for e in evs), has_success=has_s, has_harmful=has_h))
+    return out
+
+
+@dataclass(frozen=True)
+class OperationalTrialObservation:
+    """A NON-epistemic record that a method VARIANT was ATTEMPTED but produced no rule-evaluable
+    verdict (technical failure / timeout / cancelled / not_evaluated). It is a SEPARATE channel from
+    ``VerifiedTrialEvidence``: it may inform DESi that a move was tried (mapped to
+    ``technical_failure``), but it NEVER produces affinity attribution or demotion."""
+
+    trial_id: str
+    target_id: str
+    scope_id: str
+    method_id: str
+    method_variant: str
+    affinities: tuple[str, ...]
+    execution_status: str
+    failure_kind: str
+    desi_result: str = "technical_failure"
+
+
+def operational_observations(
+        events: list[MethodTrialRecorded]) -> list[OperationalTrialObservation]:
+    """The operational (non-epistemic) channel: structurally-valid events that carry NO
+    rule-evaluable
+    verdict (a technical failure / not_evaluated). They stay VISIBLE as 'a move was attempted but
+    not evaluable', strictly separate from verified evidence - never feeding attribution."""
+    out: list[OperationalTrialObservation] = []
+    for ev in events:
+        if validate(ev):
+            continue
+        if ev.epistemic_result not in RULE_EVALUABLE_RESULTS:    # not_evaluated etc.
+            out.append(OperationalTrialObservation(
+                trial_id=ev.trial_id, target_id=ev.target_id, scope_id=ev.scope_id,
+                method_id=ev.method_id, method_variant=ev.method_variant,
+                affinities=ev.affinities, execution_status=ev.execution_status,
+                failure_kind=ev.failure_kind))
     return out
 
 

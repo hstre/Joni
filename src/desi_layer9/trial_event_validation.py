@@ -36,6 +36,9 @@ _PROTO = ("valid", "invalid", "unknown")
 _KINDS = ("none", "technical", "timeout", "parser", "model", "dependency", "infrastructure")
 _RESULT = ("success", "partial_success", "no_benefit", "harmful", "inconclusive", "not_evaluated")
 _REAL = ("success", "partial_success", "no_benefit", "harmful")
+# results a registered rule can reproducibly evaluate (incl. inconclusive) - they all need the full
+# measurement/decision structure so the verdict is reproducible. ``not_evaluated`` is excluded.
+_RULE_EVALUABLE = _REAL + ("inconclusive",)
 _TARGETS = ("conflict", "open_question", "evidence_gap")
 _DIRECTIONS = ("higher_is_better", "lower_is_better")
 _ATTR_LEVELS = ("variant", "method")
@@ -257,7 +260,7 @@ def validate_trial_payload(p: dict) -> list[str]:
 
     # -- forbidden combinations (structural; NO statistics) ------------------------------------- #
     exec_s, proto, result = p["execution_status"], p["protocol_status"], p["epistemic_result"]
-    real = result in _REAL
+    real = result in _RULE_EVALUABLE          # incl. inconclusive: same structural contract
     if exec_s != "completed" and result != "not_evaluated":
         errs.append("forbidden: non-completed execution requires epistemic_result 'not_evaluated'")
     if exec_s == "failed" and p.get("failure_kind", "none") == "none":

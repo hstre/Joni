@@ -24,11 +24,24 @@ connection from the *stored* event to *external* epistemic evaluation.
    every use and requires it to equal both the claimed `implementation_hash` **and** the event's
    `decision_rule_hash` — a forged registry entry is `unverifiable`. `partial_success` is not
    producible by `rule_v2`.
-3a. **Typed verification boundary (no aggregation bypass).** Raw events become aggregable evidence
-   **only** through `verify_events`, which re-runs `evaluate_decision` and emits a token-guarded
-   `VerifiedTrialEvidence` for verified events only. `aggregate` accepts **only**
-   `VerifiedTrialEvidence` (raw events raise `TypeError`), so `attribute_to_affinity` /
-   `to_desi_method_trials` can never translate an unverified claim into epistemic weight.
+3a. **Typed verification boundary (no aggregation bypass, no substitution).** Raw events become
+   aggregable evidence **only** through `verify_events`, which re-runs `evaluate_decision` and emits
+   a token-guarded `VerifiedTrialEvidence` (carrying an `attestation` that binds the verdict to the
+   canonical event). The token is **not** the integrity root: `aggregate` **re-attests** every
+   evidence object — `verdict == event.epistemic_result`, the attestation must bind to the *current*
+   event, and the event must **re-verify** under the rule — so a substituted event
+   (`dataclasses.replace` keeping the token) is rejected with `ValueError`. `aggregate` accepts only
+   `VerifiedTrialEvidence` (raw events raise `TypeError`).
+3c. **`inconclusive` is rule-verifiable and aggregable** (in `RULE_EVALUABLE_RESULTS`): it verifies,
+   is aggregated, maps to DESi `inconclusive`, but yields **no** affinity demotion or promotion.
+   `not_evaluated` remains non-evaluable.
+3d. **Operational channel (separate from evidence).** Technical failures / `not_evaluated` events
+   carry no verdict and never feed attribution; `operational_observations` surfaces them
+   separately (mapped to `technical_failure`) so DESi can see *a move was attempted but not
+   evaluable* — the projector returns them under `operational_observations`.
+3e. **Append-only rule registry** — historical rule implementations are kept (keyed by their own
+   implementation hash); an old event verifies under the exact version that produced it and is
+   never re-interpreted under a newer one (`build_rule_registry`, immutable, no overwrite).
 3b. **Gate input contract.** The core refuses to store a real verdict whose declared rule could not
    evaluate it: `rule_v2` requires `measurement.effect_size` **and** `confidence_interval`
    (`RULE_INPUT_CONTRACTS`), so an irreversible journal never holds a `success`/`harmful`/
