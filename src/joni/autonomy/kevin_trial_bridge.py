@@ -144,6 +144,34 @@ def project(cs) -> dict:
     return proj
 
 
+def blind_spots(cs, *, top_k: int = 4) -> list[dict]:
+    """CONSUMER (the steering signal): project the core into the DESi EpistemicGapSnapshot and run
+    ``analyze_gaps`` to get the highest-value SOLUTION-SPACE GAPS - the 'probability islands' where
+    missing thinking-move (affinity) on a real target most likely unlocks progress. Each item is
+    resolved to something Kevin can act on: the target id, the missing affinity, the priority, and
+    the target's claim ids. Empty list if DESi is unavailable. Read-only; never writes the core."""
+    from . import epistemic_gap_projector as egp
+    if not egp.available():
+        return []
+    try:
+        from desi.solution_space_gap import analyze_gaps
+        snap = egp.project(cs.core, core_commit="live")
+        props = sorted(analyze_gaps(snap), key=lambda p: -p.priority)
+    except Exception:  # noqa: BLE001 - never let the steering signal break the cycle
+        return []
+    out: list[dict] = []
+    for p in props[:top_k]:
+        kind, _, tid = str(p.target).partition(":")     # e.g. "conflict:X-1" / "claim:C-7"
+        obj = cs.core.objects.get(tid)
+        claim_ids = list(getattr(obj, "claim_ids", ())) if obj is not None else (
+            [tid] if kind == "claim" else [])
+        out.append({"target": p.target, "target_kind": kind, "target_id": tid,
+                    "missing_affinity": p.missing_affinity, "priority": round(p.priority, 4),
+                    "expected_information_gain": p.expected_information_gain,
+                    "claim_ids": claim_ids})
+    return out
+
+
 def trial_event_count(cs) -> int:
     return len(cs.core.method_trial_events())
 

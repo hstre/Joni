@@ -74,9 +74,7 @@ def project(core, *, core_commit: str = "unknown"):
     # static-table critique demanded. Empty until Kevin's measured trials are written through the
     # gate - and HONESTLY marked unknown until then, never fabricated.
     from . import trial_event_projector as _tep
-    method_trials = ()
-    if _tep.available():
-        method_trials = tuple(_tep.project_trial_events(core).get("desi_method_trials") or ())
+    method_trials = _tep.desi_method_trials(core)        # DESi MethodTrial OBJECTS (not dicts)
     sources["method_trials"] = {
         "source": "sealed v4 METHOD_TRIAL_RECORDED events (rule-verified, scope-bound)",
         "confidence": "derived" if method_trials else "unknown",

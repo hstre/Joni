@@ -73,7 +73,10 @@ def test_kevin_accepts_single_open_conflict(monkeypatch, tmp_path):
     out = kevin_llm.propose(cs, ext, _Proto(), 3)
     assert out["kevin_calls"] == 1 and out["hypotheses"] >= 1
     entry = ext["kevin_llm"][-1]
-    assert entry["input_type"] == "open_conflict"
+    # Kevin engages the open conflict either directly, or - when DESi is present - via the higher-
+    # priority DESi blind-spot island that targets that same conflict (its claims are the seeds).
+    # Both mean: the open conflict is accepted and contradiction is fuel, not a blocker.
+    assert entry["input_type"] in ("open_conflict", "desi_blind_spot")
     assert entry["internal_coherence"] == "contradictory"   # contradiction is fuel, not a blocker
 
 
@@ -155,3 +158,33 @@ def test_end_to_end_single_paper_to_layer9_candidate(monkeypatch, tmp_path):
     # the call is captured (telemetry) and replay-stable
     t = model_call.telemetry(Path(tmp_path) / "state" / "model_calls")
     assert t["kevin_calls"] == 1
+
+
+def test_desi_steers_kevin_to_the_top_solution_space_gap():
+    """DESi computes the solution-space gaps (blind-spot islands) from the trial-fed gap snapshot,
+    and Kevin's input selection targets the highest-priority island FIRST - a real target + the
+    missing thinking-move - instead of a generic topic. Skips cleanly without DESi/kevin."""
+    import pytest
+    pytest.importorskip("desi.solution_space_gap")
+    pytest.importorskip("kevin")
+    from kevin import real_trial
+
+    from desi_layer9 import Operator, ProposalType, make_proposal
+    from desi_layer9.provenance import Provenance
+    from joni.autonomy import kevin_trial_bridge as bridge
+    cs = CoreState(l9.Layer9())
+    a = cs.learn("Session contamination dominates model variance", "modelling", source_id="pA")
+    b = cs.learn("Session contamination is negligible for variance", "modelling", source_id="pB")
+    cs.core.submit(make_proposal(ProposalType.CLAIM_PROPOSAL, Operator.CONFLICT_OPEN,
+                   payload={"claim_ids": [a, b], "kind": "contradiction"}, proposer="joni",
+                   provenance=Provenance.from_operator(), target_objects=(a, b)), actor="joni")
+    bridge.record_real_trial(cs, real_trial.run_joni_conflict_trial().to_dict())
+
+    islands = bridge.blind_spots(cs, top_k=3)
+    assert islands and islands[0]["target"].startswith("conflict:")  # a real conflict target
+    assert islands[0]["missing_affinity"]                            # a missing thinking-move
+
+    it, label, seeds = kevin_llm._select_input(cs)
+    assert it == "desi_blind_spot"                       # DESi steered Kevin, not a generic topic
+    assert islands[0]["missing_affinity"] in label
+    assert {c.id for c in seeds} == {a, b}                           # the conflict's own claims

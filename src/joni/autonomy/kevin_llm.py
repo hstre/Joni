@@ -36,8 +36,8 @@ _SYS = (
     "opinions, no meta-commentary, no questions.")
 
 # The closed set of input types Kevin may fire on (visible in the capture + proposal + site).
-INPUT_TYPES = ("cross_topic_analogy", "open_conflict", "single_topic_method_exploration",
-               "single_source_research_candidate")
+INPUT_TYPES = ("desi_blind_spot", "cross_topic_analogy", "open_conflict",
+               "single_topic_method_exploration", "single_source_research_candidate")
 
 
 def enabled() -> bool:
@@ -74,9 +74,29 @@ def _source_count(claims) -> int:
     return len(fams)
 
 
+def _desi_blind_spot_input(cs):
+    """DESi STEERING: the highest-priority solution-space gap (a real target + a missing thinking-
+    move) DESi predicts. Kevin aims his creativity there FIRST, instead of a generic topic. Returns
+    ``(input_type, label, seeds)`` or ``None`` (no DESi, no island, or no resolvable claims)."""
+    from . import kevin_trial_bridge as bridge
+    for isl in bridge.blind_spots(cs, top_k=4):
+        seeds = [cs.core.objects.get(cid) for cid in isl.get("claim_ids", [])]
+        seeds = [c for c in seeds if c is not None and not _is_synthetic(getattr(c, "text", ""))]
+        if seeds:
+            label = (f"{isl['target']} · missing '{isl['missing_affinity']}' thinking-move"
+                     f" (DESi prio {isl['priority']})")
+            return "desi_blind_spot", label, seeds[:4]
+    return None
+
+
 def _select_input(cs):
-    """Pick Kevin's creative input by TYPE - any one substantial input suffices. Returns
-    ``(input_type, label, seed_claims)`` or ``(None, None, None)`` when there is no real input."""
+    """Pick Kevin's creative input by TYPE - any one substantial input suffices. DESi-predicted
+    solution-space gaps (blind spots) are tried FIRST, so Kevin's divergence aims where DESi says a
+    missing thinking-move most likely unlocks progress. Returns ``(input_type, label, seed_claims)``
+    or ``(None, None, None)`` when there is no real input."""
+    steered = _desi_blind_spot_input(cs)
+    if steered is not None:                               # DESi steers Kevin to the top island
+        return steered
     usable = [t for t in cs.topics() if _usable_topic(cs, t)]
     if len(usable) >= 2:                                   # a far-analogy across two topics
         a, b = usable[0], usable[1]
@@ -101,7 +121,11 @@ def _select_input(cs):
 
 def _user_prompt(input_type: str, label: str, seeds) -> str:
     lines = "\n".join(f"- {c.text}" for c in seeds)
-    if input_type == "cross_topic_analogy":
+    if input_type == "desi_blind_spot":
+        ask = ("These claims sit at a SOLUTION-SPACE GAP that DESi flagged (the header names the "
+               "missing thinking-move). Apply THAT move to this material and propose a single "
+               "testable hypothesis or a discriminating experiment that would fill the gap.")
+    elif input_type == "cross_topic_analogy":
         ask = "Propose a bold cross-domain transfer linking these two areas."
     elif input_type == "open_conflict":
         ask = ("These claims CONTRADICT. Propose a testable hypothesis that could reconcile them, "

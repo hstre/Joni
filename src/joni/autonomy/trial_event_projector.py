@@ -237,6 +237,18 @@ def _dataset_sufficiency(core, evidence, events) -> dict:
     }
 
 
+def desi_method_trials(core) -> tuple:
+    """The rule-verified, scope-bound trial outcomes as DESi ``MethodTrial`` OBJECTS (what the
+    EpistemicGapSnapshot.method_trials field needs - the dict form in ``project_trial_events`` is
+    JSON-only). Empty tuple if DESi is unavailable or no verified trial event exists."""
+    if not available():
+        return ()
+    from .trial_event_schema import to_desi_method_trials, verify_payloads
+    stored = [p for p in ((env.get("payload") or {}) for env in core.method_trial_events())
+              if p.get("schema_version") in PROJECTOR_SUPPORTED_SCHEMA_VERSIONS]
+    return to_desi_method_trials(aggregate(verify_payloads(stored)))
+
+
 def project_trial_events(core) -> dict:
     """Project the registered trial events into a transparent structure. Every registered event is
     visible with its three-axis status; only VERIFIED scope-bound events feed aggregation; dataset
