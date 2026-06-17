@@ -939,117 +939,150 @@ def seal_payload(payload: dict, registry=None) -> dict:
 
 
 # ================================================================================================ #
-# JOURNAL MIGRATION - a VERSIONED, AUTHENTICATED, fail-closed loader for historical v3 journals
+# JOURNAL MIGRATION - a VERSIONED, fail-closed loader for historical v3 journals, bound to a PINNED
+# ALLOWLIST of historical attestations.
 #   The kernel write-boundary is deterministic (only sealed v4 is writable), so an old v3
 #   METHOD_TRIAL_RECORDED entry is NOT raw-replayable. Backward COMPATIBILITY is an explicit
 #   MIGRATION that re-seals each historically-ACCEPTED v3 trial body to v4 (the body verbatim) under
 #   its KNOWN capsule, BEFORE replay. It introduces NO submit privilege.
 #
-#   The TRUST SOURCE is a PINNED, internal, immutable catalog of historical attestations
-#   (``_TRUSTED_HISTORICAL_ATTESTATIONS``), NOT a self-declared field in the untrusted input
-#   document and NOT a caller-supplied function. The document carries a ``historical_attestation``
-#   whose ``verifier_id`` SELECTS an entry in that catalog; the migration then checks, fail-closed:
-#     (1) the attestation is byte-identical to the pinned, trusted anchor for that verifier_id
-#         (its ``attestation_hash`` is recomputed from the body AND must equal the pinned hash -
-#         a forged attestation for a different body has a different hash the caller cannot forge);
-#     (2) the attestation BINDS this document (``source_snapshot_hash == doc.snapshot_hash``), so a
-#         present snapshot_hash is never silently ignored;
-#     (3) each migrated v3 trial body's canonical hash is in the attestation's
-#         ``accepted_entry_hashes`` - acceptance is CHECKED against the trust root, never self-
-#         declared; an entry the trust root does not attest is fail-closed;
+#   TRUST MODEL (honest naming). The trust source is a PINNED, internal, immutable ALLOWLIST of
+#   historical attestation DIGESTS (``_TRUSTED_HISTORICAL_ATTESTATIONS``), NOT a self-declared field
+#   in the untrusted input document and NOT a caller-supplied function. ``attestation_digest`` is
+#   a sha256 over the canonical attestation body - it is a PINNED DIGEST, **not a cryptographic
+#   signature**: trust derives solely from that digest being allowlisted in the catalog. (A
+#   deployment that ingests EXTERNAL historical artifacts must additionally verify a real signature
+#   against a pinned public key, or ship the historical kernel/policy artifacts + a hash manifest.)
+#
+#   A document carries a ``historical_attestation`` whose ``verifier_id`` SELECTS a catalog entry;
+#   migration then checks, fail-closed:
+#     (1) the attestation is byte-identical to the pinned, allowlisted anchor (its
+#         ``attestation_digest`` recomputes from the body AND equals the pinned digest);
+#     (2) the attestation BINDS the DELIVERED DOCUMENT CONTENT: ``source_journal_hash`` equals the
+#         canonical hash of the document's FULL journal (not just a copied snapshot string), and
+#         ``source_snapshot_hash`` equals ``doc.snapshot_hash`` (never silently ignored);
+#     (3) each migrated v3 trial entry's FULL canonical JournalEntry hash (operator, proposal_type,
+#         payload, proposer, provenance, target_objects, actor, governance_approved, reason, tick)
+#         in ``accepted_full_entry_hashes`` - so the actor/provenance/governance metadata of the
+#         historical command are attested, not just the trial body;
 #     (4) the cited rule resolves to a KNOWN capsule.
-#   A real deployment populates the catalog with attestations produced by replaying the historical
-#   journal under the historical kernel release and SIGNED. There are NO production v3 trial events
-#   (base ``282d541`` has none), so the shipped demonstrator anchor is inert.
+#   PRODUCTION DEFAULT: the catalog is EMPTY, so NO v3 trial document is migratable (fail-closed). A
+#   deployment installs real, signed historical attestations; tests/dev inject an explicit catalog
+#   via ``trusted_attestations=``. The demonstrator anchor lives in the tests, never in production.
 # ================================================================================================ #
-JOURNAL_MIGRATION_VERSION = "trial_event_journal_migration_v2"
+JOURNAL_MIGRATION_VERSION = "trial_event_journal_migration_v3"
 _TRIAL_OPERATOR_VALUE = "method_trial_recorded"
 HISTORICAL_ATTESTATION_KEY = "historical_attestation"
 _ATTESTATION_BODY_FIELDS = ("verifier_id", "kernel_release", "gate_policy_version",
-                            "source_snapshot_hash", "accepted_entry_hashes")
+                            "historical_kernel_artifact_hash", "gate_policy_artifact_hash",
+                            "source_document_hash", "source_journal_hash", "source_snapshot_hash",
+                            "accepted_full_entry_hashes")
+_FULL_ENTRY_FIELDS = ("operator", "proposal_type", "payload", "proposer", "provenance",
+                      "target_objects", "actor", "governance_approved", "reason", "tick")
 
 
 class JournalMigrationError(Exception):
     """A historical v3 trial entry cannot be migrated trustworthily (fail-closed)."""
 
 
-def _entry_body_hash(payload: dict) -> str:
-    """The canonical hash of a v3 trial BODY - the unit an attestation lists as accepted."""
-    return _bytes_hash(_canonical_json_bytes(payload))
+def _entry_canon(entry: dict) -> dict:
+    """The canonical, normalised form of a FULL persisted JournalEntry (every field that becomes
+    authoritative on replay), so an attestation binds the actor/provenance/governance metadata - not
+    just the trial body."""
+    return {
+        "operator": entry.get("operator"),
+        "proposal_type": entry.get("proposal_type"),
+        "payload": entry.get("payload") or {},
+        "proposer": entry.get("proposer"),
+        "provenance": entry.get("provenance") or {},
+        "target_objects": list(entry.get("target_objects") or []),
+        "actor": entry.get("actor"),
+        "governance_approved": bool(entry.get("governance_approved")),
+        "reason": entry.get("reason", ""),
+        "tick": int(entry.get("tick", 0)),
+    }
 
 
-def _attestation_hash(att: dict) -> str:
-    """Hash over the canonical attestation BODY (excludes the hash field itself). The trust anchor:
-    a pinned hash a caller cannot forge for a different body (sha256 preimage resistance)."""
+def _full_entry_hash(entry: dict) -> str:
+    """The canonical hash of a FULL persisted JournalEntry - the unit an attestation lists."""
+    return _bytes_hash(_canonical_json_bytes(_entry_canon(entry)))
+
+
+def _journal_hash(journal: list) -> str:
+    """The canonical hash of a FULL journal (list of full canonical entries) - binds the delivered
+    document content, so changing ANY entry field (or adding/removing entries) breaks it."""
+    return _bytes_hash(_canonical_json_bytes([_entry_canon(e) for e in journal]))
+
+
+def _attestation_digest(att: dict) -> str:
+    """sha256 over the canonical attestation BODY (excludes the digest field). A PINNED DIGEST, NOT
+    a signature: a caller cannot forge it for a different body, but its TRUST comes only from being
+    allowlisted in the catalog."""
     body = {k: att.get(k) for k in _ATTESTATION_BODY_FIELDS}
-    body["accepted_entry_hashes"] = sorted(body.get("accepted_entry_hashes") or [])
+    body["accepted_full_entry_hashes"] = sorted(body.get("accepted_full_entry_hashes") or [])
     return _bytes_hash(_canonical_json_bytes(body))
 
 
 def build_historical_attestation(*, verifier_id: str, kernel_release: str, gate_policy_version: str,
-                                 source_snapshot_hash: str,
-                                 accepted_entry_hashes: list[str]) -> dict:
-    """Construct a historical attestation with its self-consistent ``attestation_hash``. (In a real
-    deployment the historical kernel produces and SIGNS this; building one does NOT make it trusted:
-    only an attestation whose hash is PINNED in ``_TRUSTED_HISTORICAL_ATTESTATIONS`` is trusted.)"""
+                                 historical_kernel_artifact_hash: str,
+                                 gate_policy_artifact_hash: str, source_document_hash: str,
+                                 source_journal_hash: str, source_snapshot_hash: str,
+                                 accepted_full_entry_hashes: list[str]) -> dict:
+    """Construct a historical attestation with its self-consistent ``attestation_digest``. Building
+    one does NOT make it trusted: only an attestation whose digest is allowlisted in a catalog (and,
+    for external artifacts, signature-verified) is trusted."""
     att = {"verifier_id": verifier_id, "kernel_release": kernel_release,
-           "gate_policy_version": gate_policy_version, "source_snapshot_hash": source_snapshot_hash,
-           "accepted_entry_hashes": sorted(accepted_entry_hashes)}
-    att["attestation_hash"] = _attestation_hash(att)
+           "gate_policy_version": gate_policy_version,
+           "historical_kernel_artifact_hash": historical_kernel_artifact_hash,
+           "gate_policy_artifact_hash": gate_policy_artifact_hash,
+           "source_document_hash": source_document_hash, "source_journal_hash": source_journal_hash,
+           "source_snapshot_hash": source_snapshot_hash,
+           "accepted_full_entry_hashes": sorted(accepted_full_entry_hashes)}
+    att["attestation_digest"] = _attestation_digest(att)
     return att
 
 
-def _demo_historical_anchor() -> tuple[dict, dict]:
-    """The demonstrator's ONE example trust anchor: a fixed historical v3 trial body + the pinned
-    attestation that attests it as historically accepted. Inert (no production v3 trial events)."""
-    body = MethodTrialRecorded(
-        trial_id="__demo_historical_v3__", timestamp="2020-01-01T00:00:00Z", ledger_tick=0,
-        target_type="conflict", target_id="X0", claim_ids=("C-0",), scope_id="demo",
-        method_id="m_demo", method_variant="v1", affinities=("causal",),
-        estimand=Estimand(outcome_metric="misclass_rate", direction="higher_is_better",
-                          minimum_effect=0.10, decision_rule_id="rule_v2"),
-        execution_status="completed", protocol_status="valid", epistemic_result="inconclusive",
-        measurement=Measurement("misclass_rate", 0.40, 0.43, effect_size=0.03, uncertainty=0.02,
-                                confidence_interval=(-0.05, 0.08)),
-        decision=Decision("rule_v2", RULE_V2_HASH, "inconclusive"), note="demo").to_dict()
-    att = build_historical_attestation(
-        verifier_id="historical_kernel_demo_v1", kernel_release="7810e25",
-        gate_policy_version="trial_gate_policy_v1",
-        source_snapshot_hash=_bytes_hash(b"demo-historical-source-snapshot"),
-        accepted_entry_hashes=[_entry_body_hash(body)])
-    return body, att
+# PRODUCTION DEFAULT: an EMPTY allowlist - no historical v3 trial document is migratable. A
+# deployment installs real signed attestations; tests/dev pass an explicit ``trusted_attestations``.
+_TRUSTED_HISTORICAL_ATTESTATIONS = MappingProxyType({})
 
 
-_DEMO_HISTORICAL_BODY, _DEMO_HISTORICAL_ATTESTATION = _demo_historical_anchor()
-
-# The PINNED, internal, immutable trust root. The caller may only SELECT a verifier_id; it can never
-# supply an executable verifier nor a self-declared acceptance. (A real deployment replaces this
-# with signed attestations; an EMPTY catalog means "no historical v3 trial is migratable".)
-_TRUSTED_HISTORICAL_ATTESTATIONS = MappingProxyType({
-    _DEMO_HISTORICAL_ATTESTATION["verifier_id"]: _DEMO_HISTORICAL_ATTESTATION,
-})
+def _document_hash(doc: dict) -> str:
+    """Canonical hash of the delivered document's migration-relevant content (journal + snapshot +
+    tick), so the attestation binds the actual bytes delivered, not just a copied selector."""
+    canon = {"journal": [_entry_canon(e) for e in doc.get("journal", [])],
+             "snapshot_hash": doc.get("snapshot_hash"), "tick": int(doc.get("tick", 0))}
+    return _bytes_hash(_canonical_json_bytes(canon))
 
 
-def _resolve_attestation(doc: dict, trusted=None) -> tuple[dict, set]:
-    """Resolve + AUTHENTICATE the document's ``historical_attestation`` against the PINNED catalog.
-    Returns ``(attestation, accepted_entry_hashes)`` or raises ``JournalMigrationError`` (fail-
-    closed). The caller supplies NO executable - only a ``verifier_id`` inside the document."""
-    catalog = _TRUSTED_HISTORICAL_ATTESTATIONS if trusted is None else trusted
+def _resolve_attestation(doc: dict, trusted) -> tuple[dict, set]:
+    """Resolve the document's ``historical_attestation`` against the PINNED allowlist and bind it to
+    the DELIVERED document. Returns ``(attestation, accepted_full_entry_hashes)`` or raises
+    ``JournalMigrationError`` (fail-closed). The caller supplies NO executable - only a verifier_id
+    inside the document, and (out of band) the trusted allowlist."""
     att = doc.get(HISTORICAL_ATTESTATION_KEY)
     if not isinstance(att, dict):
         raise JournalMigrationError(
             "no historical_attestation present - a historical v3 trial journal needs an "
-            "attestation from the pinned trust root (fail-closed)")
-    pinned = catalog.get(att.get("verifier_id"))
+            "attestation from the pinned allowlist (fail-closed)")
+    pinned = trusted.get(att.get("verifier_id"))
     if pinned is None:
         raise JournalMigrationError(
-            f"unknown verifier_id '{att.get('verifier_id')}' - not in the pinned historical trust "
-            "root (fail-closed; the caller cannot bring its own verifier)")
-    if _attestation_hash(att) != att.get("attestation_hash"):
-        raise JournalMigrationError("attestation_hash does not match its body (forged?)")
-    if att.get("attestation_hash") != pinned["attestation_hash"]:
+            f"unknown verifier_id '{att.get('verifier_id')}' - not in the pinned historical "
+            "allowlist (fail-closed; the caller cannot bring its own verifier)")
+    if _attestation_digest(att) != att.get("attestation_digest"):
+        raise JournalMigrationError("attestation_digest does not match its body (forged?)")
+    if att.get("attestation_digest") != pinned["attestation_digest"]:
         raise JournalMigrationError(
-            "attestation is not the pinned, trusted anchor for this verifier_id (fail-closed)")
+            "attestation is not the pinned, allowlisted anchor for this verifier_id (fail-closed)")
+    # bind the DELIVERED document content (not just a copied snapshot string).
+    if att.get("source_journal_hash") != _journal_hash(doc.get("journal", [])):
+        raise JournalMigrationError(
+            "attestation.source_journal_hash does not match the delivered journal's content "
+            "(fail-closed; the journal was altered or is not the attested historical journal)")
+    if att.get("source_document_hash") != _document_hash(doc):
+        raise JournalMigrationError(
+            "attestation.source_document_hash does not match the delivered document (fail-closed)")
     if att.get("source_snapshot_hash") != doc.get("snapshot_hash"):
         raise JournalMigrationError(
             "attestation.source_snapshot_hash does not bind the document's snapshot_hash "
@@ -1057,21 +1090,22 @@ def _resolve_attestation(doc: dict, trusted=None) -> tuple[dict, set]:
     if (att.get("kernel_release") != pinned["kernel_release"]
             or att.get("gate_policy_version") != pinned["gate_policy_version"]):
         raise JournalMigrationError("attestation kernel_release/gate_policy_version mismatch")
-    return att, set(att.get("accepted_entry_hashes") or [])
+    return att, set(att.get("accepted_full_entry_hashes") or [])
 
 
 def migrate_journal_entries(entries: list[dict], registry=None, *,
-                            accepted_entry_hashes=None) -> tuple[list[dict], list[dict]]:
+                            accepted_full_entry_hashes=None) -> tuple[list[dict], list[dict]]:
     """Migrate persisted journal-entry dicts. A historical v3 METHOD_TRIAL_RECORDED entry becomes a
-    SEALED v4 entry (body verbatim) ONLY IF its canonical body-hash is in ``accepted_entry_hashes``
-    (the AUTHENTICATED set ``load_migrated`` resolves from the pinned trust root) AND it resolves to
-    a KNOWN capsule. Returns FULLY DEEP-COPIED ``(migrated, log)`` (no aliasing). Fail-closed: a v3
-    trial NOT in the attested accepted set (a caller cannot self-declare acceptance), or with an
-    unknown capsule, raises. Non-trial / already-v4 entries pass through (deep-copied). Introduces
-    NO submit privilege."""
+    SEALED v4 entry (body verbatim) ONLY IF its FULL canonical JournalEntry hash is in
+    ``accepted_full_entry_hashes`` (the set ``load_migrated`` resolves from the pinned allowlist)
+    AND it resolves to a KNOWN capsule. Returns FULLY DEEP-COPIED ``(migrated, log)`` (no aliasing).
+    Fail-closed: a v3 trial whose FULL entry (actor/provenance/governance/tick included) is NOT in
+    the attested set (a caller cannot self-declare acceptance, nor swap the actor/provenance of an
+    attested body), or an unknown capsule, raises. Non-trial / already-v4 entries pass through
+    (deep-copied). Introduces NO submit privilege."""
     import copy
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
-    accepted = set(accepted_entry_hashes or [])
+    accepted = set(accepted_full_entry_hashes or [])
     out: list[dict] = []
     log: list[dict] = []
     for e in entries:
@@ -1081,11 +1115,11 @@ def migrate_journal_entries(entries: list[dict], registry=None, *,
         if not is_v3_trial:
             out.append(copy.deepcopy(e))                 # pass through, fully independent
             continue
-        body_hash = _entry_body_hash(payload)
-        if body_hash not in accepted:
+        entry_hash = _full_entry_hash(e)
+        if entry_hash not in accepted:
             raise JournalMigrationError(
-                f"v3 trial '{payload.get('trial_id')}' is not in the attested accepted-entry set "
-                "(no trustworthy historical source attests it as accepted) - fail-closed")
+                f"v3 trial '{payload.get('trial_id')}' (full entry) is not in the attested "
+                "accepted set - fail-closed (its actor/provenance/governance/tick are bound too)")
         d = payload.get("decision") or {}
         if payload.get("epistemic_result") in RULE_EVALUABLE_RESULTS:
             ch = _resolve_capsule_hash(reg, d.get("decision_rule_id"), d.get("decision_rule_hash"))
@@ -1101,23 +1135,27 @@ def migrate_journal_entries(entries: list[dict], registry=None, *,
         out.append(migrated)
         log.append({"migration": JOURNAL_MIGRATION_VERSION, "trial_id": payload.get("trial_id"),
                     "from": SCHEMA_VERSION, "to": JOURNAL_SCHEMA_VERSION,
-                    "attested_entry_hash": body_hash,
+                    "attested_full_entry_hash": entry_hash,
                     "capsule_hash": sealed.get(ENVELOPE_KEY, {}).get("capsule_hash"),
                     "seal": ENVELOPE_KEY if ENVELOPE_KEY in sealed else OPERATIONAL_ENVELOPE_KEY})
     return out, log
 
 
-def load_migrated(doc: dict, registry=None):
-    """Load a persisted Layer-9 document, AUTHENTICATING + MIGRATING historical v3 trial entries to
-    sealed v4, then replaying. The trust source is the PINNED internal catalog, resolved from the
-    document's ``historical_attestation.verifier_id`` - the caller supplies NO executable verifier.
-    Fail-closed: a v3 trial journal with no/forged/unpinned attestation, an attestation that does
-    not bind the document's snapshot_hash, an unattested entry, or an unknown capsule, all raise. A
-    document without v3 trials still has its ``snapshot_hash`` checked against the replayed state
-    (it is never silently ignored). The reconstructed state is the UPGRADED (v4) state (the BODY
-    verbatim), not the byte-identical v3 snapshot. Returns ``(core, migration_log)``."""
+def load_migrated(doc: dict, registry=None, *, trusted_attestations=None):
+    """Load a persisted Layer-9 document, MIGRATING allowlisted historical v3 trial entries to
+    sealed v4, then replaying. The trust source is a PINNED allowlist (``trusted_attestations``,
+    defaulting to the EMPTY production catalog ``_TRUSTED_HISTORICAL_ATTESTATIONS``), resolved from
+    the document's ``historical_attestation.verifier_id`` - the caller supplies NO executable
+    verifier. Fail-closed: a v3 trial journal with no/forged/unpinned attestation, an attestation
+    that does not bind the delivered document content (journal hash / document hash / snapshot_hash)
+    or whose full entries are not attested, an unknown verifier, or an unknown capsule, all raise. A
+    document without v3 trials still has its ``snapshot_hash`` checked against the replayed state.
+    The reconstructed state is the UPGRADED (v4) state (the BODY verbatim). Returns
+    ``(core, migration_log)``."""
     from desi_layer9 import JournalEntry, persistence
     from desi_layer9.hashing import snapshot_hash
+    trusted = (_TRUSTED_HISTORICAL_ATTESTATIONS if trusted_attestations is None
+               else trusted_attestations)
     journal = doc.get("journal", [])
     has_v3_trial = any(e.get("operator") == _TRIAL_OPERATOR_VALUE
                        and (e.get("payload") or {}).get("schema_version") == SCHEMA_VERSION
@@ -1125,14 +1163,19 @@ def load_migrated(doc: dict, registry=None):
     log: list[dict] = []
     accepted = None
     if has_v3_trial:
-        att, accepted = _resolve_attestation(doc)
+        att, accepted = _resolve_attestation(doc, trusted)
         log.append({"migration": JOURNAL_MIGRATION_VERSION, "attestation": {
             "verifier_id": att["verifier_id"], "kernel_release": att["kernel_release"],
             "gate_policy_version": att["gate_policy_version"],
+            "historical_kernel_artifact_hash": att.get("historical_kernel_artifact_hash"),
+            "gate_policy_artifact_hash": att.get("gate_policy_artifact_hash"),
+            "source_document_hash": att.get("source_document_hash"),
+            "source_journal_hash": att.get("source_journal_hash"),
             "source_snapshot_hash": att["source_snapshot_hash"],
-            "attestation_hash": att["attestation_hash"],
-            "accepted_entry_hashes": sorted(accepted)}})
-    migrated, mlog = migrate_journal_entries(journal, registry, accepted_entry_hashes=accepted)
+            "attestation_digest": att["attestation_digest"],
+            "accepted_full_entry_hashes": sorted(accepted)}})
+    migrated, mlog = migrate_journal_entries(journal, registry,
+                                             accepted_full_entry_hashes=accepted)
     log.extend(mlog)
     core = persistence.replay([JournalEntry.from_dict(e) for e in migrated],
                               tick=int(doc.get("tick", 0)))

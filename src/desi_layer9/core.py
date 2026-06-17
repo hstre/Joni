@@ -160,7 +160,8 @@ def _clamp(x: float) -> float:
 
 @dataclass
 class Layer9:
-    """The authoritative epistemic state and its only write path."""
+    """The authoritative epistemic state. ``submit`` is the only epistemic OBJECT/LEDGER write path;
+    ``set_clock`` is the only (explicit, monotonic) clock input - it mutates no object or ledger."""
 
     _tick: int = 0
     _objects: dict[str, object] = field(default_factory=dict)
@@ -170,10 +171,11 @@ class Layer9:
     _seq: int = 0
 
     # -- IMMUTABLE read surface --------------------------------------------- #
-    # ``submit`` is the ONLY write path. EVERY public accessor returns DEEP COPIES / read-only
-    # views, and ALL mutable state is private (``_tick``/``_objects``/``_minter``/``_ledger``/
-    # ``_journal``/``_seq``), so there is no public handle - not the object store, not the ledger,
-    # not the tick or the minter - through which authoritative state can change outside ``submit``.
+    # ``submit`` is the ONLY epistemic object/ledger write path; ``set_clock`` is the only explicit
+    # monotonic clock input (it mutates no object/ledger). EVERY public accessor returns DEEP COPIES
+    # / read-only views, and ALL mutable state is private (``_tick``/``_objects``/``_minter``/
+    # ``_ledger``/``_journal``/``_seq``), so there is no public handle - not the object store, not
+    # the ledger, not the minter - through which an object/ledger can change outside ``submit``.
     @property
     def tick(self) -> int:
         """The current logical tick (READ-ONLY; only ``submit``/replay advance ``_tick``)."""
@@ -279,12 +281,12 @@ class Layer9:
         chain_event(ev, previous, self)
         return ev
 
-    # -- the ONLY public write path ----------------------------------------- #
+    # -- the ONLY epistemic object/ledger write path ------------------------ #
     def submit(self, proposal: Proposal, *, actor: str = "system",
                governance_approved: bool = False) -> Decision:
         # SEVER the whole proposal from the caller's instance: Layer 9 stores its OWN copy and
         # never the object the caller still holds, so a post-submit mutation of the caller proposal
-        # (or its nested payload) can NOT change authoritative state. submit() is the only writer.
+        # (or its nested payload) can NOT change state. submit() is the only object/ledger writer.
         proposal = copy.deepcopy(proposal)
         # 0. journal the operation - the replayable unit (state = f(seed, journal)). JournalEntry
         # is FROZEN and stores canonical-JSON bytes, so the journal cannot be rewritten in place.
