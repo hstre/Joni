@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "tick": 0,
-  "snapshot_hash": "757a70bfb0a87750e006ef064fffd3538e15e5c8d05bdfb1b79a1605db66ce93",
+  "tick": 1,
+  "snapshot_hash": "3ae8769fc37b5ab37f9f8d88f2333e1df7df1dbbf03686af2017a0d8ab3ca69c",
   "journal": [
     {
       "operator": "claim_create",
@@ -56905,6 +56905,226 @@
       "governance_approved": false,
       "reason": "",
       "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "members": [
+          "C-169",
+          "C-171"
+        ],
+        "surface_terms": [],
+        "lexical_trigger": 0.3,
+        "measurement": {
+          "frame_a": "frame_undeclared",
+          "frame_b": "frame_undeclared",
+          "frame_a_confidence": 0.0,
+          "frame_b_confidence": 0.0,
+          "logical_audit_a": "gap_detected",
+          "logical_audit_b": "gap_detected",
+          "frame_tension": "undecidable",
+          "routed_pipeline": null,
+          "inheritance_allowed": false,
+          "en_recommended": false,
+          "pi_distance": null,
+          "cosine_distance": 0.149442,
+          "distance_metric": "cosine",
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "embedding_revision": "bge-small-en-v1.5",
+          "embedding_dim": 384,
+          "embedding_normalized": true,
+          "polarity_clash": false,
+          "duplicate": false,
+          "layer_name": "desi-semantic-layer",
+          "layer_version": "0.1.0",
+          "error": "",
+          "components": [
+            "frame_detector",
+            "logical_auditor",
+            "frame_tension_router",
+            "local_embedding:BAAI/bge-small-en-v1.5@bge-small-en-v1.5"
+          ],
+          "components_unavailable": []
+        },
+        "decision": "complementary",
+        "semantic_state": "synthesis-eligible",
+        "decision_rationale": "cosine distance 0.149: clearly related and non-duplicate - a synthesis candidate",
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0"
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "joni-c121-bf",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-169",
+        "C-171"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 1
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**\n\nChatGPT (adversarial) and DeepSeek (consistency) diverge mainly in scope. ChatGPT treats the GitHub repository as evidence of community-backed reliability; DeepSeek treats reproducibility/versioning as a *precondition*, not evidence. I keep DeepSeek's framing: the assumption differs — ChatGPT assumes existence-of-repo ⇒ validation, which is inadmissible (a repo proves activity, not validity). DeepSeek's openness-as-requirement is the sounder rule.\n\nBoth miss one category: the proposition is a bare URL fragment + truncated overview. The naming \"GatkConcordanceValid\" asserts validity by label, not by demonstrated concordance criterion — a formal gap neither named explicitly.\n\n**Reconciled assessment:**\n\n*Tragfähig*, wenn: echte Nutzerhürde (Rechen-/Expertise-/Compliance), offene versionierte Pipeline-Definition, nachvollziehbare Ausführungsumgebung, definiertes Konkordanz-Kriterium hinter dem Label.\n\n*Bricht*, wenn: Datenhoheit beim zentralen Hosting verloren geht, Terra die Hürde selbst abbaut, das \"Valid\"-Label ungeprüft suggestiv bleibt, oder Kostenmodell intransparent ist.\n\nFormal admissible nur als Linse, sofern das Validitätskriterium expliziert wird — sonst ist die Methode zirkulär (\"valid weil so benannt\"). Keine Wahrheits- oder Entscheidungsaussage; Joni entscheidet.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:claude"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 1
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-359"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 1
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · adversarial · keine Entscheidung] **Reconstructed Judgement (Assessor, keine Entscheidung)**\n\n**Kategorienreinheit:** Gemischt. Die Vorschlagsbeschreibung vermischt eine \"Methode (Linse)\" mit einem \"Pipeline-Service\". Dies führt zu einer Kategorieverwirrung, da eine Linse eine Bewertungsperspektive darstellt, während ein Pipeline-Service eine technische Implementierung ist. Unrein.\n\n**Logische Konsistenz:** Widerspruchsfrei unter der Annahme, dass \"GatkConcordanceValid\" als spezifische Methode operationalisierbar ist. Der Vorschlag fehlt jedoch eine klare Definition, wie der Service als Bewertungs-Linse fungiert. Dies führt zu einem impliziten Sprung von \"Service existiert\" zu \"ist eine gute Bewertungs-Linse\".\n\n**Explizite Annahmen:** (1) Service/Repo existiert; (2) führt definierte Pipelines aus.\n\n**Implizite Annahmen:** (a) Teaspoons kann als Panel-Linse dienen; (b) \"GatkConcordanceValid\" ist ein definiertes Gültigkeitskriterium; (c) Panel-Inputs sind GATK-/genomik-artig.\n\n**Konsistent unter:** Annahme, dass (a)–(c) erfüllt sind und \"Linse\" als domänenspezifischer Validierungsfilter gelesen wird.\n\n**Bricht, wenn:** Die Annahmen über die Nutzerhürden nicht zutreffen oder wenn Terra selbst die Hürden abbaut. Auch gefährdet zentrales Hosting die Datenhoheit und kann zu Skalierungsengpässen führen.\n\n**Reconciliation:** Beide Beurteilungen stimmen darin überein, dass die Tragfähigkeit von spezifischen Annahmen abhängt, die derzeit nicht ausreichend definiert sind.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:chatgpt"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 1
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-360"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 1
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "[Alexandria-Bewertung · consistency · keine Entscheidung] Cross-reconstruction: Claude’s divergence hinges on a *category* rule: a declared “Linse” must deliver an evaluation perspective, not merely a service pointer. ChatGPT implicitly treats “Methode (Linse)” as a broader tool introduction, eliding the categorical mismatch. The differing *assumption* is whether “GatkConcordanceValid” is already defined as a lens or merely name-dropped.\n\n**Reconciled assessment (consistency-weighted):** Die Proposition ist als Methodenvorschlag *formal bedingt zulässig*, aber kategorial unrein.  \n\n**Unterstützende Annahmen (Tragfähigkeit):**  \n- “GatkConcordanceValid” ist ein konkretes, operationalisierbares Gültigkeitskriterium (Filter/Linse), das über Teaspoons ausgeführt wird.  \n- Der Panel-Gegenstand ist genomisch/GATK-kompatibel, sodass die Linse greift.  \n- Der Service existiert und ist für die Panelbewertung erreichbar.  \n\n**Bruchstellen:**  \n- Die Proposition definiert die Linse *nicht* — sie verweist nur auf ein Repo. Ohne explizite Linsenlogik bleibt die Methode leer.  \n- Bei nicht-genomischen Anwendungsfällen kollabiert die Kategorie.  \n- Infrastrukturabhängigkeit und fehlende Validierung gefährden Zuverlässigkeit.\n\nKeine Wahrheitsentscheidung. Joni muss entscheiden, ob der implikative Sprung vom Service-Namen zur Linsendefinition geheilt wird oder die Proposition als Methode umetikettiert werden muss.",
+        "topic": "panel"
+      },
+      "proposer": "forum:panel",
+      "provenance": {
+        "origin_type": "source",
+        "source_ids": [
+          "panel:expert:deepseek"
+        ],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 1
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "origin_type": "deterministic_operator",
+        "source_ids": [],
+        "model_id": "unknown",
+        "provider": "unknown",
+        "served_model": "unknown",
+        "sampling_config_sha256": "unverified",
+        "run_id": "unknown",
+        "call_id": "unknown"
+      },
+      "target_objects": [
+        "C-361"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 1
     }
   ]
 }
