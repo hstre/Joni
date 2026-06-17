@@ -128,9 +128,10 @@ def test_a10_corrupted_migration_lines_are_quarantined():
 def test_a11_recall_does_not_change_status():
     core = l9.Layer9()
     core.submit(_op(OP.MEMORY_RECORD, {"summary": "s"}))
-    m = core.all(l9.ObjectType.MEMORY_EPISODE)[0]
+    mid = core.all(l9.ObjectType.MEMORY_EPISODE)[0].id
     for _ in range(10):
-        core.submit(_op(OP.MEMORY_RECALL, {}, target_objects=(m.id,)))
+        core.submit(_op(OP.MEMORY_RECALL, {}, target_objects=(mid,)))
+    m = core.get(mid)                                         # re-read the stored object
     assert m.recall_count == 10 and m.status is l9.Status.ACTIVE
 
 
@@ -140,12 +141,12 @@ def test_a12_narrative_cannot_write_operational_state():
     # the system records measured operational state (deterministic)
     os_obj = OperationalState(id="OS-1", metrics={"projects_abandoned": 3},
                               status=l9.Status.ACTIVE, authority=l9.Authority.AUTHORITATIVE)
-    core.objects["OS-1"] = os_obj
+    core._objects["OS-1"] = os_obj                            # white-box: simulate system-recorded
     # a narrative that claims otherwise creates only a NarrativeSummary
     core.submit(_op(OP.NARRATIVE_RENDER,
                     {"text": "I never abandon projects", "basis": ["OS-1"]}))
     assert core.get("OS-1").metrics == {"projects_abandoned": 3}   # unchanged
-    assert core.all(l9.ObjectType.OPERATIONAL_STATE)[0] is os_obj
+    assert core.all(l9.ObjectType.OPERATIONAL_STATE)[0].id == "OS-1"
 
 
 # bonus - the whole adversarial session still replays and verifies.

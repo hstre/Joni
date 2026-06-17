@@ -16,6 +16,7 @@ opened, not force-resolved. Methods become active only after trials + promotion.
 from __future__ import annotations
 
 import copy
+import json
 from dataclasses import dataclass, field
 
 from . import policy
@@ -90,40 +91,51 @@ def trial_event_hashes(o) -> dict:
     }
 
 
-@dataclass
+@dataclass(frozen=True)
 class JournalEntry:
     """One recorded operation - the replayable unit. State = f(seed, journal).
 
+    The entry is FROZEN and stores its payload/provenance as CANONICAL JSON STRINGS (immutable), so
+    the authoritative replay material cannot be rewritten in place: ``.payload`` / ``.provenance``
+    return a FRESH parsed dict on every read, and there is no mutable nested structure to alias.
+
     ``tick`` is the core's tick at the moment the operation ran, so replay can restore the
-    exact historical tick before re-applying it (objects record ``created_tick`` /
-    ``last_changed_tick``). Without it, a journal spanning a tick change (e.g. a midnight
-    day rollover) would not reproduce its own snapshot hash.
+    exact historical tick before re-applying it.
     """
 
     operator: Operator
     proposal_type: ProposalType
-    payload: dict
+    payload_canonical: str           # canonical JSON of the payload - IMMUTABLE
     proposer: str
-    provenance: dict                 # Provenance.to_dict()
+    provenance_canonical: str        # canonical JSON of Provenance.to_dict()
     target_objects: tuple[str, ...]
     actor: str
     governance_approved: bool
     reason: str = ""
     tick: int = 0
 
-    def __post_init__(self):
-        # DEEP-FREEZE the replayable content on entry: the journal must not share nested references
-        # with the caller's payload (or any earlier export), so no external mutation can rewrite the
-        # authoritative journal after the fact. state = f(seed, journal) is then immune to aliasing.
-        self.payload = copy.deepcopy(self.payload)
-        self.provenance = copy.deepcopy(self.provenance)
-        self.target_objects = tuple(self.target_objects)
+    @classmethod
+    def of(cls, *, operator, proposal_type, payload: dict, proposer, provenance: dict,
+           target_objects, actor, governance_approved, reason="", tick=0) -> JournalEntry:
+        return cls(operator=operator, proposal_type=proposal_type,
+                   payload_canonical=canonical_payload(payload), proposer=proposer,
+                   provenance_canonical=canonical_payload(provenance),
+                   target_objects=tuple(target_objects), actor=actor,
+                   governance_approved=governance_approved, reason=reason, tick=tick)
+
+    @property
+    def payload(self) -> dict:
+        return json.loads(self.payload_canonical)   # fresh, mutation-safe copy each read
+
+    @property
+    def provenance(self) -> dict:
+        return json.loads(self.provenance_canonical)
 
     def to_dict(self) -> dict:
         return {
             "operator": self.operator.value, "proposal_type": self.proposal_type.value,
-            "payload": copy.deepcopy(self.payload), "proposer": self.proposer,
-            "provenance": copy.deepcopy(self.provenance),
+            "payload": json.loads(self.payload_canonical), "proposer": self.proposer,
+            "provenance": json.loads(self.provenance_canonical),
             "target_objects": list(self.target_objects), "actor": self.actor,
             "governance_approved": self.governance_approved, "reason": self.reason,
             "tick": self.tick,
@@ -131,8 +143,8 @@ class JournalEntry:
 
     @classmethod
     def from_dict(cls, d: dict) -> JournalEntry:
-        # __post_init__ deep-copies, so the reconstructed entry never aliases the input dict.
-        return cls(
+        # canonicalising the payload/provenance severs any aliasing with the input dict.
+        return cls.of(
             operator=Operator(d["operator"]), proposal_type=ProposalType(d["proposal_type"]),
             payload=d.get("payload", {}), proposer=d.get("proposer", "unknown"),
             provenance=d.get("provenance", {}),
@@ -151,18 +163,40 @@ class Layer9:
     """The authoritative epistemic state and its only write path."""
 
     tick: int = 0
-    objects: dict[str, object] = field(default_factory=dict)
+    _objects: dict[str, object] = field(default_factory=dict)
     minter: IdMinter = field(default_factory=IdMinter)
     ledger: list[LedgerEvent] = field(default_factory=list)
-    journal: list[JournalEntry] = field(default_factory=list)
+    _journal: list[JournalEntry] = field(default_factory=list)
     _seq: int = 0
 
-    # -- reads -------------------------------------------------------------- #
+    # -- IMMUTABLE read surface --------------------------------------------- #
+    # ``submit`` is the ONLY write path: external callers get DEEP COPIES / read-only views, so a
+    # post-submit mutation of a returned object (or the caller's proposal) can never change state.
+    @property
+    def objects(self):
+        """A READ-ONLY view of the object store (keys cannot be added/removed externally). Use
+        ``get``/``all`` for mutation-safe deep copies of individual objects."""
+        from types import MappingProxyType
+        return MappingProxyType(self._objects)
+
+    @property
+    def journal(self) -> tuple:
+        """The replay journal as an IMMUTABLE tuple of frozen entries - it cannot be
+        appended/popped/cleared from outside ``submit``."""
+        return tuple(self._journal)
+
+    # -- reads (return INDEPENDENT deep copies; mutating them never touches state) ------------- #
     def get(self, oid: str):
-        return self.objects.get(oid)
+        o = self._objects.get(oid)
+        return copy.deepcopy(o) if o is not None else None
 
     def all(self, object_type: ObjectType) -> list:
-        return [o for o in self.objects.values() if o.object_type is object_type]
+        return [copy.deepcopy(o) for o in self._objects.values()
+                if o.object_type is object_type]
+
+    def _all(self, object_type: ObjectType) -> list:
+        """INTERNAL read (no copy) - the gate/handlers only read or mutate via ``_objects``."""
+        return [o for o in self._objects.values() if o.object_type is object_type]
 
     def method_trial_events(self) -> list[dict]:
         """Read-only envelope over the append-only METHOD_TRIAL_RECORDED records, in mint order.
@@ -180,7 +214,7 @@ class Layer9:
             authority levels, schema_version, derived_from, status and the payload).
         Neither is called a bare "integrity hash": each names exactly what it covers."""
         import json
-        events = sorted(self.all(ObjectType.METHOD_TRIAL_EVENT),
+        events = sorted(self._all(ObjectType.METHOD_TRIAL_EVENT),
                         key=lambda o: int(o.id.split("-")[1]))
         out: list[dict] = []
         for o in events:
@@ -199,7 +233,7 @@ class Layer9:
         return out
 
     def open_conflicts(self) -> list[Conflict]:
-        return [c for c in self.all(ObjectType.CONFLICT)
+        return [c for c in self._all(ObjectType.CONFLICT)
                 if c.conflict_status in (ConflictStatus.OPEN, ConflictStatus.UNDER_REVIEW)]
 
     # -- ledger (internal) -------------------------------------------------- #
@@ -221,14 +255,15 @@ class Layer9:
     # -- the ONLY public write path ----------------------------------------- #
     def submit(self, proposal: Proposal, *, actor: str = "system",
                governance_approved: bool = False) -> Decision:
-        # SEVER the proposal's payload from the caller's object up-front, so neither the stored
-        # Proposal object NOR the journal can be rewritten by a later mutation of the caller's dict.
-        proposal.payload = copy.deepcopy(proposal.payload)
-        # 0. journal the operation - the replayable unit (state = f(seed, journal)). The
-        # JournalEntry deep-freezes its payload (no shared nested refs). Every gate rule is
-        # in the proposal alone, so a rejected op reproduces its rejection on replay (it leaves only
-        # rejected Proposal) - state stays f(seed, journal) with no privileged replay path.
-        self.journal.append(JournalEntry(
+        # SEVER the whole proposal from the caller's instance: Layer 9 stores its OWN copy and
+        # never the object the caller still holds, so a post-submit mutation of the caller proposal
+        # (or its nested payload) can NOT change authoritative state. submit() is the only writer.
+        proposal = copy.deepcopy(proposal)
+        # 0. journal the operation - the replayable unit (state = f(seed, journal)). JournalEntry
+        # is FROZEN and stores canonical-JSON bytes, so the journal cannot be rewritten in place.
+        # Every gate rule is DETERMINISTIC in the proposal alone, so a rejected op reproduces its
+        # rejection on replay (leaving only an audited rejected Proposal) - no privileged replay.
+        self._journal.append(JournalEntry.of(
             operator=proposal.requested_operator, proposal_type=proposal.proposal_type,
             payload=proposal.payload, proposer=proposal.proposer,
             provenance=proposal.provenance.to_dict(),
@@ -241,7 +276,7 @@ class Layer9:
         proposal.created_tick = proposal.last_changed_tick = self.tick
         proposal.status, proposal.authority = Status.CANDIDATE, Authority.CANDIDATE
         proposal.taint = self._proposer_taint(proposal)
-        self.objects[proposal.id] = proposal
+        self._objects[proposal.id] = proposal
         ev0 = self._emit(Operator.PROPOSAL_SUBMIT, actor, decision="submitted",
                          reason=proposal.reason, output_refs=(proposal.id,))
         proposal.ledger_event = ev0.id
@@ -283,14 +318,14 @@ class Layer9:
         ev = self._emit(op, actor, decision=decision, reason=reason,
                         input_refs=proposal.target_objects, output_refs=tuple(changed))
         for cid in changed:
-            self.objects[cid].ledger_event = ev.id
+            self._objects[cid].ledger_event = ev.id
         proposal.status = Status.ACTIVE
         return self._decide(proposal, op, True, new_status, reason, rejected_fields, ev.id)
 
     # -- gate helpers ------------------------------------------------------- #
     def _proposer_taint(self, proposal: Proposal) -> Taint:
-        base = merge_all([self.objects[t].taint for t in proposal.target_objects
-                          if t in self.objects] or [Taint()])
+        base = merge_all([self._objects[t].taint for t in proposal.target_objects
+                          if t in self._objects] or [Taint()])
         if proposal.provenance.is_model_output:
             base = base.derive(unverified_model_output=True)
         return base
@@ -311,7 +346,7 @@ class Layer9:
             created_tick=self.tick, last_changed_tick=self.tick, created_by="gate",
             status=Status.ACTIVE, authority=Authority.AUTHORITATIVE,
         )
-        self.objects[d.id] = d
+        self._objects[d.id] = d
         return d
 
     def _mint(self, cls, object_type: ObjectType, proposal: Proposal, actor: str, **fields):
@@ -322,7 +357,7 @@ class Layer9:
             derived_from=proposal.target_objects, created_by=actor,
             **fields,
         )
-        self.objects[obj.id] = obj
+        self._objects[obj.id] = obj
         return obj
 
     # ---- operator handlers (the ONLY mutators) ---------------------------- #
@@ -334,15 +369,15 @@ class Layer9:
         return [c.id], c.status.value, f"created claim {c.id}"
 
     def _h_claim_revise(self, p, actor, gov):
-        c = self.objects[p.target_objects[0]]
+        c = self._objects[p.target_objects[0]]
         to = Status(p.payload["to_status"])
         assert_transition(ObjectType.CLAIM, c.status, to)
         c.status, c.last_changed_tick = to, self.tick
         return [c.id], to.value, f"{c.id} -> {to.value}"
 
     def _h_claim_confirm(self, p, actor, gov):
-        c = self.objects[p.target_objects[0]]
-        links = [el for el in self.all(ObjectType.EVIDENCE_LINK) if el.claim_id == c.id]
+        c = self._objects[p.target_objects[0]]
+        links = [el for el in self._all(ObjectType.EVIDENCE_LINK) if el.claim_id == c.id]
         hard = any(x.severity == "hard" for x in self.open_conflicts() if c.id in x.claim_ids)
         ok, why = can_confirm_claim(c, links, unresolved_hard_contradiction=hard)
         if not ok:
@@ -353,13 +388,13 @@ class Layer9:
         return [c.id], "confirmed", f"{c.id} confirmed"
 
     def _h_claim_contest(self, p, actor, gov):
-        c = self.objects[p.target_objects[0]]
+        c = self._objects[p.target_objects[0]]
         assert_transition(ObjectType.CLAIM, c.status, Status.CONTESTED)
         c.status, c.last_changed_tick = Status.CONTESTED, self.tick
         return [c.id], "contested", f"{c.id} contested"
 
     def _h_claim_reject(self, p, actor, gov):
-        c = self.objects[p.target_objects[0]]
+        c = self._objects[p.target_objects[0]]
         assert_transition(ObjectType.CLAIM, c.status, Status.REJECTED)
         c.status, c.last_changed_tick = Status.REJECTED, self.tick
         return [c.id], "rejected", f"{c.id} rejected"
@@ -387,7 +422,7 @@ class Layer9:
         changed = [x.id]
         contestable = (Status.ACTIVE, Status.CONFIRMED, Status.PROVISIONAL)
         for cid in x.claim_ids:                       # the conflict marks claims contested
-            c = self.objects.get(cid)
+            c = self._objects.get(cid)
             if c is not None and c.status in contestable:
                 assert_transition(ObjectType.CLAIM, c.status, Status.CONTESTED)
                 c.status, c.last_changed_tick = Status.CONTESTED, self.tick
@@ -395,14 +430,14 @@ class Layer9:
         return changed, "open", f"opened conflict {x.id}"
 
     def _h_conflict_review(self, p, actor, gov):
-        x = self.objects[p.target_objects[0]]
+        x = self._objects[p.target_objects[0]]
         assert_conflict_transition(x.conflict_status, ConflictStatus.UNDER_REVIEW)
         x.conflict_status, x.last_changed_tick = ConflictStatus.UNDER_REVIEW, self.tick
         return [x.id], "under_review", f"{x.id} under review"
 
     def _h_conflict_resolve(self, p, actor, gov):
         # Resolution is explicit and reasoned - never forced for narrative tidiness.
-        x = self.objects[p.target_objects[0]]
+        x = self._objects[p.target_objects[0]]
         to = ConflictStatus(p.payload.get("to", "resolved"))     # resolved | tolerated
         assert_conflict_transition(x.conflict_status, to)
         x.conflict_status = to
@@ -419,14 +454,14 @@ class Layer9:
         return [g.id], "active", f"created goal {g.id}"
 
     def _h_goal_update(self, p, actor, gov):
-        g = self.objects[p.target_objects[0]]
+        g = self._objects[p.target_objects[0]]
         if "progress" in p.payload:
             g.progress = _clamp(p.payload["progress"])
         g.last_changed_tick = self.tick
         return [g.id], g.status.value, f"updated goal {g.id}"
 
     def _h_goal_abandon(self, p, actor, gov):
-        g = self.objects[p.target_objects[0]]
+        g = self._objects[p.target_objects[0]]
         assert_transition(ObjectType.GOAL, g.status, Status.REJECTED)
         g.status, g.last_changed_tick = Status.REJECTED, self.tick
         return [g.id], "rejected", f"abandoned goal {g.id}"
@@ -438,7 +473,7 @@ class Layer9:
         return [pr.id], "active", f"created project {pr.id}"
 
     def _h_project_abandon(self, p, actor, gov):
-        pr = self.objects[p.target_objects[0]]
+        pr = self._objects[p.target_objects[0]]
         assert_transition(ObjectType.PROJECT, pr.status, Status.REJECTED)
         pr.status, pr.last_changed_tick = Status.REJECTED, self.tick
         return [pr.id], "rejected", f"abandoned project {pr.id}"
@@ -466,7 +501,7 @@ class Layer9:
     def _h_memory_recall(self, p, actor, gov):
         # Recall bumps salience but NEVER epistemic status (a memory does not become
         # truer by being recalled).
-        m = self.objects[p.target_objects[0]]
+        m = self._objects[p.target_objects[0]]
         before = m.status
         m.recall_count += 1
         m.last_recalled_tick = self.tick
@@ -485,7 +520,7 @@ class Layer9:
         return [m.id], "candidate", f"proposed method {m.id}"
 
     def _h_method_trial_record(self, p, actor, gov):
-        m = self.objects[p.target_objects[0]]
+        m = self._objects[p.target_objects[0]]
         success = bool(p.payload.get("success", False))
         m.trial_count += 1
         if success:
@@ -518,7 +553,7 @@ class Layer9:
             raise ValueError("invalid METHOD_TRIAL_RECORDED: " + "; ".join(errs))
         canonical = canonical_payload(p.payload)
         tid = p.payload["trial_id"]
-        for o in self.all(ObjectType.METHOD_TRIAL_EVENT):
+        for o in self._all(ObjectType.METHOD_TRIAL_EVENT):
             if o.trial_id == tid:
                 if o.canonical_payload == canonical:
                     # idempotent retry: create NOTHING (no objects -> no mutation/rehash), but tag
@@ -538,7 +573,7 @@ class Layer9:
         return [ev.id], ev.status.value, f"recorded trial event {ev.id} ('{tid}')"
 
     def _h_method_promote(self, p, actor, gov):
-        m = self.objects[p.target_objects[0]]
+        m = self._objects[p.target_objects[0]]
         if m.status is Status.CANDIDATE:
             assert_transition(ObjectType.METHOD, m.status, Status.PROVISIONAL)
             m.status = Status.PROVISIONAL                # a single gate goes no further
@@ -556,7 +591,7 @@ class Layer9:
         raise ValueError(f"{m.id} cannot be promoted from {m.status.value}")
 
     def _h_method_reject(self, p, actor, gov):
-        m = self.objects[p.target_objects[0]]
+        m = self._objects[p.target_objects[0]]
         assert_transition(ObjectType.METHOD, m.status, Status.REJECTED)
         m.status, m.last_changed_tick = Status.REJECTED, self.tick
         return [m.id], "rejected", f"rejected {m.id}"
@@ -579,7 +614,7 @@ class Layer9:
         # A human/operator signs off on a contaminated object DESPITE its taint, so it may be
         # promoted. The contamination flags stay on record; only `human_validated` is set. The
         # policy gate already restricts this operator to a human / deterministic operator.
-        obj = self.objects[p.target_objects[0]]
+        obj = self._objects[p.target_objects[0]]
         t = getattr(obj, "taint", None)
         if t is None:
             raise ValueError(f"{obj.id} carries no taint to validate")

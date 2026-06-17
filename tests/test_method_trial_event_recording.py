@@ -175,9 +175,9 @@ def test_record_object_hash_is_the_same_material_snapshot_uses():
     from desi_layer9 import hashing
     core = _core()
     _record(core, _payload())
-    o = core.all(ObjectType.METHOD_TRIAL_EVENT)[0]
+    oid = core.all(ObjectType.METHOD_TRIAL_EVENT)[0].id
     before = hashing.snapshot_hash(core)
-    o.epistemic_authority = "authoritative"     # a field the record_object_hash covers
+    core._objects[oid].epistemic_authority = "authoritative"   # white-box: tamper the STORED object
     assert hashing.snapshot_hash(core) != before  # snapshot folds in the same object material
 
 
@@ -292,8 +292,9 @@ def test_in_place_tampering_is_detectable_and_not_in_the_replayable_truth():
     _record(core, _payload())
     clean = hashing.snapshot_hash(persistence.replay(core.journal))   # the replayable truth
     assert hashing.snapshot_hash(core) == clean
-    obj = core.all(ObjectType.METHOD_TRIAL_EVENT)[0]
-    obj.canonical_payload = obj.canonical_payload.replace("no_benefit", "success")  # tamper
+    oid = core.all(ObjectType.METHOD_TRIAL_EVENT)[0].id
+    stored = core._objects[oid]                            # white-box: corrupt the STORED object
+    stored.canonical_payload = stored.canonical_payload.replace("no_benefit", "success")  # tamper
     # the live state no longer matches what the journal deterministically reproduces -> detectable.
     assert hashing.snapshot_hash(core) != clean
     # ...and the tamper never entered the replayable truth: replay from the journal is original.

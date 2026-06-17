@@ -940,26 +940,32 @@ def seal_payload(payload: dict, registry=None) -> dict:
 
 # ================================================================================================ #
 # JOURNAL MIGRATION - a VERSIONED, fail-closed loader for historical v3 trial-event journals
-#   The kernel write-boundary is deterministic (only sealed v4 is writable), so an old, accepted v3
-#   METHOD_TRIAL_RECORDED entry is NOT raw-replayable. Backward COMPATIBILITY is provided as an
-#   explicit MIGRATION: this transform re-seals each v3 trial body to v4 (preserving the body
-#   verbatim) using KNOWN capsules, BEFORE replay - it never introduces a submit privilege and is
-#   fail-closed on an unknown historical rule.
+#   The kernel write-boundary is deterministic (only sealed v4 is writable), so an old v3
+#   METHOD_TRIAL_RECORDED entry is NOT raw-replayable. Backward COMPATIBILITY is an explicit
+#   MIGRATION that re-seals each ATTESTED, historically-ACCEPTED v3 trial body to v4 (the body
+#   verbatim) under its KNOWN capsule, BEFORE replay. It introduces NO submit privilege and is
+#   fail-closed: it needs (a) a per-entry ``historical_decision`` attestation (accepted +
+#   gate_policy_version), (b) a known capsule, and (c) - via ``load_migrated`` - a way to verify the
+#   source document's integrity. A historically-REJECTED command is NOT resealed into accepted v4.
 # ================================================================================================ #
 JOURNAL_MIGRATION_VERSION = "trial_event_journal_migration_v1"
 _TRIAL_OPERATOR_VALUE = "method_trial_recorded"
+_HISTORICAL_DECISION_KEY = "historical_decision"   # {accepted, gate_policy_version, decision_hash}
 
 
 class JournalMigrationError(Exception):
-    """A historical v3 trial entry cannot be migrated deterministically (fail-closed)."""
+    """A historical v3 trial entry cannot be migrated trustworthily (fail-closed)."""
 
 
 def migrate_journal_entries(entries: list[dict], registry=None) -> tuple[list[dict], list[dict]]:
-    """Migrate persisted journal-entry dicts so a historical v3 METHOD_TRIAL_RECORDED entry becomes
-    a SEALED v4 entry (its body verbatim, re-sealed under its known capsule). Returns
-    ``(migrated_entries, log)``. Fail-closed: a v3 trial whose decision rule resolves to no known
-    capsule raises - it is never silently dropped or sealed with a null capsule. Non-trial and
-    already-v4 entries pass through unchanged. Introduces NO submit privilege."""
+    """Migrate persisted journal-entry dicts: a historical v3 METHOD_TRIAL_RECORDED entry that is
+    ATTESTED as historically ACCEPTED (``historical_decision.accepted == True`` +
+    ``gate_policy_version``) and resolves to a KNOWN capsule becomes a SEALED v4 entry (body
+    verbatim). Returns FULLY DEEP-COPIED ``(migrated_entries, log)`` (no aliasing with the input).
+    Fail-closed: a v3 trial with NO ``historical_decision`` attestation, or an unknown capsule,
+    raises; a v3 trial attested as historically REJECTED is DROPPED (never resealed as accepted).
+    Non-trial and already-v4 entries pass through (deep-copied). Introduces NO submit privilege."""
+    import copy
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
     out: list[dict] = []
     log: list[dict] = []
@@ -968,8 +974,18 @@ def migrate_journal_entries(entries: list[dict], registry=None) -> tuple[list[di
         is_v3_trial = (e.get("operator") == _TRIAL_OPERATOR_VALUE
                        and payload.get("schema_version") == SCHEMA_VERSION)
         if not is_v3_trial:
-            out.append(e)
+            out.append(copy.deepcopy(e))                 # pass through, fully independent
             continue
+        hd = e.get(_HISTORICAL_DECISION_KEY)
+        if not isinstance(hd, dict) or not hd.get("gate_policy_version"):
+            raise JournalMigrationError(
+                f"v3 trial '{payload.get('trial_id')}' carries no historical_decision attestation "
+                "(accepted + gate_policy_version) - fail-closed (no trustworthy historical source)")
+        if hd.get("accepted") is not True:
+            log.append({"migration": JOURNAL_MIGRATION_VERSION, "trial_id": payload.get("trial_id"),
+                        "action": "dropped_historically_rejected",
+                        "gate_policy_version": hd.get("gate_policy_version")})
+            continue                                  # never reseal a rejected command as accepted
         d = payload.get("decision") or {}
         if payload.get("epistemic_result") in RULE_EVALUABLE_RESULTS:
             ch = _resolve_capsule_hash(reg, d.get("decision_rule_id"), d.get("decision_rule_hash"))
@@ -978,21 +994,36 @@ def migrate_journal_entries(entries: list[dict], registry=None) -> tuple[list[di
                     f"v3 trial '{payload.get('trial_id')}' cites rule "
                     f"'{d.get('decision_rule_id')}'@'{d.get('decision_rule_hash')}' with no known "
                     "capsule - fail-closed (cannot migrate to a trustworthy v4 seal)")
-        sealed = seal_payload(payload, reg)
-        out.append({**e, "payload": sealed})
+        sealed = copy.deepcopy(seal_payload(copy.deepcopy(payload), reg))
+        migrated = {k: copy.deepcopy(v) for k, v in e.items()
+                    if k != _HISTORICAL_DECISION_KEY}
+        migrated["payload"] = sealed
+        out.append(migrated)
         log.append({"migration": JOURNAL_MIGRATION_VERSION, "trial_id": payload.get("trial_id"),
                     "from": SCHEMA_VERSION, "to": JOURNAL_SCHEMA_VERSION,
+                    "gate_policy_version": hd.get("gate_policy_version"),
+                    "capsule_hash": sealed.get(ENVELOPE_KEY, {}).get("capsule_hash"),
                     "seal": ENVELOPE_KEY if ENVELOPE_KEY in sealed else OPERATIONAL_ENVELOPE_KEY})
     return out, log
 
 
-def load_migrated(doc: dict, registry=None):
-    """Load a persisted Layer-9 document, MIGRATING historical v3 trial entries to sealed v4 first,
-    then replaying. The migrated journal contains only writable (v4 / non-trial) entries, so the
-    deterministic write boundary accepts them without any replay privilege. The reconstructed state
-    is the UPGRADED (v4) state - the migration preserves the trial BODY verbatim, not the byte-
-    identical v3 snapshot. Returns ``(core, migration_log)``."""
+def load_migrated(doc: dict, registry=None, *, historical_verifier=None):
+    """Load a persisted Layer-9 document, MIGRATING attested historical v3 trial entries to sealed
+    v4, then replaying. FAIL-CLOSED on integrity: if the document carries a ``snapshot_hash``, a
+    ``historical_verifier(doc) -> bool`` MUST be supplied and return True (it replays the ORIGINAL
+    document under the historical kernel/rules and checks the recorded snapshot); otherwise the load
+    is refused - a present snapshot_hash is never silently ignored. The reconstructed state is the
+    UPGRADED (v4) state (the trial BODY verbatim), not the byte-identical v3 snapshot. Returns
+    ``(core, migration_log)``."""
     from desi_layer9 import JournalEntry, persistence
+    if doc.get("snapshot_hash"):
+        if historical_verifier is None:
+            raise JournalMigrationError(
+                "the source document carries a snapshot_hash but no historical_verifier supplied"
+                " - refusing to migrate an unverified document (fail-closed)")
+        if not historical_verifier(doc):
+            raise JournalMigrationError(
+                "historical_verifier rejected the source document's integrity - fail-closed")
     migrated, log = migrate_journal_entries(doc.get("journal", []), registry)
     core = persistence.replay([JournalEntry.from_dict(e) for e in migrated],
                               tick=int(doc.get("tick", 0)))

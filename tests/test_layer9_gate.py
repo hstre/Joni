@@ -109,9 +109,10 @@ def test_confirm_requires_reviewed_support():
 def test_memory_recall_bumps_salience_not_status():
     core = l9.Layer9()
     core.submit(_operator_proposal(OP.MEMORY_RECORD, {"summary": "s"}))
-    m = core.all(l9.ObjectType.MEMORY_EPISODE)[0]
-    before = m.status
-    core.submit(_operator_proposal(OP.MEMORY_RECALL, {}, target_objects=(m.id,)))
+    mid = core.all(l9.ObjectType.MEMORY_EPISODE)[0].id
+    before = core.get(mid).status
+    core.submit(_operator_proposal(OP.MEMORY_RECALL, {}, target_objects=(mid,)))
+    m = core.get(mid)                                         # re-read the stored object
     assert m.recall_count == 1 and m.status is before
 
 

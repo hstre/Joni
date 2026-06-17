@@ -1891,18 +1891,33 @@ def test_journal_replay_is_immune_to_external_mutation():
     assert len(replayed.method_trial_events()) == 1
 
 
-def _historical_v3_entry(trial_id="hist", rule_hash=None):
+def _historical_v3_entry(trial_id="hist", rule_hash=None, *, attest="accepted"):
+    """Build a persisted historical v3 trial journal-entry dict.
+
+    ``attest`` controls the trusted historical-source attestation:
+    - ``"accepted"`` (default): attested as historically ACCEPTED (migratable);
+    - ``"rejected"``: attested as historically REJECTED (must be DROPPED, never resealed);
+    - ``None``: NO attestation at all (migration must fail-closed)."""
     from desi_layer9 import ProposalType as PT
     from desi_layer9.provenance import Provenance
     from joni.autonomy.trial_event_schema import RULE_V2_HASH
     body = _ev(trial_id=trial_id, epistemic_result="inconclusive",
                measurement=_meas(0.03, ci=(-0.05, 0.08)),
                decision=Decision("rule_v2", rule_hash or RULE_V2_HASH, "inconclusive")).to_dict()
-    return {"operator": "method_trial_recorded", "proposal_type": PT.METHOD_PROPOSAL.value,
-            "payload": body, "proposer": "kevin",
-            "provenance": Provenance.from_model(external=False, model_id="kevin").to_dict(),
-            "target_objects": [], "actor": "kevin", "governance_approved": False,
-            "reason": "", "tick": 0}
+    entry = {"operator": "method_trial_recorded", "proposal_type": PT.METHOD_PROPOSAL.value,
+             "payload": body, "proposer": "kevin",
+             "provenance": Provenance.from_model(external=False, model_id="kevin").to_dict(),
+             "target_objects": [], "actor": "kevin", "governance_approved": False,
+             "reason": "", "tick": 0}
+    if attest is not None:
+        import hashlib
+        import json
+        entry["historical_decision"] = {
+            "accepted": attest == "accepted",
+            "gate_policy_version": "trial_gate_policy_v1",
+            "decision_hash": "sha256:" + hashlib.sha256(
+                json.dumps(body, sort_keys=True).encode()).hexdigest()}
+    return entry
 
 
 def test_historical_v3_journal_migrates_to_v4_and_the_trial_reappears():
@@ -1936,3 +1951,174 @@ def test_a_raw_v3_journal_is_not_directly_replayable_without_migration():
     from desi_layer9 import persistence
     replayed = persistence.replay([l9.JournalEntry.from_dict(_historical_v3_entry("h"))])
     assert replayed.method_trial_events() == []
+
+
+# -- round 19: TRUE state immutability + migration trust-source -------------------------------- #
+def _make_v4_proposal(payload):
+    import desi_layer9 as l9
+    from desi_layer9 import Operator as OP
+    from desi_layer9 import ProposalType as PT
+    from desi_layer9.provenance import Provenance
+    return l9.make_proposal(PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=payload,
+                            proposer="k", provenance=Provenance.from_model(external=False,
+                                                                           model_id="k"))
+
+
+def test_mutating_the_original_proposal_after_submit_does_not_change_state():
+    # MANDATORY-1: submit() stores its OWN deep copy, never the caller's instance. Mutating the
+    # proposal (or its nested payload) AFTER submit changes nothing - submit is the only writer.
+    from desi_layer9 import hashing
+    core = _kernel()
+    prop = _make_v4_proposal(_r13_event().to_journal())
+    assert core.submit(prop, actor="k").accepted
+    snap = hashing.snapshot_hash(core)
+    prop.payload["measurement"]["effect_size"] = 999          # mutate the caller's instance
+    prop.payload["evaluation_envelope"]["capsule_hash"] = "sha256:0"
+    stored = core.method_trial_events()[0]["payload"]
+    assert stored["measurement"]["effect_size"] != 999        # authoritative state untouched
+    assert hashing.snapshot_hash(core) == snap
+
+
+def test_mutating_a_get_result_does_not_change_state():
+    # MANDATORY-2: get() hands back a deep copy; mutating it cannot reach into the kernel. The trial
+    # record stores its payload as an immutable canonical string - no shared nested state.
+    from desi_layer9 import hashing
+    core = _kernel()
+    assert _submit16(core, _r13_event().to_journal()).accepted
+    oid = core.method_trial_events()[0]["object_id"]
+    snap = hashing.snapshot_hash(core)
+    got = core.get(oid)
+    got.canonical_payload = "{}"                              # mutate the returned object
+    got.record_authority = "forged"
+    assert core.get(oid).canonical_payload != "{}"
+    assert core.get(oid).record_authority == "authoritative"
+    assert hashing.snapshot_hash(core) == snap
+
+
+def test_mutating_an_all_result_does_not_change_state():
+    # MANDATORY-3: all() hands back deep copies; mutating the list or its members changes nothing.
+    from desi_layer9 import ObjectType, hashing
+    core = _kernel()
+    assert _submit16(core, _r13_event().to_journal()).accepted
+    snap = hashing.snapshot_hash(core)
+    listing = core.all(ObjectType.METHOD_TRIAL_EVENT)
+    listing[0].canonical_payload = "{}"                       # mutate a member
+    listing.append("garbage")                                 # mutate the returned list
+    assert all(o.canonical_payload != "{}"
+               for o in core.all(ObjectType.METHOD_TRIAL_EVENT))
+    assert hashing.snapshot_hash(core) == snap
+
+
+def test_a_journal_entry_payload_cannot_be_mutated_in_place():
+    # MANDATORY-4: the journal entry is FROZEN and stores canonical bytes; payload is reconstructed
+    # on read, so a direct mutation either raises or is simply ineffective.
+    from desi_layer9 import hashing
+    core = _kernel()
+    assert _submit16(core, _r13_event().to_journal()).accepted
+    snap = hashing.snapshot_hash(core)
+    entry = core.journal[0]
+    entry.payload["measurement"]["effect_size"] = 777         # mutate the parsed view
+    import pytest
+    with pytest.raises((AttributeError, Exception)):          # frozen dataclass: no field rebind
+        entry.payload_canonical = "{}"
+    assert core.journal[0].payload["measurement"]["effect_size"] != 777
+    assert hashing.snapshot_hash(core) == snap
+
+
+def test_the_journal_list_cannot_be_appended_popped_or_cleared_externally():
+    # MANDATORY-5: the public journal is a read-only tuple; append/pop/clear are not available.
+    core = _kernel()
+    assert _submit16(core, _r13_event().to_journal()).accepted
+    j = core.journal
+    assert isinstance(j, tuple)
+    for op in ("append", "pop", "clear"):
+        assert not hasattr(j, op)
+    assert len(core.journal) == 1                              # unchanged
+
+
+def test_snapshot_ledger_and_replay_are_identical_after_all_mutation_attempts():
+    # MANDATORY-6: after exhausting every external mutation vector, snapshot, ledger chain and a
+    # fresh replay all reproduce the SAME authoritative state.
+    import desi_layer9 as l9
+    from desi_layer9 import ObjectType, hashing, persistence
+    core = _kernel()
+    prop = _make_v4_proposal(_r13_event().to_journal())
+    assert core.submit(prop, actor="k").accepted
+    snap = hashing.snapshot_hash(core)
+    ok, breaks = hashing.verify_chain(core)
+    assert ok and breaks == []
+    # exhaust the vectors
+    oid = core.method_trial_events()[0]["object_id"]
+    prop.payload["measurement"]["effect_size"] = 1            # original proposal
+    core.get(oid).canonical_payload = "{}"                    # get() result
+    for o in core.all(ObjectType.METHOD_TRIAL_EVENT):         # all() result
+        o.canonical_payload = "{}"
+    core.journal[0].payload["measurement"]["effect_size"] = 4  # parsed journal view
+    assert hashing.snapshot_hash(core) == snap                # snapshot unchanged
+    ok2, breaks2 = hashing.verify_chain(core)
+    assert ok2 and breaks2 == []                              # ledger chain intact
+    replayed = persistence.replay([l9.JournalEntry.from_dict(e.to_dict()) for e in core.journal])
+    assert hashing.snapshot_hash(replayed) == snap            # replay reproduces the same state
+
+
+def test_load_migrated_refuses_a_present_snapshot_hash_without_a_passing_verifier():
+    # BLOCKER-2: a present snapshot_hash is NEVER silently ignored. With no verifier (or a verifier
+    # that rejects) the load is refused fail-closed; the bogus DEADBEEF doc no longer migrates.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import JournalMigrationError, load_migrated
+    doc = {"journal": [_historical_v3_entry("hist-1")], "tick": 0,
+           "snapshot_hash": "sha256:DEADBEEF"}
+    with pytest.raises(JournalMigrationError):
+        load_migrated(doc)                                    # no verifier -> refused
+    with pytest.raises(JournalMigrationError):
+        load_migrated(doc, historical_verifier=lambda d: False)   # verifier rejects -> refused
+    core, _ = load_migrated(doc, historical_verifier=lambda d: True)   # attested integrity -> ok
+    assert len(core.method_trial_events()) == 1
+
+
+def test_a_historically_rejected_v3_command_is_not_resealed_as_accepted_v4():
+    # BLOCKER-2: a v3 command attested as historically REJECTED is dropped, never resealed.
+    from joni.autonomy.trial_event_schema import migrate_journal_entries
+    migrated, log = migrate_journal_entries([_historical_v3_entry("rej", attest="rejected")])
+    assert migrated == []                                     # no v4 event produced
+    assert log and log[0]["action"] == "dropped_historically_rejected"
+    assert log[0]["gate_policy_version"] == "trial_gate_policy_v1"
+
+
+def test_an_unattested_v3_command_fails_closed():
+    # BLOCKER-2: a v3 command with NO historical_decision attestation cannot be migrated to accepted
+    # v4 (no trustworthy historical source) - fail-closed.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import JournalMigrationError, migrate_journal_entries
+    with pytest.raises(JournalMigrationError):
+        migrate_journal_entries([_historical_v3_entry("x", attest=None)])
+
+
+def test_the_migration_log_documents_source_policy_version_and_capsule():
+    # BLOCKER-2: a successful migration documents the trusted source (policy version) and the
+    # capsule it bound to - the migration is auditable, not silent.
+    from joni.autonomy.trial_event_schema import migrate_journal_entries
+    migrated, log = migrate_journal_entries([_historical_v3_entry("hist-1")])
+    assert len(migrated) == 1
+    rec = log[0]
+    assert rec["migration"] == "trial_event_journal_migration_v1"
+    assert rec["gate_policy_version"] == "trial_gate_policy_v1"
+    assert rec["capsule_hash"] and rec["capsule_hash"].startswith("sha256:")
+    assert rec["from"] == "method_trial_recorded_v3" and rec["to"] == "method_trial_recorded_v4"
+
+
+def test_migration_output_does_not_alias_its_input():
+    # BLOCKER-3: the migrated entries are FULLY deep-copied; mutating the input after migration
+    # cannot reach into the migrated output (and vice versa).
+    from joni.autonomy.trial_event_schema import migrate_journal_entries
+    src = [_historical_v3_entry("hist-1"), {"operator": "noop", "payload": {"a": {"b": 1}},
+                                            "proposal_type": "method_proposal", "proposer": "k",
+                                            "provenance": {}, "target_objects": [], "actor": "k",
+                                            "governance_approved": False, "reason": "", "tick": 0}]
+    migrated, _ = migrate_journal_entries(src)
+    src[0]["payload"]["measurement"]["effect_size"] = 12345   # mutate the v3 input post-migration
+    src[1]["payload"]["a"]["b"] = 999                         # mutate the pass-through input
+    assert migrated[0]["payload"]["measurement"]["effect_size"] == 0.03   # sealed body unchanged
+    assert migrated[1]["payload"]["a"]["b"] == 1              # pass-through copy independent
