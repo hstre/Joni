@@ -676,6 +676,8 @@ def test_inconclusive_is_rule_verifiable_and_aggregable():
 
 
 def test_inconclusive_maps_to_desi_inconclusive():
+    import pytest
+    pytest.importorskip("desi.solution_space_gap")   # optional integration only
     from joni.autonomy.trial_event_schema import to_desi_method_trials
     ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.05, ci=(-0.02, 0.12)),
              decision=_dec("inconclusive"))
@@ -726,3 +728,93 @@ def test_technical_failures_travel_the_operational_channel_not_attribution():
     ops = operational_observations([tech])
     assert len(ops) == 1 and ops[0].method_variant == "v9"
     assert ops[0].execution_status == "failed" and ops[0].desi_result == "technical_failure"
+
+
+# -- round 9: operational classification is not blanket 'technical_failure' ---------------------- #
+def _op_one(ev):
+    from joni.autonomy.trial_event_schema import operational_observations
+    obs = operational_observations([ev])
+    assert len(obs) == 1
+    return obs[0]
+
+
+def test_completed_valid_not_evaluated_is_unevaluated_not_technical_failure():
+    ev = _ev(trial_id="u", execution_status="completed", protocol_status="valid",
+             failure_kind="none", epistemic_result="not_evaluated", note="pilot stopped early")
+    assert _op_one(ev).desi_result == "unevaluated"
+
+
+def test_failed_run_is_technical_failure():
+    ev = _ev(trial_id="f", execution_status="failed", failure_kind="timeout",
+             epistemic_result="not_evaluated")
+    assert _op_one(ev).desi_result == "technical_failure"
+
+
+def test_cancelled_run_is_cancelled():
+    ev = _ev(trial_id="c", execution_status="cancelled", failure_kind="none",
+             epistemic_result="not_evaluated")
+    assert _op_one(ev).desi_result == "cancelled"
+
+
+def test_invalid_protocol_run_is_protocol_invalid():
+    ev = _ev(trial_id="p", execution_status="completed", protocol_status="invalid",
+             failure_kind="none", epistemic_result="not_evaluated")
+    assert _op_one(ev).desi_result == "protocol_invalid"
+
+
+def test_no_operational_state_produces_attribution():
+    evs = [_ev(trial_id="u", execution_status="completed", protocol_status="valid",
+               failure_kind="none", epistemic_result="not_evaluated", note="unevaluated"),
+           _ev(trial_id="f", execution_status="failed", failure_kind="timeout",
+               epistemic_result="not_evaluated")]
+    assert verify_events(evs) == [] and aggregate(verify_events(evs)) == []
+
+
+# -- round 9: the PRODUCTION rule catalog keeps the archived version ----------------------------- #
+def test_production_catalog_holds_current_and_archived_versions():
+    from joni.autonomy.trial_event_schema import (
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_HASH,
+        RULE_V2_R6_HASH,
+    )
+    assert ("rule_v2", RULE_V2_HASH) in DEFAULT_RULE_REGISTRY
+    assert ("rule_v2", RULE_V2_R6_HASH) in DEFAULT_RULE_REGISTRY
+    assert RULE_V2_HASH != RULE_V2_R6_HASH
+
+
+def test_old_event_verifies_under_its_archived_version_in_production_catalog():
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH
+    # effect 0.11, CI [0.001, 0.219]: the ARCHIVED r6 rule calls this 'success'; the CURRENT rule
+    # calls it 'inconclusive'. An event recorded under the r6 hash must keep verifying as success
+    # via the production DEFAULT registry - and is never re-interpreted under the current rule.
+    old_ev = _ev(epistemic_result="success", measurement=_meas(0.11, ci=(0.001, 0.219)),
+                 decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                                   verdict="success"))
+    assert evaluate_decision(old_ev)["status"] == "verified"        # uses the archived r6 impl
+
+
+def test_same_measurement_under_current_rule_is_not_the_old_verdict():
+    # the same measurement under the CURRENT hash is inconclusive, so a 'success' claim there is
+    # inconsistent - the old verdict is never re-applied under the new rule.
+    new_ev = _ev(epistemic_result="success", measurement=_meas(0.11, ci=(0.001, 0.219)),
+                 decision=_dec("success"))
+    assert evaluate_decision(new_ev)["status"] == "inconsistent"
+
+
+def test_production_catalog_is_immutable_and_append_only():
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_HASH,
+        RULE_V2_SPEC_HASH,
+        _rule_v2,
+        build_rule_registry,
+        make_rule_entry,
+    )
+    with pytest.raises(TypeError):
+        DEFAULT_RULE_REGISTRY[("x", "y")] = None       # immutable
+    with pytest.raises(ValueError):                    # append-only: no overwrite
+        build_rule_registry([make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2),
+                             make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2)])
+    assert ("rule_v2", RULE_V2_HASH) in DEFAULT_RULE_REGISTRY

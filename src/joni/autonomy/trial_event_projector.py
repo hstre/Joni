@@ -260,7 +260,8 @@ def project_trial_events(core) -> dict:
     ops = [
         {"trial_id": o.trial_id, "target_id": o.target_id, "scope_id": o.scope_id,
          "method_variant": o.method_variant, "execution_status": o.execution_status,
-         "failure_kind": o.failure_kind, "desi_result": o.desi_result}
+         "protocol_status": o.protocol_status, "failure_kind": o.failure_kind,
+         "desi_result": o.desi_result}
         for o in operational_observations(records)]
     scope_bound = [
         {"target_id": o.target_id, "scope_id": o.scope_id, "method_variant": o.method_variant,

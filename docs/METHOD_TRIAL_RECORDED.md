@@ -200,22 +200,29 @@ a separate artifact. So:
 
 ## 5. Aggregation & attribution (versioned independence policy)
 
-`aggregate(events) -> [VariantScopeOutcome]`, then `attribute_to_affinity(outcomes, *, policy)`:
+**The verification boundary is mandatory.** Raw events are NOT aggregated directly — the only path
+is `verify_events(events) -> [VerifiedTrialEvidence]` (re-runs the registered rule; verified-only),
+then `aggregate(evidence) -> [VariantScopeOutcome]`, then `attribute_to_affinity(outcomes, *,
+policy)`. `aggregate` rejects raw events (`TypeError`) and **re-attests** each evidence object
+(verdict ↔ event, attestation re-bind, and re-verify), so a substituted event is rejected. There is
+**no** `aggregate(events)` shortcut.
 
-1. Roll up per `(target, scope, method, variant)` using only `completed`+`valid` runs; `harmful`
-   dominates, then `success`, `no_benefit`, `inconclusive`; an only-unusable cell → `technical_only`.
+1. Roll up per `(target, scope, method, variant)` over VERIFIED evidence; `harmful` dominates, then
+   `success`, `no_benefit`, `inconclusive`; success + harmful in one cell → `conflicting`.
 2. **Affinity attribution requires an `IndependencePolicy` to be satisfied** — not a count, not an
    `OR`. `independence_policy_v1` (all requirements ON) demands: ≥2 distinct variants; distinct
    implementations; distinct model **families**; independent task samples; independent evaluator;
-   and **no confounder shared by all**. A `_profile` is computed from the failing cells and the
-   policy decides. Two thin wrappers over the same model/data/judge → `strength="none"`. A success
-   for the same affinity-scope → `"none"` (inconsistent). The policy is configurable and **carries
-   its `policy_id`** into every attribution, so the bar is explicit and auditable.
+   and **no shared confounder** (fail-closed on unknowns). Two thin wrappers over the same
+   model/data/judge → `strength="none"`. Any success in the evidence → `"none"` (inconsistent).
 3. Strengths: policy-satisfied with ≥3 variants → `supported`; with 2 → `limited`; else `none`.
 4. Scopes never leak; a success elsewhere is a separate promising-transfer signal.
 
-Mapping to DESi (`to_desi_method_trials`): `technical_only → technical_failure`,
-`not_evaluated → unknown`, others pass through — so a technical/invalid cell keeps the move open.
+Mapping to DESi (`to_desi_method_trials`): `conflicting → inconclusive`, others pass through.
+**Technical failures never reach this path**: `verify_events` admits only rule-evaluable verdicts,
+so a `technical_only` cell can no longer arise here. Technical / `not_evaluated` runs travel a
+**separate** non-epistemic channel — `operational_observations(events)` — classified
+(`technical_failure` / `unevaluated` / `cancelled` / `protocol_invalid`) and **never** producing
+attribution.
 
 ---
 
@@ -225,16 +232,20 @@ The live projector stays honest today (`method_trials = unknown`, no fabrication
 gated on the core emitting events:
 
 ```
-events   = core.method_trial_events()        # NEW core read (after approval)
-outcomes = aggregate(events)
-snapshot.method_trials = to_desi_method_trials(outcomes)        # DIRECT signal
-# attempted_affinities = affinities with any completed+valid event -> direct
+events    = core.method_trial_events()        # NEW core read (after approval)
+evidence  = verify_events(events)             # rule-verified ONLY (the mandatory boundary)
+outcomes  = aggregate(evidence)               # raw events are refused
+snapshot.method_trials       = to_desi_method_trials(outcomes)        # DIRECT signal
+snapshot.operational_signals = operational_observations(events)       # non-epistemic, separate
+# attempted_affinities = affinities with any verified event -> direct
 ```
 
 Events present → `direct`; absent → `unknown`. Legacy migration is optional and flagged; with no
-verified artifacts it contributes only `not_evaluated`. `aggregate`/`to_desi_method_trials`/
-`evaluate_decision`/`attribute_to_affinity` are implemented and tested now; only
-`core.method_trial_events()` needs a core change, deferred to explicit approval.
+verified artifacts it contributes only `not_evaluated`. `verify_events`/`aggregate`/
+`to_desi_method_trials`/`evaluate_decision`/`attribute_to_affinity`/`operational_observations` are
+implemented and tested now; only `core.method_trial_events()` needs a core change, deferred to
+explicit approval. (`to_desi_method_trials` imports DESi lazily and is exercised only in the
+optional integration test — the base suite passes without the `desi` extra installed.)
 
 ---
 

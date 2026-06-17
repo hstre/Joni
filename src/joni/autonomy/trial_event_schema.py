@@ -403,10 +403,41 @@ def build_rule_registry(entries):
     return MappingProxyType(reg)
 
 
-# Immutable, append-only. Production archives every historical rule version here, keyed by its own
-# implementation hash; old events stay bound to the version that produced them.
-DEFAULT_RULE_REGISTRY = build_rule_registry(
-    [make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2)])
+def _rule_v2_archived_r6(ev: MethodTrialRecorded) -> str:
+    """ARCHIVED production implementation of rule_v2 (the round-6 semantics: ``success`` on
+    ``eff >= min and ci_low > 0``). It is kept here PERMANENTLY and NEVER edited - events recorded
+    under its implementation hash must stay verifiable across releases. When rule_v2's logic changed
+    (round 8: ``success`` requires ``ci_low >= min``), the old function was archived here, not
+    deleted, and the new ``_rule_v2`` was added alongside it. This IS the append-only catalog."""
+    m, est = ev.measurement, ev.estimand
+    eff, mn, ci = m.effect_size, est.minimum_effect, m.confidence_interval
+    if eff is None or mn is None or mn <= 0:
+        return "not_evaluated"
+    if ci is None:
+        return "inconclusive"
+    lo, hi = ci
+    if eff <= -mn and hi < 0:
+        return "harmful"
+    if eff >= mn and lo > 0:
+        return "success"
+    excludes_zero = not (lo <= 0 <= hi)
+    if excludes_zero and -mn < lo and hi < mn:
+        return "no_benefit"
+    return "inconclusive"
+
+
+_RULE_V2_R6_DESCRIPTOR = "rule_v2@r6|success:eff>=min&ci_lo>0|archived"
+_RULE_V2_R6_SPEC_HASH = "sha256:" + hashlib.sha256(_RULE_V2_R6_DESCRIPTOR.encode()).hexdigest()
+
+# THE PRODUCTION CATALOG. Append-only and immutable: it keeps EVERY historical rule version, keyed
+# by its own implementation hash, so an event recorded under an older version stays verifiable and
+# is never re-interpreted under a newer one. Adding a future version means APPENDING a new entry
+# here (and archiving the old function above), never editing or removing an existing one.
+DEFAULT_RULE_REGISTRY = build_rule_registry([
+    make_rule_entry("rule_v2", _RULE_V2_R6_SPEC_HASH, _rule_v2_archived_r6),   # archived, frozen
+    make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2),                   # current
+])
+RULE_V2_R6_HASH = _impl_hash(_rule_v2_archived_r6)
 
 
 def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
@@ -666,9 +697,10 @@ def aggregate(evidence: list[VerifiedTrialEvidence], registry=None) -> list[Vari
 @dataclass(frozen=True)
 class OperationalTrialObservation:
     """A NON-epistemic record that a method VARIANT was ATTEMPTED but produced no rule-evaluable
-    verdict (technical failure / timeout / cancelled / not_evaluated). It is a SEPARATE channel from
-    ``VerifiedTrialEvidence``: it may inform DESi that a move was tried (mapped to
-    ``technical_failure``), but it NEVER produces affinity attribution or demotion."""
+    verdict. A SEPARATE channel from ``VerifiedTrialEvidence``: it may inform DESi that a move was
+    tried (classified by ``desi_result``) but NEVER produces affinity attribution. The
+    classification distinguishes a real technical failure from a merely-unevaluated/cancelled run -
+    DESi must not learn 'no epistemic verdict => the technique failed'."""
 
     trial_id: str
     target_id: str
@@ -677,16 +709,30 @@ class OperationalTrialObservation:
     method_variant: str
     affinities: tuple[str, ...]
     execution_status: str
+    protocol_status: str
     failure_kind: str
-    desi_result: str = "technical_failure"
+    desi_result: str            # technical_failure|unevaluated|cancelled|protocol_invalid|unknown
+
+
+def _operational_class(ev: MethodTrialRecorded) -> str:
+    """Classify a non-rule-evaluable event WITHOUT collapsing everything to 'technical_failure'."""
+    if ev.execution_status == "failed":
+        return "technical_failure"
+    if ev.execution_status == "cancelled":
+        return "cancelled"
+    if ev.protocol_status == "invalid":
+        return "protocol_invalid"
+    if ev.execution_status == "completed" and ev.protocol_status == "valid":
+        return "unevaluated"                      # ran cleanly but no outcome was evaluated
+    return "unknown_operational"
 
 
 def operational_observations(
         events: list[MethodTrialRecorded]) -> list[OperationalTrialObservation]:
     """The operational (non-epistemic) channel: structurally-valid events that carry NO
-    rule-evaluable
-    verdict (a technical failure / not_evaluated). They stay VISIBLE as 'a move was attempted but
-    not evaluable', strictly separate from verified evidence - never feeding attribution."""
+    rule-evaluable verdict. They stay VISIBLE as 'a move was attempted but not evaluable', strictly
+    separate from verified evidence - never feeding attribution - and CLASSIFIED so DESi can tell a
+    technical failure from a merely-unevaluated or cancelled run."""
     out: list[OperationalTrialObservation] = []
     for ev in events:
         if validate(ev):
@@ -696,7 +742,8 @@ def operational_observations(
                 trial_id=ev.trial_id, target_id=ev.target_id, scope_id=ev.scope_id,
                 method_id=ev.method_id, method_variant=ev.method_variant,
                 affinities=ev.affinities, execution_status=ev.execution_status,
-                failure_kind=ev.failure_kind))
+                protocol_status=ev.protocol_status, failure_kind=ev.failure_kind,
+                desi_result=_operational_class(ev)))
     return out
 
 
