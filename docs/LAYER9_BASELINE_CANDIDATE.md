@@ -8,20 +8,36 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `b91a80f69276fc75e5e8a3b48794a03cc3c3e59e` (review round 7) |
-| **Superseded candidates** | `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `60a77c9e6e64cbd57f391ea223eac443d2b58538` (review round 8) |
+| **Superseded candidates** | `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 b91a80f -- src/desi_layer9 \
+git diff 282d541 60a77c9 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `b91a80f` and at this doc's commit.
+is byte-identical at `60a77c9` and at this doc's commit.
+
+### Review round 8 — evidence re-attestation + inconclusive + historical rules + operational (vs `b91a80f`)
+
+1. **Evidence is re-attested, not token-trusted** — `VerifiedTrialEvidence` carries an `attestation`
+   binding the verdict to the canonical event; `aggregate` requires `verdict ==
+   event.epistemic_result`, the attestation to re-bind to the current event, **and** the event to
+   re-verify under the rule, so a `dataclasses.replace` substitution raises `ValueError`.
+2. **`inconclusive` is rule-verifiable** — new `RULE_EVALUABLE_RESULTS` (incl. `inconclusive`,
+   excl. `not_evaluated`); it verifies, aggregates, maps to DESi `inconclusive`, but yields no
+   affinity demotion/promotion.
+3. **Historical rule versions preserved** — `build_rule_registry` is append-only/immutable, keyed by
+   `(rule_id, implementation_hash)`; an old event verifies under its archived implementation and is
+   never re-interpreted under a newer one.
+4. **Operational channel** — `OperationalTrialObservation` / `operational_observations` carry
+   technical-failure / `not_evaluated` facts for DESi (mapped to `technical_failure`) **without**
+   producing attribution.
 
 ### Review round 7 — no aggregation bypass + rule input contract + equivalence (vs `7810e25`)
 
@@ -176,7 +192,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `b91a80f`: **513 passed, 2 skipped, ruff clean.**
+Full suite at `60a77c9`: **518 passed, 2 skipped, ruff clean.**
 
 ## Known technical debt
 
