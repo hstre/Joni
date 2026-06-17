@@ -14,7 +14,6 @@
       "associated",
       "authors",
       "awesome-design-patterns",
-      "beagleimputationvalidation",
       "caching",
       "calibration",
       "codebase",
@@ -55,43 +54,48 @@
       "software",
       "users"
     ],
-    "claims_total": 925,
-    "claims_active": 632,
+    "claims_total": 942,
+    "claims_active": 642,
     "memory": 0,
-    "ledger": 6602,
-    "open_conflicts": 34,
-    "methods": 52,
+    "ledger": 6718,
+    "open_conflicts": 35,
+    "methods": 55,
     "method_trials": 172,
     "methods_ready": 0,
     "preferences": 2,
-    "evidence_links": 147,
+    "evidence_links": 149,
     "self_model": 17,
     "hypotheses": 30,
     "research_topics": 1,
     "epistemically_usable": {
-      "rate": 0.786,
-      "n": 632,
+      "rate": 0.76,
+      "n": 642,
       "flags": {
-        "correctly_typed": 632,
-        "source_anchored": 590,
-        "non_duplicate": 541,
-        "topic_valid": 630,
-        "scope_valid": 630,
-        "provenance_complete": 590
+        "correctly_typed": 642,
+        "source_anchored": 600,
+        "non_duplicate": 532,
+        "topic_valid": 640,
+        "scope_valid": 640,
+        "provenance_complete": 600
       }
     },
     "routing_engine": "DESi",
     "days_running": 1,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
-    "spent_eur": 1.576,
+    "spent_eur": 1.58,
     "cap_eur": 20.0,
-    "runs": 219
+    "runs": 220
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 219,
+    "runs": 220,
     "retired": false
   },
   "extensions": {
@@ -604,7 +608,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 216,
+      "starved_topic": 217,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -5130,7 +5134,9 @@
       "zenodo:20735285",
       "zenodo:20735571",
       "zenodo:20735917",
-      "zenodo:20736324"
+      "zenodo:20736324",
+      "zenodo:20737095",
+      "zenodo:20737096"
     ],
     "fetch_errors": [],
     "semantic_calls": [
@@ -5837,6 +5843,22 @@
         "replayed": false,
         "claims": 5,
         "source": "huggingface:2606.17182"
+      },
+      {
+        "call_id": "joni-c220:40e959eabea8",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 3,
+        "source": "zenodo:20737096"
+      },
+      {
+        "call_id": "joni-c220:dfe9f9f39df2",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": true,
+        "claims": 5,
+        "source": "zenodo:20737095"
       }
     ],
     "pdf_read": [
@@ -6025,6 +6047,15 @@
         "replayed": true,
         "claims": 0,
         "conflict": "X-32"
+      },
+      {
+        "call_id": "joni-c220:19b837e13ffa",
+        "served_model": "deepseek-v4-pro",
+        "reason": "contested",
+        "state_k": 3,
+        "replayed": true,
+        "claims": 4,
+        "conflict": "X-34"
       }
     ],
     "methods_seen": [
@@ -6078,7 +6109,9 @@
       "zenodo:20735261",
       "zenodo:20735284",
       "zenodo:20735285",
-      "zenodo:20735917"
+      "zenodo:20735917",
+      "zenodo:20737095",
+      "zenodo:20737096"
     ],
     "real_trial": {
       "method_id": "contradiction-first-review",
@@ -6164,9 +6197,11 @@
       "C-177|C-203",
       "C-177|C-835",
       "C-177|C-882",
+      "C-177|C-926",
       "C-178|C-204",
       "C-178|C-836",
       "C-178|C-883",
+      "C-178|C-927",
       "C-180|C-181",
       "C-180|C-205",
       "C-180|C-206",
@@ -6188,6 +6223,8 @@
       "C-180|C-876",
       "C-180|C-886",
       "C-180|C-890",
+      "C-180|C-930",
+      "C-180|C-932",
       "C-181|C-205",
       "C-181|C-206",
       "C-181|C-210",
@@ -6200,6 +6237,7 @@
       "C-187|C-868",
       "C-187|C-885",
       "C-187|C-891",
+      "C-187|C-933",
       "C-188|C-200",
       "C-188|C-290",
       "C-188|C-863",
@@ -6488,9 +6526,11 @@
       "C-177|C-203@bge-small-en-v1.5",
       "C-177|C-835@bge-small-en-v1.5",
       "C-177|C-882@bge-small-en-v1.5",
+      "C-177|C-926@bge-small-en-v1.5",
       "C-178|C-204@bge-small-en-v1.5",
       "C-178|C-836@bge-small-en-v1.5",
       "C-178|C-883@bge-small-en-v1.5",
+      "C-178|C-927@bge-small-en-v1.5",
       "C-180|C-181@bge-small-en-v1.5",
       "C-180|C-205@bge-small-en-v1.5",
       "C-180|C-206@bge-small-en-v1.5",
@@ -6512,6 +6552,8 @@
       "C-180|C-876@bge-small-en-v1.5",
       "C-180|C-886@bge-small-en-v1.5",
       "C-180|C-890@bge-small-en-v1.5",
+      "C-180|C-930@bge-small-en-v1.5",
+      "C-180|C-932@bge-small-en-v1.5",
       "C-181|C-205@bge-small-en-v1.5",
       "C-181|C-206@bge-small-en-v1.5",
       "C-181|C-210@bge-small-en-v1.5",
@@ -6524,6 +6566,7 @@
       "C-187|C-868@bge-small-en-v1.5",
       "C-187|C-885@bge-small-en-v1.5",
       "C-187|C-891@bge-small-en-v1.5",
+      "C-187|C-933@bge-small-en-v1.5",
       "C-188|C-200@bge-small-en-v1.5",
       "C-188|C-290@bge-small-en-v1.5",
       "C-188|C-863@bge-small-en-v1.5",
@@ -6813,6 +6856,7 @@
       "panel|abstracts",
       "panel|abundance",
       "panel|access",
+      "panel|accessed",
       "panel|accesses",
       "panel|actions",
       "panel|adaptive",
@@ -6890,6 +6934,7 @@
       "panel|community",
       "panel|compared",
       "panel|comparison",
+      "panel|complete",
       "panel|computational",
       "panel|compute",
       "panel|conditional",
@@ -6906,6 +6951,7 @@
       "panel|criteria",
       "panel|critical",
       "panel|cross-reconstruction",
+      "panel|currently",
       "panel|cyber",
       "panel|decides",
       "panel|decisions",
@@ -6934,6 +6980,7 @@
       "panel|dynamic",
       "panel|dynamics",
       "panel|economics",
+      "panel|education",
       "panel|efficiency",
       "panel|efficient",
       "panel|einer",
@@ -7180,6 +7227,7 @@
       "architecture",
       "associated",
       "awesome-design-patterns",
+      "beagleimputationvalidation",
       "contexts",
       "design",
       "documentation",
@@ -7210,16 +7258,18 @@
       "software"
     ],
     "emerge_insufficient": {
+      "panel|change": 1,
       "panel|combine": 2,
-      "panel|cost": 2,
+      "panel|cost": 3,
+      "panel|econometric": 1,
       "panel|governance": 1,
       "panel|multimodal": 1,
       "panel|provided": 2,
       "panel|scores": 2,
       "panel|streams": 3,
-      "panel|support": 2,
+      "panel|support": 3,
       "panel|survey": 3,
-      "panel|three": 2
+      "panel|three": 3
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
@@ -7318,20 +7368,21 @@
       "C-918",
       "C-919",
       "C-925",
+      "C-940",
+      "C-941",
       "C-99"
     ],
     "learned_queries": [
-      "panel claims",
-      "panel recurs",
-      "panel worth",
-      "panel testing",
       "panel across",
       "panel probability",
       "panel through-line",
-      "panel segmentation"
+      "panel segmentation",
+      "unsorted administrative",
+      "unsorted incentive-quality",
+      "unsorted ground-truth",
+      "unsorted routing"
     ],
     "hyp_seen_cycle": {
-      "C-715": 213,
       "C-716": 214,
       "C-717": 215,
       "C-720": 216,
@@ -7361,7 +7412,9 @@
       "C-919": 216,
       "C-920": 217,
       "C-924": 218,
-      "C-925": 219
+      "C-925": 219,
+      "C-940": 220,
+      "C-941": 220
     },
     "topics_domain_ok": [
       "abstracts",
@@ -7570,6 +7623,9 @@
       "C-920",
       "C-924",
       "C-925",
+      "C-940",
+      "C-941",
+      "C-942",
       "C-99"
     ],
     "methods_domain_ok": [
@@ -7621,6 +7677,9 @@
       "M-50",
       "M-51",
       "M-52",
+      "M-53",
+      "M-54",
+      "M-55",
       "M-6",
       "M-7",
       "M-8",
@@ -7630,40 +7689,33 @@
       "verdict": "steady",
       "development": 6,
       "degeneration": 1,
-      "active": 632,
+      "active": 642,
       "hypotheses": 30,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
-      "evidence_links": 147,
-      "supporting_links": 147,
-      "emergent_total": 443,
+      "evidence_links": 149,
+      "supporting_links": 149,
+      "emergent_total": 448,
       "usable_semantic_rate": 1.0,
-      "methods_total": 52,
+      "methods_total": 55,
       "method_trials_total": 172,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 8846,
-      "cycle": 219
+      "objects": 9002,
+      "cycle": 220
     },
     "vitality_prev": {
-      "supports": 147,
+      "supports": 149,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 8846,
-      "active": 632,
-      "links": 147,
-      "emergent": 443
+      "objects": 9002,
+      "active": 642,
+      "links": 149,
+      "emergent": 448
     },
     "stagnation": 0,
     "vitality_history": [
-      {
-        "cycle": 20,
-        "verdict": "developing",
-        "development": 6,
-        "degeneration": 0,
-        "usable_semantic_rate": 1.0
-      },
       {
         "cycle": 21,
         "verdict": "developing",
@@ -9056,6 +9108,13 @@
         "development": 6,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 220,
+        "verdict": "steady",
+        "development": 6,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "panel_asked": [
@@ -9245,6 +9304,7 @@
     "topic_llm_seen": {
       "alignment": "valid",
       "awesome-design-patterns": "invalid",
+      "beagleimputationvalidation": "invalid",
       "documentation": "invalid",
       "overview": "invalid",
       "panel": "invalid",
@@ -9264,6 +9324,7 @@
       "X-30",
       "X-31",
       "X-32",
+      "X-34",
       "X-4",
       "X-5",
       "X-6",
@@ -9271,7 +9332,7 @@
       "X-8"
     ],
     "reconsolidate_lens_idx": 0,
-    "kevin_last_cycle": 217,
+    "kevin_last_cycle": 220,
     "kevin_llm": [
       {
         "call_id": "kevin-c26:60a854e0b332",
@@ -9350,11 +9411,40 @@
         "origin": "kevin",
         "authority": "none",
         "requires_review": true
+      },
+      {
+        "call_id": "kevin-c220:c5562eb37225",
+        "served_model": "deepseek-v4-pro",
+        "cycle": 220,
+        "replayed": false,
+        "proposals": [
+          {
+            "id": "C-940",
+            "text": "Applying the No-Signaling Null-Boundary predictor from the Null-Boundary Response framework to the Italian incentive-quality dataset (D6.10) will show that any statistically significant effect of incentives on quality metrics is entirely due to leakage across administrative boundaries, and when corr",
+            "topic": "unsorted"
+          },
+          {
+            "id": "C-941",
+            "text": "The trillion-parameter agentic routing architecture described in Ling and Ring 2.6, when integrated into the BeagleImputationValidation pipeline, enables imputation of missing genotypes from sparse SNP arrays to recover ground-truth genotypes with >99.99% concordance in under 1 second of wall-clock ",
+            "topic": "unsorted"
+          }
+        ],
+        "input_type": "cross_topic_analogy",
+        "trigger": "panel × beagleimputationvalidation",
+        "input_hash": "5c9eead563ee42fe",
+        "source_count": 3,
+        "internal_coherence": "coherent",
+        "confirmation_ceiling": "activation",
+        "external_corroboration": "present",
+        "origin": "kevin",
+        "authority": "none",
+        "requires_review": true
       }
     ],
     "kevin_inputs_seen": [
       "833a22c53ff9e3d8",
-      "9b4dfbcafcb44213"
+      "9b4dfbcafcb44213",
+      "5c9eead563ee42fe"
     ]
   },
   "protocol": [
@@ -51600,35 +51690,442 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:19+00:00",
+      "cycle": 220,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:20+00:00",
+      "cycle": 220,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:20+00:00",
+      "cycle": 220,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:21+00:00",
+      "cycle": 220,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:24+00:00",
+      "cycle": 220,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:25+00:00",
+      "cycle": 220,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:27+00:00",
+      "cycle": 220,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:27+00:00",
+      "cycle": 220,
+      "kind": "judged",
+      "summary": "relevant: github.com/DataBiosphere/terra-scientific-pipelines-service/GatkConcordanceValid",
+      "refs": {
+        "source": "zenodo:20737096",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20737096"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:28+00:00",
+      "cycle": 220,
+      "kind": "judged",
+      "summary": "relevant: github.com/DataBiosphere/terra-scientific-pipelines-service/BeagleImputationVali",
+      "refs": {
+        "source": "zenodo:20737095",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20737095"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:44+00:00",
+      "cycle": 220,
+      "kind": "projected",
+      "summary": "Granite projected 3 claim proposal(s) from zenodo:20737096 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:51+00:00",
+      "cycle": 220,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20737095 [ibm-granite/granite-4.1-8b-20260429, replayed=True] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:48:55+00:00",
+      "cycle": 220,
+      "kind": "conflict_open",
+      "summary": "opened X-35 - two claims held open, not smoothed away",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:01+00:00",
+      "cycle": 220,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [contested] proposed 4 claim(s) [deepseek-v4-pro, replayed=True] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:02+00:00",
+      "cycle": 220,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: github.com/DataBiosphere/terra-scientific-pipelines-service/GatkConcor (from zenodo)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:03+00:00",
+      "cycle": 220,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: github.com/DataBiosphere/terra-scientific-pipelines-service/BeagleImpu (from zenodo)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:04+00:00",
+      "cycle": 220,
+      "kind": "developed",
+      "summary": "C-177/C-926: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:05+00:00",
+      "cycle": 220,
+      "kind": "developed",
+      "summary": "C-178/C-927: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:06+00:00",
+      "cycle": 220,
+      "kind": "developed",
+      "summary": "C-180/C-930: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:07+00:00",
+      "cycle": 220,
+      "kind": "developed",
+      "summary": "linked C-180 <-> C-932 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:09+00:00",
+      "cycle": 220,
+      "kind": "developed",
+      "summary": "linked C-187 <-> C-933 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:09+00:00",
+      "cycle": 220,
+      "kind": "developed",
+      "summary": "opened review of contradiction X-35",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:26+00:00",
+      "cycle": 220,
+      "kind": "kevin",
+      "summary": "Kevin (deepseek-v4-pro) [cross_topic_analogy:panel × beagleimputationvalidation] proposed 2 candidate hyp(s) · sources=3 · ceiling=activation · coherence=coherent - non-authoritative, panel + Layer 9 decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:27+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'support' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:27+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'three' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:28+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'accessed' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:29+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'change' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:30+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'complete' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:30+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'cost' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:31+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'currently' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:32+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "'econometric' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:33+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'education' (Layer 9 synthesis-eligible, SC-920) from 4 claims (C-795, C-797, C-799, C-801)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:35+00:00",
+      "cycle": 220,
+      "kind": "emerged",
+      "summary": "method candidate for Kevin: 'beagleimputationvalidation-as-a-lens' (Layer 9 synthesis-eligible, SC-921) across beagleimputationvalidation, panel",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:35+00:00",
+      "cycle": 220,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-940 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:35+00:00",
+      "cycle": 220,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-941 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:36+00:00",
+      "cycle": 220,
+      "kind": "regulate",
+      "summary": "shed C-716: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:36+00:00",
+      "cycle": 220,
+      "kind": "regulate",
+      "summary": "shed C-717: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:37+00:00",
+      "cycle": 220,
+      "kind": "regulate",
+      "summary": "shed C-720: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:39+00:00",
+      "cycle": 220,
+      "kind": "regulate",
+      "summary": "Granite topic-review rejected 1 topic(s) as junk/off-domain (beagleimputationvalidation) - shed 2 0-support claim(s); a supported idea is kept regardless",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:39+00:00",
+      "cycle": 220,
+      "kind": "vitality",
+      "summary": "steady · dev 6 · degen 1 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:41+00:00",
+      "cycle": 220,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:41+00:00",
+      "cycle": 220,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T18:49:41+00:00",
+      "cycle": 220,
+      "kind": "note",
+      "summary": "cycle done · 2 new · 2 method(s) · 0 trialed · 2 new link(s) · 0 hypothesis(es) · 2 emergent · shed 3 dead idea(s) · steady · spend €1.5800 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 121,
-    "granite_calls": 100,
-    "deepseek_escalations": 18,
-    "kevin_calls": 3,
-    "cached_calls": 5,
-    "live_calls": 116,
-    "last_call": "2026-06-17T16:41:10+00:00",
-    "est_cost_eur": 0.076,
+    "llm_calls": 126,
+    "granite_calls": 103,
+    "deepseek_escalations": 19,
+    "kevin_calls": 4,
+    "cached_calls": 7,
+    "live_calls": 119,
+    "last_call": "2026-06-17T18:49:38+00:00",
+    "est_cost_eur": 0.08,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 100,
-      "deepseek-v4-pro": 21
+      "ibm-granite/granite-4.1-8b-20260429": 103,
+      "deepseek-v4-pro": 23
     },
     "empty_calls": 0,
     "empty_truncated": 0,
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 115,
+      "stop": 118,
       "length": 1
     },
     "panel_rounds": 10,
     "reserved_budget_eur": 20.0,
-    "spent_budget_eur": 1.576,
-    "accepted_claims": 415,
-    "accepted_calls": 98,
-    "accepted_call_yield": 0.845,
+    "spent_budget_eur": 1.58,
+    "accepted_claims": 423,
+    "accepted_calls": 101,
+    "accepted_call_yield": 0.849,
     "est_cost_per_accepted_eur": 0.0002
   },
   "commissions_done": [
@@ -51640,5 +52137,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-17T18:27:23+00:00"
+  "generated": "2026-06-17T18:49:41+00:00"
 }
