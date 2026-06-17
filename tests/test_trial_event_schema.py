@@ -1048,19 +1048,21 @@ def test_input_contract_swap_with_stale_hash_is_unverifiable():
 
 
 def test_input_contract_is_actually_applied():
-    # a contract interpreter demanding an impossible field, WITH a recomputed matching hash, is
-    # enforced: the event cannot satisfy it, so it is inconsistent (never verified).
-    import dataclasses
-
+    # a CONSISTENT artifact whose contract interpreter demands an impossible field enforces it: the
+    # event cannot satisfy it, so it is inconsistent (never verified).
     from joni.autonomy.trial_event_schema import (
+        _CROSS_BLOCK_V1_SRC,
+        _DECODE_V3_SRC,
+        _R6_RULE_SRC,
         RULE_V2_R6_HASH,
-        _bytes_hash,
+        SCHEMA_VERSION,
         build_rule_registry,
+        make_archived_artifact,
     )
-    real = _real_archived_artifact()
-    attack = dataclasses.replace(real, contract_source=_IMPOSSIBLE_CONTRACT_SRC,
-                                 input_contract_hash=_bytes_hash(_IMPOSSIBLE_CONTRACT_SRC))
-    reg = build_rule_registry([attack])
+    art = make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
+                                 _IMPOSSIBLE_CONTRACT_SRC, _DECODE_V3_SRC,
+                                 expected_rule_hash=RULE_V2_R6_HASH)
+    reg = build_rule_registry([art])
     ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
              decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
                                verdict="inconclusive"))
@@ -1209,11 +1211,14 @@ def test_the_rule_input_comes_from_the_decoder_not_the_event():
     # an event whose RAW measurement the r6 rule calls 'inconclusive', claiming 'success'. With the
     # real decoder it is inconsistent; with a decoder that projects a resolved 'success' input, the
     # SAME event verifies - proving the rule (and validator) decide from the DECODER output only.
-    import dataclasses
-
     from joni.autonomy.trial_event_schema import (
+        _CROSS_BLOCK_V1_SRC,
+        _R6_CONTRACT_SRC,
+        _R6_RULE_SRC,
         RULE_V2_R6_HASH,
+        SCHEMA_VERSION,
         build_rule_registry,
+        make_archived_artifact,
     )
     ev = _ev(epistemic_result="success", measurement=_meas(0.03, ci=(-0.05, 0.08)),
              decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
@@ -1231,11 +1236,10 @@ def test_the_rule_input_comes_from_the_decoder_not_the_event():
         b" 'contrast': 'intervention_minus_baseline',\n"
         b"           'direction': 'higher_is_better', 'minimum_effect': 0.10}\n"
         b"    return meas, dec, est\n")
-    real = _real_archived_artifact()
-    overridden = dataclasses.replace(
-        real, decoder_source=override_decoder,
-        decoder_hash=__import__("joni.autonomy.trial_event_schema", fromlist=["_bytes_hash"])
-        ._bytes_hash(override_decoder))
+    # a CONSISTENT artifact carrying that decoder (all hashes incl. the capsule recomputed).
+    overridden = make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC,
+                                        _CROSS_BLOCK_V1_SRC, _R6_CONTRACT_SRC, override_decoder,
+                                        expected_rule_hash=RULE_V2_R6_HASH)
     over_reg = build_rule_registry([overridden])
     # the rule now sees the decoder's resolved 'success' projection, not the event's raw values.
     assert evaluate_decision(ev, over_reg)["status"] == "verified"
@@ -1268,3 +1272,137 @@ def test_evaluate_payload_runs_on_the_raw_stored_payload():
     # an UNKNOWN extra current-irrelevant field in the raw payload does not disturb the capsule.
     raw_plus = dict(raw, some_future_field={"x": 1})
     assert evaluate_payload(raw_plus)["status"] == "verified"
+
+
+# -- round 13: routing envelope, byte-pinned adapter, pinned loader, composite capsule hash ------ #
+def _r13_event():
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH
+    return _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+               decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                                 verdict="inconclusive"))
+
+
+def test_input_adapter_is_byte_pinned_live_change_has_no_effect():
+    # the decoder->rule view adapter is byte-pinned into the capsule; sabotaging the LIVE build_view
+    # must not change a historical evaluation (no un-attested transform between decoder & rule).
+    import joni.autonomy.trial_event_schema as S
+    from joni.autonomy.trial_event_schema import build_rule_registry
+    reg = build_rule_registry([_real_archived_artifact()])
+    orig = S.build_view
+    try:
+        S.build_view = lambda m, d, e: (_ for _ in ()).throw(AssertionError("sabotaged"))
+        assert evaluate_decision(_r13_event(), reg)["status"] == "verified"   # archived adapter
+    finally:
+        S.build_view = orig
+
+
+def test_input_adapter_bytes_tamper_is_unverifiable():
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import build_rule_registry
+    real = _real_archived_artifact()
+    tampered = dataclasses.replace(real, adapter_source=real.adapter_source + b"\n# tamper\n")
+    assert evaluate_decision(_r13_event(), build_rule_registry([tampered]))["status"] \
+        == "unverifiable"
+
+
+def test_routing_uses_the_envelope_not_payload_field_paths():
+    # routing comes from the stable envelope; even if the payload RELOCATES its decision block, the
+    # artifact is still selected via the envelope's rule_hash.
+    from joni.autonomy.trial_event_schema import (
+        _payload_hash,
+        build_rule_registry,
+        envelope_for_payload,
+        evaluate_envelope,
+    )
+    reg = build_rule_registry([_real_archived_artifact()])
+    payload = _r13_event().to_dict()
+    relocated = dict(payload)
+    relocated["decision_v3"] = relocated.pop("decision")        # current field path is gone
+    env = dict(envelope_for_payload(payload), payload_hash=_payload_hash(relocated))
+    assert evaluate_envelope(env, relocated, reg)["status"] == "verified"
+
+
+def test_unknown_envelope_version_is_unverifiable():
+    from joni.autonomy.trial_event_schema import (
+        build_rule_registry,
+        envelope_for_payload,
+        evaluate_envelope,
+    )
+    reg = build_rule_registry([_real_archived_artifact()])
+    payload = _r13_event().to_dict()
+    env = dict(envelope_for_payload(payload), envelope_version="evaluation_envelope_v999")
+    assert evaluate_envelope(env, payload, reg)["status"] == "unverifiable"
+
+
+def test_payload_tamper_under_same_envelope_is_unverifiable():
+    from joni.autonomy.trial_event_schema import (
+        build_rule_registry,
+        envelope_for_payload,
+        evaluate_envelope,
+    )
+    reg = build_rule_registry([_real_archived_artifact()])
+    payload = _r13_event().to_dict()
+    env = envelope_for_payload(payload)                         # binds the ORIGINAL payload_hash
+    tampered = dict(payload, measurement=dict(payload["measurement"], effect_size=0.99))
+    assert evaluate_envelope(env, tampered, reg)["status"] == "unverifiable"
+
+
+def test_loader_compiles_historical_bytes_under_explicit_pinned_semantics():
+    # the r6 rule has an un-imported annotation; it loads ONLY because the pinned loader applies the
+    # 'annotations' future flag with dont_inherit=True. Without that flag it must fail - proving the
+    # loader semantics are explicit and bound, not inherited from the calling module.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import _R6_RULE_SRC, _exec_callable
+    fn = _exec_callable(_R6_RULE_SRC, "_rule_v2", future_flags=("annotations",))
+    assert callable(fn)
+    with pytest.raises(NameError):
+        _exec_callable(_R6_RULE_SRC, "_rule_v2", future_flags=())
+
+
+def test_wrong_execution_environment_flags_make_it_unverifiable():
+    # an artifact whose pinned execution_environment drops the required future flag can no longer
+    # compile its own rule -> unverifiable (the loader/exec-env is part of the capsule).
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import build_rule_registry
+    real = _real_archived_artifact()
+    broken_env = dict(real.execution_environment, future_flags=[])
+    broken = dataclasses.replace(real, execution_environment=broken_env)
+    assert evaluate_decision(_r13_event(), build_rule_registry([broken]))["status"] \
+        == "unverifiable"
+
+
+def test_capsule_hash_binds_every_component_and_addresses_the_whole_capsule():
+    from joni.autonomy.trial_event_schema import (
+        build_rule_registry,
+        envelope_for_payload,
+        evaluate_envelope,
+    )
+    real = _real_archived_artifact()
+    assert real.capsule_hash and real.input_adapter_hash and real.exec_env_hash
+    reg = build_rule_registry([real])
+    payload = _r13_event().to_dict()
+    env = envelope_for_payload(payload)
+    # an envelope MAY pin the whole-capsule address; a correct one verifies, a wrong one does not.
+    assert evaluate_envelope(dict(env, capsule_hash=real.capsule_hash), payload, reg)["status"] \
+        == "verified"
+    assert evaluate_envelope(dict(env, capsule_hash="sha256:" + "0" * 64), payload, reg)["status"] \
+        == "unverifiable"
+
+
+def test_production_r6_capsule_binds_adapter_loader_and_capsule_hash():
+    from joni.autonomy.trial_event_schema import (
+        _VIEW_ADAPTER_SRC,
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_R6_HASH,
+        _bytes_hash,
+    )
+    art = DEFAULT_RULE_REGISTRY[("rule_v2", RULE_V2_R6_HASH)]
+    assert art.adapter_source == _VIEW_ADAPTER_SRC
+    assert art.input_adapter_hash == _bytes_hash(_VIEW_ADAPTER_SRC)
+    assert art.execution_environment.get("future_flags") == ["annotations"]
+    assert art.execution_environment.get("loader_version") == "artifact_loader_v1"
+    assert art.exec_env_hash and art.capsule_hash
+    assert art.envelope_version == "evaluation_envelope_v1"

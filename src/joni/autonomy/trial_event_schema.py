@@ -389,6 +389,11 @@ class EvaluationArtifact:
     input_contract_hash: str
     decoder_hash: str = ""
     canonical_input_projection_hash: str = ""
+    input_adapter_hash: str = ""
+    exec_env_hash: str = ""
+    capsule_hash: str = ""
+    envelope_version: str = ""
+    execution_environment: dict = field(default_factory=dict)
     input_contract: dict = field(default_factory=dict)   # descriptive only; the fn is the truth
     rule_fn: object = None
     rule_source: bytes | None = None        # byte-pinned rule source for ARCHIVED versions
@@ -398,9 +403,12 @@ class EvaluationArtifact:
     contract_source: bytes | None = None    # byte-pinned SELF-CONTAINED contract fn for ARCHIVED
     decoder_fn: object = None
     decoder_source: bytes | None = None     # byte-pinned input-decoder snapshot for ARCHIVED
+    adapter_fn: object = None
+    adapter_source: bytes | None = None     # byte-pinned input-adapter (blocks->view) for
 
 
 RuleEntry = EvaluationArtifact                # backwards-compatible alias
+EVALUATION_ENVELOPE_VERSION = "evaluation_envelope_v1"
 
 _RULE_V2_DESCRIPTOR = ("rule_v2|source=measurement.ci|threshold=estimand.minimum_effect|"
                        "uncertainty_not_used|harmful:ci_hi<=-min|success:ci_lo>=min|"
@@ -419,12 +427,56 @@ def _read_artifact(name: str) -> bytes:
     return (pathlib.Path(__file__).parent / "rule_artifacts" / name).read_bytes()
 
 
-def _exec_callable(src: bytes, name: str):
-    """Exec a SELF-CONTAINED byte-pinned source and return one callable. No epistemically-relevant
-    globals are injected - a historical artifact must carry its own helpers/imports/constants."""
+# ================================================================================================ #
+# PINNED LOADER + EXECUTION ENVIRONMENT - the byte-pinned sources are only meaningful together with
+# the COMPILER SEMANTICS they were validated under. The loader compiles with EXPLICIT future flags
+# and ``dont_inherit=True`` so the historical bytes execute identically regardless of the caller
+# module's future flags, optimisation, etc. The loader + environment are themselves hashed and bound
+# into the capsule, so a change to how artifacts are compiled is detectable.
+# ================================================================================================ #
+ARTIFACT_LOADER_VERSION = "artifact_loader_v1"
+_FUTURE_FLAG = {"annotations": __import__("__future__").annotations.compiler_flag}
+
+
+def _future_flags_value(future_flags) -> int:
+    bits = 0
+    for name in future_flags:
+        bits |= _FUTURE_FLAG[name]              # unknown flag -> KeyError -> fail-closed at load
+    return bits
+
+
+def _exec_callable(src: bytes, name: str, *, future_flags=("annotations",), optimize: int = 0):
+    """Exec a SELF-CONTAINED byte-pinned source under EXPLICIT, inherited-free compiler
+    return one callable. ``dont_inherit=True`` means the result does not depend on the calling
+    module's ``__future__`` flags; the required flags (e.g. ``annotations``, so an un-imported
+    annotation like ``MethodTrialRecorded`` is never evaluated) are supplied explicitly. No
+    epistemically-relevant globals are injected."""
     ns: dict = {}
-    exec(compile(src.decode("utf-8"), f"<artifact:{name}>", "exec"), ns)   # noqa: S102
+    code = compile(src.decode("utf-8"), f"<artifact:{name}>", "exec",
+                   flags=_future_flags_value(future_flags), dont_inherit=True, optimize=optimize)
+    exec(code, ns)                                                  # noqa: S102
     return ns[name]
+
+
+# the loader's OWN source is hashed - a change to how historical bytes are compiled is detectable.
+LOADER_HASH = _bytes_hash(
+    (inspect.getsource(_future_flags_value) + inspect.getsource(_exec_callable)).encode("utf-8"))
+
+
+def _execution_environment(future_flags=("annotations",), optimize: int = 0) -> dict:
+    """The pinned compiler/runtime contract under which a capsule's bytes are executed."""
+    import platform
+    return {"language": "python",
+            "python_semantics": ".".join(platform.python_version_tuple()[:2]),
+            "future_flags": list(future_flags), "optimize": optimize,
+            "loader_version": ARTIFACT_LOADER_VERSION, "loader_hash": LOADER_HASH}
+
+
+def _exec_env_hash(env: dict) -> str:
+    # python_semantics is recorded but EXCLUDED from the hash (it is host-descriptive, not a
+    # determinant of the bytes' meaning); loader_hash + flags + optimize ARE the binding semantics.
+    binding = {k: env[k] for k in ("future_flags", "optimize", "loader_version", "loader_hash")}
+    return _bytes_hash(_canonical_json_bytes(binding))
 
 
 def _decode_v3(payload: dict):
@@ -460,24 +512,31 @@ def check_contract(measurement: dict, decision: dict, estimand: dict) -> list[st
     return errors
 
 
-def _view_from_blocks(meas: dict, dec: dict, est: dict):
-    """Build a read-only input VIEW from the decoder output ONLY (never the live event), so the rule
-    decides purely from the artifact's decoded projection."""
+def build_view(meas: dict, dec: dict, est: dict):
+    """The LIVE input adapter: turn the decoder's block dicts into the read-only view the rule
+    consumes. Byte-pinned for archived versions (``view_adapter_v1.pysrc``) and bound by
+    ``input_adapter_hash`` so no un-attested transform sits between decoder and rule."""
     from types import SimpleNamespace
     return SimpleNamespace(measurement=SimpleNamespace(**meas), decision=SimpleNamespace(**dec),
                            estimand=SimpleNamespace(**est))
 
 
-def _canonical_contract_bytes(d: dict) -> bytes:
+def _canonical_json_bytes(d) -> bytes:
     import json
-    return json.dumps(d, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(d, sort_keys=True, separators=(",", ":"), default=list).encode("utf-8")
+
+
+def _payload_hash(payload: dict) -> str:
+    """Deterministic hash of a stored payload - binds the payload to its routing envelope so the
+    decoder's input cannot be swapped without breaking the envelope."""
+    return _bytes_hash(_canonical_json_bytes(payload))
 
 
 def _projection_schema_hash(meas: dict, dec: dict, est: dict) -> str:
     """Hash of the KEY-SCHEMA a decoder emits (not the values). Re-derived from the actual decode at
     use, so a decoder that emits a different input shape than the artifact declares is rejected."""
     schema = {"measurement": sorted(meas), "decision": sorted(dec), "estimand": sorted(est)}
-    return _bytes_hash(_canonical_contract_bytes(schema))
+    return _bytes_hash(_canonical_json_bytes(schema))
 
 
 # a value-free probe PAYLOAD used ONLY to derive the key-schema a decoder produces at build time.
@@ -488,37 +547,70 @@ def _projection_hash_of(decoder_fn) -> str:
     return _projection_schema_hash(*decoder_fn(_PROJECTION_PROBE_PAYLOAD))
 
 
+def _capsule_hash(*, rule_hash, validator_hash, contract_hash, decoder_hash, projection_hash,
+                  adapter_hash, exec_env_hash, schema_version, envelope_version) -> str:
+    """A single composite hash over EVERY causally-relevant component + the routing/loader contract.
+    Uniquely addresses the WHOLE evaluation capsule, so the same rule_hash under a different
+    validator/decoder/adapter/loader is a DIFFERENT capsule."""
+    parts = {"rule": rule_hash, "validator": validator_hash, "contract": contract_hash,
+             "decoder": decoder_hash, "projection": projection_hash, "input_adapter": adapter_hash,
+             "exec_env": exec_env_hash, "schema_version": schema_version,
+             "envelope_version": envelope_version}
+    return _bytes_hash(_canonical_json_bytes(parts))
+
+
 def make_live_artifact(rule_id, schema_version, rule_fn, validator_fn, contract_fn,
-                       decoder_fn=_decode_v3):
-    """An artifact bound to LIVE functions; every hash tracks the current source. The contract is a
-    CALLABLE ``check_contract(meas, dec, est) -> errors`` - the interpreter is hashed with the rule,
-    validator and decoder, so the whole executable closure is version-pinned."""
+                       decoder_fn=_decode_v3, adapter_fn=build_view):
+    """An artifact bound to LIVE functions; every hash tracks the current source. Decoder, contract,
+    validator, rule AND the input-adapter (blocks -> view) are bound, together with the loader /
+    execution-environment, into one ``capsule_hash``."""
+    env = _execution_environment()
+    eh = _exec_env_hash(env)
+    proj = _projection_hash_of(decoder_fn)
+    rh, vh, ch, dh, ah = (_impl_hash(rule_fn), _impl_hash(validator_fn), _impl_hash(contract_fn),
+                          _impl_hash(decoder_fn), _impl_hash(adapter_fn))
     return EvaluationArtifact(
-        rule_id, schema_version, implementation_hash=_impl_hash(rule_fn),
-        validator_hash=_impl_hash(validator_fn), input_contract_hash=_impl_hash(contract_fn),
-        decoder_hash=_impl_hash(decoder_fn),
-        canonical_input_projection_hash=_projection_hash_of(decoder_fn),
-        rule_fn=rule_fn, validator_fn=validator_fn, contract_fn=contract_fn, decoder_fn=decoder_fn)
+        rule_id, schema_version, implementation_hash=rh, validator_hash=vh, input_contract_hash=ch,
+        decoder_hash=dh, canonical_input_projection_hash=proj, input_adapter_hash=ah,
+        exec_env_hash=eh, envelope_version=EVALUATION_ENVELOPE_VERSION, execution_environment=env,
+        capsule_hash=_capsule_hash(
+            rule_hash=rh, validator_hash=vh, contract_hash=ch, decoder_hash=dh,
+                                   projection_hash=proj, adapter_hash=ah, exec_env_hash=eh,
+                                   schema_version=schema_version,
+                                   envelope_version=EVALUATION_ENVELOPE_VERSION),
+        rule_fn=rule_fn, validator_fn=validator_fn, contract_fn=contract_fn, decoder_fn=decoder_fn,
+        adapter_fn=adapter_fn)
 
 
 def make_archived_artifact(rule_id, schema_version, rule_src, validator_src, contract_src,
-                           decoder_src=None, *, expected_rule_hash=None):
-    """An artifact whose decoder + contract + validator + rule are ALL BYTE-PINNED, SELF-CONTAINED
-    verbatim source (no live runtime dependency). The implementation hash is the sha256 of the
-    stored rule bytes - the REAL historical hash, not one recomputed from a later copy. A pinned
-    ``expected_rule_hash`` (from the prior release) is enforced. ``contract_src`` is a
-    self-contained ``check_contract`` source; ``decoder_src`` defaults to the v3 decoder."""
+                           decoder_src=None, adapter_src=None, *, expected_rule_hash=None):
+    """An artifact whose decoder + contract + validator + rule + input-adapter are ALL BYTE-PINNED,
+    SELF-CONTAINED verbatim source, executed under a pinned loader/execution-environment. The
+    implementation hash is the sha256 of the stored rule bytes - the REAL historical hash, not one
+    recomputed from a later copy. A pinned ``expected_rule_hash`` is enforced. ``decoder_src`` /
+    ``adapter_src`` default to the v3 snapshots."""
     rh = _bytes_hash(rule_src)
     if expected_rule_hash is not None and rh != expected_rule_hash:
         raise ValueError(f"archived rule artifact hash {rh} != expected {expected_rule_hash}")
     dsrc = _DECODE_V3_SRC if decoder_src is None else decoder_src
+    asrc = _VIEW_ADAPTER_SRC if adapter_src is None else adapter_src
+    env = _execution_environment()
+    eh = _exec_env_hash(env)
     decoder_fn = _exec_callable(dsrc, "_decode_v3")
+    proj = _projection_hash_of(decoder_fn)
+    vh, ch, dh, ah = (_bytes_hash(validator_src), _bytes_hash(contract_src), _bytes_hash(dsrc),
+                      _bytes_hash(asrc))
     return EvaluationArtifact(
-        rule_id, schema_version, implementation_hash=rh, validator_hash=_bytes_hash(validator_src),
-        input_contract_hash=_bytes_hash(contract_src), decoder_hash=_bytes_hash(dsrc),
-        canonical_input_projection_hash=_projection_hash_of(decoder_fn),
+        rule_id, schema_version, implementation_hash=rh, validator_hash=vh, input_contract_hash=ch,
+        decoder_hash=dh, canonical_input_projection_hash=proj, input_adapter_hash=ah,
+        exec_env_hash=eh, envelope_version=EVALUATION_ENVELOPE_VERSION, execution_environment=env,
+        capsule_hash=_capsule_hash(
+            rule_hash=rh, validator_hash=vh, contract_hash=ch, decoder_hash=dh,
+                                   projection_hash=proj, adapter_hash=ah, exec_env_hash=eh,
+                                   schema_version=schema_version,
+                                   envelope_version=EVALUATION_ENVELOPE_VERSION),
         rule_source=rule_src, validator_source=validator_src, contract_source=contract_src,
-        decoder_source=dsrc)
+        decoder_source=dsrc, adapter_source=asrc)
 
 
 def make_rule_entry(rule_id: str, spec_hash: str, fn) -> EvaluationArtifact:
@@ -548,6 +640,7 @@ _R6_RULE_SRC = _read_artifact("rule_v2_r6.pysrc")
 _CROSS_BLOCK_V1_SRC = _read_artifact("cross_block_v1.pysrc")
 _DECODE_V3_SRC = _read_artifact("decode_v3.pysrc")
 _R6_CONTRACT_SRC = _read_artifact("contract_v2_r6.pysrc")
+_VIEW_ADAPTER_SRC = _read_artifact("view_adapter_v1.pysrc")
 RULE_V2_R6_HASH = _bytes_hash(_R6_RULE_SRC)             # the real historical hash (2438455f...)
 
 
@@ -592,111 +685,157 @@ class _Resolved:
     decoder_hash: str
     contract_fn: object
     contract_hash: str
+    adapter_fn: object
+    adapter_hash: str
+    exec_env_hash: str
+    capsule_hash: str
 
 
 def _resolve_artifact(art: EvaluationArtifact) -> _Resolved:
     """Materialise an artifact and RE-DERIVE every hash from the actual (byte-pinned for archived,
     live for current) component, so claimed metadata can never attest different executed code. The
-    byte-pinned components are SELF-CONTAINED - no live helper is injected."""
+    byte-pinned components are SELF-CONTAINED and are compiled by the PINNED loader under the
+    artifact's own execution-environment (explicit future flags, ``dont_inherit=True``)."""
+    ff = tuple(art.execution_environment.get("future_flags", ("annotations",)))
+    opt = int(art.execution_environment.get("optimize", 0))
+
+    def _exec(src, name):
+        return _exec_callable(src, name, future_flags=ff, optimize=opt)
     if art.rule_source is not None:
-        rule_hash = _bytes_hash(art.rule_source)
-        rule_fn = _exec_callable(art.rule_source, "_rule_v2")
+        rule_hash, rule_fn = _bytes_hash(art.rule_source), _exec(art.rule_source, "_rule_v2")
     else:
         rule_hash, rule_fn = _impl_hash(art.rule_fn), art.rule_fn
     if art.validator_source is not None:
         validator_hash = _bytes_hash(art.validator_source)
-        validator_fn = _exec_callable(art.validator_source, "cross_block_consistency")
+        validator_fn = _exec(art.validator_source, "cross_block_consistency")
     else:
         validator_hash, validator_fn = _impl_hash(art.validator_fn), art.validator_fn
     if art.decoder_source is not None:
-        decoder_hash = _bytes_hash(art.decoder_source)
-        decoder_fn = _exec_callable(art.decoder_source, "_decode_v3")
+        decoder_hash, decoder_fn = _bytes_hash(art.decoder_source), _exec(art.decoder_source,
+                                                                          "_decode_v3")
     else:
         decoder_hash, decoder_fn = _impl_hash(art.decoder_fn), art.decoder_fn
     if art.contract_source is not None:
-        contract_hash = _bytes_hash(art.contract_source)
-        contract_fn = _exec_callable(art.contract_source, "check_contract")
+        contract_hash, contract_fn = _bytes_hash(art.contract_source), _exec(art.contract_source,
+                                                                             "check_contract")
     else:
         contract_hash, contract_fn = _impl_hash(art.contract_fn), art.contract_fn
+    if art.adapter_source is not None:
+        adapter_hash, adapter_fn = _bytes_hash(art.adapter_source), _exec(art.adapter_source,
+                                                                          "build_view")
+    else:
+        adapter_hash, adapter_fn = _impl_hash(art.adapter_fn), art.adapter_fn
+    exec_env_hash = _exec_env_hash(art.execution_environment) if art.execution_environment else ""
+    proj = _projection_hash_of(decoder_fn)
+    capsule = _capsule_hash(
+        rule_hash=rule_hash, validator_hash=validator_hash, contract_hash=contract_hash,
+        decoder_hash=decoder_hash, projection_hash=proj, adapter_hash=adapter_hash,
+        exec_env_hash=exec_env_hash, schema_version=art.schema_version,
+        envelope_version=art.envelope_version)
     return _Resolved(rule_fn, rule_hash, validator_fn, validator_hash, decoder_fn, decoder_hash,
-                     contract_fn, contract_hash)
+                     contract_fn, contract_hash, adapter_fn, adapter_hash, exec_env_hash, capsule)
 
 
-def evaluate_payload(payload: dict, registry=None) -> dict:
-    """Evaluate a RAW canonical payload (the stored event dict) under the EXACT version-pinned
-    artifact its ``decision.decision_rule_hash`` selects - its OWN schema, decoder, contract,
-    validator AND rule. This is the canonical historical-evaluation entry: the artifact's decoder is
-    the FIRST deserialisation step, run on the raw payload, BEFORE any current dataclass
-    reconstruction, so no current default/cast/field-semantics touches a historical event. EVERY
-    component hash is re-derived from the actual artifact and checked against the claim before that
-    component is trusted. ``status`` in {"verified", "inconsistent", "unverifiable",
-    "not_applicable"}. A schema mismatch, any hash mismatch, an unknown hash, an unmet input
-    contract, a measurement the validator rejects, or a verdict the rule does not compute is never
-    ``verified``."""
+def evaluate_envelope(envelope: dict, payload: dict, registry=None) -> dict:
+    """THE canonical evaluation entry. Routing comes from a STABLE ``evaluation_envelope``
+    schema-dependent payload field paths): ``envelope_version``, ``schema_version``, ``rule_id``,
+    ``rule_hash``, ``claimed_verdict``, ``payload_hash`` (and optionally ``capsule_hash``). The
+    artifact is selected from the envelope; the payload is bound by ``payload_hash``; then the
+    artifact's OWN pinned loader compiles its OWN byte-pinned decoder -> contract -> validator ->
+    input-adapter -> rule, all run on the payload. EVERY component hash (incl. adapter, exec-env and
+    the composite capsule) is re-derived and checked. ``status`` in {"verified", "inconsistent",
+    "unverifiable", "not_applicable"}."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
-    d = payload.get("decision") or {}
-    rule_id, rule_hash_claim = d.get("decision_rule_id"), d.get("decision_rule_hash")
-    verdict, result = d.get("verdict"), payload.get("epistemic_result")
-    if result not in RULE_EVALUABLE_RESULTS:
+    if envelope.get("envelope_version") != EVALUATION_ENVELOPE_VERSION:
+        return {"status": "unverifiable",
+                "reason": f"unknown evaluation envelope version "
+                          f"{envelope.get('envelope_version')!r} - fail-closed routing"}
+    rule_id, rule_hash_claim = envelope.get("rule_id"), envelope.get("rule_hash")
+    claimed_verdict, schema_claim = envelope.get("claimed_verdict"), envelope.get("schema_version")
+    if claimed_verdict not in RULE_EVALUABLE_RESULTS:
         return {"status": "not_applicable", "reason": "no rule-evaluable verdict (not_evaluated)"}
+    # the payload is bound to the envelope - it cannot be swapped under the same routing.
+    if envelope.get("payload_hash") != _payload_hash(payload):
+        return {"status": "unverifiable",
+                "reason": "payload_hash does not match the payload - envelope/payload binding "
+                          "broken"}
     art = reg.get((rule_id, rule_hash_claim))
     if art is None:
         return {"status": "unverifiable",
                 "reason": f"decision rule '{rule_id}'@'{rule_hash_claim}' is not in the registered "
                           "append-only catalog - no trustworthy verdict"}
-    # the artifact may only evaluate the schema version it was registered for - read from the RAW
-    # payload, so the schema controls the very first deserialisation step.
-    pay_schema = payload.get("schema_version")
-    if pay_schema != art.schema_version:
+    if schema_claim != art.schema_version:
         return {"status": "unverifiable",
-                "reason": f"payload schema '{pay_schema}' != artifact schema '{art.schema_version}'"
-                          " - the historical evaluation capsule does not decode this schema"}
+                "reason": f"envelope schema '{schema_claim}' != artifact schema "
+                          f"'{art.schema_version}' - the capsule does not decode this schema"}
     try:
         r = _resolve_artifact(art)
     except Exception as exc:  # noqa: BLE001
         return {"status": "unverifiable", "reason": f"artifact could not be resolved ({exc!r})"}
-    # every component hash must match the claim BEFORE its code/contract is trusted.
-    for name, derived, claimed in (
+    # every component hash (and the composite capsule) must match BEFORE its code is trusted.
+    checks = [
         ("implementation_hash", r.rule_hash, art.implementation_hash),
         ("rule selector", r.rule_hash, rule_hash_claim),
         ("validator_hash", r.validator_hash, art.validator_hash),
         ("decoder_hash", r.decoder_hash, art.decoder_hash),
         ("input_contract_hash", r.contract_hash, art.input_contract_hash),
-    ):
+        ("input_adapter_hash", r.adapter_hash, art.input_adapter_hash),
+        ("exec_env_hash", r.exec_env_hash, art.exec_env_hash),
+        ("capsule_hash", r.capsule_hash, art.capsule_hash),
+    ]
+    if envelope.get("capsule_hash") is not None:        # optional, stronger addressing
+        checks.append(("envelope capsule_hash", r.capsule_hash, envelope.get("capsule_hash")))
+    for name, derived, claimed in checks:
         if derived is None or derived != claimed:
             return {"status": "unverifiable",
                     "reason": f"artifact {name} does not match the re-derived component "
                               f"({derived} != {claimed}) - no trustworthy verdict"}
-    # the artifact's OWN decoder is the first deserialisation step (on the RAW payload); its
-    # key-schema is re-checked.
+    # the artifact's OWN decoder is the first deserialisation step (on the payload); schema check.
     meas, dec, est = r.decoder_fn(payload)
     proj = _projection_schema_hash(meas, dec, est)
     if proj != art.canonical_input_projection_hash:
         return {"status": "unverifiable",
                 "reason": f"decoder produced an unexpected input projection ({proj} != "
                           f"{art.canonical_input_projection_hash}) - no trustworthy verdict"}
-    # the artifact's OWN contract interpreter is APPLIED before validator/rule run.
-    cerr = r.contract_fn(meas, dec, est)
+    cerr = r.contract_fn(meas, dec, est)                # the artifact's OWN contract interpreter
     if cerr:
         return {"status": "inconsistent", "reason": "; ".join(cerr)}
-    # the artifact's OWN (version-pinned, self-contained) validator runs on the decoded blocks.
-    xb = r.validator_fn(meas, dec, est, is_real=True)
+    xb = r.validator_fn(meas, dec, est, is_real=True)   # the artifact's OWN validator
     if xb:
         return {"status": "inconsistent", "reason": "; ".join(xb)}
-    # the rule decides PURELY from a view built out of the decoder output - never the live event.
-    computed = r.rule_fn(_view_from_blocks(meas, dec, est))
-    if computed != verdict or computed != result:
-        return {"status": "inconsistent", "computed": computed, "claimed": verdict,
-                "reason": f"rule computes '{computed}' from the measurement, event claims "
-                          f"'{verdict}'"}
+    # the rule decides PURELY from the view the artifact's OWN byte-pinned adapter builds out of the
+    # decoder output - no un-attested transform sits between decoder and rule.
+    computed = r.rule_fn(r.adapter_fn(meas, dec, est))
+    if computed != claimed_verdict:
+        return {"status": "inconsistent", "computed": computed, "claimed": claimed_verdict,
+                "reason": f"rule computes '{computed}' from the measurement, envelope claims "
+                          f"'{claimed_verdict}'"}
     return {"status": "verified", "computed": computed}
 
 
+def envelope_for_payload(payload: dict) -> dict:
+    """Build the stable evaluation envelope for a CURRENT-schema (v3) payload. The only place
+    that reads v3 payload field paths; a future schema that relocates routing supplies its own
+    envelope and this bridge is not used for it."""
+    d = payload.get("decision") or {}
+    return {"envelope_version": EVALUATION_ENVELOPE_VERSION,
+            "schema_version": payload.get("schema_version"),
+            "rule_id": d.get("decision_rule_id"), "rule_hash": d.get("decision_rule_hash"),
+            "claimed_verdict": d.get("verdict"), "payload_hash": _payload_hash(payload)}
+
+
+def evaluate_payload(payload: dict, registry=None) -> dict:
+    """Bridge for CURRENT-schema stored payloads: derive the stable envelope from the v3 payload and
+    evaluate via :func:`evaluate_envelope`. New/relocated schemas supply an envelope directly."""
+    return evaluate_envelope(envelope_for_payload(payload), payload, registry)
+
+
 def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
-    """Convenience wrapper: canonicalise a LIVE event to its payload and evaluate it via
-    :func:`evaluate_payload`. The verdict path runs entirely on the canonical payload + the
-    version-pinned artifact - the live dataclass is only the serialisation source."""
-    return evaluate_payload(ev.to_dict(), registry)
+    """Convenience wrapper: serialise a LIVE event to (envelope, payload) and evaluate via
+    :func:`evaluate_envelope`. The verdict path runs entirely on the canonical payload + the
+    version-pinned capsule - the live dataclass is only the serialisation source."""
+    payload = ev.to_dict()
+    return evaluate_envelope(envelope_for_payload(payload), payload, registry)
 
 
 # ================================================================================================ #
