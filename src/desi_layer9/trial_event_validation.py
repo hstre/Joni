@@ -21,13 +21,21 @@ import json
 import math
 from numbers import Number
 
-# v3 = legacy/unsealed; v4 = SEALED (must embed a bound ``evaluation_envelope`` incl. capsule_hash).
+# v3 = legacy/unsealed; v4 = SEALED. A v4 object carries EXACTLY ONE of: an epistemic
+# ``evaluation_envelope`` (a rule-evaluable verdict; capsule_hash mandatory) OR an
+# ``operational_envelope`` (a technical/not-evaluated move; NO capsule, body-bound only).
 SCHEMA_V3 = "method_trial_recorded_v3"
 SCHEMA_V4 = "method_trial_recorded_v4"
 SUPPORTED_TRIAL_SCHEMA_VERSIONS = (SCHEMA_V3, SCHEMA_V4)
 EVALUATION_ENVELOPE_KEY = "evaluation_envelope"
+OPERATIONAL_ENVELOPE_KEY = "operational_envelope"
+_ENVELOPE_KEYS = (EVALUATION_ENVELOPE_KEY, OPERATIONAL_ENVELOPE_KEY)
 _ENVELOPE_REQUIRED = ("envelope_version", "schema_version", "rule_id", "rule_hash", "capsule_hash",
                       "claimed_verdict", "evaluation_body_hash")
+_OP_ENVELOPE_REQUIRED = ("envelope_version", "schema_version", "operational_class",
+                         "evaluation_body_hash")
+_OPERATIONAL_CLASSES = ("technical_failure", "cancelled", "unevaluated", "protocol_invalid",
+                        "unknown_operational")
 
 # Per-rule STRUCTURAL input contracts: which measurement fields a real verdict under a given rule
 # must carry before it may enter the journal. The core does NOT compute the verdict - it only
@@ -70,21 +78,18 @@ def canonical_payload(payload: dict) -> str:
 
 
 def evaluation_body_hash(stored: dict) -> str:
-    """sha256 of the canonical EVALUATION BODY (the stored object EXCLUDING the embedded envelope).
+    """sha256 of the canonical EVALUATION BODY (the stored object EXCLUDING any embedded envelope).
     This is a DIFFERENT scope from the kernel's ``payload_hash`` (whole stored object) - hence the
     distinct name. Gate and evaluator share this canonicalisation so the binding is checkable."""
-    body = {k: v for k, v in stored.items() if k != EVALUATION_ENVELOPE_KEY}
+    body = {k: v for k, v in stored.items() if k not in _ENVELOPE_KEYS}
     return "sha256:" + hashlib.sha256(canonical_payload(body).encode("utf-8")).hexdigest()
 
 
 def validate_evaluation_envelope(stored: dict) -> list[str]:
-    """Structural + binding validation of a SEALED v4 object's embedded ``evaluation_envelope``. The
-    envelope must be present, complete, agree on schema_version, and BIND the body via
-    ``evaluation_body_hash``. A v4 object without a bound envelope is rejected at the gate, so the
-    journal never holds a v4 'sealed' event that is not actually sealed."""
+    """Structural + binding validation of a SEALED EPISTEMIC v4 object's ``evaluation_envelope``."""
     env = stored.get(EVALUATION_ENVELOPE_KEY)
     if not isinstance(env, dict):
-        return [f"a {SCHEMA_V4} event must embed an '{EVALUATION_ENVELOPE_KEY}' object"]
+        return [f"a {SCHEMA_V4} epistemic event must embed an '{EVALUATION_ENVELOPE_KEY}' object"]
     errs = [f"evaluation_envelope missing '{k}'" for k in _ENVELOPE_REQUIRED if not env.get(k)]
     if errs:
         return errs
@@ -99,6 +104,38 @@ def validate_evaluation_envelope(stored: dict) -> list[str]:
     if env.get("claimed_verdict") != d.get("verdict"):
         errs.append("evaluation_envelope.claimed_verdict must match the decision verdict")
     return errs
+
+
+def validate_operational_envelope(stored: dict) -> list[str]:
+    """Structural + binding validation of a SEALED OPERATIONAL v4 object's ``operational_envelope``.
+    An operational event (technical failure / cancelled / not-evaluated) needs NO capsule, but its
+    body is still bound and it must declare a known ``operational_class`` and carry no verdict."""
+    env = stored.get(OPERATIONAL_ENVELOPE_KEY)
+    if not isinstance(env, dict):
+        return [f"a {SCHEMA_V4} operational event must embed '{OPERATIONAL_ENVELOPE_KEY}'"]
+    errs = [f"operational_envelope missing '{k}'" for k in _OP_ENVELOPE_REQUIRED if not env.get(k)]
+    if errs:
+        return errs
+    if env.get("schema_version") != stored.get("schema_version"):
+        errs.append("operational_envelope.schema_version must equal the event schema_version")
+    if env.get("operational_class") not in _OPERATIONAL_CLASSES:
+        errs.append(f"operational_envelope.operational_class must be one of {_OPERATIONAL_CLASSES}")
+    if env.get("evaluation_body_hash") != evaluation_body_hash(stored):
+        errs.append("operational_envelope.evaluation_body_hash does not bind the stored body")
+    if stored.get("epistemic_result") != "not_evaluated":
+        errs.append("an operational event must carry epistemic_result 'not_evaluated'")
+    return errs
+
+
+def validate_v4_seal(stored: dict) -> list[str]:
+    """A v4 object must carry EXACTLY ONE seal: epistemic ``evaluation_envelope`` OR
+    ``operational_envelope``. Dispatch to the matching validator."""
+    has_ep = EVALUATION_ENVELOPE_KEY in stored
+    has_op = OPERATIONAL_ENVELOPE_KEY in stored
+    if has_ep == has_op:
+        return [f"a {SCHEMA_V4} event must carry EXACTLY ONE of '{EVALUATION_ENVELOPE_KEY}' or "
+                f"'{OPERATIONAL_ENVELOPE_KEY}'"]
+    return validate_evaluation_envelope(stored) if has_ep else validate_operational_envelope(stored)
 
 
 def _nonempty_str(v) -> bool:

@@ -547,23 +547,26 @@ def _canonical_json_bytes(d) -> bytes:
     return json.dumps(d, sort_keys=True, separators=(",", ":"), default=list).encode("utf-8")
 
 
-ENVELOPE_KEY = "evaluation_envelope"    # the stored evaluation envelope lives under this key
+ENVELOPE_KEY = "evaluation_envelope"        # the epistemic (rule-evaluable) seal
+OPERATIONAL_ENVELOPE_KEY = "operational_envelope"   # the operational (not-evaluated) seal
+_ENVELOPE_KEYS = (ENVELOPE_KEY, OPERATIONAL_ENVELOPE_KEY)
+OPERATIONAL_ENVELOPE_VERSION = "operational_envelope_v1"
 
 
 def evaluation_body_hash(payload: dict) -> str:
-    """Hash of the EVALUATION BODY (the payload EXCLUDING the embedded envelope), using the SAME
+    """Hash of the EVALUATION BODY (the payload EXCLUDING any embedded envelope), using the SAME
     canonicalisation as the Layer-9 gate, so the gate and the evaluator agree on the binding. NB:
     this is a DIFFERENT scope from the kernel's ``payload_hash`` (which covers the whole stored
     object including the envelope) - hence the distinct name ``evaluation_body_hash``."""
     from desi_layer9.trial_event_validation import canonical_payload
-    body = {k: v for k, v in payload.items() if k != ENVELOPE_KEY}
+    body = {k: v for k, v in payload.items() if k not in _ENVELOPE_KEYS}
     return _bytes_hash(canonical_payload(body).encode("utf-8"))
 
 
 def _split_journal(stored: dict) -> tuple[dict | None, dict]:
-    """Split a stored journal object into (stored evaluation envelope or None, payload body)."""
+    """Split a stored journal object into (epistemic evaluation envelope or None, payload body)."""
     env = stored.get(ENVELOPE_KEY)
-    body = {k: v for k, v in stored.items() if k != ENVELOPE_KEY}
+    body = {k: v for k, v in stored.items() if k not in _ENVELOPE_KEYS}
     return env, body
 
 
@@ -689,28 +692,32 @@ _CROSS_BLOCK_V1_SRC = _read_artifact("cross_block_v1.pysrc")
 _DECODE_V3_SRC = _read_artifact("decode_v3.pysrc")
 _R6_CONTRACT_SRC = _read_artifact("contract_v2_r6.pysrc")
 _VIEW_ADAPTER_SRC = _read_artifact("view_adapter_v1.pysrc")
+_RULE_V2_V2_SRC = _read_artifact("rule_v2_v2.pysrc")   # current rule, byte-pinned (no wrapper)
 RULE_V2_R6_HASH = _bytes_hash(_R6_RULE_SRC)             # the real historical hash (2438455f...)
 
 
 def _default_registry():
+    # BOTH production capsules are ARCHIVED, byte-pinned and SELF-CONTAINED - no live wrapper that
+    # could dynamically import (and thus fail to bind) the current validator/contract/decoder.
     return build_rule_registry([
         make_archived_artifact("rule_v2", JOURNAL_SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
                                _R6_CONTRACT_SRC, _DECODE_V3_SRC,
                                expected_rule_hash=RULE_V2_R6_HASH),
-        make_live_artifact("rule_v2", JOURNAL_SCHEMA_VERSION, _rule_v2, _live_cross_block,
-                           check_contract),
+        make_archived_artifact("rule_v2", JOURNAL_SCHEMA_VERSION, _RULE_V2_V2_SRC,
+                               _CROSS_BLOCK_V1_SRC, _R6_CONTRACT_SRC, _DECODE_V3_SRC,
+                               expected_rule_hash=RULE_V2_HASH),
     ])
 
 
+DEFAULT_RULE_REGISTRY = _default_registry()
+
+
 def _live_cross_block(measurement, decision, estimand, *, is_real, has_effect_derivation=False):
-    """Thin live wrapper over the current gate validator (so the live artifact's validator_hash is
-    stable regardless of where the gate function lives)."""
+    """Thin live wrapper over the current gate validator - used ONLY by tests/make_rule_entry, NEVER
+    by the production catalog (which is fully byte-pinned and self-contained)."""
     from desi_layer9.trial_event_validation import cross_block_consistency
     return cross_block_consistency(measurement, decision, estimand, is_real=is_real,
                                    has_effect_derivation=has_effect_derivation)
-
-
-DEFAULT_RULE_REGISTRY = _default_registry()
 
 
 def _blocks(ev: MethodTrialRecorded):
@@ -836,9 +843,12 @@ def evaluate_envelope(envelope: dict, payload: dict, registry=None) -> dict:
                           "binding broken"}
     art = reg.get(capsule_claim)
     if art is None:
-        return {"status": "unverifiable",
-                "reason": f"capsule '{capsule_claim}' is not in the registered append-only catalog "
-                          "- no trustworthy verdict"}
+        # the write-gate accepts any syntactically-sealed v4 (the kernel must not depend on this
+        # catalog); a well-formed seal whose capsule is unknown HERE is marked distinctly and is
+        # NEVER treated as a regular verdict (verify_payloads skips it; only "verified" aggregates).
+        return {"status": "sealed_unknown_capsule",
+                "reason": f"capsule '{capsule_claim}' is sealed but not in this registered catalog "
+                          "- never treated as a verified verdict"}
     if schema_claim != art.schema_version:
         return {"status": "unverifiable",
                 "reason": f"envelope schema '{schema_claim}' != artifact schema "
@@ -890,11 +900,10 @@ def evaluate_envelope(envelope: dict, payload: dict, registry=None) -> dict:
 
 
 def envelope_for_payload(payload: dict, capsule_hash: str, registry=None) -> dict:
-    """WRITER-SIDE helper: build the stable evaluation envelope to be STORED with the body. It pins
-    the whole-capsule address (``capsule_hash``, mandatory) and the body binding
-    (``evaluation_body_hash``). It is NOT used in historical replay - replay reads the stored
-    envelope - and it is the only place that reads the current body field paths."""
-    body = {k: v for k, v in payload.items() if k != ENVELOPE_KEY}
+    """WRITER-SIDE helper: build the EPISTEMIC evaluation envelope to be STORED with the body. It
+    pins the whole-capsule address (``capsule_hash``, mandatory) and the body binding
+    (``evaluation_body_hash``). NOT used in replay - replay reads the stored envelope."""
+    body = {k: v for k, v in payload.items() if k not in _ENVELOPE_KEYS}
     d = body.get("decision") or {}
     return {"envelope_version": EVALUATION_ENVELOPE_VERSION,
             "schema_version": body.get("schema_version"),
@@ -903,28 +912,50 @@ def envelope_for_payload(payload: dict, capsule_hash: str, registry=None) -> dic
             "evaluation_body_hash": evaluation_body_hash(body)}
 
 
+def operational_envelope_for(payload: dict) -> dict:
+    """WRITER-SIDE helper: build the OPERATIONAL envelope for a not-evaluated/technical event. It
+    carries NO capsule (there is no decision rule), only the classified operational state and the
+    body binding - so an operational move is sealed and stored without inventing a rule."""
+    body = {k: v for k, v in payload.items() if k not in _ENVELOPE_KEYS}
+    return {"envelope_version": OPERATIONAL_ENVELOPE_VERSION,
+            "schema_version": body.get("schema_version"),
+            "operational_class": _operational_class(body),
+            "evaluation_body_hash": evaluation_body_hash(body)}
+
+
 def seal_payload(payload: dict, registry=None) -> dict:
-    """Seal a v3-style body into a v4 STORED journal object: set schema_version=v4, resolve the
-    capsule for the cited (rule_id, rule_hash), and embed the evaluation envelope. WRITER-side."""
+    """Seal a v3-style body into a v4 STORED journal object. A rule-evaluable event (a resolvable
+    capsule for its decision rule) gets the EPISTEMIC envelope; a not-evaluated/operational event
+    gets the OPERATIONAL envelope - so ``to_journal`` ALWAYS produces a v4 the gate accepts (it
+    never emits a capsule_hash=null epistemic seal). WRITER-side."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
-    body = {k: v for k, v in payload.items() if k != ENVELOPE_KEY}
+    body = {k: v for k, v in payload.items() if k not in _ENVELOPE_KEYS}
     body["schema_version"] = JOURNAL_SCHEMA_VERSION
     d = body.get("decision") or {}
-    ch = _resolve_capsule_hash(reg, d.get("decision_rule_id"), d.get("decision_rule_hash"))
-    return {**body, ENVELOPE_KEY: envelope_for_payload(body, ch, reg)}
+    if body.get('epistemic_result') in RULE_EVALUABLE_RESULTS:    # claims a verdict -> EPISTEMIC
+        ch = _resolve_capsule_hash(reg, d.get("decision_rule_id"), d.get("decision_rule_hash"))
+        return {**body, ENVELOPE_KEY: envelope_for_payload(body, ch, reg)}
+    return {**body, OPERATIONAL_ENVELOPE_KEY: operational_envelope_for(body)}   # not_evaluated
 
 
 def evaluate_payload(stored: dict, registry=None) -> dict:
-    """Evaluate a STORED journal object. A SEALED object (an embedded envelope, written by
-    by ``to_journal``/``seal_payload``) routes from that STORED envelope - never a live bridge. An
-    envelope-LESS (legacy v3) object is ``legacy_unsealed``: VISIBLE but never reconstructed into a
-    verified verdict by today's code (no historical provenance => no epistemic weight)."""
-    env, payload = _split_journal(stored)
-    if env is None:
-        return {"status": "legacy_unsealed",
-                "reason": "no stored evaluation envelope - this event was not sealed at write; "
-                          "it is not reconstructed into a verified verdict by current code"}
-    return evaluate_envelope(env, payload, registry)
+    """Evaluate a STORED journal object from its SEALED envelope (never a live bridge):
+    - an EPISTEMIC ``evaluation_envelope`` -> routed/verified via :func:`evaluate_envelope`;
+    - an ``operational_envelope`` -> ``operational`` (a sealed technical/not-evaluated move, never a
+      verdict and never aggregable);
+    - neither (legacy v3) -> ``legacy_unsealed`` (visible, never reconstructed into a verdict)."""
+    ep, body = _split_journal(stored)
+    if ep is not None:
+        return evaluate_envelope(ep, body, registry)
+    op = stored.get(OPERATIONAL_ENVELOPE_KEY)
+    if isinstance(op, dict):
+        if op.get("evaluation_body_hash") != evaluation_body_hash(body):
+            return {"status": "unverifiable",
+                    "reason": "operational_envelope.evaluation_body_hash does not bind the body"}
+        return {"status": "operational", "operational_class": op.get("operational_class")}
+    return {"status": "legacy_unsealed",
+            "reason": "no stored evaluation/operational envelope - this event was not sealed at "
+                      "write; it is not reconstructed into a verdict by current code"}
 
 
 def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
@@ -1201,10 +1232,13 @@ def operational_observations(items) -> list[OperationalTrialObservation]:
     from desi_layer9.trial_event_validation import validate_trial_payload
     out: list[OperationalTrialObservation] = []
     for item in items:
-        _, p = _split_journal(_as_journal(item))
+        obj = _as_journal(item)
+        _, p = _split_journal(obj)
         if validate_trial_payload(p):
             continue
         if p.get("epistemic_result") not in RULE_EVALUABLE_RESULTS:    # not_evaluated etc.
+            op = obj.get(OPERATIONAL_ENVELOPE_KEY)         # prefer the SEALED class if present
+            klass = op.get("operational_class") if isinstance(op, dict) else _operational_class(p)
             out.append(OperationalTrialObservation(
                 trial_id=p.get("trial_id"), target_id=p.get("target_id"),
                 scope_id=p.get("scope_id"), method_id=p.get("method_id"),
@@ -1212,7 +1246,7 @@ def operational_observations(items) -> list[OperationalTrialObservation]:
                 affinities=tuple(p.get("affinities") or ()),
                 execution_status=p.get("execution_status"),
                 protocol_status=p.get("protocol_status"), failure_kind=p.get("failure_kind"),
-                desi_result=_operational_class(p)))
+                desi_result=klass))
     return out
 
 

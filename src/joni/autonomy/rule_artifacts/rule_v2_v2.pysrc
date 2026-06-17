@@ -1,0 +1,24 @@
+def _rule_v2(ev: MethodTrialRecorded) -> str:
+    """Reference decision rule (rule_v2). Computes the verdict from the MEASUREMENT's confidence
+    interval against the pre-registered ``estimand.minimum_effect``. ``success``/``harmful`` require
+    the whole interval BEYOND the threshold (``ci_low >= min`` / ``ci_high <= -min``).
+    ``no_benefit``
+    is an EQUIVALENCE verdict: the whole interval lies INSIDE the band ``(-min, +min)`` (zero may be
+    included) - a precise null is therefore no_benefit, not weaker than a small positive effect. An
+    interval that straddles a threshold boundary is ``inconclusive``. ``measurement.uncertainty`` is
+    NOT used by this rule (an uninterpreted descriptive scalar). ``partial_success`` is NOT
+    producible by rule_v2 (reserved for other registered rules)."""
+    m, est = ev.measurement, ev.estimand
+    eff, mn, ci = m.effect_size, est.minimum_effect, m.confidence_interval
+    if eff is None or mn is None or mn <= 0:
+        return "not_evaluated"
+    if ci is None:                                   # no interval -> cannot resolve anything
+        return "inconclusive"
+    lo, hi = ci
+    if hi <= -mn:                                    # interval entirely at/below -minimum_effect
+        return "harmful"
+    if lo >= mn:                                     # interval entirely at/above +minimum_effect
+        return "success"
+    if -mn < lo and hi < mn:                         # interval entirely inside the equivalence band
+        return "no_benefit"                          # (zero may be inside - a precise null counts)
+    return "inconclusive"                            # straddles a threshold boundary

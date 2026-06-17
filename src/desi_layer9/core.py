@@ -59,8 +59,8 @@ from .transitions import assert_conflict_transition, assert_transition
 from .trial_event_validation import (
     SCHEMA_V4,
     canonical_payload,
-    validate_evaluation_envelope,
     validate_trial_payload,
+    validate_v4_seal,
 )
 
 _CONTROLLED_FIELDS = ("status", "authority")        # never adopted from a payload
@@ -209,7 +209,10 @@ class Layer9:
 
     # -- the ONLY public write path ----------------------------------------- #
     def submit(self, proposal: Proposal, *, actor: str = "system",
-               governance_approved: bool = False) -> Decision:
+               governance_approved: bool = False, replaying: bool = False) -> Decision:
+        # ``replaying`` relaxes write-boundary-only rules (e.g. legacy v3 trial events are
+        # replay-only); it never relaxes structural validation. State stays f(seed, journal).
+        self._replaying = replaying
         # 0. journal the operation - the replayable unit (state = f(seed, journal)).
         self.journal.append(JournalEntry(
             operator=proposal.requested_operator, proposal_type=proposal.proposal_type,
@@ -485,9 +488,16 @@ class Layer9:
         payload as an IMMUTABLE canonical-JSON object, and mutates NO Method counter (legacy
         counters stay the sole decision-making truth). Idempotent on ``trial_id``: an identical
         re-submit records nothing; a divergent payload for the same id is an audited conflict."""
+        schema = p.payload.get("schema_version")
+        # WRITE BOUNDARY: a NEW submission must be SEALED v4; v3 is REPLAY-ONLY (existing journals
+        # remain loadable/visible, but a writer can no longer add a fresh unsealed event).
+        if schema != SCHEMA_V4 and not getattr(self, "_replaying", False):
+            raise ValueError(
+                "invalid METHOD_TRIAL_RECORDED: new submissions must be sealed "
+                f"'{SCHEMA_V4}'; '{schema}' is replay-only (legacy)")
         errs = validate_trial_payload(p.payload)
-        if p.payload.get("schema_version") == SCHEMA_V4:
-            errs = errs + validate_evaluation_envelope(p.payload)   # sealed: envelope is mandatory
+        if schema == SCHEMA_V4:
+            errs = errs + validate_v4_seal(p.payload)   # epistemic OR operational seal
         if errs:
             raise ValueError("invalid METHOD_TRIAL_RECORDED: " + "; ".join(errs))
         canonical = canonical_payload(p.payload)

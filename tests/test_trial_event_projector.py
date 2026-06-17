@@ -82,10 +82,13 @@ def _seal_if_known(payload):
 
 
 def _record(core, payload):
+    # known-rule events are SEALED to v4; an unknown-rule (legacy) v3 body is stored via the replay
+    # path so the projector can surface it as legacy_unsealed (a fresh v3 submit is refused).
     return core.submit(l9.make_proposal(
         PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=_seal_if_known(payload),
         proposer="kevin",
-        provenance=Provenance.from_model(external=False, model_id="kevin")), actor="kevin")
+        provenance=Provenance.from_model(external=False, model_id="kevin")),
+        actor="kevin", replaying=True)
 
 
 def _event(proj, trial_id):

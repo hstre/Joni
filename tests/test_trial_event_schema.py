@@ -1030,11 +1030,12 @@ def test_live_validator_hash_is_reattested_each_use():
     from joni.autonomy.trial_event_schema import (
         RULE_V2_HASH,
         _rule_v2,
+        build_rule_registry,
         make_rule_entry,
     )
     real = make_rule_entry("rule_v2", "spec", _rule_v2)
     forged = dataclasses.replace(real, validator_fn=lambda *a, **k: [])    # hash kept
-    reg = {("rule_v2", RULE_V2_HASH): forged}
+    reg = build_rule_registry([forged])
     assert evaluate_decision(_contradiction_event(RULE_V2_HASH), reg)["status"] == "unverifiable"
 
 
@@ -1387,9 +1388,13 @@ def test_capsule_hash_binds_every_component_and_addresses_the_whole_capsule():
     env, body = _sealed_split(reg)
     assert env["capsule_hash"] == real.capsule_hash               # mandatory whole-capsule address
     assert evaluate_envelope(env, body, reg)["status"] == "verified"
-    # a wrong capsule_hash (and no such capsule) fails closed.
+    # a well-formed seal for a capsule that is not in THIS catalog is marked, never verified.
     assert evaluate_envelope(dict(env, capsule_hash="sha256:" + "0" * 64), body,
-                             reg)["status"] == "unverifiable"
+                             reg)["status"] == "sealed_unknown_capsule"
+    # a missing capsule_hash (mandatory routing key) fails closed as unverifiable.
+    miss = dict(env)
+    miss.pop("capsule_hash")
+    assert evaluate_envelope(miss, body, reg)["status"] == "unverifiable"
 
 
 def test_production_r6_capsule_binds_adapter_loader_and_capsule_hash():
@@ -1642,3 +1647,126 @@ def test_evaluation_body_hash_is_a_distinct_scope_from_kernel_payload_hash():
     body_hash = evaluation_body_hash(obj)
     assert kernel_payload_hash != body_hash              # different scopes, different names
     assert obj["evaluation_envelope"]["evaluation_body_hash"] == body_hash
+
+
+# -- round 16: frozen live capsule, v4-only write boundary, operational mode, manifest ------- #
+def _kernel():
+    import desi_layer9 as l9
+    return l9.Layer9()
+
+
+def _submit16(core, payload, *, replaying=False):
+    import desi_layer9 as l9
+    from desi_layer9 import Operator as OP
+    from desi_layer9 import ProposalType as PT
+    from desi_layer9.provenance import Provenance
+    return core.submit(l9.make_proposal(PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED,
+                       payload=payload, proposer="k",
+                       provenance=Provenance.from_model(external=False, model_id="k")),
+                       actor="k", replaying=replaying)
+
+
+def test_live_production_capsule_is_frozen_against_a_validator_monkeypatch():
+    # the CURRENT production capsule is byte-pinned (no live wrapper); patching the gate validator
+    # after sealing must NOT change a sealed event's evaluation.
+    import dataclasses
+
+    import desi_layer9.trial_event_validation as V
+    from joni.autonomy.trial_event_schema import RULE_V2_HASH
+    contra = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+                 decision=Decision("rule_v2", RULE_V2_HASH, "success"))
+    contra = dataclasses.replace(contra, estimand=dataclasses.replace(contra.estimand,
+                                                                      outcome_metric="OTHER"))
+    assert evaluate_decision(contra)["status"] == "inconsistent"
+    orig = V.cross_block_consistency
+    try:
+        V.cross_block_consistency = lambda *a, **k: []        # sabotage the LIVE gate validator
+        assert evaluate_decision(contra)["status"] == "inconsistent"   # frozen capsule, unchanged
+    finally:
+        V.cross_block_consistency = orig
+
+
+def test_production_current_capsule_is_archived_and_byte_pinned():
+    from joni.autonomy.trial_event_schema import (
+        _CROSS_BLOCK_V1_SRC,
+        _RULE_V2_V2_SRC,
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_HASH,
+        _bytes_hash,
+    )
+    cur = next(a for a in DEFAULT_RULE_REGISTRY.values()
+               if a.rule_id == "rule_v2" and a.implementation_hash == RULE_V2_HASH)
+    assert cur.rule_source == _RULE_V2_V2_SRC                  # byte-pinned, not a live function
+    assert cur.validator_source == _CROSS_BLOCK_V1_SRC         # byte-pinned validator
+    assert _bytes_hash(_RULE_V2_V2_SRC) == RULE_V2_HASH
+
+
+def test_new_v3_submission_is_refused_but_v3_replays():
+    core = _kernel()
+    v3 = _r13_event().to_dict()                                # legacy v3, unsealed
+    d = _submit16(core, v3)
+    assert not d.accepted and "replay-only" in d.reason and core.method_trial_events() == []
+    assert _submit16(_kernel(), v3, replaying=True).accepted   # but v3 replays
+
+
+def test_new_v4_epistemic_submission_is_accepted():
+    core = _kernel()
+    assert _submit16(core, _r13_event().to_journal()).accepted
+    stored = core.method_trial_events()[0]["payload"]
+    assert "evaluation_envelope" in stored
+
+
+def test_operational_event_seals_as_v4_and_the_kernel_accepts_it():
+    from joni.autonomy.trial_event_schema import evaluate_payload, operational_observations
+    tech = _ev(trial_id="op-t", execution_status="failed", failure_kind="timeout",
+               epistemic_result="not_evaluated", method_variant="v9")
+    obj = tech.to_journal()
+    assert "operational_envelope" in obj and "evaluation_envelope" not in obj
+    assert obj["operational_envelope"]["operational_class"] == "technical_failure"
+    core = _kernel()
+    assert _submit16(core, obj).accepted                       # gate accepts operational
+    stored = core.method_trial_events()[0]["payload"]
+    assert evaluate_payload(stored)["status"] == "operational"
+    assert verify_events([tech]) == []                         # never epistemic evidence
+    assert operational_observations([stored])[0].desi_result == "technical_failure"
+
+
+def test_completed_valid_not_evaluated_seals_as_unevaluated():
+    ev = _ev(trial_id="u", execution_status="completed", protocol_status="valid",
+             failure_kind="none", epistemic_result="not_evaluated")
+    obj = ev.to_journal()
+    assert obj["operational_envelope"]["operational_class"] == "unevaluated"
+    assert _submit16(_kernel(), obj).accepted
+
+
+def test_to_journal_never_emits_a_v4_object_the_gate_rejects():
+    from desi_layer9.trial_event_validation import validate_v4_seal
+    cases = [
+        _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+            decision=_dec("inconclusive")),                          # epistemic
+        _ev(execution_status="failed", failure_kind="timeout", epistemic_result="not_evaluated"),
+        _ev(execution_status="cancelled", failure_kind="none", epistemic_result="not_evaluated"),
+        _ev(execution_status="completed", protocol_status="invalid", failure_kind="none",
+            epistemic_result="not_evaluated"),
+    ]
+    for ev in cases:
+        assert validate_v4_seal(ev.to_journal()) == []        # gate accepts every to_journal output
+
+
+def test_gate_rejects_a_v4_object_with_both_seals():
+    from desi_layer9.trial_event_validation import validate_v4_seal
+    obj = _r13_event().to_journal()
+    both = dict(obj, operational_envelope={'x': 1})            # both seals -> refused
+    assert any("EXACTLY ONE" in e for e in validate_v4_seal(both))
+
+
+def test_unknown_capsule_is_sealed_unknown_not_a_verdict():
+    from joni.autonomy.trial_event_schema import build_rule_registry, evaluate_envelope
+    reg = build_rule_registry([_real_archived_artifact()])
+    env, body = _sealed_split(reg)
+    res = evaluate_envelope(dict(env, capsule_hash="sha256:" + "f" * 64), body, reg)
+    assert res["status"] == "sealed_unknown_capsule"          # marked, never verified
+    # and it never becomes evidence.
+    sealed = dict(body, evaluation_envelope=dict(env, capsule_hash="sha256:" + "f" * 64))
+    from joni.autonomy.trial_event_schema import verify_payloads
+    assert verify_payloads([sealed], reg) == []

@@ -52,9 +52,14 @@ def _payload(**kw):
 
 
 def _record(core, payload, *, proposer="kevin"):
+    # These tests exercise the RECORDING MECHANICS (append-only, idempotency, hashing, deep-copy,
+    # inertness) + structural validation, which apply on BOTH the fresh-submit and the replay paths.
+    # They run on the replay path so legacy v3 bodies stay usable here; the WRITE BOUNDARY (a fresh
+    # submission must be sealed v4) is exercised by its own dedicated tests.
     return core.submit(l9.make_proposal(
         PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=payload, proposer=proposer,
-        provenance=Provenance.from_model(external=False, model_id="kevin")), actor=proposer)
+        provenance=Provenance.from_model(external=False, model_id="kevin")),
+        actor=proposer, replaying=True)
 
 
 def _make_method(core):

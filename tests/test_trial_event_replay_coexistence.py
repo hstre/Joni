@@ -51,9 +51,12 @@ def _payload(**kw):
 
 
 def _record(core, payload):
+    # exercises the append-only/idempotency/replay MECHANICS on the replay path (legacy v3 bodies
+    # stay usable here); the WRITE BOUNDARY (fresh submit must be sealed v4) has its own tests.
     return core.submit(l9.make_proposal(
         PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=payload, proposer="kevin",
-        provenance=Provenance.from_model(external=False, model_id="kevin")), actor="kevin")
+        provenance=Provenance.from_model(external=False, model_id="kevin")),
+        actor="kevin", replaying=True)
 
 
 def _make_method(core):
