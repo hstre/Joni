@@ -8,20 +8,39 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `1b1e6bfe59028dabfce3aa386b8ad0c8efc70e78` (review round 4) |
-| **Superseded candidates** | `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `e5cf6ca55ed1a568d8ab732430834f926c973880` (review round 5) |
+| **Superseded candidates** | `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 1b1e6bf -- src/desi_layer9 \
+git diff 282d541 e5cf6ca -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `1b1e6bf` and at this doc's commit.
+is byte-identical at `e5cf6ca` and at this doc's commit.
+
+### Review round 5 — `verified` bound to the observation (vs `1b1e6bf`)
+
+The decision could no longer invent its effect, but could still bring its own interval, and a bare
+point estimate could verify as success. Now the verdict is computed **entirely from the
+measurement**:
+
+1. **Resolution required** — `_rule_v2` reads effect, uncertainty **and** the confidence interval
+   from the measurement; `success`/`harmful` need the interval to resolve the direction beyond zero
+   (a `0.20 ± 100` point estimate with no interval is `inconclusive`).
+2. **The interval belongs to the measurement** — `confidence_interval` moved to `Measurement`; a
+   decision-supplied or diverging interval is rejected/`inconsistent`; the decision is reduced to
+   `{rule_id, rule_hash, verdict}`.
+3. **Measurement internal consistency** — the effect must be derivable from baseline/intervention
+   under the estimand contrast/direction (or carry an `effect_derivation` id+hash) and lie within
+   its own interval.
+4. **Rule hash binds to the implementation** — `RULE_V2_HASH = sha256(source of _rule_v2)`; a
+   `RuleEntry` carries spec+impl hashes; an implementation-hash mismatch is `unverifiable`, so a
+   code change rotates the hash and old events stay bound to their version.
 
 ### Review round 4 — verification source fixed (vs `dfb7d75`)
 
@@ -129,7 +148,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `1b1e6bf`: **478 passed, 2 skipped, ruff clean.**
+Full suite at `e5cf6ca`: **492 passed, 2 skipped, ruff clean.**
 
 ## Known technical debt
 
