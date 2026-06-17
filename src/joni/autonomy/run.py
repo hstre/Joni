@@ -279,6 +279,13 @@ def one_cycle() -> dict:
     kevin_proposed = kevin_llm.propose(cs, extensions, proto, cycle,
                                        budget=budget, runs_per_week=runs_per_week())
 
+    # 4c-kevin-orch. Kevin's REAL orchestrator (the Dirigent): DESi predicts the solution-space
+    #     islands, the wild brother explores them, Layer-9 methods discipline, epistemic selection
+    #     keeps the coherent/testable ones - selected candidates enter as non-authoritative
+    #     hypotheses. Runs ONLY with a real Kevin LLM client (KEVIN_USE_REAL_LLM=1); else a no-op.
+    from . import kevin_creative
+    kevin_creative.run(cs, extensions, proto, cycle, budget=budget)
+
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
     emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
