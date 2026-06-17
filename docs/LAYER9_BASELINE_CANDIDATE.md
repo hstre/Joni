@@ -8,20 +8,34 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `7810e257f4dddd54a43b82da7095fc2f05e5c1be` (review round 6) |
-| **Superseded candidates** | `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `b91a80f69276fc75e5e8a3b48794a03cc3c3e59e` (review round 7) |
+| **Superseded candidates** | `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 7810e25 -- src/desi_layer9 \
+git diff 282d541 b91a80f -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `7810e25` and at this doc's commit.
+is byte-identical at `b91a80f` and at this doc's commit.
+
+### Review round 7 — no aggregation bypass + rule input contract + equivalence (vs `7810e25`)
+
+1. **Typed verification boundary** — raw events become aggregable evidence only via `verify_events`
+   (re-runs the rule, verified-only) which emits a token-guarded `VerifiedTrialEvidence`; `aggregate`
+   accepts only that (raw events raise `TypeError`), so `attribute_to_affinity`/`to_desi_method_trials`
+   cannot translate an unverified claim into epistemic weight.
+2. **Gate input contract** — `RULE_INPUT_CONTRACTS`: a real verdict under `rule_v2` requires
+   `measurement.effect_size` **and** `confidence_interval`; the journal never holds a
+   `success`/`harmful`/`no_benefit` with no statistical basis.
+3. **`no_benefit` is equivalence** — CI entirely within `(−min, +min)` (zero may be included); a
+   precise null is `no_benefit`, not weaker than a small positive effect.
+4. **`uncertainty` is uninterpreted** — `rule_v2` ignores it; the gate no longer cross-checks it
+   against the CI (no scientifically-undefined inequality).
 
 ### Review round 6 — implementation-bound verification + statistical contract (vs `e5cf6ca`)
 
@@ -162,7 +176,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `7810e25`: **501 passed, 2 skipped, ruff clean.**
+Full suite at `b91a80f`: **513 passed, 2 skipped, ruff clean.**
 
 ## Known technical debt
 
