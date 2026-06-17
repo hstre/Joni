@@ -477,7 +477,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 181,
+    "starved_topic": 182,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -4193,7 +4193,8 @@
     "zenodo:20728818",
     "zenodo:20729002",
     "zenodo:20729217",
-    "zenodo:20729267"
+    "zenodo:20729267",
+    "zenodo:20729452"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -4668,6 +4669,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20729217"
+    },
+    {
+      "call_id": "joni-c185:8bfbe243443c",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20729452"
     }
   ],
   "pdf_read": [
@@ -5014,6 +5023,8 @@
     "C-648|C-649",
     "C-651|C-655",
     "C-652|C-658",
+    "C-658|C-662",
+    "C-661|C-662",
     "C-83|C-86"
   ],
   "semantic_backfilled": [
@@ -5184,6 +5195,8 @@
     "C-648|C-649@bge-small-en-v1.5",
     "C-651|C-655@bge-small-en-v1.5",
     "C-652|C-658@bge-small-en-v1.5",
+    "C-658|C-662@bge-small-en-v1.5",
+    "C-661|C-662@bge-small-en-v1.5",
     "C-83|C-86@bge-small-en-v1.5"
   ],
   "invented": [
@@ -5212,6 +5225,7 @@
     "pipelines",
     "problem",
     "related",
+    "replication",
     "research",
     "researchers",
     "scientific",
@@ -5232,6 +5246,7 @@
     "overview|keine",
     "overview|scientific",
     "panel|abstract",
+    "panel|abstracts",
     "panel|abundance",
     "panel|access",
     "panel|adaptive",
@@ -5275,6 +5290,7 @@
     "panel|behavior",
     "panel|behavioral",
     "panel|benchmark",
+    "panel|bolts",
     "panel|bottleneck",
     "panel|bounded",
     "panel|brain",
@@ -5421,6 +5437,7 @@
     "panel|proprietary",
     "panel|provides",
     "panel|proﬁle",
+    "panel|public",
     "panel|publication",
     "panel|quality",
     "panel|quantum",
@@ -5521,10 +5538,9 @@
     "software"
   ],
   "emerge_insufficient": {
-    "meth:involved": 1,
-    "panel|abstracts": 3,
+    "meth:involved": 2,
     "panel|applications": 2,
-    "panel|code": 2,
+    "panel|code": 3,
     "panel|combine": 2,
     "panel|cost": 2,
     "panel|implementation": 3,
@@ -5532,6 +5548,7 @@
     "panel|leads": 1,
     "panel|natural": 2,
     "panel|remains": 1,
+    "panel|replication": 1,
     "panel|streams": 3,
     "panel|survey": 3
   },
@@ -5609,6 +5626,7 @@
     "C-643",
     "C-650",
     "C-664",
+    "C-672",
     "C-74",
     "C-99"
   ],
@@ -5623,7 +5641,6 @@
     "panel single"
   ],
   "hyp_seen_cycle": {
-    "C-515": 174,
     "C-516": 175,
     "C-517": 176,
     "C-518": 177,
@@ -5634,7 +5651,7 @@
     "C-535": 182,
     "C-536": 183,
     "C-537": 184,
-    "C-538": 165,
+    "C-538": 185,
     "C-539": 166,
     "C-540": 167,
     "C-541": 168,
@@ -5653,7 +5670,8 @@
     "C-632": 181,
     "C-643": 182,
     "C-650": 183,
-    "C-664": 184
+    "C-664": 184,
+    "C-672": 185
   },
   "topics_domain_ok": [
     "abstracts",
@@ -5690,7 +5708,9 @@
     "provenance",
     "purpose",
     "related",
+    "replication",
     "repository",
+    "reproducibility",
     "research",
     "researchers",
     "retrieval",
@@ -5814,6 +5834,7 @@
     "C-643",
     "C-650",
     "C-664",
+    "C-672",
     "C-74",
     "C-99"
   ],
@@ -5856,30 +5877,30 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 432,
+    "active": 439,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 85,
-    "supporting_links": 85,
-    "emergent_total": 324,
+    "evidence_links": 87,
+    "supporting_links": 87,
+    "emergent_total": 328,
     "usable_semantic_rate": 1.0,
     "methods_total": 33,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 6148,
-    "cycle": 184
+    "objects": 6217,
+    "cycle": 185
   },
   "vitality_prev": {
-    "supports": 85,
+    "supports": 87,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 6148,
-    "active": 432,
-    "links": 85,
-    "emergent": 324
+    "objects": 6217,
+    "active": 439,
+    "links": 87,
+    "emergent": 328
   },
   "stagnation": 0,
   "vitality_history": [
@@ -7166,6 +7187,13 @@
     },
     {
       "cycle": 184,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 185,
       "verdict": "steady",
       "development": 6,
       "degeneration": 1,
