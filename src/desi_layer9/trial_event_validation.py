@@ -22,6 +22,15 @@ from numbers import Number
 
 SUPPORTED_TRIAL_SCHEMA_VERSIONS = ("method_trial_recorded_v3",)
 
+# Per-rule STRUCTURAL input contracts: which measurement fields a real verdict under a given rule
+# must carry before it may enter the journal. The core does NOT compute the verdict - it only
+# refuses to store a success/harmful/no_benefit claim that the declared rule could not even
+# evaluate. (rule_v2 decides from the confidence interval, so it needs effect_size AND a CI.)
+RULE_INPUT_CONTRACTS = {
+    "rule_v2": {"require_effect": True, "require_confidence_interval": True},
+}
+_DEFAULT_RULE_INPUT = {"require_effect": True, "require_confidence_interval": False}
+
 _EXEC = ("completed", "failed", "cancelled")
 _PROTO = ("valid", "invalid", "unknown")
 _KINDS = ("none", "technical", "timeout", "parser", "model", "dependency", "infrastructure")
@@ -108,10 +117,9 @@ def cross_block_consistency(measurement: dict, decision: dict, estimand: dict, *
     errs += _ci_errors("decision.confidence_interval", d_ci)
     if m_unc is not None and _finite(m_unc) and m_unc < 0:
         errs.append("measurement.uncertainty must be >= 0")
-    # uncertainty is a descriptive scalar; when a CI is also present the two must not contradict -
-    # a scalar uncertainty larger than the entire interval width is incoherent.
-    if m_unc is not None and m_ci is not None and not errs and m_unc > (m_ci[1] - m_ci[0]) + _EPS:
-        errs.append("measurement.uncertainty is inconsistent with the confidence_interval width")
+    # NOTE: ``uncertainty`` is an UNINTERPRETED descriptive scalar (its kind - SE, SD, MAD, ... - is
+    # not declared), so it is deliberately NOT cross-checked against the CI. rule_v2 ignores it; the
+    # CI is the sole statistical authority. (No fake consistency check is performed.)
     if errs:
         return errs
 
@@ -290,6 +298,16 @@ def validate_trial_payload(p: dict) -> list[str]:
         if est.get("decision_rule_id") and dec.get("decision_rule_id") and \
                 est["decision_rule_id"] != dec["decision_rule_id"]:
             errs.append("decision.decision_rule_id must match estimand.decision_rule_id")
+        # the declared rule's INPUT CONTRACT: a real verdict may not be stored unless the
+        # measurement
+        # carries the fields its rule structurally needs (the core does NOT compute the verdict).
+        contract = RULE_INPUT_CONTRACTS.get(est.get("decision_rule_id"), _DEFAULT_RULE_INPUT)
+        if contract.get("require_effect") and meas.get("effect_size") is None:
+            errs.append(f"a real result under rule '{est.get('decision_rule_id')}' requires "
+                        "measurement.effect_size")
+        if contract.get("require_confidence_interval") and meas.get("confidence_interval") is None:
+            errs.append(f"a real result under rule '{est.get('decision_rule_id')}' requires "
+                        "measurement.confidence_interval")
 
     # cross-block consistency + numeric/interval invariants + measurement-internal derivation.
     errs += cross_block_consistency(

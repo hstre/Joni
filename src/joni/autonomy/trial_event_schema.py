@@ -73,8 +73,8 @@ class Measurement:
     baseline_value: float | None = None
     intervention_value: float | None = None
     effect_size: float | None = None
-    # A DESCRIPTIVE scalar only - rule_v2 does NOT use it for the verdict (only the CI does). When
-    # present alongside a CI it must be consistent with the interval width (enforced in the gate).
+    # A DESCRIPTIVE, UNINTERPRETED scalar (its kind - SE/SD/MAD/... - is not declared), so it is
+    # NOT used by rule_v2 and NOT cross-checked against the CI. The CI is the sole authority.
     uncertainty: float | None = None
     # The statistical interval belongs to the MEASUREMENT (the observation), never the decision; it
     # is what rule_v2 uses to decide whether the minimum effect is statistically supported.
@@ -317,14 +317,15 @@ def validate_or_raise(ev: MethodTrialRecorded) -> MethodTrialRecorded:
 # function on every use, so neither a forged registry entry nor a post-hoc swap of ``fn`` can pass.
 # ================================================================================================ #
 def _rule_v2(ev: MethodTrialRecorded) -> str:
-    """Reference decision rule (rule_v2). Computes the verdict from the MEASUREMENT's effect and its
-    own confidence interval against the pre-registered ``estimand.minimum_effect``. A real
-    ``success``/``harmful`` requires the interval to STATISTICALLY SUPPORT the minimum effect, i.e.
-    the whole interval lies beyond the threshold (``ci_low >= min`` / ``ci_high <= -min``) - a
-    merely positive-direction interval that still spans values below the threshold is
-    ``inconclusive``, not
-    a verified success. ``measurement.uncertainty`` is NOT used by this rule. ``partial_success`` is
-    NOT producible by rule_v2 (reserved for other registered rules)."""
+    """Reference decision rule (rule_v2). Computes the verdict from the MEASUREMENT's confidence
+    interval against the pre-registered ``estimand.minimum_effect``. ``success``/``harmful`` require
+    the whole interval BEYOND the threshold (``ci_low >= min`` / ``ci_high <= -min``).
+    ``no_benefit``
+    is an EQUIVALENCE verdict: the whole interval lies INSIDE the band ``(-min, +min)`` (zero may be
+    included) - a precise null is therefore no_benefit, not weaker than a small positive effect. An
+    interval that straddles a threshold boundary is ``inconclusive``. ``measurement.uncertainty`` is
+    NOT used by this rule (an uninterpreted descriptive scalar). ``partial_success`` is NOT
+    producible by rule_v2 (reserved for other registered rules)."""
     m, est = ev.measurement, ev.estimand
     eff, mn, ci = m.effect_size, est.minimum_effect, m.confidence_interval
     if eff is None or mn is None or mn <= 0:
@@ -336,10 +337,9 @@ def _rule_v2(ev: MethodTrialRecorded) -> str:
         return "harmful"
     if lo >= mn:                                     # interval entirely at/above +minimum_effect
         return "success"
-    excludes_zero = not (lo <= 0 <= hi)
-    if excludes_zero and -mn < lo and hi < mn:       # resolved non-zero, entirely below threshold
-        return "no_benefit"
-    return "inconclusive"
+    if -mn < lo and hi < mn:                         # interval entirely inside the equivalence band
+        return "no_benefit"                          # (zero may be inside - a precise null counts)
+    return "inconclusive"                            # straddles a threshold boundary
 
 
 def _impl_hash(fn) -> str | None:
@@ -354,10 +354,9 @@ def _impl_hash(fn) -> str | None:
 
 # The descriptor is a human spec hash; the IMPLEMENTATION hash is derived from the rule's own source
 # and is the one an event's ``decision_rule_hash`` must match. Editing _rule_v2 rotates it.
-_RULE_V2_DESCRIPTOR = ("rule_v2|source=measurement(effect,ci)|threshold=estimand.minimum_effect|"
-                       "uncertainty_not_used|require_ci_supports_min|"
-                       "harmful:ci_hi<=-min|success:ci_lo>=min|"
-                       "no_benefit:ci_excludes_0&|ci|<min|else:inconclusive")
+_RULE_V2_DESCRIPTOR = ("rule_v2|source=measurement.ci|threshold=estimand.minimum_effect|"
+                       "uncertainty_not_used|harmful:ci_hi<=-min|success:ci_lo>=min|"
+                       "no_benefit:ci_within(-min,+min)|else:inconclusive")
 RULE_V2_SPEC_HASH = "sha256:" + hashlib.sha256(_RULE_V2_DESCRIPTOR.encode()).hexdigest()
 RULE_V2_IMPL_HASH = _impl_hash(_rule_v2)
 RULE_V2_HASH = RULE_V2_IMPL_HASH                     # the event's decision_rule_hash binds to code
@@ -551,13 +550,49 @@ def _cell_outcome(evs: list[MethodTrialRecorded]) -> tuple[str, int, int, bool, 
     return outcome, len(usable), len(unusable), has_success, has_harmful
 
 
-def aggregate(events: list[MethodTrialRecorded]) -> list[VariantScopeOutcome]:
-    """Roll valid events up to one outcome per (target, scope, variant). Invalid events are dropped
-    (a caller should ``validate`` first)."""
-    cells: dict[tuple, list[MethodTrialRecorded]] = {}
-    for e in events:
-        if validate(e):
+_EVIDENCE_TOKEN = object()
+
+
+@dataclass(frozen=True)
+class VerifiedTrialEvidence:
+    """A trial event whose verdict has been VERIFIED by the registered rule. Constructible ONLY via
+    ``verify_events`` (guarded by a private token), so ``aggregate`` / ``attribute_to_affinity`` /
+    ``to_desi_method_trials`` can NEVER translate a merely-structurally-valid-but-unverified claim
+    into epistemic weight. This is the hard type boundary: RawTrialEvent -> evaluate_decision ->
+    VerifiedTrialEvidence -> aggregate_verified -> attribution / DESi."""
+
+    event: MethodTrialRecorded
+    verdict: str
+    _token: object = None
+
+    def __post_init__(self):
+        if self._token is not _EVIDENCE_TOKEN:
+            raise TypeError("VerifiedTrialEvidence is created only by verify_events()")
+
+
+def verify_events(events: list[MethodTrialRecorded], registry=None) -> list[VerifiedTrialEvidence]:
+    """The ONLY way to turn raw events into aggregable evidence: run ``evaluate_decision`` on each
+    and keep ONLY those whose verdict the registered rule verifies (structurally valid AND
+    rule-verified). Unverifiable / inconsistent / non-real / invalid events carry no weight."""
+    out: list[VerifiedTrialEvidence] = []
+    for ev in events:
+        if validate(ev):
             continue
+        if evaluate_decision(ev, registry)["status"] == "verified":
+            out.append(VerifiedTrialEvidence(ev, ev.epistemic_result, _EVIDENCE_TOKEN))
+    return out
+
+
+def aggregate(evidence: list[VerifiedTrialEvidence]) -> list[VariantScopeOutcome]:
+    """Roll VERIFIED evidence up to one outcome per (target, scope, variant). Accepts only
+    ``VerifiedTrialEvidence`` (from ``verify_events``) - never raw events - so the verification
+    chain
+    cannot be bypassed by calling aggregate directly."""
+    cells: dict[tuple, list[MethodTrialRecorded]] = {}
+    for ve in evidence:
+        if not isinstance(ve, VerifiedTrialEvidence):
+            raise TypeError("aggregate() accepts only VerifiedTrialEvidence (see verify_events)")
+        e = ve.event
         cells.setdefault((e.target_id, e.scope_id, e.method_id, e.method_variant), []).append(e)
     out: list[VariantScopeOutcome] = []
     for (target, scope, mid, variant), evs in sorted(cells.items()):

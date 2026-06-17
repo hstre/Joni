@@ -476,11 +476,48 @@ def test_effect_outside_its_confidence_interval_is_rejected():
     assert not d.accepted and "must lie within" in d.reason
 
 
-# -- round 6: uncertainty must not contradict the interval width --------------------------------- #
-def test_uncertainty_larger_than_interval_width_is_rejected():
+# -- uncertainty is UNINTERPRETED for rule_v2: not cross-checked against the CI ------------------ #
+def test_uncertainty_is_uninterpreted_and_not_cross_checked_with_the_ci():
+    # without a declared uncertainty_kind there is no scientifically-defined relation to the CI, so
+    # the gate does NOT invent one: a large uncertainty alongside a valid CI is accepted, and the
+    # rule decides solely from the CI.
     core = _core()
     p = _payload()
     p["measurement"] = dict(p["measurement"], baseline_value=0.40, intervention_value=0.60,
-                            effect_size=0.20, uncertainty=100.0, confidence_interval=[0.10, 0.30])
+                            effect_size=0.20, uncertainty=100.0, confidence_interval=[0.12, 0.28])
+    p["epistemic_result"] = "success"
+    p["decision"] = dict(p["decision"], verdict="success")
+    assert _record(core, p).accepted
+
+
+# -- round 7: a real verdict needs the measurement its declared rule requires -------------------- #
+def test_success_without_effect_size_is_rejected():
+    core = _core()
+    p = _payload(epistemic_result="success")
+    p["measurement"] = dict(p["measurement"], effect_size=None, confidence_interval=[0.12, 0.28])
     d = _record(core, p)
-    assert not d.accepted and "inconsistent with the confidence_interval width" in d.reason
+    assert not d.accepted and "requires measurement.effect_size" in d.reason
+
+
+def test_real_result_without_confidence_interval_is_rejected_for_rule_v2():
+    core = _core()
+    p = _payload()      # no_benefit under rule_v2
+    p["measurement"] = dict(p["measurement"])
+    p["measurement"]["confidence_interval"] = None
+    d = _record(core, p)
+    assert not d.accepted and "requires measurement.confidence_interval" in d.reason
+
+
+def test_full_rule_v2_measurement_is_accepted():
+    core = _core()
+    assert _record(core, _payload()).accepted     # effect_size + CI present
+
+
+def test_not_evaluated_still_allows_empty_measurement():
+    core = _core()
+    p = _payload(trial_id="ne", epistemic_result="not_evaluated", execution_status="failed",
+                 failure_kind="timeout", protocol_status="unknown",
+                 measurement={"metric_name": None, "baseline_value": None,
+                              "intervention_value": None, "effect_size": None,
+                              "uncertainty": None, "confidence_interval": None})
+    assert _record(core, p).accepted

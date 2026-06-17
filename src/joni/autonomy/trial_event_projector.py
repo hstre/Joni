@@ -153,13 +153,13 @@ def _independent_variant_count(outcomes) -> int:
     return len({o.method_variant for o in outcomes}) if ok else 1
 
 
-def _dataset_sufficiency(core, verified, events) -> dict:
+def _dataset_sufficiency(core, evidence, events) -> dict:
     """Is the WHOLE history enough for a gap analysis? Coverage and comparative depth are judged per
     ``(conflict, scope)`` - NEVER across scopes of the same conflict, and NEVER by event count. A
     conflict is analysis-ready only if at least ONE concrete stable scope has >= MIN independent,
     rule-verified variants."""
     open_ids = {c.id for c in core.open_conflicts()} if hasattr(core, "open_conflicts") else set()
-    outcomes = aggregate(verified)
+    outcomes = aggregate(evidence)
     by_pair: dict[tuple, list] = {}                 # (target_id, scope_id) -> [outcome...]
     by_conflict: set = set()
     for o in outcomes:
@@ -214,7 +214,7 @@ def _dataset_sufficiency(core, verified, events) -> dict:
         "policy_id": SUFFICIENCY_POLICY_ID,
         "registered_events": len(events),
         "structurally_usable_events": sum(1 for e in events if e["event_usability"] == "usable"),
-        "rule_verified_events": len(verified),
+        "rule_verified_events": len(evidence),
         "covered_open_conflicts": covered,
         "open_conflicts_without_trial_history": uncovered,
         "analysis_ready_conflicts": ready_conflicts,
@@ -239,14 +239,18 @@ def project_trial_events(core) -> dict:
     sufficiency is judged against real open-conflict/scope coverage, not event count."""
     envelopes = core.method_trial_events()
     events: list[dict] = []
-    verified: list[MethodTrialRecorded] = []
+    candidates: list[MethodTrialRecorded] = []
     for env in envelopes:
         proj, rec = _project_event(env)
         events.append(proj)
         if rec is not None:
-            verified.append(rec)
+            candidates.append(rec)
 
-    outcomes = aggregate(verified)
+    # the ONLY events->evidence path: verify_events re-runs the rule and admits only verified ones,
+    # so aggregation can never act on an unverified claim (no aggregate(raw_events) bypass exists).
+    from .trial_event_schema import verify_events
+    evidence = verify_events(candidates)
+    outcomes = aggregate(evidence)
     scope_bound = [
         {"target_id": o.target_id, "scope_id": o.scope_id, "method_variant": o.method_variant,
          "outcome": o.outcome, "n_completed_valid": o.n_completed_valid,
@@ -271,5 +275,5 @@ def project_trial_events(core) -> dict:
         "verified_scope_bound_outcomes": scope_bound,
         "affinity_attributions": affinity,
         "desi_method_trials": desi_trials,              # None if DESi unavailable; never fabricated
-        "dataset_sufficiency": _dataset_sufficiency(core, verified, events),
+        "dataset_sufficiency": _dataset_sufficiency(core, evidence, events),
     }

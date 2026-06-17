@@ -19,6 +19,7 @@ from joni.autonomy.trial_event_schema import (
     evaluate_decision,
     migrate_method,
     validate,
+    verify_events,
 )
 from joni.autonomy.trial_event_schema import _cross_block_errors as _cross_block
 
@@ -164,21 +165,26 @@ def test_unverified_artifact_is_rejected_for_legacy_success():
 
 
 # -- aggregation: scope separation, technical, harmful ------------------------------------------- #
-def test_no_benefit_demotes_only_its_own_variant_scope():
+def test_outcomes_are_separated_by_variant_scope():
+    # a no_benefit in scope 'qtt' and a success in scope 'other' stay SEPARATE cells - a result in
+    # one scope never bleeds into another.
     evs = [
         _ev(trial_id="a", scope_id="qtt", method_variant="v2", epistemic_result="no_benefit",
-            measurement=_meas(0.04), decision=_dec("no_benefit", 0.04, (0.02, 0.06))),
-        _ev(trial_id="b", scope_id="other", method_variant="v2", epistemic_result="not_evaluated",
-            note="not run here"),
+            measurement=_meas(0.04), decision=_dec("no_benefit")),
+        _ev(trial_id="b", scope_id="other", method_variant="v2", epistemic_result="success",
+            measurement=_meas(0.20, ci=(0.12, 0.28)), decision=_dec("success")),
     ]
-    cells = {(o.scope_id, o.method_variant): o.outcome for o in aggregate(evs)}
-    assert cells[("qtt", "v2")] == "no_benefit" and cells[("other", "v2")] != "no_benefit"
+    cells = {(o.scope_id, o.method_variant): o.outcome for o in aggregate(verify_events(evs))}
+    assert cells[("qtt", "v2")] == "no_benefit" and cells[("other", "v2")] == "success"
 
 
-def test_unusable_cell_is_not_a_negative_result():
+def test_a_technical_failure_is_not_evidence():
+    # a failed/not_evaluated event has no verdict -> verify_events excludes it -> it can never feed
+    # aggregation or affinity attribution (no technical event masquerades as a negative).
     evs = [_ev(trial_id="a", execution_status="failed", failure_kind="timeout",
                epistemic_result="not_evaluated")]
-    assert aggregate(evs)[0].outcome == "technical_only"
+    assert verify_events(evs) == []
+    assert aggregate(verify_events(evs)) == []
 
 
 def test_success_plus_harmful_in_a_cell_is_conflicting_not_negative():
@@ -190,14 +196,14 @@ def test_success_plus_harmful_in_a_cell_is_conflicting_not_negative():
         _ev(trial_id="b", epistemic_result="harmful", measurement=_meas(-0.15),
             decision=_dec("harmful", -0.15, (-0.20, -0.10))),
     ]
-    o = aggregate(evs)[0]
+    o = aggregate(verify_events(evs))[0]
     assert o.outcome == "conflicting" and o.has_success and o.has_harmful
 
 
 def test_harmful_only_cell_dominates_as_a_safety_signal():
     evs = [_ev(trial_id="b", epistemic_result="harmful", measurement=_meas(-0.15),
                decision=_dec("harmful", -0.15, (-0.20, -0.10)))]
-    o = aggregate(evs)[0]
+    o = aggregate(verify_events(evs))[0]
     assert o.outcome == "harmful" and o.has_harmful and not o.has_success
 
 
@@ -221,12 +227,12 @@ def test_two_insufficiently_independent_variants_give_no_attribution():
     # two variants, but same model family + same impl + same task split + shared confounder.
     evs = [_neg("v1", model_family="deepseek", impl="impl-A", conf=("shared_bug",)),
            _neg("v2", model_family="deepseek", impl="impl-A", conf=("shared_bug",))]
-    a = attribute_to_affinity(aggregate(evs))[0]
+    a = attribute_to_affinity(aggregate(verify_events(evs)))[0]
     assert a.strength == "none" and not a.independent
 
 
 def test_independent_variants_give_a_limited_attribution_under_the_policy():
-    a = attribute_to_affinity(aggregate(_independent_pair()))[0]
+    a = attribute_to_affinity(aggregate(verify_events(_independent_pair())))[0]
     assert a.strength == "limited" and a.independent and a.policy_id == "independence_policy_v1"
 
 
@@ -238,11 +244,11 @@ def test_independence_policy_is_configurable_and_versioned():
                         conf=("a",)),
                    _neg("v2", model_family="deepseek", impl="impl-B", task="ts2", evaluator="ev2",
                         conf=("b",))]
-    strict = attribute_to_affinity(aggregate(same_family))[0]
+    strict = attribute_to_affinity(aggregate(verify_events(same_family)))[0]
     assert strict.strength == "none" and "model_families" in strict.reason
     relaxed = IndependencePolicy(policy_id="independence_policy_relaxed",
                                  require_model_families_distinct=False)
-    out = attribute_to_affinity(aggregate(same_family), policy=relaxed)[0]
+    out = attribute_to_affinity(aggregate(verify_events(same_family)), policy=relaxed)[0]
     assert out.strength == "limited" and out.policy_id == "independence_policy_relaxed"
 
 
@@ -250,7 +256,7 @@ def test_a_success_makes_the_affinity_picture_inconsistent():
     evs = _independent_pair() + [
         _ev(trial_id="ok", method_variant="v3", epistemic_result="success", measurement=_meas(0.18),
             decision=_dec("success", 0.18, (0.12, 0.24)))]
-    a = attribute_to_affinity(aggregate(evs))[0]
+    a = attribute_to_affinity(aggregate(verify_events(evs)))[0]
     assert a.strength == "none" and "inconsistent" in a.reason
 
 
@@ -259,13 +265,14 @@ def test_multi_affinity_method_rolls_up_to_each_affinity():
                 conf=("noise_a",), aff=("causal", "boundary")),
            _neg("v2", model_family="openai", impl="impl-B", task="ts2", evaluator="ev2",
                 conf=("noise_b",), aff=("causal",))]
-    attrs = {a.affinity: a for a in attribute_to_affinity(aggregate(evs))}
+    attrs = {a.affinity: a for a in attribute_to_affinity(aggregate(verify_events(evs)))}
     assert attrs["causal"].strength == "limited"
     assert attrs["boundary"].strength == "none"   # one variant never condemns the move
 
 
 def test_single_variant_no_benefit_never_condemns_the_affinity():
-    a = attribute_to_affinity(aggregate([_neg("v1", model_family="deepseek", impl="impl-A")]))[0]
+    evidence = verify_events([_neg("v1", model_family="deepseek", impl="impl-A")])
+    a = attribute_to_affinity(aggregate(evidence))[0]
     assert a.strength == "none"
 
 
@@ -352,7 +359,7 @@ def _mixed_variant(variant, family, impl, task, ev):
 def test_two_independent_mixed_cells_do_not_demote_the_affinity():
     evs = _mixed_variant("v1", "deepseek", "iA", "t1", "e1") + \
         _mixed_variant("v2", "openai", "iB", "t2", "e2")
-    outs = aggregate(evs)
+    outs = aggregate(verify_events(evs))
     assert all(o.outcome == "conflicting" for o in outs)
     assert any(o.has_harmful for o in outs)                  # safety signal stays visible
     a = attribute_to_affinity(outs)[0]
@@ -366,7 +373,7 @@ def test_two_independent_pure_harmful_variants_remain_demotable():
            _ev(trial_id="b", method_variant="v2", model_family="openai", implementation_id="iB",
                task_sample_id="t2", evaluator_id="e2", epistemic_result="harmful",
                measurement=_meas(-0.15), decision=_dec("harmful", -0.15, (-0.20, -0.10)))]
-    a = attribute_to_affinity(aggregate(evs))[0]
+    a = attribute_to_affinity(aggregate(verify_events(evs)))[0]
     assert a.strength == "limited" and a.independent          # no success -> demotion allowed
 
 
@@ -559,3 +566,83 @@ def test_partial_success_is_not_producible_by_rule_v2():
              decision=_dec("partial_success"))
     assert _rule_v2(ev) != "partial_success"
     assert evaluate_decision(ev)["status"] == "inconsistent"   # unreachable under rule_v2
+
+
+# -- round 7: the aggregation API cannot bypass verification ------------------------------------- #
+def _harmful_raw(variant, family, impl, task, evaluator, *, rule_hash=RULE_V2_HASH):
+    return MethodTrialRecorded(
+        trial_id=f"h-{variant}", timestamp="t", ledger_tick=1, target_type="conflict",
+        target_id="X17", claim_ids=("C-7",), scope_id="qtt", method_id="m", method_variant=variant,
+        implementation_id=impl, model_family=family, task_sample_id=task, evaluator_id=evaluator,
+        affinities=("causal",), estimand=_EST,
+        measurement=Measurement("misclass_rate", 0.40, 0.20, effect_size=-0.20, uncertainty=0.02,
+                                confidence_interval=(-0.28, -0.12)),
+        decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=rule_hash,
+                          verdict="harmful"),
+        epistemic_result="harmful")
+
+
+def test_unverified_harmful_events_cannot_drive_affinity_attribution():
+    # two structurally-valid harmful events with a BOGUS rule hash -> evaluate_decision says
+    # unverifiable; they must NOT produce any affinity attribution via the aggregation API.
+    bogus = [_harmful_raw("v1", "deepseek", "iA", "t1", "e1", rule_hash="sha256:bogus"),
+             _harmful_raw("v2", "openai", "iB", "t2", "e2", rule_hash="sha256:bogus")]
+    assert all(evaluate_decision(e)["status"] == "unverifiable" for e in bogus)
+    assert verify_events(bogus) == []                          # no evidence
+    assert aggregate(verify_events(bogus)) == []               # no outcomes
+    assert attribute_to_affinity(aggregate(verify_events(bogus))) == []   # no attribution
+
+
+def test_aggregate_rejects_raw_events_directly():
+    import pytest
+    raw = [_harmful_raw("v1", "deepseek", "iA", "t1", "e1")]
+    with pytest.raises(TypeError):
+        aggregate(raw)                                         # raw events are not evidence
+
+
+def test_verified_evidence_cannot_be_forged():
+    import pytest
+
+    from joni.autonomy.trial_event_schema import VerifiedTrialEvidence
+    with pytest.raises(TypeError):
+        VerifiedTrialEvidence(_harmful_raw("v1", "d", "i", "t", "e"), "harmful")   # no token
+
+
+def test_only_verified_evidence_yields_a_limited_attribution():
+    # the SAME two harmful variants, now with the correct rule hash, verify and demote (limited).
+    good = [_harmful_raw("v1", "deepseek", "iA", "t1", "e1"),
+            _harmful_raw("v2", "openai", "iB", "t2", "e2")]
+    a = attribute_to_affinity(aggregate(verify_events(good)))[0]
+    assert a.strength == "limited" and a.independent
+
+
+# -- round 7: no_benefit is an EQUIVALENCE verdict (a precise null is no_benefit) ---------------- #
+def test_precise_null_within_band_is_no_benefit():
+    from joni.autonomy.trial_event_schema import _rule_v2
+    ev = _ev(epistemic_result="no_benefit", measurement=_meas(0.0, ci=(-0.01, 0.01)),
+             decision=_dec("no_benefit"))
+    assert _rule_v2(ev) == "no_benefit"
+    assert evaluate_decision(ev)["status"] == "verified"
+
+
+def test_small_positive_within_band_is_also_no_benefit():
+    from joni.autonomy.trial_event_schema import _rule_v2
+    ev = _ev(epistemic_result="no_benefit", measurement=_meas(0.04, ci=(0.02, 0.06)),
+             decision=_dec("no_benefit"))
+    assert _rule_v2(ev) == "no_benefit"
+
+
+def test_interval_overlapping_threshold_is_inconclusive():
+    from joni.autonomy.trial_event_schema import _rule_v2
+    ev = _ev(epistemic_result="success", measurement=_meas(0.11, ci=(0.001, 0.219)),
+             decision=_dec("success"))
+    assert _rule_v2(ev) == "inconclusive"
+
+
+def test_negative_band_mirror_is_no_benefit_and_overlap_is_inconclusive():
+    from joni.autonomy.trial_event_schema import _rule_v2
+    within = _ev(epistemic_result="no_benefit", measurement=_meas(-0.04, ci=(-0.06, -0.02)),
+                 decision=_dec("no_benefit"))
+    overlap = _ev(epistemic_result="harmful", measurement=_meas(-0.11, ci=(-0.219, -0.001)),
+                  decision=_dec("harmful"))
+    assert _rule_v2(within) == "no_benefit" and _rule_v2(overlap) == "inconclusive"

@@ -11,23 +11,30 @@ connection from the *stored* event to *external* epistemic evaluation.
 2. Envelope, `schema_version`, `record_authority` and `epistemic_authority` are evaluated
    **separately** from the reported payload.
 3. Decision verdicts are verified by the **registered** rule via
-   `trial_event_schema.evaluate_decision`, which computes the verdict **entirely from the stored
-   measurement's effect and its own confidence interval** against the **pre-registered estimand
-   threshold** — never from the decision block (reduced to `{decision_rule_id, decision_rule_hash,
-   verdict}`), never from a decision-supplied interval, and (for `rule_v2`) **not** from
-   `measurement.uncertainty` (a descriptive scalar that must merely be consistent with the CI
-   width). A verified `success`/`harmful` requires the interval to **statistically support the
-   minimum effect** — the whole interval beyond the threshold (`ci_low ≥ min` / `ci_high ≤ −min`);
-   a merely positive-direction interval that still spans values below the threshold is
-   `inconclusive`. The measurement must be internally consistent (effect derived from
-   baseline/intervention under the contrast/direction, lying within its own interval). The rule
-   hash binds to the actual executable: the evaluator **re-derives** `sha256(source of the
-   registered function)` on every use and requires it to equal both the claimed
-   `implementation_hash` **and** the event's `decision_rule_hash` — so a forged registry entry or a
-   swapped function is `unverifiable`, not silently trusted. `partial_success` is not producible by
-   `rule_v2` (reserved for other rules). The one canonical `cross_block_consistency` (in
-   `desi_layer9.trial_event_validation`) is shared by the gate and the rule evaluator, so the two
-   cannot drift.
+   `trial_event_schema.evaluate_decision`, computed **entirely from the stored measurement's
+   confidence interval** against the **pre-registered estimand threshold** — never from the decision
+   block (reduced to `{decision_rule_id, decision_rule_hash, verdict}`), never from a
+   decision-supplied interval, and (for `rule_v2`) **not** from `measurement.uncertainty` (a
+   descriptive, **uninterpreted** scalar — not cross-checked against the CI). A verified
+   `success`/`harmful` requires the whole interval **beyond** the threshold (`ci_low ≥ min` /
+   `ci_high ≤ −min`); `no_benefit` is an **equivalence** verdict (the whole interval **inside**
+   `(−min, +min)`, zero may be included — a precise null is `no_benefit`, not weaker than a small
+   positive effect); an interval straddling a boundary is `inconclusive`. The rule hash binds to the
+   actual executable: the evaluator **re-derives** `sha256(source of the registered function)` on
+   every use and requires it to equal both the claimed `implementation_hash` **and** the event's
+   `decision_rule_hash` — a forged registry entry is `unverifiable`. `partial_success` is not
+   producible by `rule_v2`.
+3a. **Typed verification boundary (no aggregation bypass).** Raw events become aggregable evidence
+   **only** through `verify_events`, which re-runs `evaluate_decision` and emits a token-guarded
+   `VerifiedTrialEvidence` for verified events only. `aggregate` accepts **only**
+   `VerifiedTrialEvidence` (raw events raise `TypeError`), so `attribute_to_affinity` /
+   `to_desi_method_trials` can never translate an unverified claim into epistemic weight.
+3b. **Gate input contract.** The core refuses to store a real verdict whose declared rule could not
+   evaluate it: `rule_v2` requires `measurement.effect_size` **and** `confidence_interval`
+   (`RULE_INPUT_CONTRACTS`), so an irreversible journal never holds a `success`/`harmful`/
+   `no_benefit` claim with no statistical basis.
+   The one canonical `cross_block_consistency` (in `desi_layer9.trial_event_validation`) is shared
+   by the gate and the rule evaluator, so the two cannot drift.
 4. The independence policy is applied **versioned** (`attribute_to_affinity`, carrying `policy_id`).
 5. `unverifiable` / `inconsistent` / `unsupported_schema` / `insufficient` are kept **visible**,
    never filtered — negative transparency is a result.
