@@ -106,10 +106,26 @@ def validate_evaluation_envelope(stored: dict) -> list[str]:
     return errs
 
 
+def derive_operational_class(stored: dict) -> str:
+    """Deterministically derive the operational class FROM THE BODY (execution/protocol status), so
+    a writer cannot declare a class that contradicts the actual run. The single source of truth."""
+    if stored.get("execution_status") == "failed":
+        return "technical_failure"
+    if stored.get("execution_status") == "cancelled":
+        return "cancelled"
+    if stored.get("protocol_status") == "invalid":
+        return "protocol_invalid"
+    if stored.get("execution_status") == "completed" and stored.get("protocol_status") == "valid":
+        return "unevaluated"
+    return "unknown_operational"
+
+
 def validate_operational_envelope(stored: dict) -> list[str]:
     """Structural + binding validation of a SEALED OPERATIONAL v4 object's ``operational_envelope``.
     An operational event (technical failure / cancelled / not-evaluated) needs NO capsule, but its
-    body is still bound and it must declare a known ``operational_class`` and carry no verdict."""
+    body is still bound, it must carry no verdict, AND its declared ``operational_class`` must equal
+    the class DERIVED from the body - so the writer cannot mislabel a technical failure as merely
+    unevaluated (or vice versa)."""
     env = stored.get(OPERATIONAL_ENVELOPE_KEY)
     if not isinstance(env, dict):
         return [f"a {SCHEMA_V4} operational event must embed '{OPERATIONAL_ENVELOPE_KEY}'"]
@@ -118,8 +134,9 @@ def validate_operational_envelope(stored: dict) -> list[str]:
         return errs
     if env.get("schema_version") != stored.get("schema_version"):
         errs.append("operational_envelope.schema_version must equal the event schema_version")
-    if env.get("operational_class") not in _OPERATIONAL_CLASSES:
-        errs.append(f"operational_envelope.operational_class must be one of {_OPERATIONAL_CLASSES}")
+    if env.get("operational_class") != derive_operational_class(stored):
+        errs.append("operational_envelope.operational_class must equal the class derived from the "
+                    "body (execution/protocol status)")
     if env.get("evaluation_body_hash") != evaluation_body_hash(stored):
         errs.append("operational_envelope.evaluation_body_hash does not bind the stored body")
     if stored.get("epistemic_result") != "not_evaluated":

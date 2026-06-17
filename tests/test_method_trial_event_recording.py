@@ -13,6 +13,7 @@ from desi_layer9 import ObjectType
 from desi_layer9 import Operator as OP
 from desi_layer9 import ProposalType as PT
 from desi_layer9.provenance import Provenance
+from joni.autonomy.trial_event_schema import RULE_V2_HASH
 
 
 def _core():
@@ -38,7 +39,7 @@ def _full_v3(**kw):
         "measurement": {"metric_name": "misclass", "baseline_value": 0.40,
                         "intervention_value": 0.44, "effect_size": 0.04, "uncertainty": 0.02,
                         "confidence_interval": [0.02, 0.06], "nested": {"runs": [1, 2, 3]}},
-        "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": "sha256:test",
+        "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": RULE_V2_HASH,
                      "verdict": "no_benefit"},
     }
     p.update(kw)
@@ -52,14 +53,15 @@ def _payload(**kw):
 
 
 def _record(core, payload, *, proposer="kevin"):
-    # These tests exercise the RECORDING MECHANICS (append-only, idempotency, hashing, deep-copy,
-    # inertness) + structural validation, which apply on BOTH the fresh-submit and the replay paths.
-    # They run on the replay path so legacy v3 bodies stay usable here; the WRITE BOUNDARY (a fresh
-    # submission must be sealed v4) is exercised by its own dedicated tests.
+    # the only writable trial event is SEALED v4 - seal a v3 body before submit so these
+    # recording-mechanics + structural-validation tests run on the real write path. Non-v3 schema
+    # values are left untouched so the version-rejection test still exercises the gate.
+    if payload.get("schema_version") == "method_trial_recorded_v3":
+        from joni.autonomy.trial_event_schema import seal_payload
+        payload = seal_payload(payload)
     return core.submit(l9.make_proposal(
         PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=payload, proposer=proposer,
-        provenance=Provenance.from_model(external=False, model_id="kevin")),
-        actor=proposer, replaying=True)
+        provenance=Provenance.from_model(external=False, model_id="kevin")), actor=proposer)
 
 
 def _make_method(core):
@@ -214,11 +216,11 @@ def test_one_canonical_serializer_feeds_both_record_and_snapshot(monkeypatch):
     assert hashing.snapshot_hash(core) != before
 
 
-# -- 4. unknown schema version --------------------------------------------------------------- #
+# -- 4. an unsupported / non-writable schema version --------------------------------------------- #
 def test_unknown_schema_version_is_rejected_and_not_stored():
     core = _core()
     d = _record(core, _payload(schema_version="method_trial_recorded_v5"))
-    assert not d.accepted and "unsupported schema_version" in d.reason
+    assert not d.accepted and "not a writable trial-event format" in d.reason
     assert core.method_trial_events() == []
 
 

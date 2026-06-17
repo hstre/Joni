@@ -209,11 +209,11 @@ class Layer9:
 
     # -- the ONLY public write path ----------------------------------------- #
     def submit(self, proposal: Proposal, *, actor: str = "system",
-               governance_approved: bool = False, replaying: bool = False) -> Decision:
-        # ``replaying`` relaxes write-boundary-only rules (e.g. legacy v3 trial events are
-        # replay-only); it never relaxes structural validation. State stays f(seed, journal).
-        self._replaying = replaying
-        # 0. journal the operation - the replayable unit (state = f(seed, journal)).
+               governance_approved: bool = False) -> Decision:
+        # 0. journal the operation - the replayable unit (state = f(seed, journal)). Every gate rule
+        # is DETERMINISTIC in the proposal alone, so a rejected op reproduces its rejection on
+        # replay (it leaves only an audited rejected Proposal) - state stays f(seed, journal)
+        # with no privileged replay path.
         self.journal.append(JournalEntry(
             operator=proposal.requested_operator, proposal_type=proposal.proposal_type,
             payload=dict(proposal.payload), proposer=proposal.proposer,
@@ -489,15 +489,17 @@ class Layer9:
         counters stay the sole decision-making truth). Idempotent on ``trial_id``: an identical
         re-submit records nothing; a divergent payload for the same id is an audited conflict."""
         schema = p.payload.get("schema_version")
-        # WRITE BOUNDARY: a NEW submission must be SEALED v4; v3 is REPLAY-ONLY (existing journals
-        # remain loadable/visible, but a writer can no longer add a fresh unsealed event).
-        if schema != SCHEMA_V4 and not getattr(self, "_replaying", False):
+        # WRITE BOUNDARY (DETERMINISTIC - no replay exception): only a SEALED v4 trial event is
+        # writable; a v3 is never accepted. The rule depends on the proposal alone, so a v3 attempt
+        # reproduces the SAME rejection on replay (no privileged bypass, no journal poisoning).
+        # Pre-existing v3 trial data migrates by RE-SEALING to v4; the projector still READS v3 as
+        # legacy_unsealed.
+        if schema != SCHEMA_V4:
             raise ValueError(
-                "invalid METHOD_TRIAL_RECORDED: new submissions must be sealed "
-                f"'{SCHEMA_V4}'; '{schema}' is replay-only (legacy)")
+                "invalid METHOD_TRIAL_RECORDED: only sealed "
+                f"'{SCHEMA_V4}' is writable; '{schema}' is not a writable trial-event format")
         errs = validate_trial_payload(p.payload)
-        if schema == SCHEMA_V4:
-            errs = errs + validate_v4_seal(p.payload)   # epistemic OR operational seal
+        errs = errs + validate_v4_seal(p.payload)   # epistemic OR operational seal
         if errs:
             raise ValueError("invalid METHOD_TRIAL_RECORDED: " + "; ".join(errs))
         canonical = canonical_payload(p.payload)

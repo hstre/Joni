@@ -82,13 +82,12 @@ def _seal_if_known(payload):
 
 
 def _record(core, payload):
-    # known-rule events are SEALED to v4; an unknown-rule (legacy) v3 body is stored via the replay
-    # path so the projector can surface it as legacy_unsealed (a fresh v3 submit is refused).
+    # only sealed v4 is writable; known-rule events are SEALED to v4. (Unknown-rule legacy v3 bodies
+    # are not writable - those are exercised via _StubCore hand-crafted journals.)
     return core.submit(l9.make_proposal(
         PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=_seal_if_known(payload),
         proposer="kevin",
-        provenance=Provenance.from_model(external=False, model_id="kevin")),
-        actor="kevin", replaying=True)
+        provenance=Provenance.from_model(external=False, model_id="kevin")), actor="kevin")
 
 
 def _event(proj, trial_id):
@@ -109,11 +108,15 @@ class _StubCore:
         return []
 
 
-# -- MANDATORY: unknown rule hash -> registered, unverifiable, no weight, still visible --------- #
-def test_success_with_unknown_rule_hash_is_registered_but_unverifiable():
-    core = _core()
-    _record(core, _payload("t:succ", "success", rule_hash="sha256:bogus"))
-    e = _event(project_trial_events(core), "t:succ")
+# -- MANDATORY: an unknown-rule legacy v3 event (e.g. from an old journal) -> legacy_unsealed ---- #
+def test_unknown_rule_hash_legacy_v3_is_registered_but_legacy_unsealed():
+    # such an event is no longer WRITABLE (only sealed v4 is); it can only exist in an old v3
+    # which the projector surfaces as legacy_unsealed (visible, no epistemic weight).
+    p = _payload("t:succ", "success", rule_hash="sha256:bogus")
+    e = project_trial_events(_StubCore([{"object_id": "MTE-1",
+        "schema_version": p["schema_version"],
+        "record_authority": "authoritative", "epistemic_authority": "none",
+        "payload": p}]))["events"][0]
     assert e["record_status"] == "registered" and e["event_usability"] == "usable"
     assert e["decision_status"] == "legacy_unsealed" and e["epistemic_weight"] == "none"
     assert e["reported_result"] == "success"            # not counted as success, not removed

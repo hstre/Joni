@@ -33,8 +33,7 @@ def replay(journal: list[JournalEntry], *, tick: int = 0) -> Layer9:
             proposer=entry.proposer, provenance=Provenance.from_dict(entry.provenance),
             reason=entry.reason, target_objects=entry.target_objects,
         )
-        core.submit(proposal, actor=entry.actor, governance_approved=entry.governance_approved,
-                    replaying=True)
+        core.submit(proposal, actor=entry.actor, governance_approved=entry.governance_approved)
     if journal:
         core.tick = journal[-1].tick
     return core

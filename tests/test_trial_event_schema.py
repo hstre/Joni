@@ -1655,7 +1655,7 @@ def _kernel():
     return l9.Layer9()
 
 
-def _submit16(core, payload, *, replaying=False):
+def _submit16(core, payload):
     import desi_layer9 as l9
     from desi_layer9 import Operator as OP
     from desi_layer9 import ProposalType as PT
@@ -1663,7 +1663,7 @@ def _submit16(core, payload, *, replaying=False):
     return core.submit(l9.make_proposal(PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED,
                        payload=payload, proposer="k",
                        provenance=Provenance.from_model(external=False, model_id="k")),
-                       actor="k", replaying=replaying)
+                       actor="k")
 
 
 def test_live_production_capsule_is_frozen_against_a_validator_monkeypatch():
@@ -1701,12 +1701,39 @@ def test_production_current_capsule_is_archived_and_byte_pinned():
     assert _bytes_hash(_RULE_V2_V2_SRC) == RULE_V2_HASH
 
 
-def test_new_v3_submission_is_refused_but_v3_replays():
+def test_v3_trial_event_is_never_writable_under_any_public_api():
+    # the write boundary is DETERMINISTIC (no replay privilege); a v3 trial event is never stored
+    # there is no public parameter combination that stores one.
     core = _kernel()
-    v3 = _r13_event().to_dict()                                # legacy v3, unsealed
+    v3 = _r13_event().to_dict()                                # unsealed v3
     d = _submit16(core, v3)
-    assert not d.accepted and "replay-only" in d.reason and core.method_trial_events() == []
-    assert _submit16(_kernel(), v3, replaying=True).accepted   # but v3 replays
+    assert not d.accepted and "not a writable trial-event format" in d.reason
+    assert core.method_trial_events() == []
+    # submit() exposes no replay/bypass parameter at all.
+    import inspect
+    assert "replaying" not in inspect.signature(core.submit).parameters
+
+
+def test_a_rejected_v3_attempt_replays_to_an_identical_state():
+    # a rejected v3 submission is journaled but reproduces its rejection on replay deterministically
+    # no privileged path turns it into a stored trial event; state = f(seed, journal) holds.
+    import desi_layer9 as l9
+    from desi_layer9 import hashing, persistence
+    core = _kernel()
+    _submit16(core, _r13_event().to_dict())                   # rejected
+    assert core.method_trial_events() == []
+    replayed = persistence.replay([l9.JournalEntry.from_dict(e.to_dict()) for e in core.journal])
+    assert replayed.method_trial_events() == []               # no trial event from the rejected try
+    assert hashing.snapshot_hash(replayed) == hashing.snapshot_hash(core)   # identical state
+
+
+def test_pre_v4_v3_data_migrates_by_resealing_to_v4():
+    # the migration contract: pre-existing v3 trial data becomes writable by RE-SEALING to v4.
+    from joni.autonomy.trial_event_schema import seal_payload
+    core = _kernel()
+    v3 = _r13_event().to_dict()
+    assert not _submit16(core, v3).accepted                   # raw v3 is not writable
+    assert _submit16(_kernel(), seal_payload(v3)).accepted     # re-sealed to v4 -> writable
 
 
 def test_new_v4_epistemic_submission_is_accepted():
@@ -1770,3 +1797,50 @@ def test_unknown_capsule_is_sealed_unknown_not_a_verdict():
     sealed = dict(body, evaluation_envelope=dict(env, capsule_hash="sha256:" + "f" * 64))
     from joni.autonomy.trial_event_schema import verify_payloads
     assert verify_payloads([sealed], reg) == []
+
+
+# -- round 17: deterministic write boundary + body-bound operational class --------------------- #
+def test_operational_class_must_be_derived_from_the_body():
+    # a writer cannot mislabel a technical failure as merely unevaluated (or vice versa): the gate
+    # derives the class from the body's execution/protocol status and requires equality.
+    tech = _ev(trial_id="op", execution_status="failed", failure_kind="timeout",
+               epistemic_result="not_evaluated")
+    obj = tech.to_journal()
+    assert obj["operational_envelope"]["operational_class"] == "technical_failure"
+    mis = dict(obj, operational_envelope=dict(obj["operational_envelope"],
+                                              operational_class="unevaluated"))
+    d = _submit16(_kernel(), mis)
+    assert not d.accepted and "operational_class" in d.reason
+    assert _submit16(_kernel(), tech.to_journal()).accepted    # the correctly-derived class is fine
+
+
+def test_each_operational_class_is_pinned_to_its_execution_state():
+    from desi_layer9.trial_event_validation import derive_operational_class, validate_v4_seal
+    cases = {
+        ("failed", "valid"): "technical_failure",
+        ("cancelled", "valid"): "cancelled",
+        ("completed", "invalid"): "protocol_invalid",
+        ("completed", "valid"): "unevaluated",
+    }
+    for (exec_s, proto), klass in cases.items():
+        kw = dict(execution_status=exec_s, protocol_status=proto, epistemic_result="not_evaluated")
+        if exec_s == "failed":
+            kw["failure_kind"] = "timeout"
+        obj = _ev(trial_id=f"op-{exec_s}-{proto}", **kw).to_journal()
+        assert derive_operational_class(obj) == klass
+        assert obj["operational_envelope"]["operational_class"] == klass
+        assert validate_v4_seal(obj) == []                     # the derived class is accepted
+        # any OTHER class for the same body is refused.
+        wrong = "unevaluated" if klass != "unevaluated" else "technical_failure"
+        bad = dict(obj, operational_envelope=dict(obj["operational_envelope"],
+                                                  operational_class=wrong))
+        assert any("operational_class" in e for e in validate_v4_seal(bad))
+
+
+def test_submit_carries_no_mutable_replay_state():
+    # the replay context is not a mutable Core attribute (no self._replaying); the boundary depends
+    # only on the proposal.
+    core = _kernel()
+    assert not hasattr(core, "_replaying")
+    _submit16(core, _r13_event().to_journal())
+    assert not hasattr(core, "_replaying")

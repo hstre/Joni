@@ -18,6 +18,7 @@ from desi_layer9 import ProposalType as PT
 from desi_layer9 import core as core_mod
 from desi_layer9.core import JournalEntry
 from desi_layer9.provenance import Provenance
+from joni.autonomy.trial_event_schema import RULE_V2_HASH
 
 
 def _core():
@@ -41,7 +42,7 @@ def _payload(**kw):
         "measurement": {"metric_name": "misclass", "baseline_value": 0.40,
                         "intervention_value": 0.44, "effect_size": 0.04, "uncertainty": 0.02,
                         "confidence_interval": [0.02, 0.06]},
-        "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": "sha256:test",
+        "decision": {"decision_rule_id": "rule_v2", "decision_rule_hash": RULE_V2_HASH,
                      "verdict": "no_benefit"},
     }
     p.update(kw)
@@ -51,12 +52,14 @@ def _payload(**kw):
 
 
 def _record(core, payload):
-    # exercises the append-only/idempotency/replay MECHANICS on the replay path (legacy v3 bodies
-    # stay usable here); the WRITE BOUNDARY (fresh submit must be sealed v4) has its own tests.
+    # the only writable trial event is SEALED v4 - seal a v3 body so the append-only/idempotency/
+    # replay MECHANICS run on the real write path (rejected v3 reproduces deterministically).
+    if payload.get("schema_version") == "method_trial_recorded_v3":
+        from joni.autonomy.trial_event_schema import seal_payload
+        payload = seal_payload(payload)
     return core.submit(l9.make_proposal(
         PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=payload, proposer="kevin",
-        provenance=Provenance.from_model(external=False, model_id="kevin")),
-        actor="kevin", replaying=True)
+        provenance=Provenance.from_model(external=False, model_id="kevin")), actor="kevin")
 
 
 def _make_method(core):
