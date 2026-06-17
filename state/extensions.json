@@ -477,7 +477,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 177,
+    "starved_topic": 178,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -4187,7 +4187,8 @@
     "zenodo:20727983",
     "zenodo:20728016",
     "zenodo:20728112",
-    "zenodo:20728399"
+    "zenodo:20728399",
+    "zenodo:20728818"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -4614,6 +4615,14 @@
       "replayed": false,
       "claims": 5,
       "source": "github:wasp-lang/wasp"
+    },
+    {
+      "call_id": "joni-c181:10d244833259",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20728818"
     }
   ],
   "pdf_read": [
@@ -4720,6 +4729,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-19"
+    },
+    {
+      "call_id": "joni-c181:c500f7cf3de0",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-20"
     }
   ],
   "methods_seen": [
@@ -4777,7 +4795,8 @@
   "methods_ready_total": 0,
   "core_ask_signals": {
     "operator": 0,
-    "operators": 0
+    "operators": 0,
+    "scoring": 1
   },
   "core_ask_filed": {},
   "linked": [
@@ -4926,6 +4945,7 @@
     "C-461|C-464",
     "C-46|C-480",
     "C-475|C-487",
+    "C-482|C-627",
     "C-489|C-490",
     "C-489|C-491",
     "C-490|C-491",
@@ -5085,6 +5105,7 @@
     "C-461|C-464@bge-small-en-v1.5",
     "C-46|C-480@bge-small-en-v1.5",
     "C-475|C-487@bge-small-en-v1.5",
+    "C-482|C-627@bge-small-en-v1.5",
     "C-489|C-490@bge-small-en-v1.5",
     "C-489|C-491@bge-small-en-v1.5",
     "C-490|C-491@bge-small-en-v1.5",
@@ -5142,6 +5163,7 @@
     "overview|false",
     "overview|keine",
     "overview|scientific",
+    "panel|abstract",
     "panel|abundance",
     "panel|access",
     "panel|adaptive",
@@ -5197,6 +5219,7 @@
     "panel|citation-grounded",
     "panel|classical",
     "panel|claude",
+    "panel|coherence",
     "panel|coherent",
     "panel|community",
     "panel|compared",
@@ -5241,6 +5264,7 @@
     "panel|efficient",
     "panel|einer",
     "panel|embodied",
+    "panel|empirical",
     "panel|enables",
     "panel|energy",
     "panel|epidbot",
@@ -5270,6 +5294,7 @@
     "panel|hybrid",
     "panel|improves",
     "panel|imputation",
+    "panel|include",
     "panel|includes",
     "panel|inference",
     "panel|influences",
@@ -5280,6 +5305,7 @@
     "panel|kategorie",
     "panel|keine",
     "panel|knowledge",
+    "panel|label",
     "panel|language",
     "panel|large-scale",
     "panel|latent",
@@ -5422,11 +5448,13 @@
     "software"
   ],
   "emerge_insufficient": {
-    "meth:abstracts": 1,
+    "meth:abstracts": 2,
+    "panel|applications": 1,
+    "panel|code": 1,
     "panel|combine": 2,
     "panel|cost": 2,
-    "panel|implementation": 1,
-    "panel|integrated": 1,
+    "panel|implementation": 2,
+    "panel|integrated": 2,
     "panel|natural": 1,
     "panel|remains": 1,
     "panel|streams": 3,
@@ -5502,6 +5530,7 @@
     "C-571",
     "C-573",
     "C-600",
+    "C-632",
     "C-74",
     "C-99"
   ],
@@ -5516,7 +5545,6 @@
     "panel through-line"
   ],
   "hyp_seen_cycle": {
-    "C-511": 170,
     "C-512": 171,
     "C-513": 172,
     "C-514": 173,
@@ -5527,7 +5555,7 @@
     "C-519": 178,
     "C-526": 179,
     "C-533": 180,
-    "C-534": 161,
+    "C-534": 181,
     "C-535": 162,
     "C-536": 163,
     "C-537": 164,
@@ -5546,7 +5574,8 @@
     "C-588": 177,
     "C-600": 178,
     "C-608": 179,
-    "C-621": 180
+    "C-621": 180,
+    "C-632": 181
   },
   "topics_domain_ok": [
     "abstracts",
@@ -5701,6 +5730,7 @@
     "C-600",
     "C-608",
     "C-621",
+    "C-632",
     "C-74",
     "C-99"
   ],
@@ -5741,32 +5771,32 @@
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 2,
-    "active": 393,
+    "active": 403,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 81,
     "supporting_links": 81,
-    "emergent_total": 313,
+    "emergent_total": 318,
     "usable_semantic_rate": 1.0,
     "methods_total": 31,
     "method_trials_total": 172,
     "methods_ready_total": 0,
-    "stagnation_cycles": 2,
-    "objects": 5797,
-    "cycle": 180
+    "stagnation_cycles": 3,
+    "objects": 5891,
+    "cycle": 181
   },
   "vitality_prev": {
     "supports": 81,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 5797,
-    "active": 393,
+    "objects": 5891,
+    "active": 403,
     "links": 81,
-    "emergent": 313
+    "emergent": 318
   },
-  "stagnation": 2,
+  "stagnation": 3,
   "vitality_history": [
     {
       "cycle": 1,
@@ -7027,6 +7057,13 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 181,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -7203,6 +7240,7 @@
     "X-17",
     "X-18",
     "X-19",
+    "X-20",
     "X-4",
     "X-5",
     "X-6",
@@ -7210,7 +7248,7 @@
     "X-8"
   ],
   "reconsolidate_lens_idx": 3,
-  "kevin_last_cycle": 178,
+  "kevin_last_cycle": 181,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
