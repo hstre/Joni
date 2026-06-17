@@ -8,24 +8,50 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `41bc8a4596d1fbfba2e708714b97c5c402ddda1a` (review round 9) |
-| **Superseded candidates** | `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `37e5206` (review round 10) |
+| **Superseded candidates** | `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 41bc8a4 -- src/desi_layer9 \
-  src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
+git diff 282d541 37e5206 -- src/desi_layer9 \
+  src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
+  src/joni/autonomy/rule_artifacts
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `41bc8a4` and at this doc's commit.
+is byte-identical at `37e5206` and at this doc's commit.
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (520 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (525 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
+
+### Review round 10 — historical evaluation is byte-pinned (rule + validator + contract) (vs `41bc8a4`)
+
+1. **Real immutable rule artifact** — the archived `rule_v2@r6` is the **verbatim source bytes**
+   from prior release `7810e25`, stored under `src/joni/autonomy/rule_artifacts/rule_v2_r6.pysrc`.
+   Its `implementation_hash` is the sha256 of those exact bytes —
+   `sha256:2438455fd5dde3db1bb401efaccd7f13bf5fa4dd6cf6cb052b2dce2e390e05a4`, the **real published
+   hash**, never recomputed from a re-typed copy. `make_archived_artifact` enforces a pinned
+   `expected_rule_hash` and re-derives the hash from the bytes at every use.
+2. **Versioned `EvaluationArtifact` binds validator + input contract** — `rule_id`,
+   `schema_version`, `implementation_hash`, `validator_hash`, `input_contract_hash`. Historical
+   evaluation runs the artifact's **own** (byte-pinned) validator + input contract, not the current
+   one; the r6 rule ships with the byte-pinned validator snapshot it was decided under
+   (`cross_block_v1.pysrc`, `sha256:9b4a64c1…`). An old event is never re-interpreted under a
+   tightened current validator or a newer rule.
+3. **Append-only, immutable catalog** — `build_rule_registry` keys on
+   `(rule_id, implementation_hash)`, refuses to overwrite a key, returns a `MappingProxyType`; a
+   changed rule/validator is **added** as a new artifact.
+
+New tests: archived r6 hash equals the literal prior-release hash and is derived from the stored
+bytes; a copy with a mismatched `expected_rule_hash` is rejected; the full mandated flow (fix real
+hash → event under that hash → verify under new software → append a new version → old event still
+verifiable); the historical artifact binds its **own** validator (an old event stays verified under
+the lenient archived validator while the same event under the tightened current version is
+`inconsistent`); historical artifacts are byte-identical and append-only.
 
 ### Review round 9 — DESi-independent suite + operational classes + real rule catalog (vs `60a77c9`)
 
@@ -209,8 +235,8 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `41bc8a4`: **527 passed with the `desi` extra; 520 passed / 7 skipped with `desi`
-BLOCKED (0 failed); ruff clean.**
+Full suite at `37e5206`: **532 passed / 2 skipped with the `desi` extra; 525 passed / 7 skipped with
+`desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
 
@@ -269,7 +295,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..61118b3` and this package.
+1. Review the diff `282d541..37e5206` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
