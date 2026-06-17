@@ -8,28 +8,65 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `8412040` (review round 20) |
-| **Superseded candidates** | `5e385a8` (r19) · `6fe3020` (r18) · `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `cd2b8b7` (review round 21) |
+| **Superseded candidates** | `8412040` (r20) · `5e385a8` (r19) · `6fe3020` (r18) · `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 8412040 -- src/desi_layer9 \
+git diff 282d541 cd2b8b7 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (604 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (606 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive 8412040`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive cd2b8b7`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
 
-### Review round 20 — the WHOLE public state surface is immutable + an AUTHENTICATED migration trust source (vs `5e385a8`)
+### Review round 21 — the migration attestation binds the FULL entry + delivered document; the production allowlist is empty (vs `8412040`)
+
+Round 20 was rejected because the attestation bound only the trial *body*, the snapshot binding was a
+string compare, the digest was mislabelled "signed/authenticated", and the demo anchor was active in
+the production catalog. All closed; the r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **The attestation binds the FULL historical `JournalEntry`, not just the body.** The reviewer kept
+   the attested body + attestation + snapshot and swapped the entry's `actor`/`proposer`/`provenance`/
+   `governance_approved`/`reason`/`tick`/`operator`/`proposal_type`/`target_objects` — and the
+   migration accepted them (producing a v4 event with `actor: mallory`). The attested unit is now the
+   **full canonical `JournalEntry`** (`_full_entry_hash` over all ten persisted fields), so any
+   metadata change is fail-closed.
+2. **The attestation binds the DELIVERED document content, not a copied string.**
+   `source_snapshot_hash == doc.snapshot_hash` only compared two strings; an attacker could paste the
+   known pinned value onto a different document. The attestation now also carries `source_journal_hash`
+   (canonical hash of the full journal) and `source_document_hash` (journal + snapshot + tick), both
+   **recomputed from the delivered document** and required to match — so altering or adding any entry
+   breaks the binding.
+3. **Honest naming.** A sha256 over the attestation body is a **pinned digest**, *not a signature*;
+   the field is `attestation_digest` and the docs state that trust derives solely from the digest
+   being **allowlisted** (a deployment ingesting *external* artifacts must add a real signature check
+   against a pinned public key, or ship the historical kernel/policy artifacts + a hash manifest). The
+   attestation additionally carries `historical_kernel_artifact_hash` + `gate_policy_artifact_hash`.
+4. **The demo anchor is NOT in production.** The default `_TRUSTED_HISTORICAL_ATTESTATIONS` is the
+   **empty** allowlist — no v3 trial document is migratable. `load_migrated(doc, trusted_attestations=…)`
+   takes an explicit allowlist; the demonstrator anchor lives in the **tests**, never in the module.
+   (No caller-supplied verifier function — that escape hatch stays gone.)
+5. **Precise write-path wording (secondary).** `submit` is the only epistemic **object/ledger** write
+   path; `set_clock` is the only explicit **monotonic clock input** (it mutates no object or ledger).
+   The kernel docstrings/comments now say exactly this.
+
+New artifact: none (a joni-level trust-root hardening + kernel docstring precision). Round-21 tests
+(13): changing any of nine `JournalEntry` metadata fields of an attested body is refused; reusing the
+pinned snapshot string with a different journal is refused; the production catalog is empty so no demo
+document migrates (only an injected dev catalog does); a forged/tampered/own-verifier attestation is
+refused; the log documents the full attestation chain; the output does not alias its input.
+
+### Review round 20 — the WHOLE public state surface is immutable + a pinned-allowlist migration trust source (vs `5e385a8`)
 
 Round 19 was rejected on two grounds that proved *"submit is still not the only write path"* and
 *"the migration attestation is still a self-declared claim"*. Both fully closed; the r6 rule hash is
@@ -497,7 +534,7 @@ ready pair exposed; partial-overlap & fully-shared deps → not independent; dis
 minimal v3 rejected; full v3 accepted; unknown extra field allowed+preserved; real verdict without
 `decision_rule_hash` rejected; `not_evaluated` stored without measurement values.
 
-## Changed kernel files (vs `282d541`) — 10 files, +705 / −65
+## Changed kernel files (vs `282d541`) — 10 files, +710 / −68
 
 | file | change | why |
 |---|---|---|
@@ -559,7 +596,7 @@ change.) The new path is **inert**: nothing in promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `8412040`: **611 passed / 2 skipped with the `desi` extra; 604 passed / 7 skipped
+Full suite at `cd2b8b7`: **613 passed / 2 skipped with the `desi` extra; 606 passed / 7 skipped
 with `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -581,10 +618,11 @@ journal_compatibility:
   backward_readable: true                         # new code, old journal (claims/conflicts/legacy)
   trial_events_v3_backward_readable: false        # an accepted v3 trial event is NOT raw-replayable
   trial_events_v3_migration: required             # load via load_migrated() -> re-sealed to v4
-  trial_events_v3_migration_trust_source: pinned_internal_attestation_catalog  # NOT caller-supplied
-  trial_events_v3_migration_attestation: verifier_id_resolved_against_pinned_catalog
-  trial_events_v3_migration_failure_mode: fail_closed   # missing/forged/unbound/unknown attestation
-  trial_events_v3_migration_snapshot_hash: bound_by_attestation_source_snapshot_hash
+  trial_events_v3_migration_trust_source: pinned_digest_allowlist   # injected; production default {}
+  trial_events_v3_migration_attested_unit: full_journal_entry       # all 10 fields, not just body
+  trial_events_v3_migration_document_binding: source_journal_hash + source_document_hash
+  trial_events_v3_migration_anchor_type: pinned_digest              # NOT a cryptographic signature
+  trial_events_v3_migration_failure_mode: fail_closed   # missing/forged/unbound/unattested/unknown
   forward_readable: false                         # old code, new journal
   failure_mode: fail_closed_at_load
   downgrade_after_first_new_event: blocked        # IRREVERSIBLE
@@ -645,7 +683,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..8412040` and this package.
+1. Review the diff `282d541..cd2b8b7` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
