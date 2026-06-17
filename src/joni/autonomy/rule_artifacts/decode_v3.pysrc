@@ -1,15 +1,20 @@
-def _decode_v3(ev):
-    """v3 canonical input projection: event -> (measurement, decision, estimand) block dicts.
-
-    Byte-pinned snapshot of the decoder under which the r6 rule was evaluated. Re-executed verbatim
-    for historical events so a later change to the live decoder never re-projects an old event.
-    """
-    m, d, e = ev.measurement, ev.decision, ev.estimand
-    meas = {"metric_name": m.metric_name, "baseline_value": m.baseline_value,
-            "intervention_value": m.intervention_value, "effect_size": m.effect_size,
-            "uncertainty": m.uncertainty, "confidence_interval": m.confidence_interval}
-    dec = {"effect_size": d.effect_size, "minimum_effect": d.minimum_effect,
-           "confidence_interval": d.confidence_interval}
-    est = {"outcome_metric": e.outcome_metric, "contrast": e.contrast, "direction": e.direction,
-           "minimum_effect": e.minimum_effect}
+def _decode_v3(payload):
+    """v3 canonical input projection: the RAW canonical PAYLOAD dict -> (measurement, decision,
+    estimand) block dicts. This is the FIRST deserialisation step of a historical event - it runs on
+    the stored payload, before any current dataclass reconstruction, so later changes to field
+    names, defaults, types or block structure can never re-interpret an old event. Byte-pinned and
+    re-executed verbatim; its hash is part of the evaluation capsule."""
+    m = payload.get("measurement") or {}
+    d = payload.get("decision") or {}
+    e = payload.get("estimand") or {}
+    m_ci = m.get("confidence_interval")
+    d_ci = d.get("confidence_interval")
+    meas = {"metric_name": m.get("metric_name"), "baseline_value": m.get("baseline_value"),
+            "intervention_value": m.get("intervention_value"), "effect_size": m.get("effect_size"),
+            "uncertainty": m.get("uncertainty"),
+            "confidence_interval": tuple(m_ci) if m_ci is not None else None}
+    dec = {"effect_size": d.get("effect_size"), "minimum_effect": d.get("minimum_effect"),
+           "confidence_interval": tuple(d_ci) if d_ci is not None else None}
+    est = {"outcome_metric": e.get("outcome_metric"), "contrast": e.get("contrast"),
+           "direction": e.get("direction"), "minimum_effect": e.get("minimum_effect")}
     return meas, dec, est

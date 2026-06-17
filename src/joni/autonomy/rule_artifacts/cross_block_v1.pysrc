@@ -1,14 +1,34 @@
-def cross_block_consistency(measurement: dict, decision: dict, estimand: dict, *,
-                            is_real: bool, has_effect_derivation: bool = False) -> list[str]:
-    """The ONE canonical structural-consistency check shared by the gate AND the rule evaluator.
+"""Byte-pinned, SELF-CONTAINED snapshot of the cross-block structural validator under which the r6
+rule was decided. It carries its OWN helpers (_is_num/_finite/_ci_errors/_EPS) and imports - it
+imports NO epistemically-relevant function from the live runtime, so its hash covers the entire
+executable closure. Re-executed verbatim for historical events."""
+import math
+from numbers import Number
 
-    It binds ``verified`` to the actual OBSERVATION: the statistical evidence (effect, uncertainty,
-    confidence interval) lives in the MEASUREMENT; the decision block is non-authoritative and may
-    only MIRROR it, never diverge; the measurement is internally consistent (effect derived from the
-    raw values under the contrast/direction, and lying within its own interval); and all numbers are
-    finite and well-ordered. It computes NO verdict (no statistics) - only equalities, ranges,
-    finiteness and the deterministic effect derivation."""
-    errs: list[str] = []
+_EPS = 1e-9
+
+
+def _is_num(v):
+    return isinstance(v, Number) and not isinstance(v, bool)
+
+
+def _finite(v):
+    return _is_num(v) and math.isfinite(v)
+
+
+def _ci_errors(label, ci):
+    if ci is None:
+        return []
+    if not (isinstance(ci, (list, tuple)) and len(ci) == 2 and all(_finite(x) for x in ci)):
+        return [f"{label} must be a finite [low, high] pair"]
+    if ci[0] > ci[1]:
+        return [f"{label} lower bound must be <= upper bound"]
+    return []
+
+
+def cross_block_consistency(measurement, decision, estimand, *,
+                            is_real, has_effect_derivation=False):
+    errs = []
     m_eff, m_unc, m_ci = (measurement.get("effect_size"), measurement.get("uncertainty"),
                           measurement.get("confidence_interval"))
     base, inter = measurement.get("baseline_value"), measurement.get("intervention_value")
@@ -27,30 +47,23 @@ def cross_block_consistency(measurement: dict, decision: dict, estimand: dict, *
     errs += _ci_errors("decision.confidence_interval", d_ci)
     if m_unc is not None and _finite(m_unc) and m_unc < 0:
         errs.append("measurement.uncertainty must be >= 0")
-    # NOTE: ``uncertainty`` is an UNINTERPRETED descriptive scalar (its kind - SE, SD, MAD, ... - is
-    # not declared), so it is deliberately NOT cross-checked against the CI. rule_v2 ignores it; the
-    # CI is the sole statistical authority. (No fake consistency check is performed.)
     if errs:
         return errs
 
-    # the statistical interval belongs to the MEASUREMENT; the decision may only mirror it.
     if d_ci is not None:
         if m_ci is None:
             errs.append("confidence_interval must live in the measurement, not the decision")
         elif list(d_ci) != list(m_ci):
             errs.append("decision.confidence_interval must equal measurement.confidence_interval "
                         "(the decision may not supply its own interval)")
-    # the decision may not change the pre-registered threshold or contradict the measured effect.
     if d_min is not None and est_min is not None and d_min != est_min:
         errs.append("decision.minimum_effect must equal estimand.minimum_effect "
                     "(no post-hoc threshold change)")
     if d_eff is not None and m_eff is not None and d_eff != m_eff:
         errs.append("decision.effect_size must equal measurement.effect_size "
                     "(the decision may not contradict the measurement)")
-    # the effect must lie within its own interval.
     if m_ci is not None and m_eff is not None and not (m_ci[0] - _EPS <= m_eff <= m_ci[1] + _EPS):
         errs.append("measurement.effect_size must lie within measurement.confidence_interval")
-    # the measurement must be internally consistent: effect derived from the raw values.
     if base is not None and inter is not None and m_eff is not None:
         if contrast == "intervention_minus_baseline":
             oriented = (inter - base) if direction == "higher_is_better" else (base - inter)

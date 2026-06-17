@@ -55,6 +55,14 @@ def _ev(**kw) -> MethodTrialRecorded:
     return MethodTrialRecorded(**base)
 
 
+# a self-contained, permissive executable contract (the contract is now a CALLABLE, not data).
+_PERMISSIVE_CONTRACT_SRC = b"def check_contract(measurement, decision, estimand):\n    return []\n"
+
+
+def _permissive_contract(measurement, decision, estimand):
+    return []
+
+
 # -- three-axis status model (carried from v2) --------------------------------------------------- #
 def test_failed_execution_cannot_carry_a_result():
     bad = _ev(execution_status="failed", failure_kind="technical", epistemic_result="no_benefit")
@@ -689,8 +697,10 @@ def test_inconclusive_maps_to_desi_inconclusive():
     assert trials and trials[0].result == "inconclusive"
 
 
-def _const_rule_v2_archived(ev):   # a DISTINCT historical implementation (different source -> hash)
-    return ev.epistemic_result
+# a DISTINCT historical implementation (different source -> hash); decides from the decoder VIEW,
+# never the event's own epistemic_result.
+def _const_rule_v2_archived(view):
+    return "success"
 
 
 def test_historical_rule_versions_coexist_append_only():
@@ -887,11 +897,11 @@ def test_historical_artifact_binds_its_own_validator_and_input_contract():
         make_archived_artifact,
         make_live_artifact,
     )
-    const_success_src = b"def _rule_v2(ev):\n    return 'success'\n"
+    const_success_src = b"def _rule_v2(view):\n    return 'success'\n"
     lenient_validator_src = (b"def cross_block_consistency(measurement, decision, estimand, *,"
                              b" is_real, has_effect_derivation=False):\n    return []\n")
 
-    def _const_success(ev):
+    def _const_success(view):
         return "success"
 
     def _always_reject(measurement, decision, estimand, *, is_real, has_effect_derivation=False):
@@ -899,8 +909,9 @@ def test_historical_artifact_binds_its_own_validator_and_input_contract():
 
     # both decode the same (current) event schema; they differ only in the rule + validator version.
     archived = make_archived_artifact("rule_v2", SCHEMA_VERSION, const_success_src,
-                                      lenient_validator_src, {})
-    current = make_live_artifact("rule_v2", SCHEMA_VERSION, _const_success, _always_reject, {})
+                                      lenient_validator_src, _PERMISSIVE_CONTRACT_SRC)
+    current = make_live_artifact("rule_v2", SCHEMA_VERSION, _const_success, _always_reject,
+                                 _permissive_contract)
     assert archived.implementation_hash != current.implementation_hash
     assert archived.validator_hash != current.validator_hash       # distinct validator versions
     registry = build_rule_registry([archived, current])
@@ -927,6 +938,7 @@ def test_historical_artifacts_are_byte_identical_and_append_only():
 
     from joni.autonomy.trial_event_schema import (
         _CROSS_BLOCK_V1_SRC,
+        _R6_CONTRACT_SRC,
         _R6_RULE_SRC,
         DEFAULT_RULE_REGISTRY,
         RULE_V2_R6_HASH,
@@ -940,8 +952,8 @@ def test_historical_artifacts_are_byte_identical_and_append_only():
     assert art.validator_source == _CROSS_BLOCK_V1_SRC             # byte-identical validator
     assert art.implementation_hash == _bytes_hash(_R6_RULE_SRC)
     assert art.validator_hash == _bytes_hash(_CROSS_BLOCK_V1_SRC)
-    dup = make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC,
-                                 _CROSS_BLOCK_V1_SRC, {}, expected_rule_hash=RULE_V2_R6_HASH)
+    dup = make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
+                                 _R6_CONTRACT_SRC, expected_rule_hash=RULE_V2_R6_HASH)
     with pytest.raises(ValueError):                                # append-only: no overwrite
         build_rule_registry([art, dup])
 
@@ -1014,13 +1026,20 @@ def test_live_validator_hash_is_reattested_each_use():
     assert evaluate_decision(_contradiction_event(RULE_V2_HASH), reg)["status"] == "unverifiable"
 
 
+# a DIFFERENT but valid self-contained contract interpreter (so swapping it changes its hash).
+_IMPOSSIBLE_CONTRACT_SRC = (b"def check_contract(measurement, decision, estimand):\n"
+                            b"    if measurement.get('impossible') is None:\n"
+                            b"        return ['needs impossible field']\n"
+                            b"    return []\n")
+
+
 def test_input_contract_swap_with_stale_hash_is_unverifiable():
     import dataclasses
 
     from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, build_rule_registry
     real = _real_archived_artifact()
-    attack = dataclasses.replace(real,
-                                 contract_source=b'{"required_measurement_fields":["impossible"]}')
+    # swap the contract interpreter bytes but KEEP the original input_contract_hash -> stale.
+    attack = dataclasses.replace(real, contract_source=_IMPOSSIBLE_CONTRACT_SRC)
     reg = build_rule_registry([attack])                      # input_contract_hash is now stale
     ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
              decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
@@ -1029,8 +1048,8 @@ def test_input_contract_swap_with_stale_hash_is_unverifiable():
 
 
 def test_input_contract_is_actually_applied():
-    # a contract demanding an impossible field, WITH a recomputed matching hash, is enforced: the
-    # event cannot satisfy it, so it is inconsistent (never verified).
+    # a contract interpreter demanding an impossible field, WITH a recomputed matching hash, is
+    # enforced: the event cannot satisfy it, so it is inconsistent (never verified).
     import dataclasses
 
     from joni.autonomy.trial_event_schema import (
@@ -1039,9 +1058,8 @@ def test_input_contract_is_actually_applied():
         build_rule_registry,
     )
     real = _real_archived_artifact()
-    imp = b'{"required_measurement_fields":["impossible"]}'
-    attack = dataclasses.replace(real, contract_source=imp, input_contract_hash=_bytes_hash(imp),
-                                 input_contract={"required_measurement_fields": ["impossible"]})
+    attack = dataclasses.replace(real, contract_source=_IMPOSSIBLE_CONTRACT_SRC,
+                                 input_contract_hash=_bytes_hash(_IMPOSSIBLE_CONTRACT_SRC))
     reg = build_rule_registry([attack])
     ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
              decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
@@ -1050,16 +1068,18 @@ def test_input_contract_is_actually_applied():
 
 
 def test_real_r6_contract_requires_effect_and_ci():
-    # the production r6 artifact carries the REAL historical contract (require_effect + require_ci),
-    # not {}. An event with no confidence interval cannot be evaluated under it.
+    # the production r6 artifact carries the REAL historical contract (require_effect + require_ci)
+    # as a byte-pinned interpreter. An event with no CI cannot be evaluated under it.
 
     from joni.autonomy.trial_event_schema import (
+        _R6_CONTRACT_SRC,
         DEFAULT_RULE_REGISTRY,
         RULE_V2_R6_HASH,
+        _bytes_hash,
     )
     art = DEFAULT_RULE_REGISTRY[("rule_v2", RULE_V2_R6_HASH)]
-    assert art.input_contract.get("require_confidence_interval") is True
-    assert art.input_contract.get("require_effect") is True
+    assert art.input_contract_hash == _bytes_hash(_R6_CONTRACT_SRC)   # the contract is byte-pinned
+    assert b"confidence_interval" in _R6_CONTRACT_SRC and b"effect_size" in _R6_CONTRACT_SRC
     no_ci = _ev(epistemic_result="inconclusive",
                 measurement=Measurement("misclass_rate", 0.40, 0.43, effect_size=0.03,
                                         uncertainty=0.02, confidence_interval=None),
@@ -1079,16 +1099,20 @@ def test_new_artifact_may_carry_a_stricter_contract_old_event_stays_under_old():
         make_live_artifact,
     )
 
-    def _const_inconclusive(ev):
+    def _const_inconclusive(view):
         return "inconclusive"
 
     def _live_validator(measurement, decision, estimand, *, is_real, has_effect_derivation=False):
         return []
-    old_rule_src = b"def _rule_v2(ev):\n    return 'inconclusive'\n"
+
+    def _require_uncertainty(measurement, decision, estimand):
+        return [] if measurement.get("uncertainty") is not None else ["needs uncertainty"]
+    old_rule_src = b"def _rule_v2(view):\n    return 'inconclusive'\n"
     old = make_archived_artifact("rule_v2", SCHEMA_VERSION, old_rule_src,
-                                 b"def cross_block_consistency(*a, **k):\n    return []\n", {})
+                                 b"def cross_block_consistency(*a, **k):\n    return []\n",
+                                 _PERMISSIVE_CONTRACT_SRC)
     new = make_live_artifact("rule_v2", SCHEMA_VERSION, _const_inconclusive, _live_validator,
-                             {"required_measurement_fields": ["uncertainty"]})
+                             _require_uncertainty)
     reg = build_rule_registry([old, new])
     no_unc = Measurement("misclass_rate", 0.40, 0.43, effect_size=0.03, uncertainty=None,
                          confidence_interval=(-0.05, 0.08))
@@ -1147,3 +1171,100 @@ def test_production_r6_artifact_binds_decoder_contract_validator():
     assert art.contract_source == _R6_CONTRACT_SRC
     assert art.input_contract_hash == _bytes_hash(_R6_CONTRACT_SRC)
     assert art.canonical_input_projection_hash and art.validator_hash and art.implementation_hash
+
+
+# -- round 12: the capsule is CLOSED - no live helper, no direct event access, raw entry --- #
+def test_historical_validator_is_self_contained_under_live_helper_change(monkeypatch):
+    # the byte-pinned validator carries its OWN helpers; sabotaging the LIVE _finite/_EPS must not
+    # change a historical evaluation (the capsule imports no epistemically-relevant runtime helper).
+    import desi_layer9.trial_event_validation as V
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, build_rule_registry
+    reg = build_rule_registry([_real_archived_artifact()])
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="inconclusive"))
+    assert evaluate_decision(ev, reg)["status"] == "verified"
+    monkeypatch.setattr(V, "_finite", lambda x: False)       # sabotage the LIVE helper
+    monkeypatch.setattr(V, "_EPS", 999.0)
+    assert evaluate_decision(ev, reg)["status"] == "verified"   # historical result is unchanged
+
+
+def test_historical_validator_bytes_tamper_is_unverifiable():
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import (
+        _CROSS_BLOCK_V1_SRC,
+        RULE_V2_R6_HASH,
+        build_rule_registry,
+    )
+    real = _real_archived_artifact()
+    tampered = dataclasses.replace(real, validator_source=_CROSS_BLOCK_V1_SRC + b"\n# tampered\n")
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="inconclusive"))
+    assert evaluate_decision(ev, build_rule_registry([tampered]))["status"] == "unverifiable"
+
+
+def test_the_rule_input_comes_from_the_decoder_not_the_event():
+    # an event whose RAW measurement the r6 rule calls 'inconclusive', claiming 'success'. With the
+    # real decoder it is inconsistent; with a decoder that projects a resolved 'success' input, the
+    # SAME event verifies - proving the rule (and validator) decide from the DECODER output only.
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import (
+        RULE_V2_R6_HASH,
+        build_rule_registry,
+    )
+    ev = _ev(epistemic_result="success", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="success"))
+    real_reg = build_rule_registry([_real_archived_artifact()])
+    assert evaluate_decision(ev, real_reg)["status"] == "inconsistent"   # raw data -> inconclusive
+
+    override_decoder = (
+        b"def _decode_v3(payload):\n"
+        b"    meas = {'metric_name': 'misclass_rate', 'baseline_value': 0.40,\n"
+        b"            'intervention_value': 0.60, 'effect_size': 0.20, 'uncertainty': 0.02,\n"
+        b"            'confidence_interval': (0.12, 0.28)}\n"
+        b"    dec = {'effect_size': None, 'minimum_effect': None, 'confidence_interval': None}\n"
+        b"    est = {'outcome_metric': 'misclass_rate',"
+        b" 'contrast': 'intervention_minus_baseline',\n"
+        b"           'direction': 'higher_is_better', 'minimum_effect': 0.10}\n"
+        b"    return meas, dec, est\n")
+    real = _real_archived_artifact()
+    overridden = dataclasses.replace(
+        real, decoder_source=override_decoder,
+        decoder_hash=__import__("joni.autonomy.trial_event_schema", fromlist=["_bytes_hash"])
+        ._bytes_hash(override_decoder))
+    over_reg = build_rule_registry([overridden])
+    # the rule now sees the decoder's resolved 'success' projection, not the event's raw values.
+    assert evaluate_decision(ev, over_reg)["status"] == "verified"
+
+
+def test_live_contract_interpreter_change_does_not_affect_archived():
+    # the archived contract is a byte-pinned interpreter; changing the LIVE check_contract must not
+    # change a historical evaluation (the meaning is hashed with the capsule).
+    import joni.autonomy.trial_event_schema as S
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, build_rule_registry
+    reg = build_rule_registry([_real_archived_artifact()])
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="inconclusive"))
+    orig = S.check_contract
+    try:
+        S.check_contract = lambda m, d, e: ["live interpreter now rejects everything"]
+        assert evaluate_decision(ev, reg)["status"] == "verified"   # archived, unchanged
+    finally:
+        S.check_contract = orig
+
+
+def test_evaluate_payload_runs_on_the_raw_stored_payload():
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, evaluate_payload
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="inconclusive"))
+    raw = ev.to_dict()                                   # the canonical stored payload (plain dict)
+    assert evaluate_payload(raw)["status"] == "verified"
+    # an UNKNOWN extra current-irrelevant field in the raw payload does not disturb the capsule.
+    raw_plus = dict(raw, some_future_field={"x": 1})
+    assert evaluate_payload(raw_plus)["status"] == "verified"

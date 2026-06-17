@@ -34,7 +34,7 @@ from .trial_event_schema import (
     _profile,
     aggregate,
     attribute_to_affinity,
-    evaluate_decision,
+    evaluate_payload,
     validate,
 )
 
@@ -130,7 +130,9 @@ def _project_event(env: dict) -> tuple[dict, MethodTrialRecorded | None]:
                         decision_status="not_applicable", epistemic_weight="none",
                         note="event is structurally invalid; not evaluable")
             return base, None
-        dv = evaluate_decision(rec)
+        # the VERDICT is computed on the RAW canonical payload via the version-pinned capsule,
+        # not the reconstructed live record - so no current default/cast touches the verdict.
+        dv = evaluate_payload(p)
     except Exception as exc:  # noqa: BLE001 - defensive: any cast/parse error -> invalid, not crash
         base.update(projection_status="invalid_payload", event_usability="unusable",
                     decision_status="not_evaluated", epistemic_weight="none",
