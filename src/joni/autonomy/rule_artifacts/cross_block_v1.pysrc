@@ -1,0 +1,69 @@
+def cross_block_consistency(measurement: dict, decision: dict, estimand: dict, *,
+                            is_real: bool, has_effect_derivation: bool = False) -> list[str]:
+    """The ONE canonical structural-consistency check shared by the gate AND the rule evaluator.
+
+    It binds ``verified`` to the actual OBSERVATION: the statistical evidence (effect, uncertainty,
+    confidence interval) lives in the MEASUREMENT; the decision block is non-authoritative and may
+    only MIRROR it, never diverge; the measurement is internally consistent (effect derived from the
+    raw values under the contrast/direction, and lying within its own interval); and all numbers are
+    finite and well-ordered. It computes NO verdict (no statistics) - only equalities, ranges,
+    finiteness and the deterministic effect derivation."""
+    errs: list[str] = []
+    m_eff, m_unc, m_ci = (measurement.get("effect_size"), measurement.get("uncertainty"),
+                          measurement.get("confidence_interval"))
+    base, inter = measurement.get("baseline_value"), measurement.get("intervention_value")
+    d_eff, d_min, d_ci = (decision.get("effect_size"), decision.get("minimum_effect"),
+                          decision.get("confidence_interval"))
+    est_min, contrast = estimand.get("minimum_effect"), estimand.get("contrast")
+    direction = estimand.get("direction")
+
+    for name, v in (("measurement.effect_size", m_eff), ("measurement.uncertainty", m_unc),
+                    ("measurement.baseline_value", base), ("measurement.intervention_value", inter),
+                    ("estimand.minimum_effect", est_min), ("decision.effect_size", d_eff),
+                    ("decision.minimum_effect", d_min)):
+        if v is not None and not _finite(v):
+            errs.append(f"{name} must be a finite number (no NaN/Infinity)")
+    errs += _ci_errors("measurement.confidence_interval", m_ci)
+    errs += _ci_errors("decision.confidence_interval", d_ci)
+    if m_unc is not None and _finite(m_unc) and m_unc < 0:
+        errs.append("measurement.uncertainty must be >= 0")
+    # NOTE: ``uncertainty`` is an UNINTERPRETED descriptive scalar (its kind - SE, SD, MAD, ... - is
+    # not declared), so it is deliberately NOT cross-checked against the CI. rule_v2 ignores it; the
+    # CI is the sole statistical authority. (No fake consistency check is performed.)
+    if errs:
+        return errs
+
+    # the statistical interval belongs to the MEASUREMENT; the decision may only mirror it.
+    if d_ci is not None:
+        if m_ci is None:
+            errs.append("confidence_interval must live in the measurement, not the decision")
+        elif list(d_ci) != list(m_ci):
+            errs.append("decision.confidence_interval must equal measurement.confidence_interval "
+                        "(the decision may not supply its own interval)")
+    # the decision may not change the pre-registered threshold or contradict the measured effect.
+    if d_min is not None and est_min is not None and d_min != est_min:
+        errs.append("decision.minimum_effect must equal estimand.minimum_effect "
+                    "(no post-hoc threshold change)")
+    if d_eff is not None and m_eff is not None and d_eff != m_eff:
+        errs.append("decision.effect_size must equal measurement.effect_size "
+                    "(the decision may not contradict the measurement)")
+    # the effect must lie within its own interval.
+    if m_ci is not None and m_eff is not None and not (m_ci[0] - _EPS <= m_eff <= m_ci[1] + _EPS):
+        errs.append("measurement.effect_size must lie within measurement.confidence_interval")
+    # the measurement must be internally consistent: effect derived from the raw values.
+    if base is not None and inter is not None and m_eff is not None:
+        if contrast == "intervention_minus_baseline":
+            oriented = (inter - base) if direction == "higher_is_better" else (base - inter)
+            if abs(m_eff - oriented) > 1e-6:
+                errs.append("measurement.effect_size is inconsistent with baseline/intervention "
+                            "under the estimand contrast/direction")
+        elif is_real and not has_effect_derivation:
+            errs.append(f"contrast '{contrast}' requires an effect_derivation (id + hash) to "
+                        "verify the effect against the raw values")
+    if is_real:
+        m_name, o_metric = measurement.get("metric_name"), estimand.get("outcome_metric")
+        if m_name is not None and o_metric and m_name != o_metric:
+            errs.append("measurement.metric_name must equal estimand.outcome_metric")
+        if est_min is not None and (not _finite(est_min) or est_min <= 0):
+            errs.append("estimand.minimum_effect must be > 0 for a real result")
+    return errs

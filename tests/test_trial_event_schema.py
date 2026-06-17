@@ -498,13 +498,17 @@ def test_registry_rejects_an_implementation_hash_mismatch():
 
 # -- round 6: the rule hash must bind to the ACTUAL executed function ---------------------------- #
 def test_forged_registry_function_with_copied_hash_is_unverifiable():
-    # a registry whose fn is NOT _rule_v2 but claims the correct implementation_hash must not verify
-    # a measurement that is clearly harmful as a success.
-    from joni.autonomy.trial_event_schema import RULE_V2_SPEC_HASH, RuleEntry
+    # an artifact whose rule_fn is NOT _rule_v2 but CLAIMS the correct implementation_hash must not
+    # verify a measurement that is clearly harmful as a success: the hash is re-derived from the
+    # actual function at use, so the forged claim is exposed.
+    from joni.autonomy.trial_event_schema import EvaluationArtifact
     ev = _ev(epistemic_result="success", measurement=_meas(-0.20, ci=(-0.28, -0.12)),
              decision=_dec("success"))
-    forged = {("rule_v2", RULE_V2_HASH):
-              RuleEntry("rule_v2", RULE_V2_SPEC_HASH, RULE_V2_HASH, lambda e: "success")}
+    forged_art = EvaluationArtifact(
+        rule_id="rule_v2", schema_version="x", implementation_hash=RULE_V2_HASH,
+        validator_hash="sha256:0", input_contract_hash="sha256:0", input_contract={},
+        rule_fn=lambda e: "success")
+    forged = {("rule_v2", RULE_V2_HASH): forged_art}
     assert evaluate_decision(ev, forged)["status"] == "unverifiable"
 
 
@@ -784,20 +788,22 @@ def test_production_catalog_holds_current_and_archived_versions():
 
 def test_old_event_verifies_under_its_archived_version_in_production_catalog():
     from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH
-    # effect 0.11, CI [0.001, 0.219]: the ARCHIVED r6 rule calls this 'success'; the CURRENT rule
-    # calls it 'inconclusive'. An event recorded under the r6 hash must keep verifying as success
-    # via the production DEFAULT registry - and is never re-interpreted under the current rule.
-    old_ev = _ev(epistemic_result="success", measurement=_meas(0.11, ci=(0.001, 0.219)),
+    # effect 0.03, CI [-0.05, 0.08] (mn=0.10): a zero-straddling interval inside the equivalence
+    # band. The ARCHIVED r6 rule (which requires excluding zero for no_benefit) calls this
+    # 'inconclusive'; the CURRENT rule calls it 'no_benefit'. An event recorded under the r6 hash
+    # must keep verifying as 'inconclusive' via the production DEFAULT registry - it is evaluated by
+    # the archived r6 implementation, never re-interpreted under the current rule.
+    old_ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
                  decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
-                                   verdict="success"))
+                                   verdict="inconclusive"))
     assert evaluate_decision(old_ev)["status"] == "verified"        # uses the archived r6 impl
 
 
 def test_same_measurement_under_current_rule_is_not_the_old_verdict():
-    # the same measurement under the CURRENT hash is inconclusive, so a 'success' claim there is
-    # inconsistent - the old verdict is never re-applied under the new rule.
-    new_ev = _ev(epistemic_result="success", measurement=_meas(0.11, ci=(0.001, 0.219)),
-                 decision=_dec("success"))
+    # the same measurement under the CURRENT hash is 'no_benefit', so an 'inconclusive' claim there
+    # is inconsistent - the old r6 verdict is never re-applied under the new rule.
+    new_ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+                 decision=_dec("inconclusive"))
     assert evaluate_decision(new_ev)["status"] == "inconsistent"
 
 
@@ -818,3 +824,121 @@ def test_production_catalog_is_immutable_and_append_only():
         build_rule_registry([make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2),
                              make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2)])
     assert ("rule_v2", RULE_V2_HASH) in DEFAULT_RULE_REGISTRY
+
+
+# -- round 10: the archived r6 hash is the REAL prior-release hash, not recomputed from a copy --- #
+_R6_RELEASE_HASH = "sha256:2438455fd5dde3db1bb401efaccd7f13bf5fa4dd6cf6cb052b2dce2e390e05a4"
+
+
+def test_archived_r6_hash_is_the_literal_prior_release_hash():
+    # the archived rule's implementation_hash is the EXACT hash published with release 7810e25,
+    # derived from the stored verbatim BYTES - never re-derived from a later-typed copy of the fn.
+    from joni.autonomy.trial_event_schema import (
+        _R6_RULE_SRC,
+        RULE_V2_R6_HASH,
+        _bytes_hash,
+    )
+    assert RULE_V2_R6_HASH == _R6_RELEASE_HASH                 # the published historical hash
+    assert _bytes_hash(_R6_RULE_SRC) == _R6_RELEASE_HASH       # derived from the archived bytes
+    # the live rule's hash is COMPUTED from current source and is a different version entirely.
+    from joni.autonomy.trial_event_schema import RULE_V2_HASH
+    assert RULE_V2_HASH != _R6_RELEASE_HASH
+
+
+def test_archived_artifact_rejects_a_copy_with_a_mismatched_expected_hash():
+    # make_archived_artifact ENFORCES the pinned historical hash: a re-typed/altered rule body that
+    # no longer hashes to the published value is refused - a copy can never masquerade as the
+    # original.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import make_archived_artifact
+    altered = b"def _rule_v2(ev):\n    return 'success'  # a later, altered copy\n"
+    with pytest.raises(ValueError):
+        make_archived_artifact("rule_v2", "v@r6", altered, b"validator", {},
+                               expected_rule_hash=_R6_RELEASE_HASH)
+
+
+def test_event_under_real_r6_hash_verifies_then_a_new_version_is_appended():
+    # the full mandated flow: (1) fix the real prior-release hash; (2) record an event under that
+    # exact hash; (3) verify it under the new software; (4) append a new rule version; (5) the old
+    # event stays verifiable under its original hash; (6) the hash is the byte-pinned historic one.
+    from joni.autonomy.trial_event_schema import (
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_HASH,
+        RULE_V2_R6_HASH,
+    )
+    assert RULE_V2_R6_HASH == _R6_RELEASE_HASH
+    old_ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+                 decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                                   verdict="inconclusive"))
+    # the production registry already carries BOTH the archived r6 and the appended current version.
+    assert ("rule_v2", RULE_V2_R6_HASH) in DEFAULT_RULE_REGISTRY
+    assert ("rule_v2", RULE_V2_HASH) in DEFAULT_RULE_REGISTRY
+    assert evaluate_decision(old_ev)["status"] == "verified"   # old event still verifiable, as r6
+
+
+def test_historical_artifact_binds_its_own_validator_and_input_contract():
+    # an event the CURRENT (tightened) validator would reject stays verifiable under the archived
+    # artifact's OWN (lenient, byte-pinned) validator, while the SAME event under the current
+    # version is inconsistent - the validator is version-pinned alongside the rule, never swapped.
+    from joni.autonomy.trial_event_schema import (
+        SCHEMA_VERSION,
+        build_rule_registry,
+        make_archived_artifact,
+        make_live_artifact,
+    )
+    const_success_src = b"def _rule_v2(ev):\n    return 'success'\n"
+    lenient_validator_src = (b"def cross_block_consistency(measurement, decision, estimand, *,"
+                             b" is_real, has_effect_derivation=False):\n    return []\n")
+
+    def _const_success(ev):
+        return "success"
+
+    def _always_reject(measurement, decision, estimand, *, is_real, has_effect_derivation=False):
+        return ["tightened validator rejects this measurement"]
+
+    archived = make_archived_artifact("rule_v2", "v@old", const_success_src,
+                                      lenient_validator_src, {})
+    current = make_live_artifact("rule_v2", SCHEMA_VERSION, _const_success, _always_reject, {})
+    assert archived.implementation_hash != current.implementation_hash
+    assert archived.validator_hash != current.validator_hash       # distinct validator versions
+    registry = build_rule_registry([archived, current])
+
+    meas = _meas(0.20, ci=(0.12, 0.28))
+    old_ev = _ev(epistemic_result="success", measurement=meas,
+                 decision=Decision(decision_rule_id="rule_v2",
+                                   decision_rule_hash=archived.implementation_hash,
+                                   verdict="success"))
+    new_ev = _ev(epistemic_result="success", measurement=meas,
+                 decision=Decision(decision_rule_id="rule_v2",
+                                   decision_rule_hash=current.implementation_hash,
+                                   verdict="success"))
+    # old event: the archived (lenient) validator accepts -> verified.
+    assert evaluate_decision(old_ev, registry)["status"] == "verified"
+    # new event: the current (tightened) validator rejects -> inconsistent.
+    assert evaluate_decision(new_ev, registry)["status"] == "inconsistent"
+
+
+def test_historical_artifacts_are_byte_identical_and_append_only():
+    # the archived artifact's rule + validator are byte-pinned (identical to the stored files), and
+    # the production registry refuses to overwrite the historical version (append-only journal).
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        _CROSS_BLOCK_V1_SRC,
+        _R6_RULE_SRC,
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_R6_HASH,
+        _bytes_hash,
+        build_rule_registry,
+        make_archived_artifact,
+    )
+    art = DEFAULT_RULE_REGISTRY[("rule_v2", RULE_V2_R6_HASH)]
+    assert art.rule_source == _R6_RULE_SRC                          # byte-identical rule
+    assert art.validator_source == _CROSS_BLOCK_V1_SRC             # byte-identical validator
+    assert art.implementation_hash == _bytes_hash(_R6_RULE_SRC)
+    assert art.validator_hash == _bytes_hash(_CROSS_BLOCK_V1_SRC)
+    dup = make_archived_artifact("rule_v2", "method_trial_recorded_v3@r6", _R6_RULE_SRC,
+                                 _CROSS_BLOCK_V1_SRC, {}, expected_rule_hash=RULE_V2_R6_HASH)
+    with pytest.raises(ValueError):                                # append-only: no overwrite
+        build_rule_registry([art, dup])

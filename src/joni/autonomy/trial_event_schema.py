@@ -370,79 +370,134 @@ RULE_V2_HASH = RULE_V2_IMPL_HASH                     # the event's decision_rule
 
 
 @dataclass(frozen=True)
-class RuleEntry:
-    """A registered rule artefact: the executable ``fn`` plus the hashes that attest WHICH spec and
-    WHICH implementation it is. ``implementation_hash`` is NOT trusted as-claimed - the evaluator
-    re-derives ``_impl_hash(fn)`` and requires all three (re-derived, claimed, event hash) to
-    agree."""
+class EvaluationArtifact:
+    """A VERSION-PINNED evaluation bundle keyed by ``(rule_id, implementation_hash)``. It binds the
+    WHOLE evaluation of an event - rule + validator + input-contract + schema_version - so a future
+    change to the live rule OR the live validator can never re-interpret an old event: the event's
+    ``decision_rule_hash`` selects the artifact, and the artifact's OWN (byte-pinned for archived,
+    live for current) rule and validator are used. ``implementation_hash`` is re-derived at use, so
+    a forged artifact (claimed hash, different code) is rejected."""
 
     rule_id: str
-    spec_hash: str
+    schema_version: str
     implementation_hash: str
-    fn: object
+    validator_hash: str
+    input_contract_hash: str
+    input_contract: dict
+    rule_fn: object = None
+    rule_source: bytes | None = None        # byte-pinned source for ARCHIVED versions
+    validator_fn: object = None
+    validator_source: bytes | None = None   # byte-pinned validator snapshot for ARCHIVED versions
 
 
-def make_rule_entry(rule_id: str, spec_hash: str, fn) -> RuleEntry:
-    """Build a registry entry whose ``implementation_hash`` is COMPUTED from ``fn`` - so a registry
-    can never be constructed with a free-floating, mismatched hash claim."""
-    return RuleEntry(rule_id, spec_hash, _impl_hash(fn), fn)
+RuleEntry = EvaluationArtifact                # backwards-compatible alias
+
+_RULE_V2_DESCRIPTOR = ("rule_v2|source=measurement.ci|threshold=estimand.minimum_effect|"
+                       "uncertainty_not_used|harmful:ci_hi<=-min|success:ci_lo>=min|"
+                       "no_benefit:ci_within(-min,+min)|else:inconclusive")
+RULE_V2_SPEC_HASH = "sha256:" + hashlib.sha256(_RULE_V2_DESCRIPTOR.encode()).hexdigest()
+RULE_V2_IMPL_HASH = _impl_hash(_rule_v2)
+RULE_V2_HASH = RULE_V2_IMPL_HASH
 
 
-def build_rule_registry(entries):
-    """An APPEND-ONLY, immutable registry keyed by ``(rule_id, implementation_hash)``. Each entry is
-    a DISTINCT historical version: a key may never be overwritten. To keep an irreversible journal
-    reproducible, when a rule's implementation changes you ARCHIVE the old function and ADD the new
-    one (both stay registered), so an old event keeps verifying under the exact implementation that
-    produced it - and is never re-interpreted under a newer one."""
+def _bytes_hash(b: bytes) -> str:
+    return "sha256:" + hashlib.sha256(b).hexdigest()
+
+
+def _contract_hash(d: dict) -> str:
+    import json
+    return "sha256:" + hashlib.sha256(json.dumps(d, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _read_artifact(name: str) -> bytes:
+    import pathlib
+    return (pathlib.Path(__file__).parent / "rule_artifacts" / name).read_bytes()
+
+
+def _validator_globals() -> dict:
+    from desi_layer9 import trial_event_validation as v
+    return {"_finite": v._finite, "_ci_errors": v._ci_errors, "_EPS": v._EPS}
+
+
+def _exec_callable(src: bytes, name: str, extra: dict | None = None):
+    ns = {"MethodTrialRecorded": MethodTrialRecorded}
+    if extra:
+        ns.update(extra)
+    exec(compile(src.decode("utf-8"), f"<artifact:{name}>", "exec"), ns)   # noqa: S102
+    return ns[name]
+
+
+def make_live_artifact(rule_id, schema_version, rule_fn, validator_fn, input_contract):
+    """An artifact bound to LIVE functions; their hashes track the current source."""
+    return EvaluationArtifact(
+        rule_id, schema_version, implementation_hash=_impl_hash(rule_fn),
+        validator_hash=_impl_hash(validator_fn), input_contract_hash=_contract_hash(input_contract),
+        input_contract=dict(input_contract), rule_fn=rule_fn, validator_fn=validator_fn)
+
+
+def make_archived_artifact(rule_id, schema_version, rule_src, validator_src, input_contract,
+                           *, expected_rule_hash=None):
+    """An artifact whose rule + validator are BYTE-PINNED verbatim source. The implementation hash
+    is the sha256 of the stored rule bytes - the REAL historical hash, not one recomputed from a
+    later copy. A pinned ``expected_rule_hash`` (from the prior release) is enforced."""
+    rh = _bytes_hash(rule_src)
+    if expected_rule_hash is not None and rh != expected_rule_hash:
+        raise ValueError(f"archived rule artifact hash {rh} != expected {expected_rule_hash}")
+    return EvaluationArtifact(
+        rule_id, schema_version, implementation_hash=rh, validator_hash=_bytes_hash(validator_src),
+        input_contract_hash=_contract_hash(input_contract), input_contract=dict(input_contract),
+        rule_source=rule_src, validator_source=validator_src)
+
+
+def make_rule_entry(rule_id: str, spec_hash: str, fn) -> EvaluationArtifact:
+    """Compatibility shim: a LIVE artifact whose implementation_hash is COMPUTED from ``fn`` and
+    which binds the current validator + input contract."""
+    from desi_layer9.trial_event_validation import (
+        RULE_INPUT_CONTRACTS,
+        cross_block_consistency,
+    )
+    return make_live_artifact(rule_id, SCHEMA_VERSION, fn, cross_block_consistency,
+                              RULE_INPUT_CONTRACTS.get(rule_id, {}))
+
+
+def build_rule_registry(artifacts):
+    """An APPEND-ONLY, immutable catalog keyed by ``(rule_id, implementation_hash)``. A key may
+    never be overwritten - to keep an irreversible journal reproducible, a changed rule is ADDED as
+    a new artifact (with the old one archived byte-for-byte), never replacing an existing one."""
     reg: dict = {}
-    for e in entries:
-        key = (e.rule_id, e.implementation_hash)
+    for a in artifacts:
+        key = (a.rule_id, a.implementation_hash)
         if key in reg:
             raise ValueError(f"rule registry is append-only; {key} is already registered")
-        reg[key] = e
+        reg[key] = a
     return MappingProxyType(reg)
 
 
-def _rule_v2_archived_r6(ev: MethodTrialRecorded) -> str:
-    """ARCHIVED production implementation of rule_v2 (the round-6 semantics: ``success`` on
-    ``eff >= min and ci_low > 0``). It is kept here PERMANENTLY and NEVER edited - events recorded
-    under its implementation hash must stay verifiable across releases. When rule_v2's logic changed
-    (round 8: ``success`` requires ``ci_low >= min``), the old function was archived here, not
-    deleted, and the new ``_rule_v2`` was added alongside it. This IS the append-only catalog."""
-    m, est = ev.measurement, ev.estimand
-    eff, mn, ci = m.effect_size, est.minimum_effect, m.confidence_interval
-    if eff is None or mn is None or mn <= 0:
-        return "not_evaluated"
-    if ci is None:
-        return "inconclusive"
-    lo, hi = ci
-    if eff <= -mn and hi < 0:
-        return "harmful"
-    if eff >= mn and lo > 0:
-        return "success"
-    excludes_zero = not (lo <= 0 <= hi)
-    if excludes_zero and -mn < lo and hi < mn:
-        return "no_benefit"
-    return "inconclusive"
+# THE PRODUCTION CATALOG - append-only, immutable, byte-pinned. The archived r6 rule is loaded from
+# its VERBATIM historical source (its hash is the REAL prior-release hash), with a byte-pinned
+# snapshot of the validator it is evaluated under; the current rule is live.
+_R6_RULE_SRC = _read_artifact("rule_v2_r6.pysrc")
+_CROSS_BLOCK_V1_SRC = _read_artifact("cross_block_v1.pysrc")
+RULE_V2_R6_HASH = _bytes_hash(_R6_RULE_SRC)             # the real historical hash (2438455f...)
 
 
-_RULE_V2_R6_DESCRIPTOR = "rule_v2@r6|success:eff>=min&ci_lo>0|archived"
-_RULE_V2_R6_SPEC_HASH = "sha256:" + hashlib.sha256(_RULE_V2_R6_DESCRIPTOR.encode()).hexdigest()
+def _default_registry():
+    from desi_layer9.trial_event_validation import (
+        RULE_INPUT_CONTRACTS,
+        cross_block_consistency,
+    )
+    return build_rule_registry([
+        make_archived_artifact("rule_v2", "method_trial_recorded_v3@r6", _R6_RULE_SRC,
+                               _CROSS_BLOCK_V1_SRC, {}, expected_rule_hash=RULE_V2_R6_HASH),
+        make_live_artifact("rule_v2", SCHEMA_VERSION, _rule_v2, cross_block_consistency,
+                           RULE_INPUT_CONTRACTS.get("rule_v2", {})),
+    ])
 
-# THE PRODUCTION CATALOG. Append-only and immutable: it keeps EVERY historical rule version, keyed
-# by its own implementation hash, so an event recorded under an older version stays verifiable and
-# is never re-interpreted under a newer one. Adding a future version means APPENDING a new entry
-# here (and archiving the old function above), never editing or removing an existing one.
-DEFAULT_RULE_REGISTRY = build_rule_registry([
-    make_rule_entry("rule_v2", _RULE_V2_R6_SPEC_HASH, _rule_v2_archived_r6),   # archived, frozen
-    make_rule_entry("rule_v2", RULE_V2_SPEC_HASH, _rule_v2),                   # current
-])
-RULE_V2_R6_HASH = _impl_hash(_rule_v2_archived_r6)
+
+DEFAULT_RULE_REGISTRY = _default_registry()
 
 
-def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
-    """Reuse the ONE canonical consistency check (decision vs measurement vs estimand)."""
-    from desi_layer9.trial_event_validation import cross_block_consistency
+def _blocks(ev: MethodTrialRecorded):
     m, d, e = ev.measurement, ev.decision, ev.estimand
     meas = {"metric_name": m.metric_name, "baseline_value": m.baseline_value,
             "intervention_value": m.intervention_value, "effect_size": m.effect_size,
@@ -451,34 +506,61 @@ def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
            "confidence_interval": d.confidence_interval}
     est = {"outcome_metric": e.outcome_metric, "contrast": e.contrast, "direction": e.direction,
            "minimum_effect": e.minimum_effect}
-    return cross_block_consistency(meas, dec, est, is_real=True)
+    return meas, dec, est
+
+
+def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
+    """The CURRENT canonical consistency check (used for live evaluation and by tests)."""
+    from desi_layer9.trial_event_validation import cross_block_consistency
+    return cross_block_consistency(*_blocks(ev), is_real=True)
+
+
+def _resolve_artifact(art: EvaluationArtifact):
+    """Return ``(rule_fn, rule_hash, validator_fn)`` from an artifact, executing BYTE-PINNED source
+    for archived versions and re-deriving the hash so a forged claim cannot pass."""
+    if art.rule_source is not None:
+        rule_hash = _bytes_hash(art.rule_source)
+        rule_fn = _exec_callable(art.rule_source, "_rule_v2")
+    else:
+        rule_hash = _impl_hash(art.rule_fn)
+        rule_fn = art.rule_fn
+    if art.validator_source is not None:
+        validator_fn = _exec_callable(art.validator_source, "cross_block_consistency",
+                                      _validator_globals())
+    else:
+        validator_fn = art.validator_fn
+    return rule_fn, rule_hash, validator_fn
 
 
 def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
-    """Check whether the stored MEASUREMENT (against the pre-registered estimand) justifies the
-    claimed verdict. ``status`` in {"verified", "inconsistent", "unverifiable", "not_applicable"}.
-    A decision that contradicts the measurement, overrides the threshold, supplies its own interval,
-    or rests on an unresolved measurement is ``inconsistent``/``inconclusive`` - never ``verified``;
-    a hash that does not match the RE-DERIVED hash of the registered implementation is
-    ``unverifiable`` (so a forged registry function cannot self-attest)."""
+    """Evaluate the event under the EXACT version-pinned artifact its ``decision_rule_hash``
+    selects - its own rule AND its own validator/input-contract. ``status`` in {"verified",
+    "inconsistent", "unverifiable", "not_applicable"}. A forged artifact, an unknown hash, a
+    measurement the rule's own validator rejects, or a verdict the rule does not compute is never
+    ``verified``; an old event is never re-interpreted under a newer rule/validator."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
     d = ev.decision
     if ev.epistemic_result not in RULE_EVALUABLE_RESULTS:
         return {"status": "not_applicable", "reason": "no rule-evaluable verdict (not_evaluated)"}
-    # (1) structural consistency: decision may not contradict / override / supply its own interval.
-    xb = _cross_block_errors(ev)
-    if xb:
-        return {"status": "inconsistent", "reason": "; ".join(xb)}
-    # (2) the rule must be registered AND the EXECUTED function must re-derive to the claimed hash.
-    entry = reg.get((d.decision_rule_id, d.decision_rule_hash))
-    actual = _impl_hash(entry.fn) if entry is not None else None
-    if (entry is None or actual is None or actual != entry.implementation_hash
-            or actual != d.decision_rule_hash):
+    art = reg.get((d.decision_rule_id, d.decision_rule_hash))
+    if art is None:
+        return {"status": "unverifiable",
+                "reason": f"decision rule '{d.decision_rule_id}'@'{d.decision_rule_hash}' is not "
+                          "in the registered append-only catalog - no trustworthy verdict"}
+    try:
+        rule_fn, rule_hash, validator_fn = _resolve_artifact(art)
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "unverifiable", "reason": f"artifact could not be resolved ({exc!r})"}
+    if (rule_hash is None or rule_hash != art.implementation_hash
+            or rule_hash != d.decision_rule_hash):
         return {"status": "unverifiable",
                 "reason": f"decision rule '{d.decision_rule_id}'@'{d.decision_rule_hash}' does not "
-                          "match a re-derived registered implementation - no trustworthy verdict"}
-    # (3) the rule's verdict (from the MEASUREMENT) must match both the decision and the result.
-    computed = entry.fn(ev)
+                          "match the re-derived artifact implementation - no trustworthy verdict"}
+    # the artifact's OWN (version-pinned) validator runs - not necessarily the current one.
+    xb = validator_fn(*_blocks(ev), is_real=True)
+    if xb:
+        return {"status": "inconsistent", "reason": "; ".join(xb)}
+    computed = rule_fn(ev)
     if computed != d.verdict or computed != ev.epistemic_result:
         return {"status": "inconsistent", "computed": computed, "claimed": d.verdict,
                 "reason": f"rule computes '{computed}' from the measurement, event claims "
