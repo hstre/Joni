@@ -209,7 +209,8 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `60a77c9`: **518 passed, 2 skipped, ruff clean.**
+Full suite at `41bc8a4`: **527 passed with the `desi` extra; 520 passed / 7 skipped with `desi`
+BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
 
