@@ -161,40 +161,60 @@ exercised verbatim in the tests, each with its `estimand` and `decision` block. 
 
 ## 3b. Rule-Evaluator (the verdict lives here, not in the validator)
 
-The canonical entry is **`evaluate_payload(payload, registry=DEFAULT_RULE_REGISTRY)`** — it runs on
-the **raw stored canonical payload dict**, *before* any live dataclass reconstruction.
-`evaluate_decision(ev, …)` is a thin wrapper over `evaluate_payload(ev.to_dict(), …)`.
+The canonical entry is **`evaluate_envelope(envelope, payload, registry=DEFAULT_RULE_REGISTRY)`**.
+Routing comes from a **stable evaluation envelope** — *never* the schema-dependent payload field
+paths — so a future schema may relocate its routing fields without breaking selection.
+`evaluate_payload`/`evaluate_decision` build the v3 envelope via `envelope_for_payload` (the only
+place that reads v3 payload paths).
 
-- the **evaluation artifact** is looked up by `(decision_rule_id, decision_rule_hash)` read from the
-  raw payload; **unknown / non-reproducible hash → `"unverifiable"`**;
-- the artifact's `schema_version` must equal the **payload's** `schema_version` (read from the raw
-  payload, so the schema controls the very first deserialisation step) — mismatch → `"unverifiable"`;
-- **every** component hash (rule, validator, input-contract interpreter, decoder, projection) is
-  **re-derived from the actual artifact and checked against the claim** before that component is
-  trusted — any mismatch → `"unverifiable"`;
-- the artifact's **own** decoder is the **first deserialisation step** (run on the raw payload), its
-  **own** contract interpreter is applied, its **own** validator re-checks the decoded blocks, and
-  its **own** rule recomputes the verdict **from a view built solely out of the decoder output**;
-  `"verified"` only if all pass and the verdict matches, `"inconsistent"` if the contract is unmet,
-  the validator rejects the blocks, or the rule disagrees;
+The envelope (`evaluation_envelope_v1`) carries `envelope_version`, `schema_version`, `rule_id`,
+`rule_hash`, `claimed_verdict`, `payload_hash` (and optionally `capsule_hash`):
+
+- **unknown `envelope_version` → `"unverifiable"`** (fail-closed routing);
+- `payload_hash` must equal the hash of the supplied payload — a payload swapped under the same
+  routing → `"unverifiable"`;
+- the artifact is selected by `(rule_id, rule_hash)` **from the envelope**; unknown → `"unverifiable"`;
+- the envelope's `schema_version` must equal the artifact's — mismatch → `"unverifiable"`;
+- **every** component hash (rule, validator, contract interpreter, decoder, projection, **input
+  adapter**, **exec-env**, **composite capsule**) is **re-derived from the actual artifact and
+  checked** before that component is trusted — any mismatch → `"unverifiable"`;
+- then the artifact's **own** byte-pinned decoder (on the payload) → **own** contract interpreter →
+  **own** self-contained validator → **own** byte-pinned input adapter → **own** rule; `"verified"`
+  only if all pass and the computed verdict equals the envelope's `claimed_verdict`, else
+  `"inconsistent"`;
 - `"not_applicable"` when there is no real verdict to check.
 
-### The evaluation capsule (schema + decoder + contract + validator + rule, version-pinned)
+### The evaluation capsule (envelope + decoder + contract + validator + adapter + rule + loader)
 
 An event is never re-interpreted by *today's* code, and the historical components carry **no live
-runtime dependency**. Each registry entry is an `EvaluationArtifact` that binds the **whole**
-evaluation under one version. **Every** hash is re-derived from the actual (byte-pinned for archived,
-live for current) component at use:
+runtime dependency** — not even the compiler semantics. Each registry entry is an
+`EvaluationArtifact` that binds the **whole** evaluation under one version. **Every** hash is
+re-derived from the actual (byte-pinned for archived, live for current) component at use:
 
 | field | meaning |
 |---|---|
 | `rule_id` | logical rule name (`"rule_v2"`) |
-| `schema_version` | the schema this artifact decodes; must equal the payload's recorded version |
+| `schema_version` | the schema this artifact decodes; must equal the envelope's `schema_version` |
 | `implementation_hash` | sha256 of the **rule** that decides the verdict — the registry key |
 | `validator_hash` | sha256 of the **self-contained** cross-block validator, re-derived at use |
 | `input_contract_hash` | sha256 of the **executable** contract interpreter, re-derived at use |
-| `decoder_hash` | sha256 of the input decoder (**raw payload** → block dicts), re-derived at use |
+| `decoder_hash` | sha256 of the input decoder (**payload** → block dicts), re-derived at use |
 | `canonical_input_projection_hash` | sha256 of the **key-schema** the decoder emits, re-checked from the actual decode |
+| `input_adapter_hash` | sha256 of the **byte-pinned input adapter** (decoder blocks → rule view) |
+| `exec_env_hash` | sha256 of the pinned **execution environment** (future flags, optimize, loader version + hash) |
+| `capsule_hash` | composite sha256 over **all** of the above + `schema_version` + `envelope_version` — uniquely addresses the whole capsule |
+
+**Loader / execution environment.** The byte-pinned sources are only meaningful together with the
+compiler semantics they were validated under. The loader compiles with **explicit future flags** and
+**`dont_inherit=True`**, so the historical bytes execute identically regardless of the caller
+module's `__future__` flags. The r6 rule's un-imported annotation `MethodTrialRecorded` loads *only*
+because the `annotations` flag is supplied explicitly — a wrong flag/loader spec → `"unverifiable"`.
+The artifact records `execution_environment = {language, python_semantics, future_flags, optimize,
+loader_version, loader_hash}`.
+
+**Input adapter.** The transform from the decoder's block dicts to the read-only object view the rule
+consumes (`build_view`) is its own **byte-pinned** artifact (`view_adapter_v1.pysrc`), hashed into
+the capsule — no un-attested live transform sits between decoder and rule.
 
 The historical components are **self-contained**, so no live helper can silently change a historical
 result:

@@ -8,29 +8,60 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `dddac93` (review round 12) |
-| **Superseded candidates** | `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `c1e0d8e` (review round 13) |
+| **Superseded candidates** | `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 dddac93 -- src/desi_layer9 \
+git diff 282d541 c1e0d8e -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `dddac93` and at this doc's commit.
+is byte-identical at `c1e0d8e` and at this doc's commit.
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (540 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (549 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive dddac93`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive c1e0d8e`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 13 — routing envelope, byte-pinned adapter, pinned loader, capsule hash (vs `dddac93`)
+
+The historical components were pinned, but were still assembled by current glue. All four
+connection layers are now part of the capsule; the r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **Byte-pinned input adapter.** The decoder→rule view transform (`build_view`) is its own
+   self-contained artifact (`view_adapter_v1.pysrc`, `ff53fa45…`); `input_adapter_hash` is bound and
+   re-derived, and the rule consumes `artifact.adapter_fn(meas, dec, est)`. Sabotaging the live
+   `build_view` leaves a historical verdict unchanged; tampering the adapter bytes → `unverifiable`.
+   (The r6 rule still takes a view object, so its `2438455f` bytes/hash are untouched — but the view
+   is built *only* from decoder output by a pinned adapter.)
+2. **Stable routing envelope.** `evaluate_envelope(envelope, payload, registry)` selects the artifact
+   from `evaluation_envelope_v1` (`envelope_version`, `schema_version`, `rule_id`, `rule_hash`,
+   `claimed_verdict`, `payload_hash`), independent of the payload's field layout; `payload_hash`
+   binds the payload. A relocated decision block still routes; an unknown envelope version or a
+   payload tampered under the same envelope → `unverifiable`.
+3. **Pinned loader + execution environment.** `_exec_callable` compiles with explicit future flags
+   and `dont_inherit=True`; the r6 rule's un-imported annotation loads *only* under the explicit
+   `annotations` flag (without it → `NameError`). The artifact binds `execution_environment`
+   (future_flags, optimize, loader_version, loader_hash) + `exec_env_hash`; a wrong flag spec →
+   `unverifiable`.
+4. **Composite `capsule_hash`** over rule + validator + contract + decoder + projection + adapter +
+   exec-env + schema_version + envelope_version uniquely addresses the whole capsule, re-derived and
+   checked at use; an envelope may additionally pin `capsule_hash`.
+
+New artifact: `view_adapter_v1.pysrc` (`ff53fa45…`). Round-13 tests (10): adapter byte-pinning +
+tamper; envelope routing with relocated payload; unknown envelope version; payload tamper under same
+envelope; loader compiles historical bytes under explicit semantics (and fails without the flag);
+wrong exec-env flags → `unverifiable`; capsule_hash binds every component; production r6 capsule
+binds adapter+loader+capsule_hash.
 
 ### Review round 12 — the evaluation capsule is causally CLOSED (vs `b0c5b34`)
 
@@ -293,7 +324,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `dddac93`: **547 passed / 2 skipped with the `desi` extra; 540 passed / 7 skipped with
+Full suite at `c1e0d8e`: **556 passed / 2 skipped with the `desi` extra; 549 passed / 7 skipped with
 `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -353,7 +384,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..dddac93` and this package.
+1. Review the diff `282d541..c1e0d8e` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
