@@ -238,10 +238,14 @@ the internal `_objects`/`_ledger` directly. (Precisely: `submit` is the only epi
 write path; `set_clock` is the only explicit monotonic clock input and mutates no object or ledger.)
 Pre-v4 v3 data migrates by **re-sealing** to v4 (`seal_payload`); the projector still reads raw v3 as
 `legacy_unsealed`. Migration trust is a **pinned digest allowlist** — never a self-declared field in
-the input and never a caller-supplied function. The production default allowlist is **empty** (no v3
-trial document is migratable); a deployment installs real attestations, and `load_migrated(doc,
-trusted_attestations=…)` takes an explicit allowlist (the demonstrator anchor lives in the tests). The
-document's `historical_attestation.verifier_id` SELECTS an allowlist entry, and `load_migrated()`
+the input and never a caller-supplied function. Crucially, the trust root is **bound at migrator
+construction**, not per document call: `HistoricalJournalMigrator(trusted_catalog=…)` freezes the
+allowlist at trusted startup and `.load(doc)` takes only the untrusted document. The production entry
+point `load_migrated(doc)` has **no catalog parameter** — it uses a module migrator whose allowlist is
+**empty** by default, so a caller controlling only the document cannot authorise its own migration (a
+deployment builds its own migrator with a pinned/signed catalog; the demonstrator anchor lives in the
+tests). The document's `historical_attestation.verifier_id` SELECTS an allowlist entry, and the
+migrator
 checks fail-closed that the `attestation_digest` recomputes **and equals the pinned anchor** (a
 **pinned digest, not a signature** — a deployment ingesting external artifacts must add a real
 signature check), that `source_journal_hash` + `source_document_hash` match the **delivered document

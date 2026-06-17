@@ -8,26 +8,55 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `cd2b8b7` (review round 21) |
-| **Superseded candidates** | `8412040` (r20) · `5e385a8` (r19) · `6fe3020` (r18) · `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `ef08964` (review round 22) |
+| **Superseded candidates** | `cd2b8b7` (r21) · `8412040` (r20) · `5e385a8` (r19) · `6fe3020` (r18) · `d11515a` (r17) · `2d327c3` (r16) · `571cc7b` (r15) · `72a5d5f` (r14) · `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 cd2b8b7 -- src/desi_layer9 \
+git diff 282d541 ef08964 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (606 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (609 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive cd2b8b7`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive ef08964`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 22 — the migration trust root is bound at construction, not per document call; the full document is hashed (vs `cd2b8b7`)
+
+Round 21 was rejected because, although the attestation now bound the right content, the caller could
+still **bring its own trust root**: `load_migrated(doc, trusted_attestations=catalog)` let a document
+supplier pass the very allowlist that authorised the document's attestation — declaratively equivalent
+to the old `historical_verifier=lambda: True`. Closed; the r6 rule hash is unchanged
+(`sha256:2438455f…`).
+
+1. **Trust-root separation (construction-bound).** A new `HistoricalJournalMigrator(trusted_catalog=…)`
+   binds the allowlist **once, at construction** (the trusted application/deployment at startup),
+   deep-copying and freezing it; `.load(doc)` takes **only** the untrusted document. The production
+   entry point `load_migrated(doc)` has **no catalog parameter** — it delegates to a module migrator
+   whose catalog is the **empty** pinned default, so a caller controlling only the document cannot
+   authorise its own migration (it can forge an attestation, but not allowlist it). A deployment
+   builds its own migrator with a pinned/signed catalog; tests construct one with a fixture catalog.
+   The mechanical reseal step is now the **internal** `_migrate_journal_entries` (no public,
+   attestation-bypassing entry).
+2. **The full document is hashed.** `source_document_hash` covered only `{journal, snapshot_hash,
+   tick}`, so `schema_version` (or any other persisted top-level field) could change without breaking
+   the binding. `_document_hash` now canonically hashes **every** top-level field of the delivered
+   document except the attestation itself.
+
+New artifact: none (a joni-level trust-root separation + a wider document hash). Round-22 tests:
+`load_migrated` takes no per-call trust root; a self-made document + attestation is fail-closed under
+the production entry point; only a catalog bound at construction is accepted; mutating the source
+catalog after construction cannot grow the trust root; the production default stays empty; altering
+`schema_version` breaks `source_document_hash`. The round-21 full-entry and journal bindings still
+hold under the migrator.
 
 ### Review round 21 — the migration attestation binds the FULL entry + delivered document; the production allowlist is empty (vs `8412040`)
 
@@ -596,7 +625,7 @@ change.) The new path is **inert**: nothing in promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `cd2b8b7`: **613 passed / 2 skipped with the `desi` extra; 606 passed / 7 skipped
+Full suite at `ef08964`: **616 passed / 2 skipped with the `desi` extra; 609 passed / 7 skipped
 with `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -618,9 +647,10 @@ journal_compatibility:
   backward_readable: true                         # new code, old journal (claims/conflicts/legacy)
   trial_events_v3_backward_readable: false        # an accepted v3 trial event is NOT raw-replayable
   trial_events_v3_migration: required             # load via load_migrated() -> re-sealed to v4
-  trial_events_v3_migration_trust_source: pinned_digest_allowlist   # injected; production default {}
+  trial_events_v3_migration_trust_root: bound_at_migrator_construction   # NOT a per-call argument
+  trial_events_v3_migration_production_entrypoint: load_migrated(doc)    # empty pinned catalog
   trial_events_v3_migration_attested_unit: full_journal_entry       # all 10 fields, not just body
-  trial_events_v3_migration_document_binding: source_journal_hash + source_document_hash
+  trial_events_v3_migration_document_binding: full_document_hash + source_journal_hash
   trial_events_v3_migration_anchor_type: pinned_digest              # NOT a cryptographic signature
   trial_events_v3_migration_failure_mode: fail_closed   # missing/forged/unbound/unattested/unknown
   forward_readable: false                         # old code, new journal
@@ -683,7 +713,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..cd2b8b7` and this package.
+1. Review the diff `282d541..ef08964` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
