@@ -477,7 +477,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 166,
+    "starved_topic": 167,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -3972,7 +3972,8 @@
     "zenodo:20724506",
     "zenodo:20725417",
     "zenodo:20725878",
-    "zenodo:20726019"
+    "zenodo:20726019",
+    "zenodo:20727094"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -4335,6 +4336,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20725878"
+    },
+    {
+      "call_id": "joni-c170:b7628e072401",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20727094"
     }
   ],
   "pdf_read": [
@@ -4414,6 +4423,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-8"
+    },
+    {
+      "call_id": "joni-c170:3bd0770710ea",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-17"
     }
   ],
   "methods_seen": [
@@ -4817,6 +4835,7 @@
     "panel|abundance",
     "panel|access",
     "panel|adaptive",
+    "panel|admissibility",
     "panel|admissible",
     "panel|adversarial",
     "panel|against",
@@ -4835,6 +4854,7 @@
     "panel|architecture",
     "panel|array",
     "panel|artificial",
+    "panel|assessed",
     "panel|assessment",
     "panel|assessor",
     "panel|associated",
@@ -4860,13 +4880,17 @@
     "panel|classical",
     "panel|compared",
     "panel|compute",
+    "panel|conditions",
     "panel|consistency",
+    "panel|consistent",
     "panel|consistently",
     "panel|consumer",
     "panel|container",
     "panel|content",
     "panel|context",
     "panel|critical",
+    "panel|cross-reconstruction",
+    "panel|decides",
     "panel|decisions",
     "panel|deeprubric",
     "panel|defined",
@@ -4928,12 +4952,14 @@
     "panel|llm-based",
     "panel|long-term",
     "panel|loopwm",
+    "panel|maintainer",
     "panel|markets",
     "panel|matter",
     "panel|modeling",
     "panel|needs",
     "panel|network",
     "panel|nicht",
+    "panel|normativity",
     "panel|object",
     "panel|oder",
     "panel|off-chain",
@@ -5007,6 +5033,7 @@
     "panel|users",
     "panel|variable-width",
     "panel|variables",
+    "panel|viability",
     "panel|wenn",
     "panel|white",
     "panel|wird",
@@ -5041,7 +5068,9 @@
     "service",
     "software"
   ],
-  "emerge_insufficient": {},
+  "emerge_insufficient": {
+    "panel|coherent": 1
+  },
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -5111,17 +5140,16 @@
     "C-99"
   ],
   "learned_queries": [
-    "panel nicht",
     "panel variable-width",
     "panel panel",
     "panel worth",
     "panel underlying",
     "panel through-line",
     "panel across",
-    "panel chatbots"
+    "panel chatbots",
+    "panel recurs"
   ],
   "hyp_seen_cycle": {
-    "C-422": 157,
     "C-438": 158,
     "C-445": 160,
     "C-446": 161,
@@ -5132,7 +5160,7 @@
     "C-502": 167,
     "C-503": 168,
     "C-510": 169,
-    "C-511": 150,
+    "C-511": 170,
     "C-512": 151,
     "C-513": 152,
     "C-514": 153,
@@ -5151,7 +5179,8 @@
     "C-539": 166,
     "C-540": 167,
     "C-541": 168,
-    "C-542": 169
+    "C-542": 169,
+    "C-555": 170
   },
   "topics_domain_ok": [
     "agent",
@@ -5289,6 +5318,7 @@
     "C-540",
     "C-541",
     "C-542",
+    "C-555",
     "C-74",
     "C-99"
   ],
@@ -5328,33 +5358,33 @@
   "vitality": {
     "verdict": "degenerating",
     "development": 0,
-    "degeneration": 1,
-    "active": 332,
+    "degeneration": 2,
+    "active": 342,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 78,
     "supporting_links": 78,
-    "emergent_total": 257,
+    "emergent_total": 266,
     "usable_semantic_rate": 1.0,
     "methods_total": 31,
     "method_trials_total": 172,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 5121,
-    "cycle": 169
+    "stagnation_cycles": 2,
+    "objects": 5221,
+    "cycle": 170
   },
   "vitality_prev": {
     "supports": 78,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 5121,
-    "active": 332,
+    "objects": 5221,
+    "active": 342,
     "links": 78,
-    "emergent": 257
+    "emergent": 266
   },
-  "stagnation": 1,
+  "stagnation": 2,
   "vitality_history": [
     {
       "cycle": 1,
@@ -6538,6 +6568,13 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 170,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -6705,6 +6742,7 @@
     "purpose": "invalid"
   },
   "escalated_conflicts": [
+    "X-17",
     "X-4",
     "X-5",
     "X-6",
