@@ -8,20 +8,34 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `e5cf6ca55ed1a568d8ab732430834f926c973880` (review round 5) |
-| **Superseded candidates** | `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `7810e257f4dddd54a43b82da7095fc2f05e5c1be` (review round 6) |
+| **Superseded candidates** | `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 e5cf6ca -- src/desi_layer9 \
+git diff 282d541 7810e25 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `e5cf6ca` and at this doc's commit.
+is byte-identical at `7810e25` and at this doc's commit.
+
+### Review round 6 — implementation-bound verification + statistical contract (vs `e5cf6ca`)
+
+1. **The rule hash binds to the executed function** — `evaluate_decision` re-derives
+   `sha256(source of entry.fn)` on every use and requires re-derived == claimed
+   `implementation_hash` == event `decision_rule_hash`; a forged registry function that merely
+   copies the correct hash is `unverifiable`. `make_rule_entry` computes the hash from the function;
+   `DEFAULT_RULE_REGISTRY` is immutable (`MappingProxyType`).
+2. **`success`/`harmful` require the minimum effect to be statistically supported** —
+   `ci_low ≥ min` / `ci_high ≤ −min`. A positive interval spanning below the threshold (e.g.
+   `[0.001, 0.219]`, `min 0.10`) is `inconclusive`, not a verified success.
+3. **`uncertainty` / `partial_success` contracts fixed** — `rule_v2` uses only the CI (documented);
+   the gate rejects an `uncertainty` exceeding the CI width; `partial_success` is documented as not
+   producible by `rule_v2`.
 
 ### Review round 5 — `verified` bound to the observation (vs `1b1e6bf`)
 
@@ -148,7 +162,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `e5cf6ca`: **492 passed, 2 skipped, ruff clean.**
+Full suite at `7810e25`: **501 passed, 2 skipped, ruff clean.**
 
 ## Known technical debt
 
