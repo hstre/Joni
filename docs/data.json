@@ -35,12 +35,12 @@
       "software",
       "users"
     ],
-    "claims_total": 402,
-    "claims_active": 232,
+    "claims_total": 409,
+    "claims_active": 238,
     "memory": 0,
-    "ledger": 3052,
+    "ledger": 3086,
     "open_conflicts": 11,
-    "methods": 22,
+    "methods": 23,
     "method_trials": 172,
     "methods_ready": 0,
     "preferences": 1,
@@ -49,29 +49,34 @@
     "hypotheses": 30,
     "research_topics": 1,
     "epistemically_usable": {
-      "rate": 0.845,
-      "n": 232,
+      "rate": 0.849,
+      "n": 238,
       "flags": {
-        "correctly_typed": 232,
-        "source_anchored": 206,
-        "non_duplicate": 224,
-        "topic_valid": 230,
-        "scope_valid": 230,
-        "provenance_complete": 206
+        "correctly_typed": 238,
+        "source_anchored": 212,
+        "non_duplicate": 230,
+        "topic_valid": 236,
+        "scope_valid": 236,
+        "provenance_complete": 212
       }
     },
     "routing_engine": "DESi",
     "days_running": 1,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 0.932,
     "cap_eur": 20.0,
-    "runs": 137
+    "runs": 138
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 137,
+    "runs": 138,
     "retired": false
   },
   "extensions": {
@@ -553,7 +558,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 134,
+      "starved_topic": 135,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -3585,6 +3590,7 @@
       "huggingface:2606.14958",
       "huggingface:2606.15079",
       "huggingface:2606.16396",
+      "huggingface:2606.16428",
       "huggingface:2606.16449",
       "huggingface:2606.16771",
       "huggingface:2606.16852",
@@ -3880,6 +3886,14 @@
         "replayed": false,
         "claims": 5,
         "source": "openalex:W7131194452"
+      },
+      {
+        "call_id": "joni-c138:c2ed74f7cf3d",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "huggingface:2606.16428"
       }
     ],
     "pdf_read": [
@@ -3971,6 +3985,7 @@
       "github:obra/superpowers",
       "huggingface:2602.21103",
       "huggingface:2606.15079",
+      "huggingface:2606.16428",
       "huggingface:2606.16993",
       "zenodo:20719101",
       "zenodo:20719104",
@@ -4122,6 +4137,7 @@
       "C-375|C-388",
       "C-395|C-398",
       "C-396|C-399",
+      "C-403|C-404",
       "C-40|C-41",
       "C-55|C-68",
       "C-83|C-86"
@@ -4245,6 +4261,7 @@
       "C-375|C-388@bge-small-en-v1.5",
       "C-395|C-398@bge-small-en-v1.5",
       "C-396|C-399@bge-small-en-v1.5",
+      "C-403|C-404@bge-small-en-v1.5",
       "C-40|C-41@bge-small-en-v1.5",
       "C-55|C-68@bge-small-en-v1.5",
       "C-83|C-86@bge-small-en-v1.5"
@@ -4362,6 +4379,7 @@
       "panel|keine",
       "panel|knowledge",
       "panel|large-scale",
+      "panel|learning",
       "panel|levels",
       "panel|lineatus",
       "panel|linse",
@@ -4501,21 +4519,21 @@
       "C-362",
       "C-363",
       "C-402",
+      "C-409",
       "C-74",
       "C-99"
     ],
     "learned_queries": [
-      "panel predict",
-      "panel single",
       "panel agentic",
       "panel panel",
       "panel across",
       "panel factor",
       "panel worth",
-      "panel claims"
+      "panel claims",
+      "panel through-line",
+      "panel learning"
     ],
     "hyp_seen_cycle": {
-      "C-273": 129,
       "C-274": 130,
       "C-275": 131,
       "C-276": 132,
@@ -4531,7 +4549,7 @@
       "C-329": 133,
       "C-330": 135,
       "C-331": 137,
-      "C-332": 121,
+      "C-332": 138,
       "C-333": 122,
       "C-334": 124,
       "C-335": 125,
@@ -4545,7 +4563,8 @@
       "C-393": 134,
       "C-394": 135,
       "C-401": 136,
-      "C-402": 137
+      "C-402": 137,
+      "C-409": 138
     },
     "topics_domain_ok": [
       "agent",
@@ -4649,6 +4668,7 @@
       "C-394",
       "C-401",
       "C-402",
+      "C-409",
       "C-74",
       "C-99"
     ],
@@ -4668,6 +4688,7 @@
       "M-20",
       "M-21",
       "M-22",
+      "M-23",
       "M-3",
       "M-4",
       "M-5",
@@ -4679,33 +4700,33 @@
     "vitality": {
       "verdict": "degenerating",
       "development": 0,
-      "degeneration": 1,
-      "active": 232,
+      "degeneration": 2,
+      "active": 238,
       "hypotheses": 30,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 68,
       "supporting_links": 68,
-      "emergent_total": 196,
+      "emergent_total": 197,
       "usable_semantic_rate": 1.0,
-      "methods_total": 22,
+      "methods_total": 23,
       "method_trials_total": 172,
       "methods_ready_total": 0,
-      "stagnation_cycles": 1,
-      "objects": 3990,
-      "cycle": 137
+      "stagnation_cycles": 2,
+      "objects": 4034,
+      "cycle": 138
     },
     "vitality_prev": {
       "supports": 68,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 3990,
-      "active": 232,
+      "objects": 4034,
+      "active": 238,
       "links": 68,
-      "emergent": 196
+      "emergent": 197
     },
-    "stagnation": 1,
+    "stagnation": 2,
     "vitality_history": [
       {
         "cycle": 1,
@@ -5664,6 +5685,13 @@
         "verdict": "degenerating",
         "development": 0,
         "degeneration": 1,
+        "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 138,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 2,
         "usable_semantic_rate": 1.0
       }
     ],
@@ -29350,19 +29378,214 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:56:56+00:00",
+      "cycle": 138,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:56:57+00:00",
+      "cycle": 138,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:56:58+00:00",
+      "cycle": 138,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:56:59+00:00",
+      "cycle": 138,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:05+00:00",
+      "cycle": 138,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:06+00:00",
+      "cycle": 138,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:09+00:00",
+      "cycle": 138,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:09+00:00",
+      "cycle": 138,
+      "kind": "judged",
+      "summary": "relevant: LectūraAgents: A Multi-Agent Framework for Adaptive Personalized AI-Assisted Lea",
+      "refs": {
+        "source": "huggingface:2606.16428",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.16428"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:19+00:00",
+      "cycle": 138,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from huggingface:2606.16428 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:20+00:00",
+      "cycle": 138,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: LectūraAgents: A Multi-Agent Framework for Adaptive Personalized AI-As (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:21+00:00",
+      "cycle": 138,
+      "kind": "developed",
+      "summary": "C-403/C-404: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:22+00:00",
+      "cycle": 138,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'learning' (Layer 9 synthesis-eligible, SC-353) from 5 claims (C-367, C-403, C-404, C-67, C-92)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:22+00:00",
+      "cycle": 138,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-409 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:22+00:00",
+      "cycle": 138,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-332 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:22+00:00",
+      "cycle": 138,
+      "kind": "regulate",
+      "summary": "shed C-274: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:22+00:00",
+      "cycle": 138,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 2 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:25+00:00",
+      "cycle": 138,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:25+00:00",
+      "cycle": 138,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-17T01:57:25+00:00",
+      "cycle": 138,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 1 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 1 emergent · shed 1 dead idea(s) · degenerating · spend €0.9320 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 49,
-    "granite_calls": 41,
+    "llm_calls": 50,
+    "granite_calls": 42,
     "deepseek_escalations": 6,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 49,
-    "last_call": "2026-06-17T01:43:29+00:00",
+    "live_calls": 50,
+    "last_call": "2026-06-17T01:57:16+00:00",
     "est_cost_eur": 0.032,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 41,
+      "ibm-granite/granite-4.1-8b-20260429": 42,
       "deepseek-v4-pro": 8
     },
     "empty_calls": 0,
@@ -29370,15 +29593,15 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 49
+      "stop": 50
     },
     "panel_rounds": 6,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 0.932,
-    "accepted_claims": 125,
-    "accepted_calls": 31,
-    "accepted_call_yield": 0.633,
-    "est_cost_per_accepted_eur": 0.0003
+    "accepted_claims": 130,
+    "accepted_calls": 32,
+    "accepted_call_yield": 0.64,
+    "est_cost_per_accepted_eur": 0.0002
   },
   "commissions_done": [
     {
@@ -29389,5 +29612,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-17T01:50:25+00:00"
+  "generated": "2026-06-17T01:57:25+00:00"
 }
