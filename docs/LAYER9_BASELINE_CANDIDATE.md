@@ -8,29 +8,62 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `c1e0d8e` (review round 13) |
-| **Superseded candidates** | `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `72a5d5f` (review round 14) |
+| **Superseded candidates** | `c1e0d8e` (r13) · `dddac93` (r12) · `b0c5b34` (r11) · `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 c1e0d8e -- src/desi_layer9 \
+git diff 282d541 72a5d5f -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `c1e0d8e` and at this doc's commit.
+is byte-identical at `72a5d5f` and at this doc's commit.
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (549 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (557 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
 >
-> **A full repository archive is shipped** (`git archive c1e0d8e`): `pytest -q` and `ruff check .`
+> **A full repository archive is shipped** (`git archive 72a5d5f`): `pytest -q` and `ruff check .`
 > run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets `pythonpath = ["src"]`).
 > The focused review subset is provided additionally.
+
+### Review round 14 — loader trust-root, exec-env closure, python pinning, stored envelope (vs `c1e0d8e`)
+
+The components were pinned, but the loader that *executes* them was swappable, the loader's closure
+and the Python version were not bound, and the routing envelope was a live derivative. All closed;
+the r6 rule hash is unchanged (`sha256:2438455f…`).
+
+1. **The loader is a byte-pinned trust root.** `loader_v1.pysrc` (`02f22f0e…`) is bootstrapped FROM
+   ITS BYTES in `_resolve_artifact` (never the module global), its hash re-derived and checked
+   against the artifact's `execution_environment` before any artifact byte runs. The reproduced
+   attack — replacing `schema._exec_callable` after the registry is built — now has **no effect**;
+   tampering the loader bytes with a copied hash → `unverifiable`.
+2. **The exec-env binds the loader's full numeric closure.** Future flags are carried as **numeric
+   values** (`{"annotations": 16777216}` + `future_flag_bits`) and passed to the loader as arguments
+   (no mutable global table); `exec_env_hash` covers the numeric flags, optimize, loader id+hash and
+   `python_semantics`. Changing the numeric flag value → `unverifiable`.
+3. **`python_semantics` is enforced.** `_trusted_loader` requires runtime major.minor ==
+   `execution_environment.python_semantics` (else `unverifiable`) and folds it into `exec_env_hash`
+   and `capsule_hash`.
+4. **The evaluation envelope is stored and replayed.** `to_journal()` embeds the envelope alongside
+   the payload; `evaluate_payload` reads the **embedded** envelope (replay never uses the live
+   `envelope_for_payload` bridge), and `payload_hash` binds the payload (tamper → `unverifiable`).
+   Monkeypatching `envelope_for_payload` after journaling cannot re-route a stored event.
+5. **Aggregation runs from the stored (envelope, payload) pair.** `verify_payloads(stored)` verifies
+   each stored pair via `evaluate_envelope` and emits payload-based evidence; `aggregate` reads
+   grouping fields from the payload and re-verifies the pair — **no** dataclass reconstruction is a
+   precondition. The projector feeds raw stored payloads to `verify_payloads`; dataclasses are
+   display-only.
+
+New artifact: `loader_v1.pysrc` (`02f22f0e…`). Round-14 tests (9): live-loader swap has no effect;
+tampered loader bytes → `unverifiable`; numeric flag value bound; `python_semantics` enforced;
+stored-envelope replay ignores a changed live bridge; journal payload tamper detected; aggregation
+from stored objects; production capsule binds loader + python semantics.
 
 ### Review round 13 — routing envelope, byte-pinned adapter, pinned loader, capsule hash (vs `dddac93`)
 
@@ -324,7 +357,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `c1e0d8e`: **556 passed / 2 skipped with the `desi` extra; 549 passed / 7 skipped with
+Full suite at `72a5d5f`: **564 passed / 2 skipped with the `desi` extra; 557 passed / 7 skipped with
 `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -384,7 +417,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..c1e0d8e` and this package.
+1. Review the diff `282d541..72a5d5f` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).

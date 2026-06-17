@@ -204,13 +204,26 @@ re-derived from the actual (byte-pinned for archived, live for current) componen
 | `exec_env_hash` | sha256 of the pinned **execution environment** (future flags, optimize, loader version + hash) |
 | `capsule_hash` | composite sha256 over **all** of the above + `schema_version` + `envelope_version` — uniquely addresses the whole capsule |
 
-**Loader / execution environment.** The byte-pinned sources are only meaningful together with the
-compiler semantics they were validated under. The loader compiles with **explicit future flags** and
-**`dont_inherit=True`**, so the historical bytes execute identically regardless of the caller
-module's `__future__` flags. The r6 rule's un-imported annotation `MethodTrialRecorded` loads *only*
-because the `annotations` flag is supplied explicitly — a wrong flag/loader spec → `"unverifiable"`.
-The artifact records `execution_environment = {language, python_semantics, future_flags, optimize,
-loader_version, loader_hash}`.
+**Loader / execution environment (a byte-pinned trust root).** The byte-pinned sources are only
+meaningful together with the compiler semantics they were validated under. The loader is itself a
+**byte-pinned artifact** (`loader_v1.pysrc`): `_resolve_artifact` **bootstraps it from its bytes**
+(never the module global) and re-derives `loader_hash` against the artifact before executing any
+component, so swapping the live `_exec_callable` cannot change what runs. It compiles with
+**explicit numeric future-flag bits** and **`dont_inherit=True`** (the r6 rule's un-imported
+annotation loads *only* because the `annotations` flag — value `16777216` — is supplied explicitly).
+The artifact records `execution_environment = {language, python_semantics, future_flags (numeric),
+future_flag_bits, optimize, loader_version, loader_hash}`; the **runtime Python major.minor is
+enforced** to equal `python_semantics`, and the whole numeric environment is folded into
+`exec_env_hash` and `capsule_hash`. A swapped loader, tampered loader bytes, a changed numeric flag,
+or a wrong Python version → `"unverifiable"`.
+
+**Stored evaluation envelope (replay uses it, not a live bridge).** `MethodTrialRecorded.to_journal()`
+embeds the stable envelope alongside the payload as the canonical **stored** form; replay
+(`evaluate_payload`) reads the **embedded** envelope and never the live `envelope_for_payload`
+(which is writer-side only). `payload_hash` binds the payload, so a post-write tamper →
+`"unverifiable"`. Evidence comes straight from the stored `(envelope, payload)` pair via
+`verify_payloads` → `aggregate`; no current dataclass reconstruction is a precondition for
+aggregation (dataclasses stay display-only).
 
 **Input adapter.** The transform from the decoder's block dicts to the read-only object view the rule
 consumes (`build_view`) is its own **byte-pinned** artifact (`view_adapter_v1.pysrc`), hashed into
