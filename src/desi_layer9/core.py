@@ -56,7 +56,12 @@ from .provenance import Provenance
 from .rules import can_confirm_claim
 from .taint import Taint, merge_all
 from .transitions import assert_conflict_transition, assert_transition
-from .trial_event_validation import canonical_payload, validate_trial_payload
+from .trial_event_validation import (
+    SCHEMA_V4,
+    canonical_payload,
+    validate_evaluation_envelope,
+    validate_trial_payload,
+)
 
 _CONTROLLED_FIELDS = ("status", "authority")        # never adopted from a payload
 _METHOD_TRIALS_FOR_ACTIVE = 3
@@ -481,6 +486,8 @@ class Layer9:
         counters stay the sole decision-making truth). Idempotent on ``trial_id``: an identical
         re-submit records nothing; a divergent payload for the same id is an audited conflict."""
         errs = validate_trial_payload(p.payload)
+        if p.payload.get("schema_version") == SCHEMA_V4:
+            errs = errs + validate_evaluation_envelope(p.payload)   # sealed: envelope is mandatory
         if errs:
             raise ValueError("invalid METHOD_TRIAL_RECORDED: " + "; ".join(errs))
         canonical = canonical_payload(p.payload)

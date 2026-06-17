@@ -212,7 +212,7 @@ def test_one_canonical_serializer_feeds_both_record_and_snapshot(monkeypatch):
 # -- 4. unknown schema version --------------------------------------------------------------- #
 def test_unknown_schema_version_is_rejected_and_not_stored():
     core = _core()
-    d = _record(core, _payload(schema_version="method_trial_recorded_v4"))
+    d = _record(core, _payload(schema_version="method_trial_recorded_v5"))
     assert not d.accepted and "unsupported schema_version" in d.reason
     assert core.method_trial_events() == []
 

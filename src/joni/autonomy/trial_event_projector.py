@@ -38,7 +38,7 @@ from .trial_event_schema import (
 
 # The projector's OWN supported set - it may lag the core, so a future schema is surfaced as
 # ``unsupported_schema`` (a projector limitation) rather than silently dropped.
-PROJECTOR_SUPPORTED_SCHEMA_VERSIONS = ("method_trial_recorded_v3",)
+PROJECTOR_SUPPORTED_SCHEMA_VERSIONS = ("method_trial_recorded_v3", "method_trial_recorded_v4")
 SUFFICIENCY_POLICY_ID = "gap_analysis_sufficiency_v1"
 _MIN_INDEPENDENT_VARIANTS = 2          # a conflict needs comparative depth, not a single point
 

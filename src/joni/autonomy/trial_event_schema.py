@@ -34,6 +34,10 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 
 SCHEMA_VERSION = "method_trial_recorded_v3"
+# the SEALED journal format: a v4 stored object MUST embed the stable evaluation envelope (with the
+# composite capsule_hash). v3 events are legacy/unsealed and never produce verified evidence.
+SCHEMA_VERSION_V4 = "method_trial_recorded_v4"
+JOURNAL_SCHEMA_VERSION = SCHEMA_VERSION_V4
 EVENT_TYPE = "METHOD_TRIAL_RECORDED"
 
 # -- orthogonal axes ----------------------------------------------------------------------------- #
@@ -210,11 +214,11 @@ class MethodTrialRecorded:
             "note": self.note, "field_sources": dict(self.field_sources),
         }
 
-    def to_journal(self) -> dict:
-        """The canonical STORED form: the payload PLUS the embedded, stable evaluation envelope
-        (writer-side). Replay routes from the embedded envelope, not from a live bridge."""
-        payload = self.to_dict()
-        return {**payload, ENVELOPE_KEY: envelope_for_payload(payload)}
+    def to_journal(self, registry=None) -> dict:
+        """The canonical SEALED STORED form (v4): the body PLUS the embedded, stable evaluation
+        envelope (with the mandatory whole-capsule ``capsule_hash``). Replay routes from the
+        envelope, never from a live bridge."""
+        return seal_payload(self.to_dict(), registry)
 
 
 # ================================================================================================ #
@@ -546,12 +550,14 @@ def _canonical_json_bytes(d) -> bytes:
 ENVELOPE_KEY = "evaluation_envelope"    # the stored evaluation envelope lives under this key
 
 
-def _payload_hash(payload: dict) -> str:
-    """Deterministic hash of a stored payload (EXCLUDING the embedded evaluation envelope) - binds
-    the payload to its routing envelope so the decoder's input cannot be swapped without breaking
-    the envelope, and is stable whether or not the envelope is attached."""
+def evaluation_body_hash(payload: dict) -> str:
+    """Hash of the EVALUATION BODY (the payload EXCLUDING the embedded envelope), using the SAME
+    canonicalisation as the Layer-9 gate, so the gate and the evaluator agree on the binding. NB:
+    this is a DIFFERENT scope from the kernel's ``payload_hash`` (which covers the whole stored
+    object including the envelope) - hence the distinct name ``evaluation_body_hash``."""
+    from desi_layer9.trial_event_validation import canonical_payload
     body = {k: v for k, v in payload.items() if k != ENVELOPE_KEY}
-    return _bytes_hash(_canonical_json_bytes(body))
+    return _bytes_hash(canonical_payload(body).encode("utf-8"))
 
 
 def _split_journal(stored: dict) -> tuple[dict | None, dict]:
@@ -646,20 +652,33 @@ def make_rule_entry(rule_id: str, spec_hash: str, fn) -> EvaluationArtifact:
     """Compatibility shim: a LIVE artifact whose implementation_hash is COMPUTED from ``fn`` and
     which binds the current validator + contract + decoder."""
     from desi_layer9.trial_event_validation import cross_block_consistency
-    return make_live_artifact(rule_id, SCHEMA_VERSION, fn, cross_block_consistency, check_contract)
+    return make_live_artifact(rule_id, JOURNAL_SCHEMA_VERSION, fn, cross_block_consistency,
+                              check_contract)
 
 
 def build_rule_registry(artifacts):
-    """An APPEND-ONLY, immutable catalog keyed by ``(rule_id, implementation_hash)``. A key may
-    never be overwritten - to keep an irreversible journal reproducible, a changed rule is ADDED as
-    a new artifact (with the old one archived byte-for-byte), never replacing an existing one."""
+    """An APPEND-ONLY, immutable catalog keyed by the composite ``capsule_hash`` - so two capsules
+    with the SAME rule (same rule_hash) but a different validator/contract/decoder/loader/exec-env
+    coexist without hash tricks. A capsule_hash may never be overwritten."""
     reg: dict = {}
     for a in artifacts:
-        key = (a.rule_id, a.implementation_hash)
-        if key in reg:
-            raise ValueError(f"rule registry is append-only; {key} is already registered")
-        reg[key] = a
+        if a.capsule_hash in reg:
+            raise ValueError(f"rule registry is append-only; capsule {a.capsule_hash} is already "
+                             "registered")
+        reg[a.capsule_hash] = a
     return MappingProxyType(reg)
+
+
+def _resolve_capsule_hash(registry, rule_id: str, rule_hash: str) -> str | None:
+    """Find the capsule_hash whose artifact has this (rule_id, rule_hash). Used WRITER-side to
+    new event; ambiguity (two capsules share the rule) is an explicit error - the writer must then
+    name the capsule_hash directly."""
+    hits = [a.capsule_hash for a in registry.values()
+            if a.rule_id == rule_id and a.implementation_hash == rule_hash]
+    if len(hits) > 1:
+        raise ValueError(f"rule '{rule_id}'@'{rule_hash}' maps to multiple capsules; name the "
+                         "capsule_hash explicitly")
+    return hits[0] if hits else None
 
 
 # THE PRODUCTION CATALOG - append-only, immutable, byte-pinned. The archived r6 rule is loaded from
@@ -675,10 +694,11 @@ RULE_V2_R6_HASH = _bytes_hash(_R6_RULE_SRC)             # the real historical ha
 
 def _default_registry():
     return build_rule_registry([
-        make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
+        make_archived_artifact("rule_v2", JOURNAL_SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
                                _R6_CONTRACT_SRC, _DECODE_V3_SRC,
                                expected_rule_hash=RULE_V2_R6_HASH),
-        make_live_artifact("rule_v2", SCHEMA_VERSION, _rule_v2, _live_cross_block, check_contract),
+        make_live_artifact("rule_v2", JOURNAL_SCHEMA_VERSION, _rule_v2, _live_cross_block,
+                           check_contract),
     ])
 
 
@@ -786,14 +806,13 @@ def _resolve_artifact(art: EvaluationArtifact) -> _Resolved:
 
 
 def evaluate_envelope(envelope: dict, payload: dict, registry=None) -> dict:
-    """THE canonical evaluation entry. Routing comes from a STABLE ``evaluation_envelope``
-    schema-dependent payload field paths): ``envelope_version``, ``schema_version``, ``rule_id``,
-    ``rule_hash``, ``claimed_verdict``, ``payload_hash`` (and optionally ``capsule_hash``). The
-    artifact is selected from the envelope; the payload is bound by ``payload_hash``; then the
-    artifact's OWN pinned loader compiles its OWN byte-pinned decoder -> contract -> validator ->
-    input-adapter -> rule, all run on the payload. EVERY component hash (incl. adapter, exec-env and
-    the composite capsule) is re-derived and checked. ``status`` in {"verified", "inconsistent",
-    "unverifiable", "not_applicable"}."""
+    """THE canonical evaluation entry. Routing comes from a STABLE ``evaluation_envelope``: it
+    addresses the WHOLE capsule by the MANDATORY ``capsule_hash`` (rule_id/rule_hash are
+    cross-checks only); the payload BODY is bound by ``evaluation_body_hash``. Then the artifact's
+    OWN re-attested loader compiles its OWN byte-pinned decoder -> contract -> validator ->
+    input-adapter -> rule. EVERY component hash (incl. adapter, exec-env and the composite capsule)
+    is re-derived and checked. ``status`` in {"verified", "inconsistent", "unverifiable",
+    "not_applicable"}."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
     if envelope.get("envelope_version") != EVALUATION_ENVELOPE_VERSION:
         return {"status": "unverifiable",
@@ -801,18 +820,25 @@ def evaluate_envelope(envelope: dict, payload: dict, registry=None) -> dict:
                           f"{envelope.get('envelope_version')!r} - fail-closed routing"}
     rule_id, rule_hash_claim = envelope.get("rule_id"), envelope.get("rule_hash")
     claimed_verdict, schema_claim = envelope.get("claimed_verdict"), envelope.get("schema_version")
+    capsule_claim = envelope.get("capsule_hash")
     if claimed_verdict not in RULE_EVALUABLE_RESULTS:
         return {"status": "not_applicable", "reason": "no rule-evaluable verdict (not_evaluated)"}
-    # the payload is bound to the envelope - it cannot be swapped under the same routing.
-    if envelope.get("payload_hash") != _payload_hash(payload):
+    # the capsule_hash is the MANDATORY routing key - it addresses the whole evaluator, not just a
+    # rule. A missing/unknown capsule_hash fails closed.
+    if not capsule_claim:
         return {"status": "unverifiable",
-                "reason": "payload_hash does not match the payload - envelope/payload binding "
-                          "broken"}
-    art = reg.get((rule_id, rule_hash_claim))
+                "reason": "envelope carries no capsule_hash - the whole-capsule address is "
+                          "mandatory; fail-closed routing"}
+    # the BODY is bound to the envelope - it cannot be swapped under the same routing.
+    if envelope.get("evaluation_body_hash") != evaluation_body_hash(payload):
+        return {"status": "unverifiable",
+                "reason": "evaluation_body_hash does not match the payload body - envelope/payload "
+                          "binding broken"}
+    art = reg.get(capsule_claim)
     if art is None:
         return {"status": "unverifiable",
-                "reason": f"decision rule '{rule_id}'@'{rule_hash_claim}' is not in the registered "
-                          "append-only catalog - no trustworthy verdict"}
+                "reason": f"capsule '{capsule_claim}' is not in the registered append-only catalog "
+                          "- no trustworthy verdict"}
     if schema_claim != art.schema_version:
         return {"status": "unverifiable",
                 "reason": f"envelope schema '{schema_claim}' != artifact schema "
@@ -821,19 +847,20 @@ def evaluate_envelope(envelope: dict, payload: dict, registry=None) -> dict:
         r = _resolve_artifact(art)
     except Exception as exc:  # noqa: BLE001
         return {"status": "unverifiable", "reason": f"artifact could not be resolved ({exc!r})"}
-    # every component hash (and the composite capsule) must match BEFORE its code is trusted.
+    # every component hash (and the composite capsule) must match BEFORE its code is trusted. The
+    # capsule_hash claimed in the ENVELOPE must equal the re-derived one AND the artifact's.
     checks = [
         ("implementation_hash", r.rule_hash, art.implementation_hash),
-        ("rule selector", r.rule_hash, rule_hash_claim),
+        ("rule transparency", r.rule_hash, rule_hash_claim),
         ("validator_hash", r.validator_hash, art.validator_hash),
         ("decoder_hash", r.decoder_hash, art.decoder_hash),
         ("input_contract_hash", r.contract_hash, art.input_contract_hash),
         ("input_adapter_hash", r.adapter_hash, art.input_adapter_hash),
         ("exec_env_hash", r.exec_env_hash, art.exec_env_hash),
         ("capsule_hash", r.capsule_hash, art.capsule_hash),
+        ("envelope capsule_hash", r.capsule_hash, capsule_claim),
+        ("rule_id transparency", art.rule_id, rule_id),
     ]
-    if envelope.get("capsule_hash") is not None:        # optional, stronger addressing
-        checks.append(("envelope capsule_hash", r.capsule_hash, envelope.get("capsule_hash")))
     for name, derived, claimed in checks:
         if derived is None or derived != claimed:
             return {"status": "unverifiable",
@@ -862,33 +889,49 @@ def evaluate_envelope(envelope: dict, payload: dict, registry=None) -> dict:
     return {"status": "verified", "computed": computed}
 
 
-def envelope_for_payload(payload: dict) -> dict:
-    """Build the stable evaluation envelope for a CURRENT-schema (v3) payload. The only place
-    that reads v3 payload field paths; a future schema that relocates routing supplies its own
-    envelope and this bridge is not used for it."""
-    d = payload.get("decision") or {}
+def envelope_for_payload(payload: dict, capsule_hash: str, registry=None) -> dict:
+    """WRITER-SIDE helper: build the stable evaluation envelope to be STORED with the body. It pins
+    the whole-capsule address (``capsule_hash``, mandatory) and the body binding
+    (``evaluation_body_hash``). It is NOT used in historical replay - replay reads the stored
+    envelope - and it is the only place that reads the current body field paths."""
+    body = {k: v for k, v in payload.items() if k != ENVELOPE_KEY}
+    d = body.get("decision") or {}
     return {"envelope_version": EVALUATION_ENVELOPE_VERSION,
-            "schema_version": payload.get("schema_version"),
+            "schema_version": body.get("schema_version"),
             "rule_id": d.get("decision_rule_id"), "rule_hash": d.get("decision_rule_hash"),
-            "claimed_verdict": d.get("verdict"), "payload_hash": _payload_hash(payload)}
+            "capsule_hash": capsule_hash, "claimed_verdict": d.get("verdict"),
+            "evaluation_body_hash": evaluation_body_hash(body)}
+
+
+def seal_payload(payload: dict, registry=None) -> dict:
+    """Seal a v3-style body into a v4 STORED journal object: set schema_version=v4, resolve the
+    capsule for the cited (rule_id, rule_hash), and embed the evaluation envelope. WRITER-side."""
+    reg = DEFAULT_RULE_REGISTRY if registry is None else registry
+    body = {k: v for k, v in payload.items() if k != ENVELOPE_KEY}
+    body["schema_version"] = JOURNAL_SCHEMA_VERSION
+    d = body.get("decision") or {}
+    ch = _resolve_capsule_hash(reg, d.get("decision_rule_id"), d.get("decision_rule_hash"))
+    return {**body, ENVELOPE_KEY: envelope_for_payload(body, ch, reg)}
 
 
 def evaluate_payload(stored: dict, registry=None) -> dict:
-    """Evaluate a STORED journal object. If it carries an embedded ``evaluation_envelope`` (the
-    normal replay case, written by ``to_journal``), routing uses THAT stored envelope - never a live
-    bridge. Only an envelope-less (legacy) payload falls back to ``envelope_for_payload`` (a
-    writer-side helper, explicitly NOT part of historical replay)."""
+    """Evaluate a STORED journal object. A SEALED object (an embedded envelope, written by
+    by ``to_journal``/``seal_payload``) routes from that STORED envelope - never a live bridge. An
+    envelope-LESS (legacy v3) object is ``legacy_unsealed``: VISIBLE but never reconstructed into a
+    verified verdict by today's code (no historical provenance => no epistemic weight)."""
     env, payload = _split_journal(stored)
     if env is None:
-        env = envelope_for_payload(payload)
+        return {"status": "legacy_unsealed",
+                "reason": "no stored evaluation envelope - this event was not sealed at write; "
+                          "it is not reconstructed into a verified verdict by current code"}
     return evaluate_envelope(env, payload, registry)
 
 
 def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
-    """Convenience wrapper: serialise a LIVE event to its STORED journal object (payload + embedded
+    """Convenience wrapper: serialise a LIVE event to its SEALED journal object (v4 body + embedded
     envelope) and evaluate it. The envelope is built once at journaling; replay then uses the stored
     envelope, so a later change to ``envelope_for_payload`` cannot re-route a stored event."""
-    return evaluate_payload(ev.to_journal(), registry)
+    return evaluate_payload(ev.to_journal(registry), registry)
 
 
 # ================================================================================================ #
@@ -1051,18 +1094,19 @@ def _as_journal(x) -> dict:
 
 
 def verify_payloads(stored: list[dict], registry=None) -> list[VerifiedTrialEvidence]:
-    """Turn STORED journal objects (envelope + payload) into aggregable evidence: structurally valid
-    AND verified by the version-pinned capsule via ``evaluate_envelope`` on the stored pair. No
-    current dataclass reconstruction is a precondition. Unverifiable / inconsistent / invalid
-    invalid objects carry no weight."""
+    """Turn SEALED STORED journal objects (an embedded envelope + body) into aggregable evidence:
+    structurally valid AND verified by the version-pinned capsule via ``evaluate_envelope`` on the
+    STORED pair. An envelope-LESS (legacy_unsealed) object NEVER becomes evidence - it carries no
+    epistemic weight and is never reconstructed by a live bridge. No dataclass reconstruction is a
+    precondition; unverifiable / inconsistent / invalid objects carry no weight."""
     from desi_layer9.trial_event_validation import validate_trial_payload
     out: list[VerifiedTrialEvidence] = []
     for obj in stored:
         env, payload = _split_journal(_as_journal(obj))
+        if env is None:                                  # legacy_unsealed: no historical envelope
+            continue
         if validate_trial_payload(payload):
             continue
-        if env is None:
-            env = envelope_for_payload(payload)
         if evaluate_envelope(env, payload, registry)["status"] == "verified":
             verdict = payload.get("epistemic_result")
             out.append(VerifiedTrialEvidence(

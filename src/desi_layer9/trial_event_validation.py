@@ -16,11 +16,18 @@ is immutable (a string), tamper-evident (hashable), and comparable for idempoten
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 from numbers import Number
 
-SUPPORTED_TRIAL_SCHEMA_VERSIONS = ("method_trial_recorded_v3",)
+# v3 = legacy/unsealed; v4 = SEALED (must embed a bound ``evaluation_envelope`` incl. capsule_hash).
+SCHEMA_V3 = "method_trial_recorded_v3"
+SCHEMA_V4 = "method_trial_recorded_v4"
+SUPPORTED_TRIAL_SCHEMA_VERSIONS = (SCHEMA_V3, SCHEMA_V4)
+EVALUATION_ENVELOPE_KEY = "evaluation_envelope"
+_ENVELOPE_REQUIRED = ("envelope_version", "schema_version", "rule_id", "rule_hash", "capsule_hash",
+                      "claimed_verdict", "evaluation_body_hash")
 
 # Per-rule STRUCTURAL input contracts: which measurement fields a real verdict under a given rule
 # must carry before it may enter the journal. The core does NOT compute the verdict - it only
@@ -60,6 +67,38 @@ def canonical_payload(payload: dict) -> str:
     """Deterministic canonical JSON of a payload (sorted keys, compact, deep). Round-tripping
     through json also yields plain, fully-detached data - no shared nested references survive."""
     return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
+
+def evaluation_body_hash(stored: dict) -> str:
+    """sha256 of the canonical EVALUATION BODY (the stored object EXCLUDING the embedded envelope).
+    This is a DIFFERENT scope from the kernel's ``payload_hash`` (whole stored object) - hence the
+    distinct name. Gate and evaluator share this canonicalisation so the binding is checkable."""
+    body = {k: v for k, v in stored.items() if k != EVALUATION_ENVELOPE_KEY}
+    return "sha256:" + hashlib.sha256(canonical_payload(body).encode("utf-8")).hexdigest()
+
+
+def validate_evaluation_envelope(stored: dict) -> list[str]:
+    """Structural + binding validation of a SEALED v4 object's embedded ``evaluation_envelope``. The
+    envelope must be present, complete, agree on schema_version, and BIND the body via
+    ``evaluation_body_hash``. A v4 object without a bound envelope is rejected at the gate, so the
+    journal never holds a v4 'sealed' event that is not actually sealed."""
+    env = stored.get(EVALUATION_ENVELOPE_KEY)
+    if not isinstance(env, dict):
+        return [f"a {SCHEMA_V4} event must embed an '{EVALUATION_ENVELOPE_KEY}' object"]
+    errs = [f"evaluation_envelope missing '{k}'" for k in _ENVELOPE_REQUIRED if not env.get(k)]
+    if errs:
+        return errs
+    if env.get("schema_version") != stored.get("schema_version"):
+        errs.append("evaluation_envelope.schema_version must equal the event schema_version")
+    if env.get("evaluation_body_hash") != evaluation_body_hash(stored):
+        errs.append("evaluation_envelope.evaluation_body_hash does not bind the stored body")
+    d = stored.get("decision") or {}
+    if env.get("rule_id") != d.get("decision_rule_id") or env.get("rule_hash") != \
+            d.get("decision_rule_hash"):
+        errs.append("evaluation_envelope rule_id/rule_hash must match the decision block")
+    if env.get("claimed_verdict") != d.get("verdict"):
+        errs.append("evaluation_envelope.claimed_verdict must match the decision verdict")
+    return errs
 
 
 def _nonempty_str(v) -> bool:

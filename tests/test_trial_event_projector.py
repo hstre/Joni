@@ -70,9 +70,21 @@ def _harmful(trial_id, **kw):
     return _payload(trial_id, "harmful", effect=-0.18, ci=(-0.24, -0.12), **kw)
 
 
+def _seal_if_known(payload):
+    # SEAL into the v4 journal format when the cited rule resolves to a registered capsule; an
+    # unknown/stale rule cannot be sealed (no capsule) and stays a legacy v3 (unsealed) event -
+    # visible, but never reconstructed into a verified verdict.
+    from joni.autonomy import trial_event_schema as s
+    d = payload.get("decision") or {}
+    ch = s._resolve_capsule_hash(s.DEFAULT_RULE_REGISTRY, d.get("decision_rule_id"),
+                                 d.get("decision_rule_hash"))
+    return s.seal_payload(payload) if ch else payload
+
+
 def _record(core, payload):
     return core.submit(l9.make_proposal(
-        PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=payload, proposer="kevin",
+        PT.METHOD_PROPOSAL, OP.METHOD_TRIAL_RECORDED, payload=_seal_if_known(payload),
+        proposer="kevin",
         provenance=Provenance.from_model(external=False, model_id="kevin")), actor="kevin")
 
 
@@ -100,7 +112,7 @@ def test_success_with_unknown_rule_hash_is_registered_but_unverifiable():
     _record(core, _payload("t:succ", "success", rule_hash="sha256:bogus"))
     e = _event(project_trial_events(core), "t:succ")
     assert e["record_status"] == "registered" and e["event_usability"] == "usable"
-    assert e["decision_status"] == "unverifiable" and e["epistemic_weight"] == "none"
+    assert e["decision_status"] == "legacy_unsealed" and e["epistemic_weight"] == "none"
     assert e["reported_result"] == "success"            # not counted as success, not removed
 
 
@@ -175,9 +187,9 @@ def test_two_scopes_of_one_conflict_do_not_jointly_satisfy():
 
 # -- 5. an unsupported schema stays visible as a projector limitation ---------------------------- #
 def test_unsupported_schema_is_visible_not_silently_dropped():
-    env = {"object_id": "MTE-9", "schema_version": "method_trial_recorded_v4",
+    env = {"object_id": "MTE-9", "schema_version": "method_trial_recorded_v5",
            "record_authority": "authoritative", "epistemic_authority": "none",
-           "payload": {"trial_id": "t:future", "schema_version": "method_trial_recorded_v4",
+           "payload": {"trial_id": "t:future", "schema_version": "method_trial_recorded_v5",
                        "target_type": "conflict", "target_id": "X1", "epistemic_result": "success"}}
     e = project_trial_events(_StubCore([env]))["events"][0]
     assert e["record_status"] == "registered"
@@ -236,8 +248,9 @@ def test_projection_is_deterministic():
 
 # -- the projector NEVER crashes on an accepted/registered payload ------------------------------- #
 def _env(payload, oid="MTE-x"):
-    return {"object_id": oid, "schema_version": payload.get("schema_version"),
-            "record_authority": "authoritative", "epistemic_authority": "none", "payload": payload}
+    obj = _seal_if_known(payload)
+    return {"object_id": oid, "schema_version": obj.get("schema_version"),
+            "record_authority": "authoritative", "epistemic_authority": "none", "payload": obj}
 
 
 def test_malformed_payload_is_invalid_not_a_crash_and_others_still_project():
@@ -310,4 +323,4 @@ def test_stale_rule_implementation_hash_projects_as_unverifiable():
     p = _payload("s", "success")
     p["decision"] = dict(p["decision"], decision_rule_hash="sha256:" + "0" * 64)
     ev = project_trial_events(_StubCore([_env(p, "MTE-1")]))["events"][0]
-    assert ev["decision_status"] == "unverifiable" and ev["epistemic_weight"] == "none"
+    assert ev["decision_status"] == "legacy_unsealed" and ev["epistemic_weight"] == "none"
