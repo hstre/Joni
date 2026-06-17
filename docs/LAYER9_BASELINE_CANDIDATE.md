@@ -8,25 +8,56 @@ stays locked until then.
 
 | | |
 |---|---|
-| **Baseline candidate (code)** | `37e5206` (review round 10) |
-| **Superseded candidates** | `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
+| **Baseline candidate (code)** | `b0c5b34` (review round 11) |
+| **Superseded candidates** | `37e5206` (r10) · `41bc8a4` (r9) · `60a77c9` (r8) · `b91a80f` (r7) · `7810e25` (r6) · `e5cf6ca` (r5) · `1b1e6bf` (r4) · `dfb7d75` (r3) · `c5fdd9a` (r2) · `61118b3` (r1) — all *rejected pending fixes* by independent review |
 | **Last accepted Layer-9 state (base)** | `282d541` (`Schema v3: …proposal-only`) — no kernel change up to here |
 | **Branch** | `claude/kevin-creativity-architecture-ukz17g` |
 
 Full diff to review:
 
 ```
-git diff 282d541 37e5206 -- src/desi_layer9 \
+git diff 282d541 b0c5b34 -- src/desi_layer9 \
   src/joni/autonomy/trial_event_projector.py src/joni/autonomy/trial_event_schema.py \
   src/joni/autonomy/rule_artifacts
 ```
 
 Adding this governance doc changes **no** kernel/projector/test file, so the kernel+projector tree
-is byte-identical at `37e5206` and at this doc's commit.
+is byte-identical at `b0c5b34` and at this doc's commit.
 
 > **The base test suite is now self-sufficient:** it passes with the optional `desi` extra
-> **blocked** (525 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
+> **blocked** (535 passed, 7 skipped, 0 failed) — the DESi mapping is an optional integration test
 > (`importorskip`). Pinning the DESi extra to a commit SHA remains a `dependency_manifest` TODO.
+>
+> **A full repository archive is shipped this round** (`git archive b0c5b34`): `pytest -q` and
+> `ruff check .` run from the extracted tree with **no** manual `PYTHONPATH` (pyproject sets
+> `pythonpath = ["src"]`). The focused review subset is provided additionally.
+
+### Review round 11 — validator, input-contract and schema/decoder are CAUSALLY bound (vs `37e5206`)
+
+1. **Validator hash is re-derived and checked before the validator is trusted.** `_resolve_artifact`
+   recomputes the validator hash from the actual (byte-pinned for archived, live for current)
+   validator; `evaluate_decision` rejects a mismatch as `unverifiable` **before** running it. The
+   attack *real rule bytes + copied `validator_hash` 9b4a64c1… + manipulated validator bytes
+   2cc80f77… returning `[]`* now returns `unverifiable`, not `verified`.
+2. **Input contract is hash-checked AND applied.** The byte-pinned canonical-JSON contract's hash is
+   re-derived at use (stale/forged → `unverifiable`); `_apply_input_contract` enforces
+   `require_effect` / `require_confidence_interval` / `required_measurement_fields` before
+   validator+rule (unmet → `inconsistent`). The production r6 artifact carries the **real** historical
+   contract `{require_effect, require_confidence_interval}`, not `{}`.
+3. **`schema_version` + input decoder are operative.** `MethodTrialRecorded` carries a recorded
+   `schema_version`; `evaluate_decision` refuses an artifact whose `schema_version` ≠ the event's
+   (→ `unverifiable`). The input projection is a versioned, hashed decoder (`_decode_v3`, byte-pinned
+   `decode_v3.pysrc`); `decoder_hash` and `canonical_input_projection_hash` are re-derived at use and
+   the artifact's **own** decoder builds the blocks — `_blocks()` no longer silently applies today's
+   field semantics to old events.
+
+New byte-pinned artifacts: `decode_v3.pysrc` (`sha256:5b85b74f…`), `rule_v2_r6.contract.json`
+(`sha256:92c77200…`). New tests (round 11, 11 tests): validator-bytes swap with copied hash →
+`unverifiable`; live validator hash re-attested each use; contract swap with stale hash →
+`unverifiable`; contract actually applied; real r6 contract requires effect+CI; a new artifact may
+carry a stricter contract while the old event stays under its own; schema-version mismatch →
+`unverifiable`; decoder-bytes swap with copied hash → `unverifiable`; production r6 artifact binds
+decoder+contract+validator.
 
 ### Review round 10 — historical evaluation is byte-pinned (rule + validator + contract) (vs `41bc8a4`)
 
@@ -235,7 +266,7 @@ promotion/discard reads it.
 **`tests/test_trial_event_schema.py`** (already accepted) — v3 schema validation, rule evaluator,
 independence policy.
 
-Full suite at `37e5206`: **532 passed / 2 skipped with the `desi` extra; 525 passed / 7 skipped with
+Full suite at `b0c5b34`: **542 passed / 2 skipped with the `desi` extra; 535 passed / 7 skipped with
 `desi` BLOCKED (0 failed); ruff clean.**
 
 ## Known technical debt
@@ -295,7 +326,7 @@ does_not_prove:
 
 ## Designation procedure (human)
 
-1. Review the diff `282d541..37e5206` and this package.
+1. Review the diff `282d541..b0c5b34` and this package.
 2. Explicitly designate a commit as the **human-reviewed Layer-9 baseline**.
 3. Only then: implement `layer9_kernel_lock` resolution over `src/desi_layer9` and run the **human**
    `lock` to freeze that commit (per `PROTECTION_ZONES.md`).
