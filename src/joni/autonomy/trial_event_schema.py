@@ -167,12 +167,13 @@ class MethodTrialRecorded:
     legacy_validation: LegacyValidation | None = None
     note: str = ""
     field_sources: dict = field(default_factory=dict)
+    schema_version: str = SCHEMA_VERSION        # the schema this event was RECORDED under
 
     def to_dict(self) -> dict:
         m, e, d = self.measurement, self.estimand, self.decision
         lv = self.legacy_validation
         return {
-            "schema_version": SCHEMA_VERSION, "event_type": EVENT_TYPE,
+            "schema_version": self.schema_version, "event_type": EVENT_TYPE,
             "trial_id": self.trial_id, "timestamp": self.timestamp, "ledger_tick": self.ledger_tick,
             "target_type": self.target_type, "target_id": self.target_id,
             "claim_ids": list(self.claim_ids),
@@ -372,11 +373,14 @@ RULE_V2_HASH = RULE_V2_IMPL_HASH                     # the event's decision_rule
 @dataclass(frozen=True)
 class EvaluationArtifact:
     """A VERSION-PINNED evaluation bundle keyed by ``(rule_id, implementation_hash)``. It binds the
-    WHOLE evaluation of an event - rule + validator + input-contract + schema_version - so a future
-    change to the live rule OR the live validator can never re-interpret an old event: the event's
-    ``decision_rule_hash`` selects the artifact, and the artifact's OWN (byte-pinned for archived,
-    live for current) rule and validator are used. ``implementation_hash`` is re-derived at use, so
-    a forged artifact (claimed hash, different code) is rejected."""
+    WHOLE evaluation of an event - schema_version + input decoder + input-contract + validator +
+    rule - so a future change to *any* live component can never re-interpret an old event. The
+    event's ``decision_rule_hash`` selects the artifact; the artifact's OWN (byte-pinned for
+    archived, live for current) decoder, contract, validator and rule are used. EVERY hash
+    (``implementation_hash``, ``validator_hash``, ``input_contract_hash``, ``decoder_hash``,
+    ``canonical_input_projection_hash``) is RE-DERIVED from the actual artifact at use and checked
+    against the claim, so a forged artifact (claimed hash, different code/contract) is rejected
+    before its code is trusted. ``schema_version`` must equal the event's recorded schema."""
 
     rule_id: str
     schema_version: str
@@ -384,10 +388,15 @@ class EvaluationArtifact:
     validator_hash: str
     input_contract_hash: str
     input_contract: dict
+    decoder_hash: str = ""
+    canonical_input_projection_hash: str = ""
     rule_fn: object = None
     rule_source: bytes | None = None        # byte-pinned source for ARCHIVED versions
     validator_fn: object = None
     validator_source: bytes | None = None   # byte-pinned validator snapshot for ARCHIVED versions
+    contract_source: bytes | None = None    # byte-pinned canonical-JSON contract for ARCHIVED
+    decoder_fn: object = None
+    decoder_source: bytes | None = None     # byte-pinned input-decoder snapshot for ARCHIVED
 
 
 RuleEntry = EvaluationArtifact                # backwards-compatible alias
@@ -404,9 +413,13 @@ def _bytes_hash(b: bytes) -> str:
     return "sha256:" + hashlib.sha256(b).hexdigest()
 
 
-def _contract_hash(d: dict) -> str:
+def _canonical_contract_bytes(d: dict) -> bytes:
     import json
-    return "sha256:" + hashlib.sha256(json.dumps(d, sort_keys=True).encode("utf-8")).hexdigest()
+    return json.dumps(d, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def _contract_hash(d: dict) -> str:
+    return _bytes_hash(_canonical_contract_bytes(d))
 
 
 def _read_artifact(name: str) -> bytes:
@@ -427,31 +440,106 @@ def _exec_callable(src: bytes, name: str, extra: dict | None = None):
     return ns[name]
 
 
-def make_live_artifact(rule_id, schema_version, rule_fn, validator_fn, input_contract):
-    """An artifact bound to LIVE functions; their hashes track the current source."""
+def _decode_v3(ev: MethodTrialRecorded):
+    """The v3 canonical INPUT projection: event -> (measurement, decision, estimand) block dicts.
+    This is the ONLY place that maps event fields to the validator/rule input. It is versioned and
+    HASHED (``decoder_hash``) so a historical event is never silently re-projected by a changed
+    decoder; a historical artifact carries its own byte-pinned decoder snapshot."""
+    m, d, e = ev.measurement, ev.decision, ev.estimand
+    meas = {"metric_name": m.metric_name, "baseline_value": m.baseline_value,
+            "intervention_value": m.intervention_value, "effect_size": m.effect_size,
+            "uncertainty": m.uncertainty, "confidence_interval": m.confidence_interval}
+    dec = {"effect_size": d.effect_size, "minimum_effect": d.minimum_effect,
+           "confidence_interval": d.confidence_interval}
+    est = {"outcome_metric": e.outcome_metric, "contrast": e.contrast, "direction": e.direction,
+           "minimum_effect": e.minimum_effect}
+    return meas, dec, est
+
+
+def _projection_schema_hash(meas: dict, dec: dict, est: dict) -> str:
+    """Hash of the KEY-SCHEMA a decoder emits (not the values). Re-derived from the actual decode at
+    use, so a decoder that emits a different input shape than the artifact declares is rejected."""
+    schema = {"measurement": sorted(meas), "decision": sorted(dec), "estimand": sorted(est)}
+    return _bytes_hash(_canonical_contract_bytes(schema))
+
+
+# a value-free probe used ONLY to derive the key-schema a decoder produces at artifact-build time.
+_PROJECTION_PROBE = None
+
+
+def _projection_hash_of(decoder_fn) -> str:
+    global _PROJECTION_PROBE
+    if _PROJECTION_PROBE is None:
+        _PROJECTION_PROBE = MethodTrialRecorded(trial_id="_probe", timestamp="_", ledger_tick=0,
+                                                target_type="_", target_id="_")
+    return _projection_schema_hash(*decoder_fn(_PROJECTION_PROBE))
+
+
+def _apply_input_contract(contract: dict, meas: dict, dec: dict, est: dict) -> list[str]:
+    """Enforce the historical input contract BEFORE the validator/rule run. Unmet required inputs
+    make the event non-evaluable under THIS contract (reported as a structural inconsistency)."""
+    errors: list[str] = []
+    if contract.get("require_effect") and meas.get("effect_size") is None:
+        errors.append("input contract requires measurement.effect_size")
+    if contract.get("require_confidence_interval") and meas.get("confidence_interval") is None:
+        errors.append("input contract requires measurement.confidence_interval")
+    blocks = {"measurement": meas, "decision": dec, "estimand": est}
+    for spec in contract.get("required_fields", ()):
+        block, _, fld = spec.partition(".")
+        if meas.get(spec) is not None or (block in blocks and blocks[block].get(fld) is not None):
+            continue
+        errors.append(f"input contract requires non-null '{spec}'")
+    for fld in contract.get("required_measurement_fields", ()):
+        if meas.get(fld) is None:
+            errors.append(f"input contract requires non-null measurement.{fld}")
+    return errors
+
+
+def _as_contract(contract) -> tuple[dict, bytes]:
+    """Accept a dict (canonicalised to bytes) or already-canonical bytes; return (dict, bytes)."""
+    import json
+    if isinstance(contract, (bytes, bytearray)):
+        return json.loads(bytes(contract).decode("utf-8")), bytes(contract)
+    return dict(contract), _canonical_contract_bytes(contract)
+
+
+def make_live_artifact(rule_id, schema_version, rule_fn, validator_fn, input_contract,
+                       decoder_fn=_decode_v3):
+    """An artifact bound to LIVE functions; every hash tracks the current source."""
+    cdict, cbytes = _as_contract(input_contract)
     return EvaluationArtifact(
         rule_id, schema_version, implementation_hash=_impl_hash(rule_fn),
-        validator_hash=_impl_hash(validator_fn), input_contract_hash=_contract_hash(input_contract),
-        input_contract=dict(input_contract), rule_fn=rule_fn, validator_fn=validator_fn)
+        validator_hash=_impl_hash(validator_fn), input_contract_hash=_bytes_hash(cbytes),
+        input_contract=cdict, decoder_hash=_impl_hash(decoder_fn),
+        canonical_input_projection_hash=_projection_hash_of(decoder_fn),
+        rule_fn=rule_fn, validator_fn=validator_fn, decoder_fn=decoder_fn)
 
 
-def make_archived_artifact(rule_id, schema_version, rule_src, validator_src, input_contract,
-                           *, expected_rule_hash=None):
-    """An artifact whose rule + validator are BYTE-PINNED verbatim source. The implementation hash
-    is the sha256 of the stored rule bytes - the REAL historical hash, not one recomputed from a
-    later copy. A pinned ``expected_rule_hash`` (from the prior release) is enforced."""
+def make_archived_artifact(rule_id, schema_version, rule_src, validator_src, contract,
+                           decoder_src=None, *, expected_rule_hash=None):
+    """An artifact whose decoder + contract + validator + rule are ALL BYTE-PINNED verbatim. The
+    implementation hash is the sha256 of the stored rule bytes - the REAL historical hash, not one
+    recomputed from a later copy. A pinned ``expected_rule_hash`` (from the prior release) is
+    enforced. ``contract`` may be canonical-JSON bytes (byte-pinned) or a dict; ``decoder_src``
+    defaults to the v3 decoder snapshot."""
     rh = _bytes_hash(rule_src)
     if expected_rule_hash is not None and rh != expected_rule_hash:
         raise ValueError(f"archived rule artifact hash {rh} != expected {expected_rule_hash}")
+    cdict, cbytes = _as_contract(contract)
+    dsrc = _DECODE_V3_SRC if decoder_src is None else decoder_src
+    decoder_fn = _exec_callable(dsrc, "_decode_v3")
     return EvaluationArtifact(
         rule_id, schema_version, implementation_hash=rh, validator_hash=_bytes_hash(validator_src),
-        input_contract_hash=_contract_hash(input_contract), input_contract=dict(input_contract),
-        rule_source=rule_src, validator_source=validator_src)
+        input_contract_hash=_bytes_hash(cbytes), input_contract=cdict,
+        decoder_hash=_bytes_hash(dsrc),
+        canonical_input_projection_hash=_projection_hash_of(decoder_fn),
+        rule_source=rule_src, validator_source=validator_src, contract_source=cbytes,
+        decoder_source=dsrc)
 
 
 def make_rule_entry(rule_id: str, spec_hash: str, fn) -> EvaluationArtifact:
     """Compatibility shim: a LIVE artifact whose implementation_hash is COMPUTED from ``fn`` and
-    which binds the current validator + input contract."""
+    which binds the current validator + input contract + decoder."""
     from desi_layer9.trial_event_validation import (
         RULE_INPUT_CONTRACTS,
         cross_block_consistency,
@@ -474,10 +562,12 @@ def build_rule_registry(artifacts):
 
 
 # THE PRODUCTION CATALOG - append-only, immutable, byte-pinned. The archived r6 rule is loaded from
-# its VERBATIM historical source (its hash is the REAL prior-release hash), with a byte-pinned
-# snapshot of the validator it is evaluated under; the current rule is live.
+# its VERBATIM historical source (its hash is the REAL prior-release hash), together with byte-
+# pinned snapshots of the decoder, contract and validator it ran under; the current rule is live.
 _R6_RULE_SRC = _read_artifact("rule_v2_r6.pysrc")
 _CROSS_BLOCK_V1_SRC = _read_artifact("cross_block_v1.pysrc")
+_DECODE_V3_SRC = _read_artifact("decode_v3.pysrc")
+_R6_CONTRACT_SRC = _read_artifact("rule_v2_r6.contract.json")
 RULE_V2_R6_HASH = _bytes_hash(_R6_RULE_SRC)             # the real historical hash (2438455f...)
 
 
@@ -487,8 +577,9 @@ def _default_registry():
         cross_block_consistency,
     )
     return build_rule_registry([
-        make_archived_artifact("rule_v2", "method_trial_recorded_v3@r6", _R6_RULE_SRC,
-                               _CROSS_BLOCK_V1_SRC, {}, expected_rule_hash=RULE_V2_R6_HASH),
+        make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
+                               _R6_CONTRACT_SRC, _DECODE_V3_SRC,
+                               expected_rule_hash=RULE_V2_R6_HASH),
         make_live_artifact("rule_v2", SCHEMA_VERSION, _rule_v2, cross_block_consistency,
                            RULE_INPUT_CONTRACTS.get("rule_v2", {})),
     ])
@@ -498,15 +589,8 @@ DEFAULT_RULE_REGISTRY = _default_registry()
 
 
 def _blocks(ev: MethodTrialRecorded):
-    m, d, e = ev.measurement, ev.decision, ev.estimand
-    meas = {"metric_name": m.metric_name, "baseline_value": m.baseline_value,
-            "intervention_value": m.intervention_value, "effect_size": m.effect_size,
-            "uncertainty": m.uncertainty, "confidence_interval": m.confidence_interval}
-    dec = {"effect_size": d.effect_size, "minimum_effect": d.minimum_effect,
-           "confidence_interval": d.confidence_interval}
-    est = {"outcome_metric": e.outcome_metric, "contrast": e.contrast, "direction": e.direction,
-           "minimum_effect": e.minimum_effect}
-    return meas, dec, est
+    """The CURRENT (live) input projection. Historical eval uses the artifact's own decoder."""
+    return _decode_v3(ev)
 
 
 def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
@@ -515,29 +599,55 @@ def _cross_block_errors(ev: MethodTrialRecorded) -> list[str]:
     return cross_block_consistency(*_blocks(ev), is_real=True)
 
 
-def _resolve_artifact(art: EvaluationArtifact):
-    """Return ``(rule_fn, rule_hash, validator_fn)`` from an artifact, executing BYTE-PINNED source
-    for archived versions and re-deriving the hash so a forged claim cannot pass."""
+@dataclass(frozen=True)
+class _Resolved:
+    rule_fn: object
+    rule_hash: str
+    validator_fn: object
+    validator_hash: str
+    decoder_fn: object
+    decoder_hash: str
+    contract: dict
+    contract_hash: str
+
+
+def _resolve_artifact(art: EvaluationArtifact) -> _Resolved:
+    """Materialise an artifact and RE-DERIVE every hash from the actual (byte-pinned for archived,
+    live for current) component, so claimed metadata can never attest different executed code."""
     if art.rule_source is not None:
         rule_hash = _bytes_hash(art.rule_source)
         rule_fn = _exec_callable(art.rule_source, "_rule_v2")
     else:
-        rule_hash = _impl_hash(art.rule_fn)
-        rule_fn = art.rule_fn
+        rule_hash, rule_fn = _impl_hash(art.rule_fn), art.rule_fn
     if art.validator_source is not None:
+        validator_hash = _bytes_hash(art.validator_source)
         validator_fn = _exec_callable(art.validator_source, "cross_block_consistency",
                                       _validator_globals())
     else:
-        validator_fn = art.validator_fn
-    return rule_fn, rule_hash, validator_fn
+        validator_hash, validator_fn = _impl_hash(art.validator_fn), art.validator_fn
+    if art.decoder_source is not None:
+        decoder_hash = _bytes_hash(art.decoder_source)
+        decoder_fn = _exec_callable(art.decoder_source, "_decode_v3")
+    else:
+        decoder_hash, decoder_fn = _impl_hash(art.decoder_fn), art.decoder_fn
+    if art.contract_source is not None:
+        contract = _as_contract(art.contract_source)[0]
+        contract_hash = _bytes_hash(art.contract_source)
+    else:
+        contract, contract_hash = dict(art.input_contract), _contract_hash(art.input_contract)
+    return _Resolved(rule_fn, rule_hash, validator_fn, validator_hash, decoder_fn, decoder_hash,
+                     contract, contract_hash)
 
 
 def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
-    """Evaluate the event under the EXACT version-pinned artifact its ``decision_rule_hash``
-    selects - its own rule AND its own validator/input-contract. ``status`` in {"verified",
-    "inconsistent", "unverifiable", "not_applicable"}. A forged artifact, an unknown hash, a
-    measurement the rule's own validator rejects, or a verdict the rule does not compute is never
-    ``verified``; an old event is never re-interpreted under a newer rule/validator."""
+    """Evaluate the event under the EXACT version-pinned artifact its ``decision_rule_hash`` selects
+    - its OWN schema, decoder, input-contract, validator AND rule. ``status`` in {"verified",
+    "inconsistent", "unverifiable", "not_applicable"}. EVERY component hash is re-derived from the
+    actual artifact and checked against the claim before that component is trusted, so claimed
+    metadata can never attest a different executed decoder/contract/validator/rule. A schema
+    mismatch, any hash mismatch, an unknown hash, an unmet input contract, a measurement the rule's
+    own validator rejects, or a verdict the rule does not compute is never ``verified``; an old
+    event is never re-interpreted under a newer component."""
     reg = DEFAULT_RULE_REGISTRY if registry is None else registry
     d = ev.decision
     if ev.epistemic_result not in RULE_EVALUABLE_RESULTS:
@@ -547,20 +657,44 @@ def evaluate_decision(ev: MethodTrialRecorded, registry=None) -> dict:
         return {"status": "unverifiable",
                 "reason": f"decision rule '{d.decision_rule_id}'@'{d.decision_rule_hash}' is not "
                           "in the registered append-only catalog - no trustworthy verdict"}
+    # the artifact may only evaluate the schema version it was registered for.
+    ev_schema = getattr(ev, "schema_version", SCHEMA_VERSION)
+    if ev_schema != art.schema_version:
+        return {"status": "unverifiable",
+                "reason": f"event schema '{ev_schema}' != artifact schema '{art.schema_version}' - "
+                          "the historical evaluation capsule does not decode this schema"}
     try:
-        rule_fn, rule_hash, validator_fn = _resolve_artifact(art)
+        r = _resolve_artifact(art)
     except Exception as exc:  # noqa: BLE001
         return {"status": "unverifiable", "reason": f"artifact could not be resolved ({exc!r})"}
-    if (rule_hash is None or rule_hash != art.implementation_hash
-            or rule_hash != d.decision_rule_hash):
+    # every component hash must match the claim BEFORE its code/contract is trusted.
+    for name, derived, claimed in (
+        ("implementation_hash", r.rule_hash, art.implementation_hash),
+        ("rule selector", r.rule_hash, d.decision_rule_hash),
+        ("validator_hash", r.validator_hash, art.validator_hash),
+        ("decoder_hash", r.decoder_hash, art.decoder_hash),
+        ("input_contract_hash", r.contract_hash, art.input_contract_hash),
+    ):
+        if derived is None or derived != claimed:
+            return {"status": "unverifiable",
+                    "reason": f"artifact {name} does not match the re-derived component "
+                              f"({derived} != {claimed}) - no trustworthy verdict"}
+    # the artifact's OWN (version-pinned) decoder projects the input; its key-schema is re-checked.
+    meas, dec, est = r.decoder_fn(ev)
+    proj = _projection_schema_hash(meas, dec, est)
+    if proj != art.canonical_input_projection_hash:
         return {"status": "unverifiable",
-                "reason": f"decision rule '{d.decision_rule_id}'@'{d.decision_rule_hash}' does not "
-                          "match the re-derived artifact implementation - no trustworthy verdict"}
+                "reason": f"decoder produced an unexpected input projection ({proj} != "
+                          f"{art.canonical_input_projection_hash}) - no trustworthy verdict"}
+    # the artifact's OWN input contract is APPLIED before validator/rule run.
+    cerr = _apply_input_contract(r.contract, meas, dec, est)
+    if cerr:
+        return {"status": "inconsistent", "reason": "; ".join(cerr)}
     # the artifact's OWN (version-pinned) validator runs - not necessarily the current one.
-    xb = validator_fn(*_blocks(ev), is_real=True)
+    xb = r.validator_fn(meas, dec, est, is_real=True)
     if xb:
         return {"status": "inconsistent", "reason": "; ".join(xb)}
-    computed = rule_fn(ev)
+    computed = r.rule_fn(ev)
     if computed != d.verdict or computed != ev.epistemic_result:
         return {"status": "inconsistent", "computed": computed, "claimed": d.verdict,
                 "reason": f"rule computes '{computed}' from the measurement, event claims "

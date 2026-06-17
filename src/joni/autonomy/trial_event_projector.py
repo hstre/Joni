@@ -26,6 +26,7 @@ import contextlib
 
 from .trial_event_schema import (
     INDEPENDENCE_POLICY_V1,
+    SCHEMA_VERSION,
     Decision,
     Estimand,
     Measurement,
@@ -93,7 +94,8 @@ def _record_from_payload(p: dict) -> MethodTrialRecorded:
             verdict=dec.get("verdict", "not_evaluated"), effect_size=dec.get("effect_size"),
             confidence_interval=tuple(d_ci) if d_ci else None,
             minimum_effect=dec.get("minimum_effect")),
-        confounders=tuple(p.get("confounders", ()) or ()))
+        confounders=tuple(p.get("confounders", ()) or ()),
+        schema_version=p.get("schema_version", SCHEMA_VERSION))
 
 
 def _project_event(env: dict) -> tuple[dict, MethodTrialRecorded | None]:

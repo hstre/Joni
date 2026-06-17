@@ -897,7 +897,8 @@ def test_historical_artifact_binds_its_own_validator_and_input_contract():
     def _always_reject(measurement, decision, estimand, *, is_real, has_effect_derivation=False):
         return ["tightened validator rejects this measurement"]
 
-    archived = make_archived_artifact("rule_v2", "v@old", const_success_src,
+    # both decode the same (current) event schema; they differ only in the rule + validator version.
+    archived = make_archived_artifact("rule_v2", SCHEMA_VERSION, const_success_src,
                                       lenient_validator_src, {})
     current = make_live_artifact("rule_v2", SCHEMA_VERSION, _const_success, _always_reject, {})
     assert archived.implementation_hash != current.implementation_hash
@@ -929,6 +930,7 @@ def test_historical_artifacts_are_byte_identical_and_append_only():
         _R6_RULE_SRC,
         DEFAULT_RULE_REGISTRY,
         RULE_V2_R6_HASH,
+        SCHEMA_VERSION,
         _bytes_hash,
         build_rule_registry,
         make_archived_artifact,
@@ -938,7 +940,210 @@ def test_historical_artifacts_are_byte_identical_and_append_only():
     assert art.validator_source == _CROSS_BLOCK_V1_SRC             # byte-identical validator
     assert art.implementation_hash == _bytes_hash(_R6_RULE_SRC)
     assert art.validator_hash == _bytes_hash(_CROSS_BLOCK_V1_SRC)
-    dup = make_archived_artifact("rule_v2", "method_trial_recorded_v3@r6", _R6_RULE_SRC,
+    dup = make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC,
                                  _CROSS_BLOCK_V1_SRC, {}, expected_rule_hash=RULE_V2_R6_HASH)
     with pytest.raises(ValueError):                                # append-only: no overwrite
         build_rule_registry([art, dup])
+
+
+# -- round 11: validator, input-contract, schema/decoder are CAUSALLY bound, not metadata -- #
+def _real_archived_artifact():
+    from joni.autonomy.trial_event_schema import (
+        _CROSS_BLOCK_V1_SRC,
+        _DECODE_V3_SRC,
+        _R6_CONTRACT_SRC,
+        _R6_RULE_SRC,
+        RULE_V2_R6_HASH,
+        SCHEMA_VERSION,
+        make_archived_artifact,
+    )
+    return make_archived_artifact("rule_v2", SCHEMA_VERSION, _R6_RULE_SRC, _CROSS_BLOCK_V1_SRC,
+                                  _R6_CONTRACT_SRC, _DECODE_V3_SRC,
+                                  expected_rule_hash=RULE_V2_R6_HASH)
+
+
+def _contradiction_event(hash_):
+    # metric_name != estimand.outcome_metric: a real cross-block contradiction caught here.
+    import dataclasses
+    ev = _ev(epistemic_result="success", measurement=_meas(0.20, ci=(0.12, 0.28)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=hash_,
+                               verdict="success"))
+    return dataclasses.replace(ev, estimand=dataclasses.replace(ev.estimand,
+                                                                outcome_metric="OTHER_METRIC"))
+
+
+def test_real_validator_artifact_and_hash_verify_normally():
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, build_rule_registry
+    real = _real_archived_artifact()
+    reg = build_rule_registry([real])
+    ok = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="inconclusive"))
+    assert evaluate_decision(ok, reg)["status"] == "verified"
+    # the honest archived validator still CATCHES a real contradiction (it is actually executed).
+    assert evaluate_decision(_contradiction_event(RULE_V2_R6_HASH), reg)["status"] == "inconsistent"
+
+
+def test_validator_bytes_swap_with_copied_hash_is_unverifiable():
+    # the reviewer's attack: real rule bytes + copied real validator_hash + manipulated validator
+    # bytes that always return [] -> the contradiction would slip through IF the hash were trusted.
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, build_rule_registry
+    real = _real_archived_artifact()
+    forged_validator = (b"def cross_block_consistency(measurement, decision, estimand, *, is_real,"
+                        b" has_effect_derivation=False):\n    return []\n")
+    attack = dataclasses.replace(real, validator_source=forged_validator)  # hash kept
+    reg = build_rule_registry([attack])
+    assert evaluate_decision(_contradiction_event(RULE_V2_R6_HASH), reg)["status"] == "unverifiable"
+
+
+def test_live_validator_hash_is_reattested_each_use():
+    # a LIVE artifact whose validator_fn is swapped for an always-accept one while keeping the real
+    # validator_hash is also rejected - the live validator hash is re-derived at every use.
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import (
+        RULE_V2_HASH,
+        _rule_v2,
+        make_rule_entry,
+    )
+    real = make_rule_entry("rule_v2", "spec", _rule_v2)
+    forged = dataclasses.replace(real, validator_fn=lambda *a, **k: [])    # hash kept
+    reg = {("rule_v2", RULE_V2_HASH): forged}
+    assert evaluate_decision(_contradiction_event(RULE_V2_HASH), reg)["status"] == "unverifiable"
+
+
+def test_input_contract_swap_with_stale_hash_is_unverifiable():
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, build_rule_registry
+    real = _real_archived_artifact()
+    attack = dataclasses.replace(real,
+                                 contract_source=b'{"required_measurement_fields":["impossible"]}')
+    reg = build_rule_registry([attack])                      # input_contract_hash is now stale
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="inconclusive"))
+    assert evaluate_decision(ev, reg)["status"] == "unverifiable"
+
+
+def test_input_contract_is_actually_applied():
+    # a contract demanding an impossible field, WITH a recomputed matching hash, is enforced: the
+    # event cannot satisfy it, so it is inconsistent (never verified).
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import (
+        RULE_V2_R6_HASH,
+        _bytes_hash,
+        build_rule_registry,
+    )
+    real = _real_archived_artifact()
+    imp = b'{"required_measurement_fields":["impossible"]}'
+    attack = dataclasses.replace(real, contract_source=imp, input_contract_hash=_bytes_hash(imp),
+                                 input_contract={"required_measurement_fields": ["impossible"]})
+    reg = build_rule_registry([attack])
+    ev = _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+             decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                               verdict="inconclusive"))
+    assert evaluate_decision(ev, reg)["status"] == "inconsistent"
+
+
+def test_real_r6_contract_requires_effect_and_ci():
+    # the production r6 artifact carries the REAL historical contract (require_effect + require_ci),
+    # not {}. An event with no confidence interval cannot be evaluated under it.
+
+    from joni.autonomy.trial_event_schema import (
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_R6_HASH,
+    )
+    art = DEFAULT_RULE_REGISTRY[("rule_v2", RULE_V2_R6_HASH)]
+    assert art.input_contract.get("require_confidence_interval") is True
+    assert art.input_contract.get("require_effect") is True
+    no_ci = _ev(epistemic_result="inconclusive",
+                measurement=Measurement("misclass_rate", 0.40, 0.43, effect_size=0.03,
+                                        uncertainty=0.02, confidence_interval=None),
+                decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                                  verdict="inconclusive"))
+    assert evaluate_decision(no_ci)["status"] == "inconsistent"
+
+
+def test_new_artifact_may_carry_a_stricter_contract_old_event_stays_under_old():
+    # an old artifact (lenient {}) and a new artifact (stricter contract) coexist; the SAME
+    # measurement is evaluable under the old hash but not the new - old events keep their own
+    # contract, never the new stricter one.
+    from joni.autonomy.trial_event_schema import (
+        SCHEMA_VERSION,
+        build_rule_registry,
+        make_archived_artifact,
+        make_live_artifact,
+    )
+
+    def _const_inconclusive(ev):
+        return "inconclusive"
+
+    def _live_validator(measurement, decision, estimand, *, is_real, has_effect_derivation=False):
+        return []
+    old_rule_src = b"def _rule_v2(ev):\n    return 'inconclusive'\n"
+    old = make_archived_artifact("rule_v2", SCHEMA_VERSION, old_rule_src,
+                                 b"def cross_block_consistency(*a, **k):\n    return []\n", {})
+    new = make_live_artifact("rule_v2", SCHEMA_VERSION, _const_inconclusive, _live_validator,
+                             {"required_measurement_fields": ["uncertainty"]})
+    reg = build_rule_registry([old, new])
+    no_unc = Measurement("misclass_rate", 0.40, 0.43, effect_size=0.03, uncertainty=None,
+                         confidence_interval=(-0.05, 0.08))
+    old_ev = _ev(epistemic_result="inconclusive", measurement=no_unc,
+                 decision=Decision(decision_rule_id="rule_v2",
+                                   decision_rule_hash=old.implementation_hash,
+                                   verdict="inconclusive"))
+    new_ev = _ev(epistemic_result="inconclusive", measurement=no_unc,
+                 decision=Decision(decision_rule_id="rule_v2",
+                                   decision_rule_hash=new.implementation_hash,
+                                   verdict="inconclusive"))
+    assert evaluate_decision(old_ev, reg)["status"] == "verified"        # lenient old contract
+    assert evaluate_decision(new_ev, reg)["status"] == "inconsistent"    # stricter new contract
+
+
+def test_schema_version_mismatch_is_unverifiable():
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH
+    future = dataclasses.replace(
+        _ev(epistemic_result="inconclusive", measurement=_meas(0.03, ci=(-0.05, 0.08)),
+            decision=Decision(decision_rule_id="rule_v2", decision_rule_hash=RULE_V2_R6_HASH,
+                              verdict="inconclusive")),
+        schema_version="method_trial_recorded_v4")
+    assert evaluate_decision(future)["status"] == "unverifiable"
+
+
+def test_decoder_bytes_swap_with_copied_hash_is_unverifiable():
+    # a decoder swapped for one that drops the metric_name (so the contradiction can't be seen),
+    # while keeping the real decoder_hash, is rejected - the decoder hash is re-derived at use.
+    import dataclasses
+
+    from joni.autonomy.trial_event_schema import RULE_V2_R6_HASH, build_rule_registry
+    real = _real_archived_artifact()
+    forged_decoder = (b"def _decode_v3(ev):\n"
+                      b"    m, d, e = ev.measurement, ev.decision, ev.estimand\n"
+                      b"    return ({'effect_size': m.effect_size,"
+                      b" 'confidence_interval': m.confidence_interval},"
+                      b" {'minimum_effect': d.minimum_effect},"
+                      b" {'minimum_effect': e.minimum_effect})\n")
+    attack = dataclasses.replace(real, decoder_source=forged_decoder)   # decoder_hash unchanged
+    reg = build_rule_registry([attack])
+    assert evaluate_decision(_contradiction_event(RULE_V2_R6_HASH), reg)["status"] == "unverifiable"
+
+
+def test_production_r6_artifact_binds_decoder_contract_validator():
+    from joni.autonomy.trial_event_schema import (
+        _DECODE_V3_SRC,
+        _R6_CONTRACT_SRC,
+        DEFAULT_RULE_REGISTRY,
+        RULE_V2_R6_HASH,
+        _bytes_hash,
+    )
+    art = DEFAULT_RULE_REGISTRY[("rule_v2", RULE_V2_R6_HASH)]
+    assert art.decoder_source == _DECODE_V3_SRC and art.decoder_hash == _bytes_hash(_DECODE_V3_SRC)
+    assert art.contract_source == _R6_CONTRACT_SRC
+    assert art.input_contract_hash == _bytes_hash(_R6_CONTRACT_SRC)
+    assert art.canonical_input_projection_hash and art.validator_hash and art.implementation_hash

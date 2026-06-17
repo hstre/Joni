@@ -1,0 +1,15 @@
+def _decode_v3(ev):
+    """v3 canonical input projection: event -> (measurement, decision, estimand) block dicts.
+
+    Byte-pinned snapshot of the decoder under which the r6 rule was evaluated. Re-executed verbatim
+    for historical events so a later change to the live decoder never re-projects an old event.
+    """
+    m, d, e = ev.measurement, ev.decision, ev.estimand
+    meas = {"metric_name": m.metric_name, "baseline_value": m.baseline_value,
+            "intervention_value": m.intervention_value, "effect_size": m.effect_size,
+            "uncertainty": m.uncertainty, "confidence_interval": m.confidence_interval}
+    dec = {"effect_size": d.effect_size, "minimum_effect": d.minimum_effect,
+           "confidence_interval": d.confidence_interval}
+    est = {"outcome_metric": e.outcome_metric, "contrast": e.contrast, "direction": e.direction,
+           "minimum_effect": e.minimum_effect}
+    return meas, dec, est
