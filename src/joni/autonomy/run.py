@@ -209,7 +209,7 @@ def one_cycle() -> dict:
     # 3c-real. The REAL method-trial protocol (measured: frozen task set, baseline vs intervention,
     #     predefined metric, negative control, provenance) - kept separate from, and honest about,
     #     the synthetic simulator above. Decision rests on the metric, not a model's opinion.
-    trials.run_real_method_trial(extensions, proto, cycle)
+    trials.run_real_method_trial(cs, extensions, proto, cycle)
     # running totals so homeostasis/commission can see whether method-trialing ever matures
     extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
         trialed.get("trialed", 0)
