@@ -277,7 +277,7 @@ class CoreState:
         return max(self.core.all(object_type), key=lambda o: int(o.id.split("-")[-1]))
 
     def set_day(self, day: int) -> None:
-        self.core.tick = max(0, int(day))
+        self.core.set_clock(max(0, int(day)))
 
     # -- contradiction detection: open conflicts, never force-resolve -------- #
     def detect_and_open_conflicts(self) -> list[str]:

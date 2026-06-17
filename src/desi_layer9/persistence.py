@@ -25,9 +25,9 @@ def replay(journal: list[JournalEntry], *, tick: int = 0) -> Layer9:
     that spans a tick change reproduces the exact historical ``created_tick`` values - and
     therefore its own snapshot hash.
     """
-    core = Layer9(tick=tick)
+    core = Layer9(_tick=tick)
     for entry in journal:
-        core.tick = entry.tick
+        core._tick = entry.tick                       # internal write path (kernel-only replay)
         proposal = make_proposal(
             entry.proposal_type, entry.operator, payload=dict(entry.payload),
             proposer=entry.proposer, provenance=Provenance.from_dict(entry.provenance),
@@ -35,7 +35,7 @@ def replay(journal: list[JournalEntry], *, tick: int = 0) -> Layer9:
         )
         core.submit(proposal, actor=entry.actor, governance_approved=entry.governance_approved)
     if journal:
-        core.tick = journal[-1].tick
+        core._tick = journal[-1].tick
     return core
 
 

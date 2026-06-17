@@ -40,8 +40,12 @@ def _sha(text: str) -> str:
 
 
 def snapshot_hash(state) -> str:
-    """Deterministic hash of all authoritative objects (ledger excluded)."""
-    parts = [object_canonical(o) for o in sorted(state.objects.values(), key=lambda o: o.id)]
+    """Deterministic hash of all authoritative objects (ledger excluded).
+
+    Reads the INTERNAL ``_objects`` store directly (not the public ``objects`` snapshot, which deep-
+    copies every value) - integrity hashing is hot (called on every ledger emit) and must hash the
+    real objects, not throw-away copies."""
+    parts = [object_canonical(o) for o in sorted(state._objects.values(), key=lambda o: o.id)]
     return _sha("\n".join(parts))
 
 
@@ -74,7 +78,7 @@ def verify_chain(state) -> tuple[bool, list[str]]:
     """Recompute the ledger chain and report any break (tampering)."""
     problems: list[str] = []
     prev_hash = ""
-    for ev in state.ledger:
+    for ev in state._ledger:
         expected = _sha(prev_hash + "|" + event_canonical(ev))
         if ev.event_hash != expected:
             problems.append(f"{ev.id}: event_hash mismatch (tampered?)")

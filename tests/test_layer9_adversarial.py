@@ -102,9 +102,15 @@ def test_a7_taint_survives_summarisation():
 def test_a8_altering_a_past_event_breaks_the_chain():
     core = l9.Layer9()
     core.submit(_op(OP.CLAIM_CREATE, {"text": "x"}))
+    # the PUBLIC ledger is immutable: editing a returned event cannot reach the chain.
     core.ledger[0].actor = "attacker"
-    ok, problems = l9.verify_chain(core)
-    assert not ok and problems
+    assert core.ledger[0].actor != "attacker"            # the returned event was a deep copy
+    ok, _ = l9.verify_chain(core)
+    assert ok                                            # public mutation never broke the chain
+    # but STORAGE-level corruption of the internal ledger is still detected by verify_chain.
+    core._ledger[0].actor = "attacker"
+    ok2, problems = l9.verify_chain(core)
+    assert not ok2 and problems
 
 
 # A9 - an invalid status transition is attempted.

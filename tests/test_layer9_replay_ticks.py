@@ -6,7 +6,7 @@ from desi_layer9.provenance import Provenance
 
 
 def _add_claim(core, text, tick):
-    core.tick = tick
+    core._tick = tick                                # white-box: advance the internal logical tick
     core.submit(make_proposal(
         ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
         payload={"text": text, "topic": "t"}, proposer="source",
@@ -34,7 +34,7 @@ def test_repair_fixes_a_legacy_state_without_per_entry_ticks(tmp_path):
     # hash was computed with a later tick (as the live midnight rollover produced).
     core = l9.Layer9()
     _add_claim(core, "a", 0)
-    core.tick = 1
+    core._tick = 1
     _add_claim(core, "b", 1)
     doc = persistence.to_doc(core)
     for e in doc["journal"]:

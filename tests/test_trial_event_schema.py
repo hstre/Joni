@@ -1891,50 +1891,67 @@ def test_journal_replay_is_immune_to_external_mutation():
     assert len(replayed.method_trial_events()) == 1
 
 
-def _historical_v3_entry(trial_id="hist", rule_hash=None, *, attest="accepted"):
-    """Build a persisted historical v3 trial journal-entry dict.
+_OMIT = object()
 
-    ``attest`` controls the trusted historical-source attestation:
-    - ``"accepted"`` (default): attested as historically ACCEPTED (migratable);
-    - ``"rejected"``: attested as historically REJECTED (must be DROPPED, never resealed);
-    - ``None``: NO attestation at all (migration must fail-closed)."""
+
+def _raw_v3_entry(body: dict):
+    """Wrap a v3 trial BODY into a persisted journal-entry dict (no attestation). Deep-copies the
+    body so a module-level constant (e.g. the demo anchor) is never mutated by a test."""
+    import copy
+
     from desi_layer9 import ProposalType as PT
     from desi_layer9.provenance import Provenance
+    return {"operator": "method_trial_recorded", "proposal_type": PT.METHOD_PROPOSAL.value,
+            "payload": copy.deepcopy(body), "proposer": "kevin",
+            "provenance": Provenance.from_model(external=False, model_id="kevin").to_dict(),
+            "target_objects": [], "actor": "kevin", "governance_approved": False,
+            "reason": "", "tick": 0}
+
+
+def _v3_body(trial_id="hist", rule_hash=None):
     from joni.autonomy.trial_event_schema import RULE_V2_HASH
-    body = _ev(trial_id=trial_id, epistemic_result="inconclusive",
+    return _ev(trial_id=trial_id, epistemic_result="inconclusive",
                measurement=_meas(0.03, ci=(-0.05, 0.08)),
                decision=Decision("rule_v2", rule_hash or RULE_V2_HASH, "inconclusive")).to_dict()
-    entry = {"operator": "method_trial_recorded", "proposal_type": PT.METHOD_PROPOSAL.value,
-             "payload": body, "proposer": "kevin",
-             "provenance": Provenance.from_model(external=False, model_id="kevin").to_dict(),
-             "target_objects": [], "actor": "kevin", "governance_approved": False,
-             "reason": "", "tick": 0}
-    if attest is not None:
-        import hashlib
-        import json
-        entry["historical_decision"] = {
-            "accepted": attest == "accepted",
-            "gate_policy_version": "trial_gate_policy_v1",
-            "decision_hash": "sha256:" + hashlib.sha256(
-                json.dumps(body, sort_keys=True).encode()).hexdigest()}
-    return entry
+
+
+def _demo_trial_doc(*, attestation=_OMIT, snapshot_hash=_OMIT):
+    """A persisted document around the demonstrator's PINNED historical trial body. Defaults to the
+    trusted attestation + its bound snapshot_hash (the migratable happy path)."""
+    from joni.autonomy.trial_event_schema import _DEMO_HISTORICAL_ATTESTATION, _DEMO_HISTORICAL_BODY
+    att = _DEMO_HISTORICAL_ATTESTATION if attestation is _OMIT else attestation
+    snap = (_DEMO_HISTORICAL_ATTESTATION["source_snapshot_hash"]
+            if snapshot_hash is _OMIT else snapshot_hash)
+    doc = {"journal": [_raw_v3_entry(_DEMO_HISTORICAL_BODY)], "tick": 0}
+    if snap is not None:
+        doc["snapshot_hash"] = snap
+    if att is not None:
+        doc["historical_attestation"] = att
+    return doc
 
 
 def test_historical_v3_journal_migrates_to_v4_and_the_trial_reappears():
     from joni.autonomy.trial_event_schema import load_migrated
-    core, log = load_migrated({"journal": [_historical_v3_entry("hist-1")], "tick": 0})
+    core, log = load_migrated(_demo_trial_doc())
     evs = core.method_trial_events()
     assert len(evs) == 1 and evs[0]["schema_version"] == "method_trial_recorded_v4"
     assert evs[0]["payload"]["measurement"]["effect_size"] == 0.03   # body preserved verbatim
-    assert log and log[0]["migration"] == "trial_event_journal_migration_v1"
+    assert log[0]["attestation"]["verifier_id"] == "historical_kernel_demo_v1"
 
 
-def test_migration_is_fail_closed_on_an_unknown_historical_rule():
+def test_migration_is_fail_closed_on_an_unknown_capsule():
+    # even an ATTESTED-accepted body whose cited rule has no known capsule is fail-closed.
     import pytest
 
-    from joni.autonomy.trial_event_schema import JournalMigrationError, migrate_journal_entries
+    from joni.autonomy.trial_event_schema import (
+        JournalMigrationError,
+        _entry_body_hash,
+        migrate_journal_entries,
+    )
+    bad = _raw_v3_entry(_v3_body("bad", rule_hash="sha256:unknown"))
+    accepted = {_entry_body_hash(bad["payload"])}
     with pytest.raises(JournalMigrationError):
-        migrate_journal_entries([_historical_v3_entry("bad", rule_hash="sha256:unknown")])
+        migrate_journal_entries([bad], accepted_entry_hashes=accepted)
 
 
 def test_migration_introduces_no_submit_privilege_v3_still_unwritable():
@@ -1949,7 +1966,7 @@ def test_a_raw_v3_journal_is_not_directly_replayable_without_migration():
     # (only migration loads it). Replay rejects it; no trial event is reconstructed.
     import desi_layer9 as l9
     from desi_layer9 import persistence
-    replayed = persistence.replay([l9.JournalEntry.from_dict(_historical_v3_entry("h"))])
+    replayed = persistence.replay([l9.JournalEntry.from_dict(_raw_v3_entry(_v3_body("h")))])
     assert replayed.method_trial_events() == []
 
 
@@ -2061,63 +2078,198 @@ def test_snapshot_ledger_and_replay_are_identical_after_all_mutation_attempts():
     assert hashing.snapshot_hash(replayed) == snap            # replay reproduces the same state
 
 
-def test_load_migrated_refuses_a_present_snapshot_hash_without_a_passing_verifier():
-    # BLOCKER-2: a present snapshot_hash is NEVER silently ignored. With no verifier (or a verifier
-    # that rejects) the load is refused fail-closed; the bogus DEADBEEF doc no longer migrates.
+# -- round 20: the WHOLE public state surface is immutable ------------------------------------- #
+def test_mutating_an_objects_value_does_not_change_state():
+    # BLOCKER-1 (r20): core.objects[id] hands back a DEEP COPY, not the real internal instance, so
+    # neither core.objects[id] = x nor core.objects[id].field = x can reach authoritative state.
+    from desi_layer9 import Status, hashing
+    core = _kernel()
+    assert _submit16(core, _r13_event().to_journal()).accepted
+    oid = core.method_trial_events()[0]["object_id"]
+    snap = hashing.snapshot_hash(core)
+    external = core.objects[oid]
+    external.status = Status.REJECTED                          # the reviewer's exact reproduction
+    external.canonical_payload = "{}"
+    assert hashing.snapshot_hash(core) == snap                # internal state untouched
+    assert core.objects[oid].status is not Status.REJECTED
+    import pytest
+    with pytest.raises(TypeError):                            # keys cannot be injected either
+        core.objects["INJECT"] = 1
+
+
+def test_the_ledger_cannot_be_cleared_or_mutated_externally():
+    # BLOCKER-2 (r20): the public ledger is an immutable tuple of deep copies - clear/append/pop are
+    # unavailable, and editing a returned event cannot reach the hash chain.
+    from desi_layer9 import hashing
+    core = _kernel()
+    _submit16(core, _r13_event().to_journal())
+    led = core.ledger
+    assert isinstance(led, tuple)
+    for op in ("clear", "append", "pop"):
+        assert not hasattr(led, op)
+    n = len(core.ledger)
+    led[0].reason = "tampered"                                # mutate a returned (copied) event
+    ok, problems = hashing.verify_chain(core)
+    assert ok and not problems and len(core.ledger) == n     # chain intact, nothing removed
+
+
+def test_the_logical_clock_is_read_only_and_monotonic():
+    # BLOCKER (r20, secondary): there is no bare core.tick setter; the only clock input is the
+    # monotonic set_clock(), which never moves backward (replay determinism).
     import pytest
 
-    from joni.autonomy.trial_event_schema import JournalMigrationError, load_migrated
-    doc = {"journal": [_historical_v3_entry("hist-1")], "tick": 0,
-           "snapshot_hash": "sha256:DEADBEEF"}
+    core = _kernel()
+    with pytest.raises(AttributeError):
+        core.tick = 5                                         # no public setter
+    core.set_clock(3)
+    assert core.tick == 3
+    core.set_clock(3)                                         # equal is allowed
+    with pytest.raises(ValueError):
+        core.set_clock(2)                                     # backward is refused
+
+
+def test_there_is_no_public_minter_or_seq_write_surface():
+    # BLOCKER (r20, secondary): the id minter is private; a caller cannot mint ids / shift sequence
+    # outside submit().
+    core = _kernel()
+    assert not hasattr(core, "minter")                        # renamed to _minter (internal)
+    assert hasattr(core, "_minter")
+
+
+# -- round 20: AUTHENTICATED migration trust source (no caller-supplied truth) ----------------- #
+def test_load_migrated_refuses_a_missing_forged_or_unbound_attestation():
+    # BLOCKER 3+4: trust comes ONLY from the pinned catalog. A present snapshot_hash is never
+    # ignored; a missing, forged, or snapshot-unbound attestation is fail-closed.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        _DEMO_HISTORICAL_BODY,
+        JournalMigrationError,
+        _entry_body_hash,
+        build_historical_attestation,
+        load_migrated,
+    )
+    # (a) DEADBEEF doc, NO attestation -> refused.
     with pytest.raises(JournalMigrationError):
-        load_migrated(doc)                                    # no verifier -> refused
+        load_migrated(_demo_trial_doc(attestation=None, snapshot_hash="sha256:DEADBEEF"))
+    # (b) a FORGED attestation for the DEADBEEF doc (internally consistent, but its hash is not the
+    #     pinned anchor) -> refused.
+    forged = build_historical_attestation(
+        verifier_id="historical_kernel_demo_v1", kernel_release="7810e25",
+        gate_policy_version="trial_gate_policy_v1", source_snapshot_hash="sha256:DEADBEEF",
+        accepted_entry_hashes=[_entry_body_hash(_DEMO_HISTORICAL_BODY)])
     with pytest.raises(JournalMigrationError):
-        load_migrated(doc, historical_verifier=lambda d: False)   # verifier rejects -> refused
-    core, _ = load_migrated(doc, historical_verifier=lambda d: True)   # attested integrity -> ok
+        load_migrated(_demo_trial_doc(attestation=forged, snapshot_hash="sha256:DEADBEEF"))
+    # (c) the pinned attestation, but the doc's snapshot_hash does not bind its source -> refused.
+    with pytest.raises(JournalMigrationError):
+        load_migrated(_demo_trial_doc(snapshot_hash="sha256:DEADBEEF"))
+    # (d) the pinned attestation, correctly bound -> migrates.
+    core, _ = load_migrated(_demo_trial_doc())
     assert len(core.method_trial_events()) == 1
 
 
-def test_a_historically_rejected_v3_command_is_not_resealed_as_accepted_v4():
-    # BLOCKER-2: a v3 command attested as historically REJECTED is dropped, never resealed.
-    from joni.autonomy.trial_event_schema import migrate_journal_entries
-    migrated, log = migrate_journal_entries([_historical_v3_entry("rej", attest="rejected")])
-    assert migrated == []                                     # no v4 event produced
-    assert log and log[0]["action"] == "dropped_historically_rejected"
-    assert log[0]["gate_policy_version"] == "trial_gate_policy_v1"
+def test_a_tampered_attestation_field_is_rejected():
+    # the attestation_hash is recomputed from the body; a tampered field keeping the old hash fails.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        _DEMO_HISTORICAL_ATTESTATION,
+        JournalMigrationError,
+        load_migrated,
+    )
+    tampered = dict(_DEMO_HISTORICAL_ATTESTATION)
+    tampered["kernel_release"] = "ATTACKER"                   # change a field, keep the pinned hash
+    with pytest.raises(JournalMigrationError):
+        load_migrated(_demo_trial_doc(attestation=tampered))
+
+
+def test_a_caller_cannot_self_declare_acceptance_with_its_own_verifier():
+    # a caller's OWN attestation (new verifier_id, self-listed accepted set) is not in the pinned
+    # trust root -> fail-closed. The caller cannot bring its own truth source (no lambda/catalog).
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        _DEMO_HISTORICAL_ATTESTATION,
+        _DEMO_HISTORICAL_BODY,
+        JournalMigrationError,
+        _entry_body_hash,
+        build_historical_attestation,
+        load_migrated,
+    )
+    own = build_historical_attestation(
+        verifier_id="my_own_verifier", kernel_release="7810e25",
+        gate_policy_version="trial_gate_policy_v1",
+        source_snapshot_hash=_DEMO_HISTORICAL_ATTESTATION["source_snapshot_hash"],
+        accepted_entry_hashes=[_entry_body_hash(_DEMO_HISTORICAL_BODY)])
+    with pytest.raises(JournalMigrationError):
+        load_migrated(_demo_trial_doc(attestation=own))
+
+
+def test_load_migrated_takes_no_caller_supplied_verifier_function():
+    # the round-19 `historical_verifier=lambda: True` escape hatch is GONE: trust is pinned.
+    import inspect
+
+    from joni.autonomy.trial_event_schema import load_migrated
+    assert "historical_verifier" not in inspect.signature(load_migrated).parameters
+
+
+def test_a_v3_entry_not_in_the_attested_set_is_fail_closed():
+    # acceptance is CHECKED against the attested set, never self-declared. An entry the trust root
+    # does not list is refused.
+    import pytest
+
+    from joni.autonomy.trial_event_schema import (
+        _DEMO_HISTORICAL_BODY,
+        JournalMigrationError,
+        _entry_body_hash,
+        migrate_journal_entries,
+    )
+    other = _raw_v3_entry(_v3_body("not-attested"))
+    accepted = {_entry_body_hash(_DEMO_HISTORICAL_BODY)}      # attests only the demo body
+    with pytest.raises(JournalMigrationError):
+        migrate_journal_entries([other], accepted_entry_hashes=accepted)
 
 
 def test_an_unattested_v3_command_fails_closed():
-    # BLOCKER-2: a v3 command with NO historical_decision attestation cannot be migrated to accepted
-    # v4 (no trustworthy historical source) - fail-closed.
+    # a v3 command with NO attested accepted set cannot be migrated to accepted v4 - fail-closed.
     import pytest
 
     from joni.autonomy.trial_event_schema import JournalMigrationError, migrate_journal_entries
     with pytest.raises(JournalMigrationError):
-        migrate_journal_entries([_historical_v3_entry("x", attest=None)])
+        migrate_journal_entries([_raw_v3_entry(_v3_body("x"))])
 
 
-def test_the_migration_log_documents_source_policy_version_and_capsule():
-    # BLOCKER-2: a successful migration documents the trusted source (policy version) and the
-    # capsule it bound to - the migration is auditable, not silent.
-    from joni.autonomy.trial_event_schema import migrate_journal_entries
-    migrated, log = migrate_journal_entries([_historical_v3_entry("hist-1")])
-    assert len(migrated) == 1
-    rec = log[0]
-    assert rec["migration"] == "trial_event_journal_migration_v1"
-    assert rec["gate_policy_version"] == "trial_gate_policy_v1"
-    assert rec["capsule_hash"] and rec["capsule_hash"].startswith("sha256:")
+def test_the_migration_log_documents_the_attestation_chain():
+    # the migration is auditable: the log records the trusted source (verifier/kernel/policy/
+    # snapshot/attestation hash) and, per entry, the attested entry-hash + capsule it bound to.
+    from joni.autonomy.trial_event_schema import load_migrated
+    _, log = load_migrated(_demo_trial_doc())
+    att = log[0]["attestation"]
+    for k in ("verifier_id", "kernel_release", "gate_policy_version", "source_snapshot_hash",
+              "attestation_hash", "accepted_entry_hashes"):
+        assert k in att
+    rec = log[1]
     assert rec["from"] == "method_trial_recorded_v3" and rec["to"] == "method_trial_recorded_v4"
+    assert rec["attested_entry_hash"].startswith("sha256:")
+    assert rec["capsule_hash"] and rec["capsule_hash"].startswith("sha256:")
 
 
 def test_migration_output_does_not_alias_its_input():
-    # BLOCKER-3: the migrated entries are FULLY deep-copied; mutating the input after migration
-    # cannot reach into the migrated output (and vice versa).
-    from joni.autonomy.trial_event_schema import migrate_journal_entries
-    src = [_historical_v3_entry("hist-1"), {"operator": "noop", "payload": {"a": {"b": 1}},
-                                            "proposal_type": "method_proposal", "proposer": "k",
-                                            "provenance": {}, "target_objects": [], "actor": "k",
-                                            "governance_approved": False, "reason": "", "tick": 0}]
-    migrated, _ = migrate_journal_entries(src)
+    # the migrated entries are FULLY deep-copied; mutating the input after migration cannot reach
+    # into the migrated output (and vice versa).
+    from joni.autonomy.trial_event_schema import (
+        _DEMO_HISTORICAL_BODY,
+        _entry_body_hash,
+        migrate_journal_entries,
+    )
+    demo = _raw_v3_entry(_DEMO_HISTORICAL_BODY)
+    passthrough = {"operator": "noop", "payload": {"a": {"b": 1}},
+                   "proposal_type": "method_proposal", "proposer": "k", "provenance": {},
+                   "target_objects": [], "actor": "k", "governance_approved": False,
+                   "reason": "", "tick": 0}
+    src = [demo, passthrough]
+    accepted = {_entry_body_hash(_DEMO_HISTORICAL_BODY)}
+    migrated, _ = migrate_journal_entries(src, accepted_entry_hashes=accepted)
     src[0]["payload"]["measurement"]["effect_size"] = 12345   # mutate the v3 input post-migration
     src[1]["payload"]["a"]["b"] = 999                         # mutate the pass-through input
     assert migrated[0]["payload"]["measurement"]["effect_size"] == 0.03   # sealed body unchanged

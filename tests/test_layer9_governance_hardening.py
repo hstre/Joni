@@ -88,7 +88,7 @@ def test_sampling_provenance_is_covered_by_the_chain_hash():
     from desi_layer9.hashing import event_canonical, verify_chain
     core = l9.Layer9()
     core.submit(_op(OP.CLAIM_CREATE, {"text": "x"}, ptype=PT.CLAIM_PROPOSAL))
-    ev = core.ledger[-1]
+    ev = core._ledger[-1]                                           # white-box: the stored event
     before = event_canonical(ev)
     ev.sampling_provenance = {"model": "forged", "temperature": 9}   # forge the provenance
     assert event_canonical(ev) != before                            # it IS in the canonical form

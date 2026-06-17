@@ -148,7 +148,7 @@ def import_joni_state(core: Layer9, state: dict, report: MigrationReport) -> dic
 def migrate(*, joni_state: dict | None = None, kevin_jsonl: str | None = None,
             tick: int = 0) -> tuple[Layer9, MigrationReport]:
     """Deterministic, idempotent migration into a fresh Layer 9 core."""
-    core = Layer9(tick=tick)
+    core = Layer9(_tick=tick)
     report = MigrationReport()
     if joni_state is not None:
         import_joni_state(core, joni_state, report)

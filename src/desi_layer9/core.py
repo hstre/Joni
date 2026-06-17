@@ -162,28 +162,55 @@ def _clamp(x: float) -> float:
 class Layer9:
     """The authoritative epistemic state and its only write path."""
 
-    tick: int = 0
+    _tick: int = 0
     _objects: dict[str, object] = field(default_factory=dict)
-    minter: IdMinter = field(default_factory=IdMinter)
-    ledger: list[LedgerEvent] = field(default_factory=list)
+    _minter: IdMinter = field(default_factory=IdMinter)
+    _ledger: list[LedgerEvent] = field(default_factory=list)
     _journal: list[JournalEntry] = field(default_factory=list)
     _seq: int = 0
 
     # -- IMMUTABLE read surface --------------------------------------------- #
-    # ``submit`` is the ONLY write path: external callers get DEEP COPIES / read-only views, so a
-    # post-submit mutation of a returned object (or the caller's proposal) can never change state.
+    # ``submit`` is the ONLY write path. EVERY public accessor returns DEEP COPIES / read-only
+    # views, and ALL mutable state is private (``_tick``/``_objects``/``_minter``/``_ledger``/
+    # ``_journal``/``_seq``), so there is no public handle - not the object store, not the ledger,
+    # not the tick or the minter - through which authoritative state can change outside ``submit``.
+    @property
+    def tick(self) -> int:
+        """The current logical tick (READ-ONLY; only ``submit``/replay advance ``_tick``)."""
+        return self._tick
+
     @property
     def objects(self):
-        """A READ-ONLY view of the object store (keys cannot be added/removed externally). Use
-        ``get``/``all`` for mutation-safe deep copies of individual objects."""
+        """A READ-ONLY snapshot of the object store: keys cannot be added/removed AND each value is
+        an independent DEEP COPY, so neither ``core.objects[id] = x`` nor ``core.objects[id].f = x``
+        can reach authoritative state. Internal kernel code uses ``_objects``; integrity hashing
+        reads ``_objects`` directly (no copy)."""
         from types import MappingProxyType
-        return MappingProxyType(self._objects)
+        return MappingProxyType({oid: copy.deepcopy(o) for oid, o in self._objects.items()})
+
+    @property
+    def ledger(self) -> tuple:
+        """The audit ledger as an IMMUTABLE tuple of DEEP-COPIED events: it cannot be
+        appended/popped/cleared, and editing a returned event cannot reach the chain.
+        ``verify_chain`` works on the internal ``_ledger``."""
+        return tuple(copy.deepcopy(e) for e in self._ledger)
 
     @property
     def journal(self) -> tuple:
         """The replay journal as an IMMUTABLE tuple of frozen entries - it cannot be
         appended/popped/cleared from outside ``submit``."""
         return tuple(self._journal)
+
+    # -- the ONE clock input (not a state mutator) -------------------------- #
+    def set_clock(self, tick: int) -> None:
+        """Advance the logical clock (the day/tick stamped on FUTURE objects). This is a CLOCK
+        input, NOT an epistemic-state mutation: it creates/modifies/deletes no object and leaves
+        ``snapshot_hash`` unchanged. It is MONOTONIC - it may not move backward, which would make
+        replay non-deterministic. There is deliberately no bare ``core.tick = ...`` setter."""
+        tick = int(tick)
+        if tick < self._tick:
+            raise ValueError(f"the logical clock cannot move backward ({self._tick} -> {tick})")
+        self._tick = tick
 
     # -- reads (return INDEPENDENT deep copies; mutating them never touches state) ------------- #
     def get(self, oid: str):
@@ -242,13 +269,13 @@ class Layer9:
               cost: float = 0.0, sampling: dict | None = None) -> LedgerEvent:
         self._seq += 1
         ev = LedgerEvent(
-            id=self.minter.next(ObjectType.LEDGER_EVENT), sequence=self._seq, tick=self.tick,
+            id=self._minter.next(ObjectType.LEDGER_EVENT), sequence=self._seq, tick=self._tick,
             operator=operator, actor=actor, decision=decision, reason=reason,
             input_refs=tuple(input_refs), output_refs=tuple(output_refs),
             reviewed_by=reviewed_by, cost=cost, sampling_provenance=sampling or {},
         )
-        previous = self.ledger[-1] if self.ledger else None
-        self.ledger.append(ev)
+        previous = self._ledger[-1] if self._ledger else None
+        self._ledger.append(ev)
         chain_event(ev, previous, self)
         return ev
 
@@ -268,12 +295,12 @@ class Layer9:
             payload=proposal.payload, proposer=proposal.proposer,
             provenance=proposal.provenance.to_dict(),
             target_objects=tuple(proposal.target_objects), actor=actor,
-            governance_approved=governance_approved, reason=proposal.reason, tick=self.tick,
+            governance_approved=governance_approved, reason=proposal.reason, tick=self._tick,
         ))
 
         # 1. record the proposal (its taint reflects who proposed it).
-        proposal.id = self.minter.next(ObjectType.PROPOSAL)
-        proposal.created_tick = proposal.last_changed_tick = self.tick
+        proposal.id = self._minter.next(ObjectType.PROPOSAL)
+        proposal.created_tick = proposal.last_changed_tick = self._tick
         proposal.status, proposal.authority = Status.CANDIDATE, Authority.CANDIDATE
         proposal.taint = self._proposer_taint(proposal)
         self._objects[proposal.id] = proposal
@@ -340,10 +367,10 @@ class Layer9:
     def _decide(self, proposal, op, accepted, new_status, reason, rejected_fields,
                 ev_id) -> Decision:
         d = Decision(
-            id=self.minter.next(ObjectType.DECISION), proposal_id=proposal.id, operator=op,
+            id=self._minter.next(ObjectType.DECISION), proposal_id=proposal.id, operator=op,
             accepted=accepted, new_status=new_status, reason=reason,
             rejected_fields=tuple(rejected_fields), ledger_event=ev_id,
-            created_tick=self.tick, last_changed_tick=self.tick, created_by="gate",
+            created_tick=self._tick, last_changed_tick=self._tick, created_by="gate",
             status=Status.ACTIVE, authority=Authority.AUTHORITATIVE,
         )
         self._objects[d.id] = d
@@ -351,8 +378,8 @@ class Layer9:
 
     def _mint(self, cls, object_type: ObjectType, proposal: Proposal, actor: str, **fields):
         obj = cls(
-            id=self.minter.next(object_type),
-            created_tick=self.tick, last_changed_tick=self.tick,
+            id=self._minter.next(object_type),
+            created_tick=self._tick, last_changed_tick=self._tick,
             provenance=proposal.provenance, taint=proposal.taint,
             derived_from=proposal.target_objects, created_by=actor,
             **fields,
