@@ -83,6 +83,7 @@ def event_from_real_trial(result: dict, *, ledger_tick: int,
         scope_description=f"frozen transfer task set ({metric})",
         method_id=str(result.get("method_id", "unknown")),
         method_variant=str(result.get("method_id", "unknown")),
+        affinities=tuple(result.get("affinities") or ()),   # the DESi axis this trial informs
         task_set_id=task_set, task_sample_id=str(result.get("task_set_sha", ""))[:12],
         baseline_id="baseline_solver", evaluator_id=f"metric:{metric}",
         model=str(result.get("processor_model", "none")), estimand=estimand,
