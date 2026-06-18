@@ -80,6 +80,11 @@ jobs:
           # The synthetic keyword-trial mock carries no epistemic weight and the REAL trial
           # protocol now exists, so keep the mock OUT of the production loop (no protocol noise).
           JONI_SYNTHETIC_TRIALS: "0"
+          # Verified snapshot fast-load (#120): skip the O(n²) journal replay on load. The journal
+          # stays the source of truth + fallback; the snapshot is accepted only if it reproduces
+          # the recorded snapshot_hash AND verify_chain passes, else it falls back to full replay.
+          # The first save after this writes the snapshot; subsequent cycles load in O(n).
+          JONI_FAST_LOAD: "1"
           JONI_LOOP_MINUTES: "320"    # run cycles for ~5.3h, then let the next job take over
           JONI_LOOP_PAUSE_SECONDS: "180"   # a polite pause between cycles
           DESI_ROOT: ${{ github.workspace }}/_desi
