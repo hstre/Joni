@@ -105,6 +105,29 @@ class Method(EpistemicObject):
 
 
 @dataclass
+class MethodTrialEvent(EpistemicObject):
+    """An immutable, append-only record of ONE METHOD_TRIAL_RECORDED event.
+
+    The verbatim payload is stored as a CANONICAL JSON string (``canonical_payload``), never a
+    mutable dict, so the record cannot be altered in place and a hash over it is deterministic.
+    This object is never mutated and never read by the method-promotion/discard counters -
+    interpretation of the trial lives OUTSIDE Layer 9.
+
+    ``record_authority`` vs ``epistemic_authority``: the RECORD is authoritative (Layer 9 confirms
+    that this event, with this payload, was registered); the trial's epistemic VERDICT inside the
+    payload is NOT thereby confirmed - so a generic reader must not read ``authority`` and treat the
+    embedded ``epistemic_result`` as established science.
+    """
+
+    object_type: ObjectType = ObjectType.METHOD_TRIAL_EVENT
+    schema_version: str = ""
+    trial_id: str = ""
+    canonical_payload: str = ""               # canonical JSON of the verbatim payload (immutable)
+    record_authority: str = "authoritative"   # the registration is in-force...
+    epistemic_authority: str = "none"         # ...the trial verdict is NOT core-confirmed
+
+
+@dataclass
 class MemoryEpisode(EpistemicObject):
     object_type: ObjectType = ObjectType.MEMORY_EPISODE
     kind: MemoryKind = MemoryKind.EPISODIC

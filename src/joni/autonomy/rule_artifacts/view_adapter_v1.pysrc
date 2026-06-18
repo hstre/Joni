@@ -1,0 +1,9 @@
+def build_view(meas, dec, est):
+    """Byte-pinned input adapter: turn the decoder's canonical (measurement, decision, estimand)
+    block dicts into the read-only object VIEW the rule consumes. This is the ONLY transform between
+    the decoder output and the rule; it is hashed into the capsule so no live adapter logic can sit,
+    un-attested, between decoder and rule. Self-contained (imports its own SimpleNamespace)."""
+    from types import SimpleNamespace
+    return SimpleNamespace(measurement=SimpleNamespace(**meas),
+                           decision=SimpleNamespace(**dec),
+                           estimand=SimpleNamespace(**est))

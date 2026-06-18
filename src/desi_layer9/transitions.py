@@ -84,6 +84,9 @@ _MEMORY: dict[Status, frozenset[Status]] = {
     S.EXPIRED: _TERMINAL,
 }
 
+# An append-only, immutable record: minted ACTIVE and never transitioned (no lifecycle).
+_IMMUTABLE_RECORD: dict[Status, frozenset[Status]] = {S.ACTIVE: _TERMINAL}
+
 TRANSITIONS: dict[ObjectType, dict[Status, frozenset[Status]]] = {
     ObjectType.CLAIM: _CLAIM_LIKE,
     ObjectType.SELF_MODEL_CLAIM: _CLAIM_LIKE,
@@ -98,6 +101,7 @@ TRANSITIONS: dict[ObjectType, dict[Status, frozenset[Status]]] = {
     ObjectType.PROJECT: _GOAL_LIKE,
     ObjectType.MEMORY_EPISODE: _MEMORY,
     ObjectType.SEMANTIC_CLUSTER: _SEMANTIC,
+    ObjectType.METHOD_TRIAL_EVENT: _IMMUTABLE_RECORD,   # transitionless by design
 }
 
 CONFLICT_TRANSITIONS: dict[ConflictStatus, frozenset[ConflictStatus]] = {

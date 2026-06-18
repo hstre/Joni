@@ -28,11 +28,25 @@ if [ -f /root/.ssh/authorized_keys ]; then
   install -o "${USER_NAME}" -g "${USER_NAME}" -m 600 \
     /root/.ssh/authorized_keys "${HOME_DIR}/.ssh/authorized_keys"
 fi
+# Passwordless sudo for the single owner of this box: lets you (and remote help) fix things
+# without being locked out, even after root SSH is disabled below.
+echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME}
+chmod 440 /etc/sudoers.d/${USER_NAME}
 
-echo "== ssh hardening (keys only, no root login) =="
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-systemctl restart ssh || systemctl restart sshd || true
+echo "== ssh hardening =="
+# Only lock SSH down to keys-only if the joni user actually has a key - otherwise we would
+# lock you out (e.g. when you logged in by password). No key => keep password+root login,
+# warn, and let you add a key and re-run later.
+if [ "${JONI_HARDEN_SSH:-1}" = "1" ] && [ -s "${HOME_DIR}/.ssh/authorized_keys" ]; then
+  sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+  sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+  systemctl restart ssh || systemctl restart sshd || true
+  echo "   keys-only login enabled; from now on log in as: ssh ${USER_NAME}@<ip>"
+  HARDENED=1
+else
+  echo "   ssh hardening skipped (JONI_HARDEN_SSH=0 or no key) - login settings left as-is"
+  HARDENED=0
+fi
 
 echo "== firewall: only SSH in, all out =="
 ufw default deny incoming
@@ -52,7 +66,9 @@ else
 fi
 python3 -m venv "${APP_DIR}/.venv"
 "${APP_DIR}/.venv/bin/pip" install --quiet --upgrade pip
-"${APP_DIR}/.venv/bin/pip" install --quiet -e "${APP_DIR}[dev,llm,pdf,embed]"
+# Core only - the dry-run relay needs no heavy extras. Optional features (llm/pdf/embed)
+# can be added later with: .venv/bin/pip install -e "REPO[llm,pdf,embed]"
+"${APP_DIR}/.venv/bin/pip" install --quiet -e "${APP_DIR}"
 # a secrets file you fill in later; root-readable only
 [ -f "${HOME_DIR}/joni/relay.env" ] || printf '# fill per platform you enable; never commit\n' > "${HOME_DIR}/joni/relay.env"
 chmod 600 "${HOME_DIR}/joni/relay.env"
@@ -88,6 +104,11 @@ systemctl enable --now joni-relay
 
 echo
 echo "== done =="
+if [ "${HARDENED:-0}" = "1" ]; then
+  echo "Log in from now on as:  ssh ${USER_NAME}@<ip>   (root/password login is OFF)"
+else
+  echo "SSH hardening was SKIPPED (no key) - root/password login still ON."
+fi
 echo "Relay is running in DRY-RUN (posts nothing). Watch it:  journalctl -u joni-relay -f"
 echo "Next: put credentials in ${HOME_DIR}/joni/relay.env, then we wire the first adapter."
 echo "Approve a draft (from anywhere with the repo):  python -m joni.autonomy approve <id>"

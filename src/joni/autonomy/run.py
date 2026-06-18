@@ -209,7 +209,7 @@ def one_cycle() -> dict:
     # 3c-real. The REAL method-trial protocol (measured: frozen task set, baseline vs intervention,
     #     predefined metric, negative control, provenance) - kept separate from, and honest about,
     #     the synthetic simulator above. Decision rests on the metric, not a model's opinion.
-    trials.run_real_method_trial(extensions, proto, cycle)
+    trials.run_real_method_trial(cs, extensions, proto, cycle)
     # running totals so homeostasis/commission can see whether method-trialing ever matures
     extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
         trialed.get("trialed", 0)
@@ -259,11 +259,32 @@ def one_cycle() -> dict:
     #     auto-confirmed). Joni does not only react to sources.
     invented = invent.invent(cs, extensions, proto, cycle)
 
-    # 4c-kevin. Kevin's creative arm (opt-in, cadence-spaced): his own deepseek-v4-pro profile
-    #     proposes a bold cross-domain transfer hypothesis from two of Joni's topics. Candidate
-    #     through the gate, captured. Distinct from his deterministic method trials above.
+    # 4c-desi. DESi predicts the solution-space gaps (blind-spot coverage over the Layer-9 gap
+    #     snapshot, now fed by the sealed trial events) - the 'probability islands' where a missing
+    #     thinking-move on a real target most likely unlocks progress. Surfaced for the site, and
+    #     used to STEER Kevin below. Read-only; clean empty list without DESi.
+    from . import kevin_trial_bridge as _bridge
+    islands = _bridge.blind_spots(cs, top_k=5)
+    extensions["desi_blind_spots"] = islands
+    if islands:
+        top = ", ".join(f"{i['target']}:{i['missing_affinity']}({i['priority']})"
+                        for i in islands[:3])
+        proto.record(cycle, "note", f"DESi solution-space gaps (top {min(3, len(islands))} of "
+                                    f"{len(islands)}): {top}")
+
+    # 4c-kevin. Kevin's creative arm (opt-in, cadence-spaced): his own deepseek-v4-pro profile.
+    #     STEERED by DESi - he aims his divergence at the highest-priority solution-space gap
+    #     (a real target + the missing thinking-move) first, falling back to generic inputs.
+    #     Candidate through the gate, captured. Distinct from his deterministic method trials above.
     kevin_proposed = kevin_llm.propose(cs, extensions, proto, cycle,
                                        budget=budget, runs_per_week=runs_per_week())
+
+    # 4c-kevin-orch. Kevin's REAL orchestrator (the Dirigent): DESi predicts the solution-space
+    #     islands, the wild brother explores them, Layer-9 methods discipline, epistemic selection
+    #     keeps the coherent/testable ones - selected candidates enter as non-authoritative
+    #     hypotheses. Runs ONLY with a real Kevin LLM client (KEVIN_USE_REAL_LLM=1); else a no-op.
+    from . import kevin_creative
+    kevin_creative.run(cs, extensions, proto, cycle, budget=budget)
 
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.

@@ -32,6 +32,7 @@ PREFIX: dict[ObjectType, str] = {
     ObjectType.SELF_MODEL_CLAIM: "SM",
     ObjectType.NARRATIVE_SUMMARY: "NS",
     ObjectType.SEMANTIC_CLUSTER: "SC",
+    ObjectType.METHOD_TRIAL_EVENT: "MTE",
 }
 
 

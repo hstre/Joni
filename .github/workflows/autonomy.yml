@@ -11,11 +11,16 @@ name: joni-autonomy
 # only a re-launcher - it starts the next continuous job when the previous one ends (the
 # concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
 on:
-  # Live again 2026-06-16 after the stop/review: memory preserved, governance core hardened,
-  # Kevin's real trial in place, budget cap + capability health wired. Fresh ONE-WEEK window.
-  schedule:
-    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
-  workflow_dispatch:
+  # STOPPED 2026-06-18: the autonomous loop is halted on request. Joni's accumulated memory is
+  # backed up (branch backup/joni-2026-06-18 at the pre-stop main HEAD) and his work to date is
+  # preserved in state/. The new Kevin (real orchestrator + DESi blind-spot prediction + the
+  # sealed trial-event subsystem) is built in below, but the hourly re-launcher is OFF so nothing
+  # auto-runs and no real DeepSeek spend is incurred until a human deliberately restarts.
+  #
+  # To restart: uncomment the `schedule:` block (or trigger a one-off run via workflow_dispatch).
+  # schedule:
+  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  workflow_dispatch:           # manual restart only, until the schedule is re-enabled
 
 concurrency:
   group: joni-autonomy
@@ -50,7 +55,7 @@ jobs:
         # Pinned to an IMMUTABLE commit (not the moving branch name) so future Kevin work - on the
         # branch or on main - does NOT affect Joni until we deliberately re-pin. e723881 = the
         # branch tip with the real_trial protocol + honesty tags + green CI (2026-06-16).
-        run: python -m pip install "kevin @ git+https://github.com/hstre/Kevin@e723881ef2ea03d37727289a19a66b0fdfffa48f"
+        run: python -m pip install "kevin @ git+https://github.com/hstre/Kevin@446c9d2287b1842e0b0e53ee69e3346453faa44e"
       - name: Install DESi (so the real Semantic Layer is live; optional)
         continue-on-error: true
         run: python -m pip install -e _desi || python -m pip install _desi
@@ -65,6 +70,9 @@ jobs:
           JONI_RUNTIME_DAYS: "7"      # one-week run (memory preserved, hardened core + fixes)
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
+          KEVIN_USE_REAL_LLM: "1"     # Kevin's orchestrator uses the real DeepSeek client
+          KEVIN_USE_DESI: "1"         # Kevin's space_predictor uses real DESi blind-spot coverage
+          JONI_KEVIN_ORCHESTRATOR: "1"  # run Kevin's real orchestrator in the loop
           # Semantic proposal layer ON: the pinned models read sources and *propose* candidate
           # claims through the Layer-9 gate (never authoritative). Granite 4.1 8B for structured
           # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard). Capped

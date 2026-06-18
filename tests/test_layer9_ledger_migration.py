@@ -35,9 +35,14 @@ def test_ledger_chain_verifies():
 
 def test_tampering_a_past_event_breaks_the_chain():
     core = _seed_core()
-    core.ledger[0].reason = "tampered"          # edit a historic event
-    ok, problems = l9.verify_chain(core)
-    assert not ok and problems
+    # the PUBLIC ledger hands back deep copies, so an external edit cannot reach the chain...
+    core.ledger[0].reason = "tampered"
+    ok, _ = l9.verify_chain(core)
+    assert ok
+    # ...but STORAGE-level tampering of the internal ledger is still detected.
+    core._ledger[0].reason = "tampered"         # edit a historic event in place
+    ok2, problems = l9.verify_chain(core)
+    assert not ok2 and problems
 
 
 # -- replay ----------------------------------------------------------------- #

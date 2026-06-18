@@ -1,0 +1,11 @@
+def load_callable(source_bytes, name, future_flag_bits, optimize):
+    """Byte-pinned artifact loader. Compiles a SELF-CONTAINED source under EXPLICIT, inherited-free
+    compiler semantics and returns one callable. The numeric future-flag bits and optimisation level
+    are passed in as arguments (never read from any mutable module global), so the loader's whole
+    executable behaviour lives in THESE bytes and is fully covered by loader_hash. dont_inherit=True
+    means the result never depends on the calling module's own __future__ flags."""
+    code = compile(source_bytes.decode("utf-8"), "<artifact:" + name + ">", "exec",
+                   flags=future_flag_bits, dont_inherit=True, optimize=optimize)
+    ns = {}
+    exec(code, ns)
+    return ns[name]

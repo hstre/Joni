@@ -1,0 +1,11 @@
+def check_contract(measurement, decision, estimand):
+    """Byte-pinned, SELF-CONTAINED input contract for rule_v2 (r6): a real verdict requires a
+    measured effect AND a confidence interval (rule_v2 decides from the CI). Both the requirement
+    AND its interpretation live in these bytes, so the contract's MEANING is hashed - a later change
+    to a live interpreter cannot re-interpret this historical contract. Returns a list of errors."""
+    errors = []
+    if measurement.get("effect_size") is None:
+        errors.append("input contract requires measurement.effect_size")
+    if measurement.get("confidence_interval") is None:
+        errors.append("input contract requires measurement.confidence_interval")
+    return errors

@@ -66,16 +66,22 @@ def project(core, *, core_commit: str = "unknown"):
     sources["method_history.affinities"] = {
         "source": "Method.applicable_to", "confidence": "direct"}
 
-    # -- method_trials (scope-bound, per-conflict, result-kind): UNKNOWN in Layer 9 today -------- #
-    # Methods carry GLOBAL success/failure counts and run-ids, but nothing binds a trial to a
-    # conflict, a scope, a method-variant, or a result KIND (no_benefit vs technical_failure...).
-    # So we project NOTHING here and say so - rather than fabricate scope-bound outcomes.
-    method_trials = ()
+    # -- method_trials (scope-bound, per-target, result-kind): from the SEALED v4 trial events --- #
+    # The legacy Method.success/failure counters bind nothing to a target/scope/result-kind. The v4
+    # METHOD_TRIAL_RECORDED subsystem captures exactly that - a trial bound to a target_id, scope_id
+    # and method_variant with a RULE-VERIFIED result kind (no_benefit / harmful / success / ...).
+    # Project those (rule-verified only) into DESi MethodTrial DTOs; this is the data capture the
+    # static-table critique demanded. Empty until Kevin's measured trials are written through the
+    # gate - and HONESTLY marked unknown until then, never fabricated.
+    from . import trial_event_projector as _tep
+    method_trials = _tep.desi_method_trials(core)        # DESi MethodTrial OBJECTS (not dicts)
     sources["method_trials"] = {
-        "source": "n/a", "confidence": "unknown",
-        "note": "Layer 9 records global Method.success/failure_count + run-ids only - NOT "
-                "scope-bound outcomes with a result kind. The analysis cannot beat a static table "
-                "without this; the data capture must be added first."}
+        "source": "sealed v4 METHOD_TRIAL_RECORDED events (rule-verified, scope-bound)",
+        "confidence": "derived" if method_trials else "unknown",
+        "note": ("scope-bound, rule-verified trial outcomes projected to DESi MethodTrial DTOs"
+                 if method_trials else
+                 "no sealed v4 trial events recorded yet - DESi degrades to the static table until "
+                 "Kevin's measured trials are written through the gate")}
 
     # -- evidence gaps: DERIVED (active claims with thin / single-source support) ---------------- #
     evidence_gaps = []

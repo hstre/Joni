@@ -51,16 +51,16 @@ def run_trials(cs, proto, cycle: int = 0, *, run_id: str | None = None) -> dict:
             "failed": rep["failed"], "activation_ready": ready}
 
 
-def run_real_method_trial(extensions: dict, proto, cycle: int = 0) -> dict:
+def run_real_method_trial(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     """Run the REAL method-trial protocol (``kevin.real_trial`` · real_trial_protocol_v1) - a
     measured trial (frozen task set, baseline vs intervention, predefined metric, repetitions,
-    negative control, full provenance), NOT the synthetic keyword simulator. The decision rests on
-    the metric alone. The latest result is stored for the site; a protocol note is written when the
-    verdict changes. Clean no-op without ``kevin``.
+    negative control, full provenance + a real confidence interval), NOT the synthetic keyword
+    simulator. The decision rests on the metric alone. Clean no-op without ``kevin``.
 
-    It is kept *separate* from the synthetic trial counters and is NOT recorded against a shelf
-    method (the method under test is not a harvested shelf object), so the two never conflate; the
-    stored result IS the provenance-bearing artefact (epistemic_weight=provisional)."""
+    The measured result is now also RECORDED through the one authoritative Layer-9 core as a sealed
+    v4 ``METHOD_TRIAL_RECORDED`` event (the writer, gated by ``JONI_TRIAL_WRITER``; the verdict is
+    rule_v2's, not Kevin's) and PROJECTED into the DESi solution-space-gap view (the consumer). The
+    latest result is stored for the site; a protocol note is written when the verdict changes."""
     out = {"ran": False}
     try:
         from kevin import real_trial
@@ -73,6 +73,31 @@ def run_real_method_trial(extensions: dict, proto, cycle: int = 0) -> dict:
         return out
     prev = extensions.get("real_trial", {})
     extensions["real_trial"] = result
+
+    # WRITER + CONSUMER: record the measured trial as an immutable sealed v4 event, then project the
+    # accumulated events into the DESi solution-space-gap view. Clean no-ops if unavailable.
+    from . import kevin_trial_bridge as bridge
+    rec = bridge.record_real_trial(cs, result, run_id=f"joni-c{cycle}")
+    proj = bridge.project(cs)
+    extensions["trial_events"] = {"count": bridge.trial_event_count(cs),
+                                  "last": rec, "writer_enabled": bridge.writer_enabled()}
+    if proj.get("available"):
+        suff = proj.get("dataset_sufficiency", {})
+        extensions["trial_event_projection"] = {
+            "sufficiency": suff.get("verdict"),
+            "registered_events": suff.get("registered_events", 0),
+            "rule_verified_events": suff.get("rule_verified_events", 0),
+            "ready_conflict_scopes": suff.get("analysis_ready_conflict_scopes", []),
+            "verified_outcomes": len(proj.get("verified_scope_bound_outcomes", [])),
+            "operational_observations": len(proj.get("operational_observations", []))}
+    if rec.get("recorded"):
+        sfc = extensions.get("trial_event_projection", {}).get("sufficiency", "n/a")
+        proto.record(cycle, "trialed",
+                     f"recorded sealed trial event {rec['trial_id']} "
+                     f"(verdict {rec.get('verdict')}, "
+                     f"rule_v2) · {extensions['trial_events']['count']} event(s) in the core · "
+                     f"DESi sufficiency: {sfc}")
+
     if (prev.get("task_set_sha") != result.get("task_set_sha")
             or prev.get("passed") != result.get("passed")):
         proto.record(
@@ -80,10 +105,12 @@ def run_real_method_trial(extensions: dict, proto, cycle: int = 0) -> dict:
             f"REAL method-trial [{result['method_id']}] on {result['task_set']} "
             f"(sha {result['task_set_sha'][:8]}): {result['metric']} baseline "
             f"{result['baseline']} -> intervention {result['intervention']} (Δ{result['delta']}, "
-            f"control {result['negative_control']}, reps {result['repetitions']}) -> "
-            f"{'PASS' if result['passed'] else 'no pass'} · {result['uncertainty']} uncertainty · "
-            f"epistemic_weight={result['epistemic_weight']} (measured, not the synthetic mock)")
-    return {"ran": True, "passed": result["passed"], "direction": result["direction"]}
+            f"CI {result.get('confidence_interval')}, control {result['negative_control']}, reps "
+            f"{result['repetitions']}) -> {'PASS' if result['passed'] else 'no pass'} · "
+            f"{result['uncertainty']} uncertainty · epistemic_weight={result['epistemic_weight']} "
+            "(measured, not the synthetic mock)")
+    return {"ran": True, "passed": result["passed"], "direction": result["direction"],
+            "recorded": rec.get("recorded", False)}
 
 
 def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5) -> int:
