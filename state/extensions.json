@@ -21,7 +21,35 @@
       "source": "https://zenodo.org/records/20740562"
     }
   ],
-  "commissions": [],
+  "commissions": [
+    {
+      "kind": "starved_topic",
+      "cycle": 253,
+      "addressed_to": "Claude",
+      "title": "Erweitere meine Quellen für 'panel'",
+      "component": "the reading layer (sources.py / reader.py) - which feeds Joni can draw on, outside the protected core",
+      "component_key": "reader-sources",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (reader-sources)",
+      "motivation": "Ich habe 27 Hypothesen zu 'panel', aber 0 stützende Evidenz - meine Quellen liefern dazu nichts, die Ideen bleiben barren.",
+      "desired_capability": "Füge in sources.py / reader.py eine Quelle hinzu, die zu 'panel' Material liefert (eine gezielte Query oder ein passender Feed).",
+      "acceptance": "Ein Lauf bringt mindestens ein gelesenes Item zu 'panel', das eine Hypothese stützen oder ihr widersprechen kann.",
+      "evidence": {
+        "topic": "panel",
+        "hypotheses": 27,
+        "hypothesis_ids": [
+          "C-969",
+          "C-970",
+          "C-971",
+          "C-978",
+          "C-979"
+        ]
+      },
+      "risk": "low - adds an input source; no state-logic changes",
+      "sustained_cycles": 3
+    }
+  ],
   "forum_heard": [
     {
       "cycle": 251,
@@ -417,11 +445,13 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 2,
+    "starved_topic": 3,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
-  "commissions_filed": {},
+  "commissions_filed": {
+    "starved_topic": 253
+  },
   "forum_stance": "Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber genau so streng geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein deshalb geglaubt, weil ein Mensch es gesagt hat.",
   "forum_registry": {
     "huggingface": {
@@ -522,15 +552,35 @@
       "question": "Hat jemand gute Quellen oder Erfahrungen zu 'academic'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
       "status": "posted",
       "posted_url": "https://www.moltbook.com/posts/29bc090d-79f2-4ea4-a212-bd8332ed8459"
+    },
+    {
+      "id": "FA-253-cbfc98",
+      "cycle": 253,
+      "platform": "reddit",
+      "need": "topic:patterns",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'patterns'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "drafted",
+      "posted_url": null
+    },
+    {
+      "id": "FA-253-097d7e",
+      "cycle": 253,
+      "platform": "moltbook",
+      "need": "topic:patterns",
+      "question": "Hat jemand gute Quellen oder Erfahrungen zu 'patterns'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.",
+      "status": "posted",
+      "posted_url": "https://www.moltbook.com/posts/a6d3b8da-8c76-4e90-9523-4aaa44536da5"
     }
   ],
   "forum_asked": [
     "topic:forum",
-    "topic:academic"
+    "topic:academic",
+    "topic:patterns"
   ],
   "forum_asked_moltbook": [
     "topic:forum",
-    "topic:academic"
+    "topic:academic",
+    "topic:patterns"
   ],
   "forum_identity": {
     "moltbook": {
@@ -6107,6 +6157,7 @@
     "huggingface:2606.18363",
     "huggingface:2606.18375",
     "huggingface:2606.18543",
+    "huggingface:2606.18558",
     "huggingface:2606.19047",
     "huggingface:2606.19336",
     "huggingface:2606.19338",
@@ -7541,6 +7592,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-51"
+    },
+    {
+      "call_id": "joni-c253:301e14939d2e",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 4,
+      "conflict": "X-52"
     }
   ],
   "methods_seen": [
@@ -7649,7 +7709,7 @@
   "methods_ready_total": 0,
   "core_ask_signals": {
     "operators": 0,
-    "scoring": 1
+    "scoring": 0
   },
   "core_ask_filed": {},
   "linked": [
@@ -7700,6 +7760,7 @@
     "C-1033|C-1204",
     "C-1033|C-1227",
     "C-1033|C-1229",
+    "C-1033|C-1300",
     "C-1033|C-770",
     "C-1034|C-1051",
     "C-1036|C-1053",
@@ -7709,6 +7770,7 @@
     "C-1050|C-1171",
     "C-1050|C-1187",
     "C-1050|C-1227",
+    "C-1050|C-1300",
     "C-1055|C-1058",
     "C-1055|C-1061",
     "C-1059|C-1086",
@@ -8182,6 +8244,7 @@
     "C-1033|C-1204@bge-small-en-v1.5",
     "C-1033|C-1227@bge-small-en-v1.5",
     "C-1033|C-1229@bge-small-en-v1.5",
+    "C-1033|C-1300@bge-small-en-v1.5",
     "C-1033|C-770@bge-small-en-v1.5",
     "C-1034|C-1051@bge-small-en-v1.5",
     "C-1036|C-1053@bge-small-en-v1.5",
@@ -8191,6 +8254,7 @@
     "C-1050|C-1171@bge-small-en-v1.5",
     "C-1050|C-1187@bge-small-en-v1.5",
     "C-1050|C-1227@bge-small-en-v1.5",
+    "C-1050|C-1300@bge-small-en-v1.5",
     "C-1055|C-1058@bge-small-en-v1.5",
     "C-1055|C-1061@bge-small-en-v1.5",
     "C-1059|C-1086@bge-small-en-v1.5",
@@ -8618,6 +8682,7 @@
   ],
   "invented": [
     "academic|agent",
+    "academic|agents",
     "documentation|panel",
     "overview|panel"
   ],
@@ -8658,7 +8723,8 @@
     "scientific",
     "service",
     "software",
-    "users"
+    "users",
+    "variance"
   ],
   "synthesized": [
     "panel|accuracy",
@@ -9170,6 +9236,7 @@
     "associated",
     "awesome-design-patterns",
     "beagleimputationvalidation",
+    "context",
     "contexts",
     "design",
     "documentation",
@@ -9218,7 +9285,10 @@
   "hyp_tested": [
     "C-1304|C-1244",
     "C-1304|C-1257",
-    "C-1304|C-1261"
+    "C-1304|C-1261",
+    "C-1312|C-1244",
+    "C-1312|C-1257",
+    "C-1312|C-1261"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -9340,14 +9410,14 @@
     "C-995"
   ],
   "learned_queries": [
-    "panel worth",
-    "unsorted exactly",
-    "unsorted revealing",
-    "unsorted observed",
     "unsorted single",
     "panel recurs",
     "academic+agent publishing",
-    "academic+agent methodology"
+    "academic+agent methodology",
+    "panel claims",
+    "panel underlying",
+    "academic+agents mathematical",
+    "academic+agents under"
   ],
   "hyp_seen_cycle": {
     "C-960": 224,
@@ -9378,7 +9448,8 @@
     "C-1191": 249,
     "C-1208": 250,
     "C-1233": 252,
-    "C-1304": 252
+    "C-1306": 253,
+    "C-1312": 253
   },
   "topics_domain_ok": [
     "abstracts",
@@ -9435,7 +9506,8 @@
     "scientific",
     "service",
     "software",
-    "users"
+    "users",
+    "variance"
   ],
   "hyp_domain_ok": [
     "C-1002",
@@ -9457,6 +9529,9 @@
     "C-1233",
     "C-129",
     "C-1306",
+    "C-1313",
+    "C-1314",
+    "C-1316",
     "C-142",
     "C-158",
     "C-160",
@@ -9707,40 +9782,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 920,
+    "active": 926,
     "hypotheses": 29,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 215,
-    "supporting_links": 215,
-    "emergent_total": 574,
+    "evidence_links": 217,
+    "supporting_links": 217,
+    "emergent_total": 576,
     "usable_semantic_rate": 1.0,
     "methods_total": 74,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 12559,
-    "cycle": 252
+    "objects": 12646,
+    "cycle": 253
   },
   "vitality_prev": {
-    "supports": 215,
+    "supports": 217,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 12559,
-    "active": 920,
-    "links": 215,
-    "emergent": 574
+    "objects": 12646,
+    "active": 926,
+    "links": 217,
+    "emergent": 576
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 53,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 2,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 54,
       "verdict": "degenerating",
@@ -11133,6 +11201,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 253,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -11404,12 +11479,13 @@
     "X-5",
     "X-50",
     "X-51",
+    "X-52",
     "X-6",
     "X-7",
     "X-8"
   ],
   "reconsolidate_lens_idx": 3,
-  "kevin_last_cycle": 250,
+  "kevin_last_cycle": 253,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
@@ -11516,12 +11592,41 @@
       "origin": "kevin",
       "authority": "none",
       "requires_review": true
+    },
+    {
+      "call_id": "kevin-c253:1d901ca8c381",
+      "served_model": "deepseek-v4-pro",
+      "cycle": 253,
+      "replayed": false,
+      "proposals": [
+        {
+          "id": "C-1313",
+          "text": "Applying prompt ensembling to Italian municipal service workers—by repeatedly exposing them to multiple randomly ordered incentive statements before task execution—reduces quality variance across workers by at least 25% compared to a single incentive statement, as measured by blinded audit scores.",
+          "topic": "unsorted"
+        },
+        {
+          "id": "C-1314",
+          "text": "Temperature annealing, where the magnitude of performance-based bonuses decreases exponentially over a contract period in Italian healthcare, results in higher quality consistency (lower variance) than constant bonuses, while maintaining mean quality, as tested in a 12-month RCT.",
+          "topic": "unsorted"
+        }
+      ],
+      "input_type": "cross_topic_analogy",
+      "trigger": "panel × forum",
+      "input_hash": "775ca8bae76a17bb",
+      "source_count": 4,
+      "internal_coherence": "coherent",
+      "confirmation_ceiling": "activation",
+      "external_corroboration": "present",
+      "origin": "kevin",
+      "authority": "none",
+      "requires_review": true
     }
   ],
   "kevin_inputs_seen": [
     "833a22c53ff9e3d8",
     "9b4dfbcafcb44213",
-    "5c9eead563ee42fe"
+    "5c9eead563ee42fe",
+    "775ca8bae76a17bb"
   ],
   "trial_events": {
     "count": 1,
