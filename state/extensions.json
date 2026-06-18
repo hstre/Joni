@@ -445,7 +445,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 15,
+    "starved_topic": 16,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -6707,7 +6707,8 @@
     "zenodo:20746572",
     "zenodo:20746779",
     "zenodo:20748618",
-    "zenodo:20748894"
+    "zenodo:20748894",
+    "zenodo:20749764"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -7734,6 +7735,14 @@
       "replayed": false,
       "claims": 5,
       "source": "arxiv:2606.19319v1"
+    },
+    {
+      "call_id": "joni-c266:7f091f836f7e",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20749764"
     }
   ],
   "pdf_read": [
@@ -8474,6 +8483,8 @@
     "C-1155|C-1303",
     "C-1155|C-1308",
     "C-1155|C-1309",
+    "C-1155|C-1328",
+    "C-1155|C-1331",
     "C-1156|C-1172",
     "C-1156|C-1188",
     "C-1157|C-1173",
@@ -8502,6 +8513,8 @@
     "C-1171|C-1228",
     "C-1171|C-1300",
     "C-1171|C-1303",
+    "C-1171|C-1308",
+    "C-1171|C-1309",
     "C-11|C-4",
     "C-122|C-123",
     "C-122|C-124",
@@ -9093,6 +9106,8 @@
     "C-1155|C-1303@bge-small-en-v1.5",
     "C-1155|C-1308@bge-small-en-v1.5",
     "C-1155|C-1309@bge-small-en-v1.5",
+    "C-1155|C-1328@bge-small-en-v1.5",
+    "C-1155|C-1331@bge-small-en-v1.5",
     "C-1156|C-1172@bge-small-en-v1.5",
     "C-1156|C-1188@bge-small-en-v1.5",
     "C-1157|C-1173@bge-small-en-v1.5",
@@ -9121,6 +9136,8 @@
     "C-1171|C-1228@bge-small-en-v1.5",
     "C-1171|C-1300@bge-small-en-v1.5",
     "C-1171|C-1303@bge-small-en-v1.5",
+    "C-1171|C-1308@bge-small-en-v1.5",
+    "C-1171|C-1309@bge-small-en-v1.5",
     "C-11|C-4@bge-small-en-v1.5",
     "C-122|C-123@bge-small-en-v1.5",
     "C-122|C-124@bge-small-en-v1.5",
@@ -9517,6 +9534,7 @@
     "agent|forum",
     "agent|panel",
     "agent|patterns",
+    "agent|research",
     "documentation|panel",
     "overview|panel"
   ],
@@ -9544,6 +9562,7 @@
     "hosted",
     "include",
     "intended",
+    "intervals",
     "involved",
     "knowledge",
     "language",
@@ -9573,7 +9592,6 @@
     "variance"
   ],
   "synthesized": [
-    "panel|achieved",
     "panel|achieves",
     "panel|action",
     "panel|actions",
@@ -10056,6 +10074,7 @@
     "panel|users",
     "panel|uzbekistan",
     "panel|validity",
+    "panel|value",
     "panel|variable-width",
     "panel|variables",
     "panel|version",
@@ -10122,7 +10141,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:strategic": 2,
+    "meth:strategic": 3,
     "panel|confirm": 3,
     "panel|contradiction": 3,
     "panel|enabling": 3,
@@ -10134,8 +10153,7 @@
     "panel|sciorch": 1,
     "panel|statistics": 3,
     "panel|trajectory": 2,
-    "panel|understanding": 2,
-    "panel|value": 3
+    "panel|understanding": 2
   },
   "hyp_tested": [
     "C-1304|C-1244",
@@ -10277,18 +10295,16 @@
     "C-995"
   ],
   "learned_queries": [
-    "agent+forum spaghetti",
-    "unsorted anharmonicity",
-    "unsorted being",
     "panel underlying",
     "agent+panel *when*",
     "agent+panel panel",
     "panel claims",
-    "panel testing"
+    "panel testing",
+    "agent+patterns agent",
+    "agent+patterns sometimes",
+    "panel panel"
   ],
   "hyp_seen_cycle": {
-    "C-1137": 243,
-    "C-1148": 244,
     "C-1159": 245,
     "C-1164": 246,
     "C-1175": 247,
@@ -10316,7 +10332,9 @@
     "C-1408": 264,
     "C-1411": 264,
     "C-1423": 265,
-    "C-1425": 265
+    "C-1425": 265,
+    "C-1426": 266,
+    "C-1428": 266
   },
   "topics_domain_ok": [
     "abstracts",
@@ -10355,6 +10373,7 @@
     "hosted",
     "include",
     "intended",
+    "intervals",
     "involved",
     "knowledge",
     "language",
@@ -10431,6 +10450,8 @@
     "C-1425",
     "C-1426",
     "C-1428",
+    "C-1438",
+    "C-1440",
     "C-158",
     "C-160",
     "C-174",
@@ -10686,40 +10707,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 997,
+    "active": 1007,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 241,
-    "supporting_links": 241,
-    "emergent_total": 595,
+    "evidence_links": 243,
+    "supporting_links": 243,
+    "emergent_total": 596,
     "usable_semantic_rate": 1.0,
     "methods_total": 80,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 14024,
-    "cycle": 265
+    "objects": 14127,
+    "cycle": 266
   },
   "vitality_prev": {
-    "supports": 241,
+    "supports": 243,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 14024,
-    "active": 997,
-    "links": 241,
-    "emergent": 595
+    "objects": 14127,
+    "active": 1007,
+    "links": 243,
+    "emergent": 596
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 66,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 67,
       "verdict": "steady",
@@ -12108,6 +12122,13 @@
     },
     {
       "cycle": 265,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 266,
       "verdict": "steady",
       "development": 6,
       "degeneration": 1,
