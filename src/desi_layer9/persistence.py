@@ -9,8 +9,10 @@ hash chain. A snapshot may accelerate startup but never replaces the journal.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
+from . import snapshot
 from .core import JournalEntry, Layer9, make_proposal
 from .hashing import snapshot_hash, verify_chain
 from .provenance import Provenance
@@ -39,21 +41,47 @@ def replay(journal: list[JournalEntry], *, tick: int = 0) -> Layer9:
     return core
 
 
+def _fast_load_enabled() -> bool:
+    """The snapshot fast-load is OPT-IN (``JONI_FAST_LOAD=1``). Default OFF preserves the exact
+    current behaviour: state is always re-derived by replaying the journal (the source of truth, and
+    the gate re-enforcement that goes with it). Enabling it TRUSTS the bot-written snapshot as a
+    verified cache - a deliberate speed/integrity trade-off the deployment opts into."""
+    return os.getenv("JONI_FAST_LOAD", "0") == "1"
+
+
 def to_doc(state: Layer9) -> dict:
-    return {
+    doc = {
         "schema_version": SCHEMA_VERSION,
         "tick": state.tick,
         "snapshot_hash": snapshot_hash(state),
         "journal": [e.to_dict() for e in state.journal],
     }
+    if _fast_load_enabled():
+        # A VERIFIED fast-load cache (never the source of truth - the journal is). ``from_doc``
+        # restores it and re-checks it against ``snapshot_hash`` + ``verify_chain``; on any mismatch
+        # it falls back to a full replay. So it only ever skips work, never changes the result.
+        doc["state_snapshot"] = snapshot.capture(state)
+    return doc
 
 
 def from_doc(doc: dict, *, verify: bool = True) -> Layer9:
     journal = [JournalEntry.from_dict(e) for e in doc.get("journal", [])]
+    recorded = doc.get("snapshot_hash")
+    # FAST PATH (opt-in, verify=True only): restore the snapshot and accept it ONLY if it
+    # reproduces the recorded snapshot_hash AND verify_chain passes. Any problem -> replay instead.
+    snap = doc.get("state_snapshot")
+    if _fast_load_enabled() and verify and snap is not None:
+        try:
+            state = snapshot.restore(snap, journal, tick=int(doc.get("tick", 0)))
+            ok_chain, _ = verify_chain(state)
+            if ok_chain and recorded and snapshot_hash(state) == recorded:
+                return state
+        except Exception:  # noqa: BLE001 - a malformed/old snapshot is never fatal; replay instead
+            pass
+    # SLOW PATH: full replay - the journal is the source of truth.
     state = replay(journal, tick=int(doc.get("tick", 0)))
     if verify:
         # Integrity: the reconstructed state must match the recorded snapshot.
-        recorded = doc.get("snapshot_hash")
         if recorded and snapshot_hash(state) != recorded:
             raise ValueError("replay snapshot hash mismatch - journal or snapshot corrupted")
         ok, problems = verify_chain(state)
