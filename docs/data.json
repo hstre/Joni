@@ -60,46 +60,52 @@
       "service",
       "software",
       "threshold",
+      "user",
       "users",
       "variance"
     ],
-    "claims_total": 1360,
-    "claims_active": 952,
+    "claims_total": 1369,
+    "claims_active": 959,
     "memory": 0,
-    "ledger": 9742,
+    "ledger": 9802,
     "open_conflicts": 74,
-    "methods": 76,
+    "methods": 77,
     "method_trials": 172,
     "methods_ready": 0,
     "preferences": 3,
-    "evidence_links": 227,
+    "evidence_links": 229,
     "self_model": 23,
-    "hypotheses": 28,
+    "hypotheses": 29,
     "research_topics": 9,
     "epistemically_usable": {
-      "rate": 0.754,
-      "n": 952,
+      "rate": 0.755,
+      "n": 959,
       "flags": {
-        "correctly_typed": 952,
-        "source_anchored": 904,
-        "non_duplicate": 768,
-        "topic_valid": 950,
-        "scope_valid": 950,
-        "provenance_complete": 904
+        "correctly_typed": 959,
+        "source_anchored": 910,
+        "non_duplicate": 775,
+        "topic_valid": 957,
+        "scope_valid": 957,
+        "provenance_complete": 910
       }
     },
     "routing_engine": "DESi",
     "days_running": 2,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 1.786,
     "cap_eur": 20.0,
-    "runs": 258
+    "runs": 259
   },
   "window": {
     "start": "2026-06-16T13:09:10+00:00",
-    "runs": 258,
+    "runs": 259,
     "retired": false
   },
   "extensions": {
@@ -549,7 +555,7 @@
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 8,
+      "starved_topic": 9,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -6511,6 +6517,7 @@
       "huggingface:2606.17321",
       "huggingface:2606.17539",
       "huggingface:2606.17628",
+      "huggingface:2606.17800",
       "huggingface:2606.17861",
       "huggingface:2606.18023",
       "huggingface:2606.18180",
@@ -7612,6 +7619,14 @@
         "replayed": false,
         "claims": 5,
         "source": "github:Imbad0202/academic-research-skills"
+      },
+      {
+        "call_id": "joni-c259:59e2535a64c4",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "huggingface:2606.17800"
       }
     ],
     "pdf_read": [
@@ -8063,6 +8078,7 @@
       "huggingface:2606.17321",
       "huggingface:2606.17539",
       "huggingface:2606.17628",
+      "huggingface:2606.17800",
       "huggingface:2606.17861",
       "huggingface:2606.18208",
       "huggingface:2606.18363",
@@ -8218,6 +8234,7 @@
       "C-1067|C-1227",
       "C-1067|C-1300",
       "C-1067|C-1308",
+      "C-1067|C-1328",
       "C-1073|C-1121",
       "C-1081|C-1123",
       "C-1082|C-1124",
@@ -8255,6 +8272,7 @@
       "C-1094|C-1185",
       "C-1094|C-1207",
       "C-1104|C-1227",
+      "C-1104|C-1308",
       "C-1115|C-741",
       "C-1116|C-1133",
       "C-1116|C-1144",
@@ -8732,6 +8750,7 @@
       "C-1067|C-1227@bge-small-en-v1.5",
       "C-1067|C-1300@bge-small-en-v1.5",
       "C-1067|C-1308@bge-small-en-v1.5",
+      "C-1067|C-1328@bge-small-en-v1.5",
       "C-1073|C-1121@bge-small-en-v1.5",
       "C-1081|C-1123@bge-small-en-v1.5",
       "C-1082|C-1124@bge-small-en-v1.5",
@@ -8769,6 +8788,7 @@
       "C-1094|C-1185@bge-small-en-v1.5",
       "C-1094|C-1207@bge-small-en-v1.5",
       "C-1104|C-1227@bge-small-en-v1.5",
+      "C-1104|C-1308@bge-small-en-v1.5",
       "C-1115|C-741@bge-small-en-v1.5",
       "C-1116|C-1133@bge-small-en-v1.5",
       "C-1116|C-1144@bge-small-en-v1.5",
@@ -9172,6 +9192,7 @@
       "academic|forum",
       "academic|panel",
       "academic|patterns",
+      "academic|research",
       "documentation|panel",
       "overview|panel"
     ],
@@ -9217,6 +9238,7 @@
       "service",
       "software",
       "threshold",
+      "user",
       "users",
       "variance"
     ],
@@ -9762,10 +9784,10 @@
       "scientific",
       "service",
       "software",
+      "three",
       "variance"
     ],
     "emerge_insufficient": {
-      "meth:three": 3,
       "panel|confirm": 3,
       "panel|contradiction": 3,
       "panel|enabling": 3,
@@ -9794,7 +9816,10 @@
       "C-1349|C-1261",
       "C-1358|C-1244",
       "C-1358|C-1257",
-      "C-1358|C-1261"
+      "C-1358|C-1261",
+      "C-1367|C-1244",
+      "C-1367|C-1257",
+      "C-1367|C-1261"
     ],
     "hyp_insufficient": {},
     "hyp_hollow": [
@@ -9916,14 +9941,14 @@
       "C-995"
     ],
     "learned_queries": [
-      "academic+panel reveal",
-      "academic+panel ignoring",
-      "panel claims",
       "academic+evaluation architectural",
       "academic+evaluation measurements",
       "panel through-line",
       "academic+patterns basic",
-      "academic+patterns calculated"
+      "academic+patterns calculated",
+      "panel across",
+      "academic+research publishing",
+      "academic+research methodical"
     ],
     "hyp_seen_cycle": {
       "C-981": 233,
@@ -9953,7 +9978,8 @@
       "C-1341": 256,
       "C-1344": 257,
       "C-1353": 258,
-      "C-1358": 258
+      "C-1360": 259,
+      "C-1367": 259
     },
     "topics_domain_ok": [
       "abstracts",
@@ -10015,6 +10041,7 @@
       "service",
       "software",
       "threshold",
+      "user",
       "users",
       "variance"
     ],
@@ -10046,6 +10073,7 @@
       "C-1344",
       "C-1353",
       "C-1360",
+      "C-1369",
       "C-142",
       "C-158",
       "C-160",
@@ -10291,6 +10319,7 @@
       "M-74",
       "M-75",
       "M-76",
+      "M-77",
       "M-8",
       "M-9"
     ],
@@ -10298,40 +10327,33 @@
       "verdict": "steady",
       "development": 6,
       "degeneration": 1,
-      "active": 952,
-      "hypotheses": 28,
-      "unsupported_hypotheses": 28,
+      "active": 959,
+      "hypotheses": 29,
+      "unsupported_hypotheses": 29,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
-      "evidence_links": 227,
-      "supporting_links": 227,
-      "emergent_total": 583,
+      "evidence_links": 229,
+      "supporting_links": 229,
+      "emergent_total": 585,
       "usable_semantic_rate": 1.0,
-      "methods_total": 76,
+      "methods_total": 77,
       "method_trials_total": 172,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 13135,
-      "cycle": 258
+      "objects": 13224,
+      "cycle": 259
     },
     "vitality_prev": {
-      "supports": 227,
+      "supports": 229,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 13135,
-      "active": 952,
-      "links": 227,
-      "emergent": 583
+      "objects": 13224,
+      "active": 959,
+      "links": 229,
+      "emergent": 585
     },
     "stagnation": 0,
     "vitality_history": [
-      {
-        "cycle": 59,
-        "verdict": "degenerating",
-        "development": 0,
-        "degeneration": 1,
-        "usable_semantic_rate": 1.0
-      },
       {
         "cycle": 60,
         "verdict": "steady",
@@ -11724,6 +11746,13 @@
         "development": 6,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 259,
+        "verdict": "steady",
+        "development": 6,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "panel_asked": [
@@ -12018,7 +12047,7 @@
       "X-8"
     ],
     "reconsolidate_lens_idx": 3,
-    "kevin_last_cycle": 256,
+    "kevin_last_cycle": 259,
     "kevin_llm": [
       {
         "call_id": "kevin-c26:60a854e0b332",
@@ -67059,19 +67088,268 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:46:53+00:00",
+      "cycle": 259,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:46:54+00:00",
+      "cycle": 259,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:46:54+00:00",
+      "cycle": 259,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:46:56+00:00",
+      "cycle": 259,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:01+00:00",
+      "cycle": 259,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:02+00:00",
+      "cycle": 259,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:04+00:00",
+      "cycle": 259,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:07+00:00",
+      "cycle": 259,
+      "kind": "judged",
+      "summary": "relevant: MaineCoon: Pursuing A Real-Time Audio-Visual Social World Model",
+      "refs": {
+        "source": "huggingface:2606.17800",
+        "topic": "panel",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.17800"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:37+00:00",
+      "cycle": 259,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from huggingface:2606.17800 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:47+00:00",
+      "cycle": 259,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: MaineCoon: Pursuing A Real-Time Audio-Visual Social World Model (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:53+00:00",
+      "cycle": 259,
+      "kind": "developed",
+      "summary": "linked C-1067 <-> C-1328 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:57+00:00",
+      "cycle": 259,
+      "kind": "developed",
+      "summary": "linked C-1104 <-> C-1308 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:47:59+00:00",
+      "cycle": 259,
+      "kind": "invented",
+      "summary": "new hypothesis bridging academic x research (candidate, derived from C-1265+C-1270)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:06+00:00",
+      "cycle": 259,
+      "kind": "emerged",
+      "summary": "new topic 'user' precipitated from a recurrence across panel, patterns",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:08+00:00",
+      "cycle": 259,
+      "kind": "emerged",
+      "summary": "'access' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:09+00:00",
+      "cycle": 259,
+      "kind": "emerged",
+      "summary": "'accuracy' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:11+00:00",
+      "cycle": 259,
+      "kind": "emerged",
+      "summary": "'variance' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:13+00:00",
+      "cycle": 259,
+      "kind": "emerged",
+      "summary": "synthesis on panel: 'accesses' (Layer 9 synthesis-eligible, SC-1394) from 8 claims (C-187, C-868, C-873, C-885, C-891)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:22+00:00",
+      "cycle": 259,
+      "kind": "strengthen",
+      "summary": "idea C-1367 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:22+00:00",
+      "cycle": 259,
+      "kind": "strategy",
+      "summary": "redundant inputs (67% duplicate) -> broaden: lean on self-invented hypotheses over re-reading",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:24+00:00",
+      "cycle": 259,
+      "kind": "regulate",
+      "summary": "retired 1 junk-subject hypothesis(es): C-1367",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:26+00:00",
+      "cycle": 259,
+      "kind": "vitality",
+      "summary": "steady · dev 6 · degen 1 · 29 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:43+00:00",
+      "cycle": 259,
+      "kind": "tooled",
+      "summary": "DESi date_math: 2 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:43+00:00",
+      "cycle": 259,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-18T14:48:43+00:00",
+      "cycle": 259,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 1 method(s) · 0 trialed · 2 new link(s) · 1 hypothesis(es) · 2 emergent · steady · spend €1.7860 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 190,
-    "granite_calls": 143,
+    "llm_calls": 191,
+    "granite_calls": 144,
     "deepseek_escalations": 42,
     "kevin_calls": 5,
     "cached_calls": 23,
-    "live_calls": 167,
-    "last_call": "2026-06-18T14:38:01+00:00",
+    "live_calls": 168,
+    "last_call": "2026-06-18T14:47:25+00:00",
     "est_cost_eur": 0.136,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 143,
+      "ibm-granite/granite-4.1-8b-20260429": 144,
       "deepseek-v4-pro": 47
     },
     "empty_calls": 1,
@@ -67079,15 +67357,15 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 165,
+      "stop": 166,
       "length": 2
     },
     "panel_rounds": 11,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 1.786,
-    "accepted_claims": 631,
-    "accepted_calls": 154,
-    "accepted_call_yield": 0.922,
+    "accepted_claims": 636,
+    "accepted_calls": 155,
+    "accepted_call_yield": 0.923,
     "est_cost_per_accepted_eur": 0.0002
   },
   "commissions_done": [
@@ -67099,5 +67377,5 @@
       "note": "trials.retire_unproductive(): Pass = activation-ready; FAIL = nach N Trials ohne Netto-Gewinn verwerfen, damit die Methodenliste nicht unbegrenzt waechst."
     }
   ],
-  "generated": "2026-06-18T14:39:43+00:00"
+  "generated": "2026-06-18T14:48:49+00:00"
 }

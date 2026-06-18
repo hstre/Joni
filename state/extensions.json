@@ -445,7 +445,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 8,
+    "starved_topic": 9,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -6407,6 +6407,7 @@
     "huggingface:2606.17321",
     "huggingface:2606.17539",
     "huggingface:2606.17628",
+    "huggingface:2606.17800",
     "huggingface:2606.17861",
     "huggingface:2606.18023",
     "huggingface:2606.18180",
@@ -7508,6 +7509,14 @@
       "replayed": false,
       "claims": 5,
       "source": "github:Imbad0202/academic-research-skills"
+    },
+    {
+      "call_id": "joni-c259:59e2535a64c4",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.17800"
     }
   ],
   "pdf_read": [
@@ -7959,6 +7968,7 @@
     "huggingface:2606.17321",
     "huggingface:2606.17539",
     "huggingface:2606.17628",
+    "huggingface:2606.17800",
     "huggingface:2606.17861",
     "huggingface:2606.18208",
     "huggingface:2606.18363",
@@ -8114,6 +8124,7 @@
     "C-1067|C-1227",
     "C-1067|C-1300",
     "C-1067|C-1308",
+    "C-1067|C-1328",
     "C-1073|C-1121",
     "C-1081|C-1123",
     "C-1082|C-1124",
@@ -8151,6 +8162,7 @@
     "C-1094|C-1185",
     "C-1094|C-1207",
     "C-1104|C-1227",
+    "C-1104|C-1308",
     "C-1115|C-741",
     "C-1116|C-1133",
     "C-1116|C-1144",
@@ -8628,6 +8640,7 @@
     "C-1067|C-1227@bge-small-en-v1.5",
     "C-1067|C-1300@bge-small-en-v1.5",
     "C-1067|C-1308@bge-small-en-v1.5",
+    "C-1067|C-1328@bge-small-en-v1.5",
     "C-1073|C-1121@bge-small-en-v1.5",
     "C-1081|C-1123@bge-small-en-v1.5",
     "C-1082|C-1124@bge-small-en-v1.5",
@@ -8665,6 +8678,7 @@
     "C-1094|C-1185@bge-small-en-v1.5",
     "C-1094|C-1207@bge-small-en-v1.5",
     "C-1104|C-1227@bge-small-en-v1.5",
+    "C-1104|C-1308@bge-small-en-v1.5",
     "C-1115|C-741@bge-small-en-v1.5",
     "C-1116|C-1133@bge-small-en-v1.5",
     "C-1116|C-1144@bge-small-en-v1.5",
@@ -9068,6 +9082,7 @@
     "academic|forum",
     "academic|panel",
     "academic|patterns",
+    "academic|research",
     "documentation|panel",
     "overview|panel"
   ],
@@ -9113,6 +9128,7 @@
     "service",
     "software",
     "threshold",
+    "user",
     "users",
     "variance"
   ],
@@ -9658,10 +9674,10 @@
     "scientific",
     "service",
     "software",
+    "three",
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:three": 3,
     "panel|confirm": 3,
     "panel|contradiction": 3,
     "panel|enabling": 3,
@@ -9690,7 +9706,10 @@
     "C-1349|C-1261",
     "C-1358|C-1244",
     "C-1358|C-1257",
-    "C-1358|C-1261"
+    "C-1358|C-1261",
+    "C-1367|C-1244",
+    "C-1367|C-1257",
+    "C-1367|C-1261"
   ],
   "hyp_insufficient": {},
   "hyp_hollow": [
@@ -9812,14 +9831,14 @@
     "C-995"
   ],
   "learned_queries": [
-    "academic+panel reveal",
-    "academic+panel ignoring",
-    "panel claims",
     "academic+evaluation architectural",
     "academic+evaluation measurements",
     "panel through-line",
     "academic+patterns basic",
-    "academic+patterns calculated"
+    "academic+patterns calculated",
+    "panel across",
+    "academic+research publishing",
+    "academic+research methodical"
   ],
   "hyp_seen_cycle": {
     "C-981": 233,
@@ -9849,7 +9868,8 @@
     "C-1341": 256,
     "C-1344": 257,
     "C-1353": 258,
-    "C-1358": 258
+    "C-1360": 259,
+    "C-1367": 259
   },
   "topics_domain_ok": [
     "abstracts",
@@ -9911,6 +9931,7 @@
     "service",
     "software",
     "threshold",
+    "user",
     "users",
     "variance"
   ],
@@ -9942,6 +9963,7 @@
     "C-1344",
     "C-1353",
     "C-1360",
+    "C-1369",
     "C-142",
     "C-158",
     "C-160",
@@ -10187,6 +10209,7 @@
     "M-74",
     "M-75",
     "M-76",
+    "M-77",
     "M-8",
     "M-9"
   ],
@@ -10194,40 +10217,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 952,
-    "hypotheses": 28,
-    "unsupported_hypotheses": 28,
+    "active": 959,
+    "hypotheses": 29,
+    "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 227,
-    "supporting_links": 227,
-    "emergent_total": 583,
+    "evidence_links": 229,
+    "supporting_links": 229,
+    "emergent_total": 585,
     "usable_semantic_rate": 1.0,
-    "methods_total": 76,
+    "methods_total": 77,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 13135,
-    "cycle": 258
+    "objects": 13224,
+    "cycle": 259
   },
   "vitality_prev": {
-    "supports": 227,
+    "supports": 229,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 13135,
-    "active": 952,
-    "links": 227,
-    "emergent": 583
+    "objects": 13224,
+    "active": 959,
+    "links": 229,
+    "emergent": 585
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 59,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 60,
       "verdict": "steady",
@@ -11620,6 +11636,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 259,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -11914,7 +11937,7 @@
     "X-8"
   ],
   "reconsolidate_lens_idx": 3,
-  "kevin_last_cycle": 256,
+  "kevin_last_cycle": 259,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
