@@ -445,7 +445,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 17,
+    "starved_topic": 18,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -6708,7 +6708,8 @@
     "zenodo:20746779",
     "zenodo:20748618",
     "zenodo:20748894",
-    "zenodo:20749764"
+    "zenodo:20749764",
+    "zenodo:20749982"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -7743,6 +7744,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20749764"
+    },
+    {
+      "call_id": "joni-c268:5a82f0f54b47",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20749982"
     }
   ],
   "pdf_read": [
@@ -8533,7 +8542,10 @@
     "C-1187|C-1204",
     "C-1187|C-1227",
     "C-1187|C-1228",
+    "C-1187|C-1300",
+    "C-1187|C-1303",
     "C-11|C-4",
+    "C-1201|C-1203",
     "C-122|C-123",
     "C-122|C-124",
     "C-122|C-125",
@@ -9174,7 +9186,10 @@
     "C-1187|C-1204@bge-small-en-v1.5",
     "C-1187|C-1227@bge-small-en-v1.5",
     "C-1187|C-1228@bge-small-en-v1.5",
+    "C-1187|C-1300@bge-small-en-v1.5",
+    "C-1187|C-1303@bge-small-en-v1.5",
     "C-11|C-4@bge-small-en-v1.5",
+    "C-1201|C-1203@bge-small-en-v1.5",
     "C-122|C-123@bge-small-en-v1.5",
     "C-122|C-124@bge-small-en-v1.5",
     "C-122|C-125@bge-small-en-v1.5",
@@ -9565,6 +9580,7 @@
     "academic|patterns",
     "academic|research",
     "agents|alignment",
+    "agents|evaluation",
     "agent|agents",
     "agent|alignment",
     "agent|evaluation",
@@ -9624,6 +9640,7 @@
     "service",
     "session",
     "software",
+    "support",
     "threshold",
     "user",
     "users",
@@ -10149,6 +10166,7 @@
     "expresses",
     "graph",
     "helmholtz",
+    "higher",
     "hosted",
     "include",
     "intended",
@@ -10333,18 +10351,16 @@
     "C-995"
   ],
   "learned_queries": [
-    "panel claims",
-    "panel testing",
-    "agent+patterns agent",
-    "agent+patterns sometimes",
     "panel panel",
     "agent+research precisely",
     "agent+research because",
-    "panel accesses"
+    "panel accesses",
+    "agents+alignment sonnet",
+    "agents+alignment hypothesis",
+    "panel factor",
+    "panel through-line"
   ],
   "hyp_seen_cycle": {
-    "C-1175": 247,
-    "C-1186": 248,
     "C-1191": 249,
     "C-1208": 250,
     "C-1233": 252,
@@ -10372,7 +10388,9 @@
     "C-1426": 266,
     "C-1428": 266,
     "C-1438": 267,
-    "C-1440": 267
+    "C-1440": 267,
+    "C-1441": 268,
+    "C-1443": 268
   },
   "topics_domain_ok": [
     "abstracts",
@@ -10441,6 +10459,7 @@
     "service",
     "session",
     "software",
+    "support",
     "threshold",
     "user",
     "users",
@@ -10493,6 +10512,8 @@
     "C-1440",
     "C-1441",
     "C-1443",
+    "C-1450",
+    "C-1452",
     "C-158",
     "C-160",
     "C-174",
@@ -10748,40 +10769,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 1008,
+    "active": 1015,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 245,
-    "supporting_links": 245,
-    "emergent_total": 598,
+    "evidence_links": 247,
+    "supporting_links": 247,
+    "emergent_total": 600,
     "usable_semantic_rate": 1.0,
     "methods_total": 80,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 14218,
-    "cycle": 267
+    "objects": 14297,
+    "cycle": 268
   },
   "vitality_prev": {
-    "supports": 245,
+    "supports": 247,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 14218,
-    "active": 1008,
-    "links": 245,
-    "emergent": 598
+    "objects": 14297,
+    "active": 1015,
+    "links": 247,
+    "emergent": 600
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 68,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 69,
       "verdict": "degenerating",
@@ -12174,6 +12188,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 268,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -12476,7 +12497,7 @@
     "X-8"
   ],
   "reconsolidate_lens_idx": 4,
-  "kevin_last_cycle": 265,
+  "kevin_last_cycle": 268,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
