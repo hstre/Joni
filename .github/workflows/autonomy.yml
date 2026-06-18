@@ -11,11 +11,12 @@ name: joni-autonomy
 # only a re-launcher - it starts the next continuous job when the previous one ends (the
 # concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
 on:
-  # RESTARTED 2026-06-18 for a TWO-DAY window: the new Kevin (real orchestrator + DESi blind-spot
+  # RESTARTED 2026-06-18 for TWO MORE DAYS: the new Kevin (real orchestrator + DESi blind-spot
   # prediction + sealed trial events) is built in and the last live-loop mock is gone. Joni's
-  # pre-stop memory is backed up on branch backup/joni-2026-06-18. The runtime window is set to
-  # 2 days (JONI_RUNTIME_DAYS below) and the window start was reset to the restart time, so Joni
-  # runs for two days from now and then stands down on his own. The 20 EUR/week budget stays the
+  # pre-stop memory is backed up on branch backup/joni-2026-06-18. The window start stays at the
+  # ORIGINAL 2026-06-16 (do NOT reset it - the journal's logical clock is already at day 2, and
+  # set_day must never move that clock backward), and JONI_RUNTIME_DAYS=4 means Joni lives 4 days
+  # total = the 2 he already ran + 2 more, retiring ~2026-06-20. The 20 EUR/week budget stays the
   # hard ceiling. To stop early: re-comment the schedule (or cancel the in-flight run).
   schedule:
     - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
@@ -66,7 +67,7 @@ jobs:
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
-          JONI_RUNTIME_DAYS: "2"      # two-day run on restart (window start reset to restart time)
+          JONI_RUNTIME_DAYS: "4"      # 4 days total = 2 already lived (clock at day 2) + 2 more
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           KEVIN_USE_REAL_LLM: "1"     # Kevin's orchestrator uses the real DeepSeek client
