@@ -445,7 +445,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 19,
+    "starved_topic": 20,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -6605,6 +6605,7 @@
     "openclaw:GreenSheep01201/Claw-Kanban",
     "openclaw:JimLiu/baoyu-skills",
     "openclaw:Parad0x-Labs/openclaw-skills",
+    "openclaw:TencentCloud/TencentDB-Agent-Memory",
     "openclaw:VoltAgent/awesome-openclaw-skills",
     "openclaw:alirezarezvani/claude-skills",
     "openclaw:csuzngjh/principles",
@@ -6612,6 +6613,8 @@
     "openclaw:modest-curator478/claude-skills",
     "openclaw:oguzhnatly/fleet",
     "openclaw:smouj/openclaw-desk",
+    "openclaw:teng-lin/notebooklm-py",
+    "openclaw:win4r/ClawTeam-OpenClaw",
     "openclaw:xyreinsurance119/agentforge-openclaw",
     "zenodo:17799385",
     "zenodo:20509084",
@@ -6704,8 +6707,11 @@
     "zenodo:20744001",
     "zenodo:20744116",
     "zenodo:20745716",
+    "zenodo:20746473",
     "zenodo:20746572",
     "zenodo:20746779",
+    "zenodo:20746984",
+    "zenodo:20747211",
     "zenodo:20748618",
     "zenodo:20748894",
     "zenodo:20749764",
@@ -7752,6 +7758,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20749982"
+    },
+    {
+      "call_id": "joni-c270:ca7eb6e67a79",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20746984"
+    },
+    {
+      "call_id": "joni-c270:5b81c4fc4cca",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20747211"
     }
   ],
   "pdf_read": [
@@ -8217,6 +8239,7 @@
     "huggingface:2606.19336",
     "huggingface:2606.19341",
     "openalex:W7162828992",
+    "openclaw:TencentCloud/TencentDB-Agent-Memory",
     "zenodo:20719101",
     "zenodo:20719104",
     "zenodo:20719129",
@@ -8245,6 +8268,8 @@
     "zenodo:20737709",
     "zenodo:20740562",
     "zenodo:20741292",
+    "zenodo:20746984",
+    "zenodo:20747211",
     "zenodo:20748618"
   ],
   "real_trial": {
@@ -8546,6 +8571,8 @@
     "C-1187|C-1303",
     "C-1187|C-1308",
     "C-1187|C-1309",
+    "C-1187|C-1328",
+    "C-1187|C-1331",
     "C-11|C-4",
     "C-1201|C-1203",
     "C-1204|C-1227",
@@ -8553,6 +8580,7 @@
     "C-1204|C-1308",
     "C-1204|C-1328",
     "C-1209|C-1210",
+    "C-1214|C-1229",
     "C-122|C-123",
     "C-122|C-124",
     "C-122|C-125",
@@ -9197,6 +9225,8 @@
     "C-1187|C-1303@bge-small-en-v1.5",
     "C-1187|C-1308@bge-small-en-v1.5",
     "C-1187|C-1309@bge-small-en-v1.5",
+    "C-1187|C-1328@bge-small-en-v1.5",
+    "C-1187|C-1331@bge-small-en-v1.5",
     "C-11|C-4@bge-small-en-v1.5",
     "C-1201|C-1203@bge-small-en-v1.5",
     "C-1204|C-1227@bge-small-en-v1.5",
@@ -9204,6 +9234,7 @@
     "C-1204|C-1308@bge-small-en-v1.5",
     "C-1204|C-1328@bge-small-en-v1.5",
     "C-1209|C-1210@bge-small-en-v1.5",
+    "C-1214|C-1229@bge-small-en-v1.5",
     "C-122|C-123@bge-small-en-v1.5",
     "C-122|C-124@bge-small-en-v1.5",
     "C-122|C-125@bge-small-en-v1.5",
@@ -9596,6 +9627,7 @@
     "agents|alignment",
     "agents|evaluation",
     "agents|forum",
+    "agents|panel",
     "agent|agents",
     "agent|alignment",
     "agent|evaluation",
@@ -9619,6 +9651,7 @@
     "code",
     "compared",
     "confidence",
+    "consistency",
     "context",
     "contexts",
     "described",
@@ -10172,6 +10205,7 @@
     "associated",
     "awesome-design-patterns",
     "beagleimputationvalidation",
+    "consistency",
     "contamination",
     "context",
     "contexts",
@@ -10368,20 +10402,16 @@
     "C-995"
   ],
   "learned_queries": [
-    "agent+research because",
-    "panel accesses",
-    "agents+alignment sonnet",
     "agents+alignment hypothesis",
     "panel factor",
     "panel through-line",
     "agents+evaluation quality",
-    "agents+evaluation might"
+    "agents+evaluation might",
+    "agents+forum finding",
+    "agents+forum matter",
+    "panel panel"
   ],
   "hyp_seen_cycle": {
-    "C-1233": 252,
-    "C-1306": 253,
-    "C-1313": 254,
-    "C-1314": 254,
     "C-1316": 255,
     "C-1334": 255,
     "C-1341": 256,
@@ -10407,7 +10437,9 @@
     "C-1441": 268,
     "C-1443": 268,
     "C-1450": 269,
-    "C-1452": 269
+    "C-1452": 269,
+    "C-1453": 270,
+    "C-1457": 270
   },
   "topics_domain_ok": [
     "abstracts",
@@ -10430,6 +10462,7 @@
     "codebase",
     "compared",
     "confidence",
+    "consistency",
     "context",
     "contexts",
     "described",
@@ -10534,6 +10567,8 @@
     "C-1452",
     "C-1453",
     "C-1457",
+    "C-1474",
+    "C-1476",
     "C-158",
     "C-160",
     "C-174",
@@ -10783,46 +10818,41 @@
     "M-79",
     "M-8",
     "M-80",
+    "M-81",
+    "M-82",
     "M-9"
   ],
   "vitality": {
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 1016,
-    "hypotheses": 28,
-    "unsupported_hypotheses": 28,
+    "active": 1033,
+    "hypotheses": 30,
+    "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 249,
-    "supporting_links": 249,
-    "emergent_total": 602,
+    "evidence_links": 251,
+    "supporting_links": 251,
+    "emergent_total": 604,
     "usable_semantic_rate": 1.0,
-    "methods_total": 80,
+    "methods_total": 82,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 14372,
-    "cycle": 269
+    "objects": 14503,
+    "cycle": 270
   },
   "vitality_prev": {
-    "supports": 249,
+    "supports": 251,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 14372,
-    "active": 1016,
-    "links": 249,
-    "emergent": 602
+    "objects": 14503,
+    "active": 1033,
+    "links": 251,
+    "emergent": 604
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 70,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 71,
       "verdict": "degenerating",
@@ -12211,6 +12241,13 @@
     },
     {
       "cycle": 269,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 270,
       "verdict": "steady",
       "development": 6,
       "degeneration": 1,
