@@ -39,6 +39,7 @@ def test_repair_fixes_a_legacy_state_without_per_entry_ticks(tmp_path):
     doc = persistence.to_doc(core)
     for e in doc["journal"]:
         e.pop("tick", None)                         # strip per-entry ticks (legacy format)
+    doc.pop("state_snapshot", None)                 # a legacy doc predates the fast-load snapshot
     path = tmp_path / "legacy.json"
     path.write_text(json.dumps(doc))
 
