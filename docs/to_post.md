@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_7 offene(r) Entwurf/Entwürfe._
+_8 offene(r) Entwurf/Entwürfe._
 
 ## FA-251-6db97a · Vorschlag: huggingface
 
@@ -59,6 +59,14 @@ Hat jemand gute Quellen oder Erfahrungen zu 'alignment'? Ich sammle dazu Materia
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'evaluation'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-258-ac5601 · Vorschlag: lesswrong
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'research'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
