@@ -2,9 +2,10 @@
 
 A single self-contained ``docs/index.html`` (data embedded, no build step, no backend)
 suitable for GitHub Pages. It shows the live status, the budget, the topics Joni now
-tracks, the peripheral improvements he built into himself, the open asks waiting on a
-human, and the tail of the append-only protocol. ``docs/data.json`` is also written for
-anyone who wants the raw record.
+tracks, the peripheral improvements he built into himself, and the tail of the
+append-only protocol. ``docs/data.json`` is also written for anyone who wants the raw
+record. (The human-task surfaces — core asks, Aufträge an Claude, and the forum
+post-mappe — were retired when the autonomous loop was stopped.)
 """
 
 from __future__ import annotations
@@ -34,102 +35,6 @@ def build(data: dict) -> str:
         f"<td class=c>{format(e.get('cost_eur',0), '.4f') if e.get('cost_eur') else '—'}</td></tr>"
         for e in events
     )
-    def _ask(a) -> str:
-        ev = a.get("evidence", {}) if isinstance(a.get("evidence"), dict) else {}
-        url = ev.get("source_url") or a.get("source_url", "#")
-        rtype = a.get("request_type", "observation")
-        comp = a.get("component", a.get("target", "protected core"))
-        what = a.get("proposed_change", a.get("rationale", ""))
-        return (
-            f"<li><div><span class=chip>{esc(rtype)}</span> <b>{esc(comp)}</b></div>"
-            f"<div class=asrow><span class=k>what</span> {esc(what)}</div>"
-            f"<div class=asrow><span class=k>evidence</span> {esc(ev.get('source_title',''))} "
-            f"<span class=src>(<a href='{esc(url)}'>source</a>)</span></div>"
-            f"<div class=asrow><span class=k>risk</span> {esc(a.get('risk','—'))}</div></li>")
-
-    asks = ext.get("asks", [])
-    asks_html = "".join(_ask(a) for a in asks) or \
-        "<li class=empty>none — Joni has not needed to touch the core.</li>"
-
-    def _commission(c) -> str:
-        ev = c.get("evidence", {}) if isinstance(c.get("evidence"), dict) else {}
-        ev_txt = " · ".join(f"{esc(k)} {esc(v)}"
-                            for k, v in ev.items() if not isinstance(v, list))
-
-        def row(k, v):
-            return f"<div class=asrow><span class=k>{k}</span> {esc(v)}</div>"
-        return (
-            f"<li><div><span class=chip>extension · non-core</span> "
-            f"<b>{esc(c.get('title',''))}</b></div>"
-            + row("component", c.get("component", ""))
-            + row("why", c.get("motivation", ""))
-            + row("build", c.get("desired_capability", ""))
-            + row("done&nbsp;when", c.get("acceptance", ""))
-            + f"<div class=asrow><span class=k>evidence</span> {ev_txt}</div>"
-            + row("risk", c.get("risk", "—")) + "</li>")
-
-    # Implemented Aufträge (by a human-gated Claude session), with date+time, so the page shows
-    # not only what Joni asked for but what was actually built and when.
-    done = d.get("commissions_done", []) if isinstance(d.get("commissions_done"), list) else []
-    done_titles = {c.get("title", "") for c in done if isinstance(c, dict)}
-
-    commissions = [c for c in ext.get("commissions", [])
-                   if isinstance(c, dict) and c.get("title") and c.get("title") not in done_titles]
-    commissions_html = "".join(_commission(c) for c in commissions) or \
-        "<li class=empty>keine offenen — alle gestellten Aufträge sind umgesetzt.</li>"
-
-    def _done(c) -> str:
-        ts = esc(c.get("implemented_at", "—"))
-        ref = c.get("ref", "")
-        ref_html = f" <span class=src>({esc(ref)})</span>" if ref else ""
-        return (
-            f"<li><div><span class='chip' style='background:var(--good);color:#06210f'>"
-            f"✓ umgesetzt</span> <b>{esc(c.get('title',''))}</b> "
-            f"<span class=src>· {ts}</span>{ref_html}</div>"
-            f"<div class=asrow><span class=k>component</span> {esc(c.get('component',''))}</div>"
-            f"<div class=asrow><span class=k>note</span> {esc(c.get('note',''))}</div></li>")
-    done_html = "".join(_done(c) for c in sorted(
-        done, key=lambda c: c.get("implemented_at", ""), reverse=True)) or \
-        "<li class=empty>noch keiner umgesetzt.</li>"
-
-    # Humans & forums: people are a source, never an authority.
-    stance = ext.get("forum_stance", "")
-    reg = ext.get("forum_registry", {})
-    reg_html = "".join(
-        f"<span class=pill>{esc(p)}"
-        f"{' · live' if v.get('registered') else ' · allowed'}</span>"
-        for p, v in reg.items()) or "<span class=empty>no forums configured</span>"
-    outbox = [d for d in ext.get("forum_outbox", []) if isinstance(d, dict)]
-    posted_count = sum(1 for d in outbox if d.get("status") == "posted")
-    outbox_html = "".join(
-        f"<li><span class=chip>{esc(d.get('platform',''))} · "
-        f"{esc(d.get('status','drafted'))}</span> <code>{esc(d.get('id',''))}</code> "
-        f"{esc(d.get('question',''))}"
-        + (f" <a href=\"{esc(d.get('posted_url'))}\" target=_blank rel=noopener>&#8599; ansehen</a>"
-           if d.get("posted_url") else "")
-        + "</li>"
-        for d in reversed(outbox[-8:])) or "<li class=empty>no questions drafted yet</li>"
-    mb = ext.get("forum_identity", {}).get("moltbook", {})
-    mb_html = (
-        f" &middot; als <a href=\"{esc(mb.get('profile_url'))}\" target=_blank rel=noopener>"
-        f"@{esc(mb.get('name'))}</a> auf Moltbook" if mb.get("name") else "")
-    approve_note = (
-        "<div class=note style='margin-top:4px'><b>" + str(posted_count) + "</b> gepostet"
-        + mb_html + " &middot; "
-        "Agenten-Netze (Moltbook) postet Joni <b>autonom</b>; Menschen-Foren bleiben auf dem "
-        "<i>&bdquo;du postest, Joni textet&ldquo;</i>-Weg &mdash; Entw&uuml;rfe warten in "
-        "<code>docs/to_post.md</code>, bis ein Mensch sie postet.</div>")
-    heard = [h for h in ext.get("forum_heard", []) if isinstance(h, dict)][-6:]
-    heard_html = "".join(
-        f"<li><div><b>{esc(h.get('platform',''))}:{esc(h.get('handle',''))}</b> "
-        f"<span class=src>→ {esc(h.get('claim',''))}</span>"
-        + (" <span class=chip>Reaktion auf willy-Post (Legacy)</span>"
-           if h.get("origin") == "predecessor-thread" else "")
-        + "</div>"
-        f"<div class=asrow>{esc(h.get('text',''))}</div>"
-        f"<div class=asrow><span class=k>treated as</span> {esc(h.get('treated_as',''))}</div></li>"
-        for h in reversed(heard)) or \
-        "<li class=empty>no human input yet — inbox at state/forum_inbox.json</li>"
 
     # Expert panel: what the Alexandria trio discussed the last time Joni was unsure.
     panel = ext.get("panel_last") if isinstance(ext.get("panel_last"), dict) else {}
@@ -506,27 +411,6 @@ what is uncertain, what contradicts, and what changed.</p>
   <div class="card full">
     <h2>Self-review · hourly · provisional self-model (not facts)</h2>
     {review_html}
-  </div>
-  <div class="card full">
-    <h2>Asks — waiting on a human (protected core)</h2>
-    <ul>{asks_html}</ul>
-  </div>
-  <div class="card full">
-    <h2>Aufträge an Claude — extend Joni (non-core, implemented via PR)</h2>
-    <h3 style='margin:4px 0'>Offen</h3>
-    <ul>{commissions_html}</ul>
-    <h3 style='margin:10px 0 4px'>Umgesetzt (mit Datum &amp; Uhrzeit)</h3>
-    <ul>{done_html}</ul>
-  </div>
-  <div class="card full">
-    <h2>Menschen &amp; Foren — a source, not an authority</h2>
-    <p class=note>{stance}</p>
-    <div style='margin:6px 0'>{reg_html}</div>
-    <h3 style='margin:10px 0 4px'>Fragen &amp; Posts</h3>
-    <ul>{outbox_html}</ul>
-    {approve_note}
-    <h3 style='margin:10px 0 4px'>Heard from people — and how it was treated</h3>
-    <ul>{heard_html}</ul>
   </div>
   <div class="card full">
     <h2>Kevin — was er vorschlägt &amp; ob es taugt</h2>

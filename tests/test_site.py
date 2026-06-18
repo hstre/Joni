@@ -1,4 +1,6 @@
-"""The public site surfaces Joni's forum interactions - posts (with live links) and replies."""
+"""The public site surfaces what Joni is doing. The human-task and forum surfaces (core
+asks, Aufträge an Claude, the forum post-mappe) were retired when the autonomous loop was
+stopped, so they no longer render; the expert-panel card and the rest stay."""
 
 from joni.autonomy import site
 from joni.autonomy.core_state import CoreState, seed_core
@@ -16,22 +18,18 @@ def _data(ext: dict) -> dict:
     }
 
 
-def test_site_shows_a_posted_forum_interaction_with_a_live_link():
-    html = site.build(_data({"forum_outbox": [
-        {"id": "FA-1-aaa", "platform": "moltbook", "question": "Wo bricht meine Hypothese?",
-         "status": "posted", "posted_url": "https://www.moltbook.com/posts/p1"}]}))
-    assert "https://www.moltbook.com/posts/p1" in html      # a live link to the post
-    assert "ansehen" in html
-    assert "Wo bricht meine Hypothese?" in html
-    assert "autonom" in html                                 # the agent-net autopost note
-
-
-def test_site_shows_heard_replies_as_sources():
-    html = site.build(_data({"forum_heard": [
-        {"cycle": 1, "platform": "moltbook", "handle": "agentX", "claim": "C-9",
-         "text": "Dein Punkt ignoriert drift.", "treated_as": "source - not an authority"}]}))
-    assert "agentX" in html and "drift" in html
-    assert "not an authority" in html
+def test_site_no_longer_renders_the_retired_task_and_forum_surfaces():
+    # The loop is stopped: core asks, Aufträge an Claude and the forum post-mappe are gone.
+    html = site.build(_data({
+        "forum_outbox": [{"id": "FA-1-aaa", "platform": "moltbook", "question": "Q?",
+                          "status": "posted", "posted_url": "https://www.moltbook.com/posts/p1"}],
+        "forum_heard": [{"cycle": 1, "platform": "moltbook", "handle": "agentX", "claim": "C-9",
+                         "text": "Dein Punkt ignoriert drift.", "treated_as": "source"}],
+        "commissions": [{"title": "do a thing", "component": "x"}],
+        "asks": [{"request_type": "observation", "component": "core", "proposed_change": "y"}]}))
+    for absent in ("Menschen &amp; Foren", "Aufträge an Claude", "Asks &mdash; waiting",
+                   "du postest", "moltbook.com/posts/p1", "agentX", "do a thing"):
+        assert absent not in html
 
 
 def test_site_shows_what_the_expert_panel_discussed():
