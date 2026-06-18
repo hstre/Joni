@@ -15,6 +15,10 @@
     {
       "note": "external corroboration that cheap-first routing with adequacy checks pays off",
       "source": "https://huggingface.co/papers/2606.17081"
+    },
+    {
+      "note": "external corroboration that cheap-first routing with adequacy checks pays off",
+      "source": "https://zenodo.org/records/20740562"
     }
   ],
   "commissions": [
@@ -508,7 +512,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 238,
+    "starved_topic": 239,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -5816,7 +5820,8 @@
     "zenodo:20738801",
     "zenodo:20739360",
     "zenodo:20739600",
-    "zenodo:20740446"
+    "zenodo:20740446",
+    "zenodo:20740562"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -6667,6 +6672,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20740446"
+    },
+    {
+      "call_id": "joni-c242:39a7841a638b",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20740562"
     }
   ],
   "pdf_read": [
@@ -6925,6 +6938,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-40"
+    },
+    {
+      "call_id": "joni-c242:1ba4adad8d23",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 4,
+      "conflict": "X-41"
     }
   ],
   "methods_seen": [
@@ -6991,7 +7013,8 @@
     "zenodo:20737095",
     "zenodo:20737096",
     "zenodo:20737708",
-    "zenodo:20737709"
+    "zenodo:20737709",
+    "zenodo:20740562"
   ],
   "real_trial": {
     "method_id": "contradiction-first-review",
@@ -7058,12 +7081,15 @@
     "C-1033|C-1067",
     "C-1033|C-1091",
     "C-1033|C-1102",
+    "C-1033|C-1116",
     "C-1033|C-770",
     "C-1034|C-1051",
     "C-1036|C-1053",
     "C-1048|C-1049",
     "C-1055|C-1058",
     "C-1055|C-1061",
+    "C-1059|C-1086",
+    "C-1061|C-1075",
     "C-11|C-4",
     "C-122|C-123",
     "C-122|C-124",
@@ -7481,12 +7507,15 @@
     "C-1033|C-1067@bge-small-en-v1.5",
     "C-1033|C-1091@bge-small-en-v1.5",
     "C-1033|C-1102@bge-small-en-v1.5",
+    "C-1033|C-1116@bge-small-en-v1.5",
     "C-1033|C-770@bge-small-en-v1.5",
     "C-1034|C-1051@bge-small-en-v1.5",
     "C-1036|C-1053@bge-small-en-v1.5",
     "C-1048|C-1049@bge-small-en-v1.5",
     "C-1055|C-1058@bge-small-en-v1.5",
     "C-1055|C-1061@bge-small-en-v1.5",
+    "C-1059|C-1086@bge-small-en-v1.5",
+    "C-1061|C-1075@bge-small-en-v1.5",
     "C-11|C-4@bge-small-en-v1.5",
     "C-122|C-123@bge-small-en-v1.5",
     "C-122|C-124@bge-small-en-v1.5",
@@ -7932,6 +7961,7 @@
     "panel|achieve",
     "panel|achieves",
     "panel|actions",
+    "panel|active",
     "panel|adaptive",
     "panel|adding",
     "panel|additional",
@@ -8088,6 +8118,7 @@
     "panel|effective",
     "panel|efficiency",
     "panel|efficient",
+    "panel|eine",
     "panel|einer",
     "panel|embeddings",
     "panel|embodied",
@@ -8306,6 +8337,7 @@
     "panel|scan",
     "panel|scientific",
     "panel|scope",
+    "panel|score",
     "panel|scores",
     "panel|search",
     "panel|segmentation",
@@ -8418,14 +8450,14 @@
     "software"
   ],
   "emerge_insufficient": {
-    "panel|capture": 1,
-    "panel|ceo-bench": 2,
+    "panel|capture": 2,
+    "panel|ceo-bench": 3,
     "panel|confirm": 3,
     "panel|contradiction": 3,
-    "panel|diverse": 2,
+    "panel|diverse": 3,
     "panel|enabling": 1,
-    "panel|outperforms": 2,
-    "panel|students": 1
+    "panel|outperforms": 3,
+    "panel|students": 2
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
@@ -8433,6 +8465,7 @@
     "C-1002",
     "C-1054",
     "C-1071",
+    "C-1120",
     "C-113",
     "C-129",
     "C-142",
@@ -8542,20 +8575,19 @@
     "C-995"
   ],
   "learned_queries": [
-    "panel through-line",
-    "panel factor",
     "panel recurs",
     "panel series",
     "panel panel",
     "panel underlying",
     "panel across",
-    "panel testing"
+    "panel testing",
+    "panel claims",
+    "panel reason"
   ],
   "hyp_seen_cycle": {
-    "C-903": 239,
     "C-917": 240,
     "C-918": 241,
-    "C-919": 216,
+    "C-919": 242,
     "C-920": 217,
     "C-924": 218,
     "C-925": 219,
@@ -8582,7 +8614,8 @@
     "C-1054": 238,
     "C-1071": 239,
     "C-1095": 240,
-    "C-1106": 241
+    "C-1106": 241,
+    "C-1120": 242
   },
   "topics_domain_ok": [
     "abstracts",
@@ -8646,6 +8679,7 @@
     "C-1071",
     "C-1095",
     "C-1106",
+    "C-1120",
     "C-113",
     "C-129",
     "C-142",
@@ -8882,6 +8916,7 @@
     "M-64",
     "M-65",
     "M-66",
+    "M-67",
     "M-7",
     "M-8",
     "M-9"
@@ -8890,40 +8925,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 759,
+    "active": 772,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 193,
-    "supporting_links": 193,
-    "emergent_total": 540,
+    "evidence_links": 195,
+    "supporting_links": 195,
+    "emergent_total": 543,
     "usable_semantic_rate": 1.0,
-    "methods_total": 66,
+    "methods_total": 67,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 10870,
-    "cycle": 241
+    "objects": 10987,
+    "cycle": 242
   },
   "vitality_prev": {
-    "supports": 193,
+    "supports": 195,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 10870,
-    "active": 759,
-    "links": 193,
-    "emergent": 540
+    "objects": 10987,
+    "active": 772,
+    "links": 195,
+    "emergent": 543
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 42,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 2,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 43,
       "verdict": "degenerating",
@@ -10316,6 +10344,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 242,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -10560,6 +10595,7 @@
     "X-39",
     "X-4",
     "X-40",
+    "X-41",
     "X-5",
     "X-6",
     "X-7",
