@@ -1,0 +1,24 @@
+```json
+[
+  {
+    "text": "Disaggregated inference architectures separate prefill and decode phases onto distinct GPU pools, creating competing agents that share a fixed hardware budget.",
+    "topic": "Disaggregated Inference Architecture"
+  },
+  {
+    "text": "The architecture is modeled as three coupled games: a two-player resource game between prefill and decode pools, a selfish caching game over the hierarchical KV cache, and a congestion game with positive externalities for request routing.",
+    "topic": "Game-Theoretic Modeling"
+  },
+  {
+    "text": "GPU saturation induces regime transitions that shift the game's payoff structure: below saturation, selfish behavior has bounded Price of Anarchy (PoA); at saturation, superlinear latency and cache externalities drive the empirical estimator PoA-hat upward.",
+    "topic": "Price of Anarchy and Regime Transitions"
+  },
+  {
+    "text": "An adaptive controller detects saturation transitions in real time and adjusts routing parameters, shifting from cache-affinity exploitation to load-balanced congestion avoidance.",
+    "topic": "Adaptive Controller Design"
+  },
+  {
+    "text": "On the 70B 1P/5D topology, adaptive routing reduces PoA-hat from 66.4 to 21.5, a 3.1x improvement, with a 13% throughput cost.",
+    "topic": "Performance Improvement on 70B 1P/5D Topology"
+  }
+]
+```
