@@ -449,7 +449,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 32,
+    "starved_topic": 33,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -7234,7 +7234,8 @@
     "zenodo:20751278",
     "zenodo:20751617",
     "zenodo:20751733",
-    "zenodo:20751744"
+    "zenodo:20751744",
+    "zenodo:20752232"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -8421,6 +8422,14 @@
       "replayed": false,
       "claims": 5,
       "source": "openalex:W7137577846"
+    },
+    {
+      "call_id": "joni-c283:2ec15a829934",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20752232"
     }
   ],
   "pdf_read": [
@@ -8938,7 +8947,8 @@
     "zenodo:20748618",
     "zenodo:20750539",
     "zenodo:20750744",
-    "zenodo:20751733"
+    "zenodo:20751733",
+    "zenodo:20752232"
   ],
   "real_trial": {
     "method_id": "contradiction-first-review",
@@ -9305,12 +9315,14 @@
     "C-1309|C-1356",
     "C-130|C-131",
     "C-1310|C-1328",
+    "C-1310|C-770",
     "C-131|C-138",
     "C-1323|C-1578",
     "C-1324|C-1579",
     "C-133|C-137",
     "C-134|C-139",
     "C-1361|C-1362",
+    "C-1361|C-1364",
     "C-144|C-153",
     "C-144|C-154",
     "C-153|C-154",
@@ -10012,12 +10024,14 @@
     "C-1309|C-1356@bge-small-en-v1.5",
     "C-130|C-131@bge-small-en-v1.5",
     "C-1310|C-1328@bge-small-en-v1.5",
+    "C-1310|C-770@bge-small-en-v1.5",
     "C-131|C-138@bge-small-en-v1.5",
     "C-1323|C-1578@bge-small-en-v1.5",
     "C-1324|C-1579@bge-small-en-v1.5",
     "C-133|C-137@bge-small-en-v1.5",
     "C-134|C-139@bge-small-en-v1.5",
     "C-1361|C-1362@bge-small-en-v1.5",
+    "C-1361|C-1364@bge-small-en-v1.5",
     "C-144|C-153@bge-small-en-v1.5",
     "C-144|C-154@bge-small-en-v1.5",
     "C-153|C-154@bge-small-en-v1.5",
@@ -10423,6 +10437,7 @@
     "evaluation|patterns",
     "evaluation|research",
     "forum|panel",
+    "forum|patterns",
     "overview|panel"
   ],
   "emerged_topics": [
@@ -10441,6 +10456,7 @@
     "compared",
     "confidence",
     "consistency",
+    "contamination",
     "context",
     "contexts",
     "described",
@@ -10495,8 +10511,6 @@
     "variance"
   ],
   "synthesized": [
-    "panel|additional",
-    "panel|addressing",
     "panel|adenia",
     "panel|admissibility",
     "panel|admissible",
@@ -10796,6 +10810,7 @@
     "panel|multi-agent",
     "panel|multi-axis",
     "panel|multimodal",
+    "panel|native",
     "panel|natural",
     "panel|necessary",
     "panel|needs",
@@ -10933,6 +10948,7 @@
     "panel|sound",
     "panel|spatial",
     "panel|spatiotemporal",
+    "panel|stability",
     "panel|standard",
     "panel|statement",
     "panel|states",
@@ -11015,6 +11031,7 @@
     "documentation",
     "evidence",
     "exchanges",
+    "experiment",
     "expresses",
     "graph",
     "helmholtz",
@@ -11060,10 +11077,10 @@
     "versus"
   ],
   "emerge_insufficient": {
+    "panel|adaptive": 1,
     "panel|confirm": 3,
     "panel|contradiction": 3,
     "panel|matching": 1,
-    "panel|native": 3,
     "panel|plots": 1,
     "panel|reduction": 1,
     "panel|refers": 3,
@@ -11071,7 +11088,7 @@
     "panel|sciorch": 1,
     "panel|trajectory": 2,
     "panel|understanding": 2,
-    "panel|university": 1
+    "panel|university": 2
   },
   "hyp_tested": [
     "C-1304|C-1244",
@@ -11213,14 +11230,14 @@
     "C-995"
   ],
   "learned_queries": [
-    "evaluation+panel contradiction",
-    "panel single",
-    "evaluation+patterns their",
     "evaluation+patterns requests",
     "panel factor",
     "panel recurs",
     "evaluation+research content",
-    "evaluation+research against"
+    "evaluation+research against",
+    "forum+panel contamination",
+    "forum+panel variance",
+    "panel claims"
   ],
   "hyp_seen_cycle": {
     "C-1450": 269,
@@ -11250,7 +11267,9 @@
     "C-1588": 281,
     "C-1590": 281,
     "C-1610": 282,
-    "C-1614": 282
+    "C-1614": 282,
+    "C-1627": 283,
+    "C-1629": 283
   },
   "topics_domain_ok": [
     "abstracts",
@@ -11278,6 +11297,7 @@
     "compared",
     "confidence",
     "consistency",
+    "contamination",
     "context",
     "contexts",
     "described",
@@ -11422,6 +11442,8 @@
     "C-1614",
     "C-1627",
     "C-1629",
+    "C-1636",
+    "C-1638",
     "C-174",
     "C-176",
     "C-190",
@@ -11688,40 +11710,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 1149,
+    "active": 1156,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 275,
-    "supporting_links": 275,
-    "emergent_total": 628,
+    "evidence_links": 277,
+    "supporting_links": 277,
+    "emergent_total": 630,
     "usable_semantic_rate": 1.0,
     "methods_total": 93,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 15884,
-    "cycle": 282
+    "objects": 15984,
+    "cycle": 283
   },
   "vitality_prev": {
-    "supports": 275,
+    "supports": 277,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 15884,
-    "active": 1149,
-    "links": 275,
-    "emergent": 628
+    "objects": 15984,
+    "active": 1156,
+    "links": 277,
+    "emergent": 630
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 83,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 84,
       "verdict": "degenerating",
@@ -13114,6 +13129,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 283,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -13422,7 +13444,7 @@
     "X-81"
   ],
   "reconsolidate_lens_idx": 5,
-  "kevin_last_cycle": 280,
+  "kevin_last_cycle": 283,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
