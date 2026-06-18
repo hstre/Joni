@@ -11,16 +11,15 @@ name: joni-autonomy
 # only a re-launcher - it starts the next continuous job when the previous one ends (the
 # concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
 on:
-  # STOPPED 2026-06-18: the autonomous loop is halted on request. Joni's accumulated memory is
-  # backed up (branch backup/joni-2026-06-18 at the pre-stop main HEAD) and his work to date is
-  # preserved in state/. The new Kevin (real orchestrator + DESi blind-spot prediction + the
-  # sealed trial-event subsystem) is built in below, but the hourly re-launcher is OFF so nothing
-  # auto-runs and no real DeepSeek spend is incurred until a human deliberately restarts.
-  #
-  # To restart: uncomment the `schedule:` block (or trigger a one-off run via workflow_dispatch).
-  # schedule:
-  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
-  workflow_dispatch:           # manual restart only, until the schedule is re-enabled
+  # RESTARTED 2026-06-18 for a TWO-DAY window: the new Kevin (real orchestrator + DESi blind-spot
+  # prediction + sealed trial events) is built in and the last live-loop mock is gone. Joni's
+  # pre-stop memory is backed up on branch backup/joni-2026-06-18. The runtime window is set to
+  # 2 days (JONI_RUNTIME_DAYS below) and the window start was reset to the restart time, so Joni
+  # runs for two days from now and then stands down on his own. The 20 EUR/week budget stays the
+  # hard ceiling. To stop early: re-comment the schedule (or cancel the in-flight run).
+  schedule:
+    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  workflow_dispatch:
 
 concurrency:
   group: joni-autonomy
@@ -67,7 +66,7 @@ jobs:
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
-          JONI_RUNTIME_DAYS: "7"      # one-week run (memory preserved, hardened core + fixes)
+          JONI_RUNTIME_DAYS: "2"      # two-day run on restart (window start reset to restart time)
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           KEVIN_USE_REAL_LLM: "1"     # Kevin's orchestrator uses the real DeepSeek client
