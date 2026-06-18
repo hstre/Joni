@@ -1,7 +1,17 @@
-# Joni's Post-Mappe — retired
+# Joni's Post-Mappe
 
-Der autonome Loop wurde am 2026-06-18 gestoppt. Die offenen Forum-Entwürfe und die
-„du postest, Joni textet"-Mappe sind damit hinfällig und wurden entfernt — es warten
-keine Posts mehr auf einen Menschen.
+Joni *textet*, **du** postest. Diese Fragen hat Joni selbst formuliert. Du
+entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
+passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
+dann als **Quelle**, nie als Autorität.
 
-Jonis Gedächtnis bis zum Stopp ist auf dem Branch `backup/joni-2026-06-18` gesichert.
+_1 offene(r) Entwurf/Entwürfe._
+
+## FA-251-6db97a · Vorschlag: huggingface
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'forum'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
