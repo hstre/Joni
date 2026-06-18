@@ -449,7 +449,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 29,
+    "starved_topic": 30,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -6941,6 +6941,7 @@
     "openalex:W7163454141",
     "openalex:W7164977240",
     "openclaw:Agents365-ai/asta-skill",
+    "openclaw:Agents365-ai/excalidraw-skill",
     "openclaw:GreenSheep01201/Claw-Kanban",
     "openclaw:JimLiu/baoyu-skills",
     "openclaw:Parad0x-Labs/openclaw-skills",
@@ -6949,8 +6950,10 @@
     "openclaw:alirezarezvani/claude-skills",
     "openclaw:csuzngjh/principles",
     "openclaw:hesamsheikh/awesome-openclaw-usecases",
+    "openclaw:indranilbanerjee/contentforge",
     "openclaw:modest-curator478/claude-skills",
     "openclaw:oguzhnatly/fleet",
+    "openclaw:realactivity/tula",
     "openclaw:smouj/openclaw-desk",
     "openclaw:teng-lin/notebooklm-py",
     "openclaw:win4r/ClawTeam-OpenClaw",
@@ -8200,6 +8203,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20751744"
+    },
+    {
+      "call_id": "joni-c280:5abfd7a4e9af",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "openclaw:Agents365-ai/excalidraw-skill"
+    },
+    {
+      "call_id": "joni-c280:d518f206adda",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "openclaw:realactivity/tula"
     }
   ],
   "pdf_read": [
@@ -9050,6 +9069,19 @@
     "C-1248|C-1257",
     "C-1251|C-1259",
     "C-1254|C-1259",
+    "C-1257|C-1261",
+    "C-1257|C-1265",
+    "C-1261|C-1265",
+    "C-1274|C-1290",
+    "C-1274|C-1320",
+    "C-1275|C-1322",
+    "C-1276|C-1321",
+    "C-1287|C-1295",
+    "C-1288|C-1296",
+    "C-1289|C-1297",
+    "C-1290|C-1320",
+    "C-1300|C-1308",
+    "C-1300|C-1310",
     "C-130|C-131",
     "C-131|C-138",
     "C-133|C-137",
@@ -9733,6 +9765,19 @@
     "C-1248|C-1257@bge-small-en-v1.5",
     "C-1251|C-1259@bge-small-en-v1.5",
     "C-1254|C-1259@bge-small-en-v1.5",
+    "C-1257|C-1261@bge-small-en-v1.5",
+    "C-1257|C-1265@bge-small-en-v1.5",
+    "C-1261|C-1265@bge-small-en-v1.5",
+    "C-1274|C-1290@bge-small-en-v1.5",
+    "C-1274|C-1320@bge-small-en-v1.5",
+    "C-1275|C-1322@bge-small-en-v1.5",
+    "C-1276|C-1321@bge-small-en-v1.5",
+    "C-1287|C-1295@bge-small-en-v1.5",
+    "C-1288|C-1296@bge-small-en-v1.5",
+    "C-1289|C-1297@bge-small-en-v1.5",
+    "C-1290|C-1320@bge-small-en-v1.5",
+    "C-1300|C-1308@bge-small-en-v1.5",
+    "C-1300|C-1310@bge-small-en-v1.5",
     "C-130|C-131@bge-small-en-v1.5",
     "C-131|C-138@bge-small-en-v1.5",
     "C-133|C-137@bge-small-en-v1.5",
@@ -10139,6 +10184,7 @@
     "documentation|panel",
     "evaluation|forum",
     "evaluation|panel",
+    "evaluation|patterns",
     "overview|panel"
   ],
   "emerged_topics": [
@@ -10162,6 +10208,7 @@
     "described",
     "design",
     "directly",
+    "error",
     "evidence",
     "expresses",
     "graph",
@@ -10208,7 +10255,6 @@
     "variance"
   ],
   "synthesized": [
-    "panel|actions",
     "panel|active",
     "panel|adaptive",
     "panel|adding",
@@ -10372,6 +10418,7 @@
     "panel|distinction",
     "panel|divergence",
     "panel|diverse",
+    "panel|diversity",
     "panel|documentation",
     "panel|docusaurus",
     "panel|domain",
@@ -10734,6 +10781,7 @@
     "higher",
     "hosted",
     "hygiene",
+    "ignoring",
     "include",
     "intended",
     "involved",
@@ -10772,10 +10820,10 @@
   "emerge_insufficient": {
     "panel|confirm": 3,
     "panel|contradiction": 3,
-    "panel|diversity": 3,
-    "panel|economic": 1,
-    "panel|intelligence": 1,
+    "panel|economic": 2,
+    "panel|intelligence": 2,
     "panel|matching": 1,
+    "panel|native": 1,
     "panel|plots": 1,
     "panel|reduction": 1,
     "panel|refers": 3,
@@ -10924,18 +10972,16 @@
     "C-995"
   ],
   "learned_queries": [
-    "panel worth",
-    "alignment+research apply",
-    "alignment+research videolingo",
     "panel accesses",
     "panel through-line",
     "evaluation+forum implication",
     "evaluation+forum requests",
-    "panel testing"
+    "panel testing",
+    "evaluation+panel ignored",
+    "evaluation+panel contradiction",
+    "panel single"
   ],
   "hyp_seen_cycle": {
-    "C-1423": 265,
-    "C-1425": 265,
     "C-1426": 266,
     "C-1428": 266,
     "C-1438": 267,
@@ -10963,7 +11009,9 @@
     "C-1549": 278,
     "C-1551": 278,
     "C-1554": 279,
-    "C-1556": 279
+    "C-1556": 279,
+    "C-1572": 280,
+    "C-1574": 280
   },
   "topics_domain_ok": [
     "abstracts",
@@ -10974,6 +11022,7 @@
     "adk-python",
     "against",
     "agent",
+    "agentforge-openclaw",
     "agents",
     "alignment",
     "architecture",
@@ -10997,6 +11046,7 @@
     "directly",
     "distillation",
     "documentation",
+    "error",
     "evaluation",
     "evidence",
     "expresses",
@@ -11047,6 +11097,7 @@
     "support",
     "threshold",
     "time",
+    "tula",
     "user",
     "users",
     "variance"
@@ -11123,6 +11174,8 @@
     "C-1572",
     "C-1574",
     "C-158",
+    "C-1588",
+    "C-1590",
     "C-160",
     "C-174",
     "C-176",
@@ -11387,40 +11440,33 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 1106,
+    "active": 1116,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 269,
-    "supporting_links": 269,
-    "emergent_total": 622,
+    "evidence_links": 271,
+    "supporting_links": 271,
+    "emergent_total": 624,
     "usable_semantic_rate": 1.0,
     "methods_total": 90,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 15393,
-    "cycle": 279
+    "objects": 15561,
+    "cycle": 280
   },
   "vitality_prev": {
-    "supports": 269,
+    "supports": 271,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 15393,
-    "active": 1106,
-    "links": 269,
-    "emergent": 622
+    "objects": 15561,
+    "active": 1116,
+    "links": 271,
+    "emergent": 624
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 80,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 81,
       "verdict": "degenerating",
@@ -12813,6 +12859,13 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 280,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "panel_asked": [
@@ -13071,7 +13124,8 @@
     "problem": "invalid",
     "purpose": "invalid",
     "repository": "invalid",
-    "research": "valid"
+    "research": "valid",
+    "tula": "invalid"
   },
   "escalated_conflicts": [
     "X-17",
@@ -13117,7 +13171,7 @@
     "X-8"
   ],
   "reconsolidate_lens_idx": 5,
-  "kevin_last_cycle": 277,
+  "kevin_last_cycle": 280,
   "kevin_llm": [
     {
       "call_id": "kevin-c26:60a854e0b332",
