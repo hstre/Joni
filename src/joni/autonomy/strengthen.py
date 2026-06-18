@@ -38,16 +38,26 @@ _MAX_INSUFFICIENT_RETRIES = 3   # a layer-absent non-judgment is retried this of
 
 
 def _kevin_verdict(text: str, topic: str):
-    """Kevin's epistemic-selection verdict for an idea, or None if Kevin is unavailable."""
+    """Kevin's epistemic-selection verdict for an idea, or None if Kevin is unavailable.
+
+    Uses Kevin's REAL client (``get_default_client``) and only runs when one is configured
+    (``KEVIN_USE_REAL_LLM=1`` + key) - the same gate as ``kevin_creative``. We never run the
+    MockLLM here: a fabricated verdict shown as Kevin's advice would be a lie. Without a real
+    client this is a clean no-op (None) and the deterministic ladder decides alone - Kevin's
+    verdict is advisory and never gates promotion anyway.
+    """
+    import os
+    if os.getenv("KEVIN_USE_REAL_LLM") != "1":
+        return None
     try:
-        from kevin.llm_client import MockLLM
+        from kevin.llm_client import get_default_client
         from kevin.models import Candidate, Problem
         from kevin.selector import Selector
     except Exception:  # noqa: BLE001 - Kevin is an optional vetting partner
         return None
     try:
         cand = Candidate(content=text, space_id="hyp", variant_id="h")
-        ev = Selector(MockLLM()).evaluate(Problem(statement=topic or text), cand)
+        ev = Selector(get_default_client()).evaluate(Problem(statement=topic or text), cand)
         return ev.verdict.value          # "promising" | "tentative" | "rejected"
     except Exception:  # noqa: BLE001
         return None
