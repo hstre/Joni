@@ -30,16 +30,5 @@ def test_unknown_target_falls_back_safely():
     a = structured_ask(_imp("something-core"), 1)
     assert a["component"] == "protected core logic"
     assert "high" in a["risk"].lower()
-
-
-def test_the_ask_renders_structured_on_the_site():
-    from joni.autonomy import site
-    ext = {"asks": [structured_ask(_imp("scoring"), 3)], "topics_added": [], "notes": [],
-           "diary": [], "review_history": []}
-    html = site.build({
-        "snapshot": {"topics": [], "tick": 0}, "generated": "now",
-        "budget": {"spent_eur": 0.0, "cap_eur": 20.0, "runs": 1},
-        "window": {"start": "2026-06-14", "runs": 1}, "extensions": ext, "protocol": [],
-    })
-    assert "observation" in html and "evidence" in html and "risk" in html
-    assert "belief-weighing" in html                     # the scoring component description
+    # Note: core asks are still generated (and filed for a human), but the website no longer
+    # renders an "Asks" card — that surface was retired when the autonomous loop was stopped.
