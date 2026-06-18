@@ -449,7 +449,7 @@
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 28,
+    "starved_topic": 29,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -6841,6 +6841,7 @@
     "github:greensock/gsap-skills",
     "github:home-assistant/core",
     "github:iluwatar/java-design-patterns",
+    "github:karpathy/autoresearch",
     "github:lm-sys/FastChat",
     "github:lukehoban/es6features",
     "github:mlflow/mlflow",
@@ -6922,6 +6923,7 @@
     "huggingface:2606.19338",
     "huggingface:2606.19341",
     "openalex:W7113475520",
+    "openalex:W7125880845",
     "openalex:W7131194452",
     "openalex:W7137387816",
     "openalex:W7137405644",
@@ -6937,6 +6939,7 @@
     "openalex:W7162820765",
     "openalex:W7162828992",
     "openalex:W7163454141",
+    "openalex:W7164977240",
     "openclaw:Agents365-ai/asta-skill",
     "openclaw:GreenSheep01201/Claw-Kanban",
     "openclaw:JimLiu/baoyu-skills",
@@ -7056,7 +7059,9 @@
     "zenodo:20750386",
     "zenodo:20750539",
     "zenodo:20750568",
-    "zenodo:20751016"
+    "zenodo:20751016",
+    "zenodo:20751617",
+    "zenodo:20751744"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -8179,6 +8184,22 @@
       "replayed": false,
       "claims": 1,
       "source": "github:greensock/gsap-skills"
+    },
+    {
+      "call_id": "joni-c279:52a449933f7c",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "github:karpathy/autoresearch"
+    },
+    {
+      "call_id": "joni-c279:f6f970467025",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20751744"
     }
   ],
   "pdf_read": [
@@ -8620,6 +8641,7 @@
     "github:git/git",
     "github:google/adk-python",
     "github:greensock/gsap-skills",
+    "github:karpathy/autoresearch",
     "github:lukehoban/es6features",
     "github:obra/superpowers",
     "github:wasp-lang/wasp",
@@ -8650,6 +8672,7 @@
     "huggingface:2606.19341",
     "openalex:W7137737438",
     "openalex:W7162828992",
+    "openalex:W7164977240",
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
     "zenodo:20719101",
     "zenodo:20719104",
@@ -9024,6 +9047,9 @@
     "C-1244|C-1265",
     "C-1245|C-1251",
     "C-1245|C-1259",
+    "C-1248|C-1257",
+    "C-1251|C-1259",
+    "C-1254|C-1259",
     "C-130|C-131",
     "C-131|C-138",
     "C-133|C-137",
@@ -9704,6 +9730,9 @@
     "C-1244|C-1265@bge-small-en-v1.5",
     "C-1245|C-1251@bge-small-en-v1.5",
     "C-1245|C-1259@bge-small-en-v1.5",
+    "C-1248|C-1257@bge-small-en-v1.5",
+    "C-1251|C-1259@bge-small-en-v1.5",
+    "C-1254|C-1259@bge-small-en-v1.5",
     "C-130|C-131@bge-small-en-v1.5",
     "C-131|C-138@bge-small-en-v1.5",
     "C-133|C-137@bge-small-en-v1.5",
@@ -10109,6 +10138,7 @@
     "alignment|research",
     "documentation|panel",
     "evaluation|forum",
+    "evaluation|panel",
     "overview|panel"
   ],
   "emerged_topics": [
@@ -10122,6 +10152,7 @@
     "architecture",
     "associated",
     "benchmark",
+    "claude",
     "code",
     "compared",
     "confidence",
@@ -10735,12 +10766,15 @@
     "software",
     "strategic",
     "three",
+    "times",
     "variance"
   ],
   "emerge_insufficient": {
     "panel|confirm": 3,
     "panel|contradiction": 3,
-    "panel|diversity": 2,
+    "panel|diversity": 3,
+    "panel|economic": 1,
+    "panel|intelligence": 1,
     "panel|matching": 1,
     "panel|plots": 1,
     "panel|reduction": 1,
@@ -10890,18 +10924,16 @@
     "C-995"
   ],
   "learned_queries": [
-    "panel factor",
-    "alignment+patterns hypothesis",
-    "alignment+patterns patterns",
     "panel worth",
     "alignment+research apply",
     "alignment+research videolingo",
     "panel accesses",
-    "panel through-line"
+    "panel through-line",
+    "evaluation+forum implication",
+    "evaluation+forum requests",
+    "panel testing"
   ],
   "hyp_seen_cycle": {
-    "C-1408": 264,
-    "C-1411": 264,
     "C-1423": 265,
     "C-1425": 265,
     "C-1426": 266,
@@ -10929,7 +10961,9 @@
     "C-1540": 277,
     "C-1542": 277,
     "C-1549": 278,
-    "C-1551": 278
+    "C-1551": 278,
+    "C-1554": 279,
+    "C-1556": 279
   },
   "topics_domain_ok": [
     "abstracts",
@@ -10950,6 +10984,7 @@
     "benchmark",
     "caching",
     "calibration",
+    "claude",
     "code",
     "codebase",
     "compared",
@@ -11085,6 +11120,8 @@
     "C-1551",
     "C-1554",
     "C-1556",
+    "C-1572",
+    "C-1574",
     "C-158",
     "C-160",
     "C-174",
@@ -11342,46 +11379,41 @@
     "M-86",
     "M-87",
     "M-88",
-    "M-9"
+    "M-89",
+    "M-9",
+    "M-90"
   ],
   "vitality": {
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 1090,
+    "active": 1106,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 267,
-    "supporting_links": 267,
-    "emergent_total": 620,
+    "evidence_links": 269,
+    "supporting_links": 269,
+    "emergent_total": 622,
     "usable_semantic_rate": 1.0,
-    "methods_total": 88,
+    "methods_total": 90,
     "method_trials_total": 172,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 15248,
-    "cycle": 278
+    "objects": 15393,
+    "cycle": 279
   },
   "vitality_prev": {
-    "supports": 267,
+    "supports": 269,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 15248,
-    "active": 1090,
-    "links": 267,
-    "emergent": 620
+    "objects": 15393,
+    "active": 1106,
+    "links": 269,
+    "emergent": 622
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 79,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 80,
       "verdict": "degenerating",
@@ -12770,6 +12802,13 @@
     },
     {
       "cycle": 278,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 279,
       "verdict": "steady",
       "development": 6,
       "degeneration": 1,
