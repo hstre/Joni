@@ -2,40 +2,41 @@
   "snapshot": {
     "tick": 0,
     "topics": [
-      "memory",
       "forum",
+      "memory",
       "drift",
       "context",
       "distillation",
       "inference",
+      "language",
       "privacy",
       "retrieval",
       "routing",
       "variance"
     ],
-    "claims_total": 189,
-    "claims_active": 145,
+    "claims_total": 218,
+    "claims_active": 173,
     "memory": 0,
-    "ledger": 998,
+    "ledger": 1128,
     "open_conflicts": 34,
-    "methods": 8,
+    "methods": 10,
     "method_trials": 0,
     "methods_ready": 0,
     "preferences": 1,
     "evidence_links": 4,
     "self_model": 4,
-    "hypotheses": 12,
+    "hypotheses": 13,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.91,
-      "n": 145,
+      "rate": 0.919,
+      "n": 173,
       "flags": {
-        "correctly_typed": 145,
-        "source_anchored": 136,
-        "non_duplicate": 141,
-        "topic_valid": 145,
-        "scope_valid": 145,
-        "provenance_complete": 136
+        "correctly_typed": 173,
+        "source_anchored": 163,
+        "non_duplicate": 169,
+        "topic_valid": 173,
+        "scope_valid": 173,
+        "provenance_complete": 163
       }
     },
     "routing_engine": "DESi",
@@ -48,13 +49,13 @@
     }
   },
   "budget": {
-    "spent_eur": 0.174,
+    "spent_eur": 0.178,
     "cap_eur": 20.0,
-    "runs": 4
+    "runs": 5
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 4,
+    "runs": 5,
     "retired": false
   },
   "extensions": {
@@ -490,6 +491,9 @@
       }
     ],
     "seen": [
+      "arxiv:2606.20518v1",
+      "arxiv:2606.20520v1",
+      "arxiv:2606.20543v1",
       "arxiv:2606.20544v1",
       "arxiv:2606.20546v1",
       "arxiv:2606.20553v1",
@@ -600,9 +604,28 @@
         "replayed": false,
         "claims": 5,
         "source": "huggingface:2606.16827"
+      },
+      {
+        "call_id": "joni-c5:26249952b297",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "arxiv:2606.20543v1"
+      },
+      {
+        "call_id": "joni-c5:7d25cc6bd5d2",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "arxiv:2606.20520v1"
       }
     ],
     "pdf_read": [
+      "arxiv:2606.20518v1",
+      "arxiv:2606.20520v1",
+      "arxiv:2606.20543v1",
       "arxiv:2606.20553v1",
       "arxiv:2606.20554v1",
       "arxiv:2606.20557v1",
@@ -652,9 +675,20 @@
         "replayed": false,
         "claims": 4,
         "conflict": "X-33"
+      },
+      {
+        "call_id": "joni-c5:db67cbc41afa",
+        "served_model": "deepseek-v4-pro",
+        "reason": "contested",
+        "state_k": 3,
+        "replayed": false,
+        "claims": 4,
+        "conflict": "X-34"
       }
     ],
     "methods_seen": [
+      "arxiv:2606.20518v1",
+      "arxiv:2606.20543v1",
       "arxiv:2606.20553v1",
       "arxiv:2606.20554v1",
       "arxiv:2606.20557v1",
@@ -716,6 +750,7 @@
       "C-148|C-153",
       "C-166|C-177",
       "C-181|C-182",
+      "C-190|C-193",
       "C-20|C-53",
       "C-32|C-43",
       "C-33|C-44",
@@ -732,6 +767,7 @@
       "C-148|C-153@bge-small-en-v1.5",
       "C-166|C-177@bge-small-en-v1.5",
       "C-181|C-182@bge-small-en-v1.5",
+      "C-190|C-193@bge-small-en-v1.5",
       "C-20|C-53@bge-small-en-v1.5",
       "C-32|C-43@bge-small-en-v1.5",
       "C-33|C-44@bge-small-en-v1.5",
@@ -810,6 +846,7 @@
     "emerged_topics": [
       "context",
       "inference",
+      "language",
       "variance"
     ],
     "synthesized": [
@@ -819,6 +856,9 @@
       "forum|deterministic",
       "forum|diffusiongemma",
       "forum|exchanges",
+      "forum|execution",
+      "forum|generation",
+      "forum|serial",
       "forum|session",
       "forum|silence",
       "forum|strategic",
@@ -832,6 +872,7 @@
     "emerged_methods": [
       "become",
       "context",
+      "drift",
       "variance"
     ],
     "emerge_insufficient": {
@@ -842,14 +883,14 @@
     "hyp_insufficient": {},
     "hyp_hollow": [],
     "learned_queries": [
-      "drift+forum across",
-      "forum actually",
-      "forum exact",
-      "forum claims",
       "forum worth",
       "drift+memory small",
       "drift+memory annealing",
-      "memory existing"
+      "memory existing",
+      "forum+memory contradiction",
+      "forum+memory strategic/neglectful",
+      "helpfulness-variance-privacy-leakage prompts",
+      "helpfulness-variance-privacy-leakage leaking"
     ],
     "hyp_seen_cycle": {
       "C-56": 1,
@@ -859,13 +900,16 @@
       "C-135": 3,
       "C-137": 3,
       "C-160": 4,
-      "C-162": 4
+      "C-162": 4,
+      "C-185": 5,
+      "C-186": 5
     },
     "topics_domain_ok": [
       "context",
       "distillation",
       "drift",
       "inference",
+      "language",
       "privacy",
       "retrieval",
       "routing",
@@ -886,50 +930,53 @@
       "C-186",
       "C-187",
       "C-189",
+      "C-218",
       "C-56",
       "C-57",
       "C-58"
     ],
     "methods_domain_ok": [
       "M-1",
+      "M-10",
       "M-2",
       "M-3",
       "M-4",
       "M-5",
       "M-6",
       "M-7",
-      "M-8"
+      "M-8",
+      "M-9"
     ],
     "vitality": {
-      "verdict": "developing",
-      "development": 3,
-      "degeneration": 0,
-      "active": 145,
-      "hypotheses": 12,
-      "unsupported_hypotheses": 12,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "active": 173,
+      "hypotheses": 13,
+      "unsupported_hypotheses": 13,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 4,
       "supporting_links": 4,
-      "emergent_total": 21,
+      "emergent_total": 26,
       "usable_semantic_rate": 1.0,
-      "methods_total": 8,
+      "methods_total": 10,
       "method_trials_total": 0,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 1282,
-      "cycle": 4
+      "stagnation_cycles": 1,
+      "objects": 1448,
+      "cycle": 5
     },
     "vitality_prev": {
       "supports": 4,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 1282,
-      "active": 145,
+      "objects": 1448,
+      "active": 173,
       "links": 4,
-      "emergent": 21
+      "emergent": 26
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -958,12 +1005,19 @@
         "development": 3,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 5,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 4,
+      "starved_topic": 5,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -1349,7 +1403,8 @@
     "escalated_conflicts": [
       "X-12",
       "X-32",
-      "X-33"
+      "X-33",
+      "X-34"
     ],
     "kevin_orch_last_cycle": 2,
     "kevin_orch_seen": [
@@ -4281,36 +4336,319 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:49+00:00",
+      "cycle": 5,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:50+00:00",
+      "cycle": 5,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:50+00:00",
+      "cycle": 5,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:52+00:00",
+      "cycle": 5,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:56+00:00",
+      "cycle": 5,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:57+00:00",
+      "cycle": 5,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:58+00:00",
+      "cycle": 5,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:58+00:00",
+      "cycle": 5,
+      "kind": "judged",
+      "summary": "relevant: SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation",
+      "refs": {
+        "source": "arxiv:2606.20543v1",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.20543v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:58+00:00",
+      "cycle": 5,
+      "kind": "judged",
+      "summary": "relevant: Sovereign Execution Brokers: Enforcing Certificate-Bound Authority in Agentic Co",
+      "refs": {
+        "source": "arxiv:2606.20520v1",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.20520v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:33:59+00:00",
+      "cycle": 5,
+      "kind": "judged",
+      "summary": "relevant: FlowEdit: Associative Memory for Lifelong Pronunciation Adaptation in Flow-Match",
+      "refs": {
+        "source": "arxiv:2606.20518v1",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "http://arxiv.org/abs/2606.20518v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:06+00:00",
+      "cycle": 5,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from arxiv:2606.20543v1 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:10+00:00",
+      "cycle": 5,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from arxiv:2606.20520v1 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:12+00:00",
+      "cycle": 5,
+      "kind": "read",
+      "summary": "read full text of Sovereign Execution Brokers: Enforcing Certificate-Bound Aut: 5 claim(s) [arxiv:2606.20520v1]",
+      "refs": {
+        "url": "https://arxiv.org/pdf/2606.20520v1.pdf",
+        "topic": "forum"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:14+00:00",
+      "cycle": 5,
+      "kind": "read",
+      "summary": "read full text of FlowEdit: Associative Memory for Lifelong Pronunciation Adap: 5 claim(s) [arxiv:2606.20518v1]",
+      "refs": {
+        "url": "https://arxiv.org/pdf/2606.20518v1.pdf",
+        "topic": "forum"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:30+00:00",
+      "cycle": 5,
+      "kind": "escalated",
+      "summary": "DeepSeek escalation [contested] proposed 4 claim(s) [deepseek-v4-pro, replayed=False] - candidates via the gate, not authoritative; Layer 9 decides",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:30+00:00",
+      "cycle": 5,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: SSD: Spatially Speculative Decoding Accelerates Autoregressive Image G (from arxiv)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:31+00:00",
+      "cycle": 5,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: FlowEdit: Associative Memory for Lifelong Pronunciation Adaptation in  (from arxiv)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:31+00:00",
+      "cycle": 5,
+      "kind": "developed",
+      "summary": "C-190/C-193: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:32+00:00",
+      "cycle": 5,
+      "kind": "emerged",
+      "summary": "new topic 'language' precipitated from a recurrence across forum, memory",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:32+00:00",
+      "cycle": 5,
+      "kind": "emerged",
+      "summary": "'generation' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:32+00:00",
+      "cycle": 5,
+      "kind": "emerged",
+      "summary": "'serial' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:33+00:00",
+      "cycle": 5,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'execution' (Layer 9 synthesis-eligible, SC-42) from 7 claims (C-191, C-198, C-199, C-200, C-202)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:33+00:00",
+      "cycle": 5,
+      "kind": "emerged",
+      "summary": "'drift' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:36+00:00",
+      "cycle": 5,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 13 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:37+00:00",
+      "cycle": 5,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:37+00:00",
+      "cycle": 5,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:34:37+00:00",
+      "cycle": 5,
+      "kind": "note",
+      "summary": "cycle done · 3 new · read 2 paper(s) · 2 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · degenerating · spend €0.1780 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 17,
-    "granite_calls": 11,
-    "deepseek_escalations": 4,
+    "llm_calls": 20,
+    "granite_calls": 13,
+    "deepseek_escalations": 5,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 17,
-    "last_call": "2026-06-19T12:30:14+00:00",
-    "est_cost_eur": 0.024,
+    "live_calls": 20,
+    "last_call": "2026-06-19T12:34:29+00:00",
+    "est_cost_eur": 0.028,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 11,
-      "deepseek-v4-pro": 6
+      "ibm-granite/granite-4.1-8b-20260429": 13,
+      "deepseek-v4-pro": 7
     },
     "empty_calls": 0,
     "empty_truncated": 0,
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 17
+      "stop": 20
     },
     "panel_rounds": 1,
     "reserved_budget_eur": 20.0,
-    "spent_budget_eur": 0.174,
-    "accepted_claims": 47,
-    "accepted_calls": 12,
-    "accepted_call_yield": 0.706,
+    "spent_budget_eur": 0.178,
+    "accepted_claims": 61,
+    "accepted_calls": 15,
+    "accepted_call_yield": 0.75,
     "est_cost_per_accepted_eur": 0.0005
   },
   "commissions_done": [],
-  "generated": "2026-06-19T12:30:20+00:00"
+  "generated": "2026-06-19T12:34:37+00:00"
 }
