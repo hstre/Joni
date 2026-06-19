@@ -494,6 +494,7 @@
     "openalex:W7128545313",
     "openalex:W7128547584",
     "openalex:W7128814387",
+    "openalex:W7137578291",
     "openalex:W7137590217",
     "openalex:W7137681926",
     "openalex:W7141781397",
@@ -502,6 +503,7 @@
     "openalex:W7159750554",
     "openalex:W7164710496",
     "openalex:W7164715081",
+    "openalex:W7164783592",
     "openalex:W7164865069",
     "openalex:W7164973977",
     "openclaw:ComposioHQ/secure-openclaw",
@@ -529,7 +531,9 @@
     "zenodo:20761219",
     "zenodo:20761254",
     "zenodo:20762027",
-    "zenodo:20762561"
+    "zenodo:20762561",
+    "zenodo:20762563",
+    "zenodo:20763578"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -724,6 +728,22 @@
       "replayed": false,
       "claims": 1,
       "source": "hackernews:28549739"
+    },
+    {
+      "call_id": "joni-c32:dda14aa552fa",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20763578"
+    },
+    {
+      "call_id": "joni-c32:5ead04260840",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20762563"
     }
   ],
   "pdf_read": [
@@ -808,9 +828,12 @@
     "github:flarum/flarum",
     "github:theDakshJaitly/mex",
     "huggingface:2606.16827",
+    "openalex:W7137578291",
+    "openalex:W7164783592",
     "openalex:W7164865069",
     "openalex:W7164973977",
-    "zenodo:20721436"
+    "zenodo:20721436",
+    "zenodo:20762563"
   ],
   "real_trial": {
     "method_id": "contradiction-first-review",
@@ -901,6 +924,9 @@
     "C-377|C-381",
     "C-378|C-381",
     "C-37|C-50",
+    "C-384|C-388",
+    "C-385|C-393",
+    "C-385|C-397",
     "C-3|C-344"
   ],
   "semantic_backfilled": [
@@ -948,6 +974,9 @@
     "C-377|C-381@bge-small-en-v1.5",
     "C-378|C-381@bge-small-en-v1.5",
     "C-37|C-50@bge-small-en-v1.5",
+    "C-384|C-388@bge-small-en-v1.5",
+    "C-385|C-393@bge-small-en-v1.5",
+    "C-385|C-397@bge-small-en-v1.5",
     "C-3|C-344@bge-small-en-v1.5"
   ],
   "invented": [
@@ -1043,6 +1072,7 @@
     "reasoning",
     "sample",
     "session",
+    "supporting",
     "temporal",
     "tokenization",
     "tokens",
@@ -1103,6 +1133,7 @@
     "forum|evaluation",
     "forum|exchanges",
     "forum|execution",
+    "forum|extraction",
     "forum|find",
     "forum|flowedit",
     "forum|forums",
@@ -1223,6 +1254,7 @@
     "memory",
     "openclaw",
     "outputs",
+    "prompt",
     "real",
     "reasoning",
     "session",
@@ -1233,7 +1265,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|community": 1,
+    "forum|community": 2,
     "meth:related": 1,
     "meth:sample": 1
   },
@@ -1243,17 +1275,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum worth",
     "forum across",
     "forum recurs",
     "memory through-line",
     "memory worth",
     "forum forums",
     "forum underlying",
-    "forum factor"
+    "forum factor",
+    "forum single"
   ],
   "hyp_seen_cycle": {
-    "C-185": 20,
     "C-186": 21,
     "C-187": 22,
     "C-189": 23,
@@ -1265,7 +1296,7 @@
     "C-244": 29,
     "C-246": 30,
     "C-248": 31,
-    "C-256": 13,
+    "C-256": 32,
     "C-260": 15,
     "C-262": 15,
     "C-264": 16,
@@ -1283,7 +1314,8 @@
     "C-335": 28,
     "C-354": 29,
     "C-370": 30,
-    "C-383": 31
+    "C-383": 31,
+    "C-399": 32
   },
   "topics_domain_ok": [
     "announcements",
@@ -1322,6 +1354,7 @@
     "sample",
     "secure-openclaw",
     "session",
+    "supporting",
     "temporal",
     "tokenization",
     "tokens",
@@ -1376,6 +1409,7 @@
     "C-354",
     "C-370",
     "C-383",
+    "C-399",
     "C-56",
     "C-57",
     "C-58"
@@ -1397,6 +1431,7 @@
     "M-21",
     "M-22",
     "M-23",
+    "M-24",
     "M-3",
     "M-4",
     "M-5",
@@ -1406,35 +1441,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "degenerating",
-    "development": 0,
-    "degeneration": 2,
-    "active": 303,
+    "verdict": "steady",
+    "development": 6,
+    "degeneration": 1,
+    "active": 316,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 15,
-    "supporting_links": 15,
-    "emergent_total": 207,
+    "evidence_links": 17,
+    "supporting_links": 17,
+    "emergent_total": 210,
     "usable_semantic_rate": 1.0,
-    "methods_total": 23,
+    "methods_total": 24,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 3020,
-    "cycle": 31
+    "stagnation_cycles": 0,
+    "objects": 3136,
+    "cycle": 32
   },
   "vitality_prev": {
-    "supports": 15,
+    "supports": 17,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3020,
-    "active": 303,
-    "links": 15,
-    "emergent": 207
+    "objects": 3136,
+    "active": 316,
+    "links": 17,
+    "emergent": 210
   },
-  "stagnation": 1,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1652,12 +1687,19 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 32,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 31,
+    "starved_topic": 32,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
