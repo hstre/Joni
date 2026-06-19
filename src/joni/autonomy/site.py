@@ -36,6 +36,49 @@ def build(data: dict) -> str:
         for e in events
     )
 
+    # Aufträge an Claude: Joni's own non-core programming suggestions (also filed as joni-auftrag
+    # issues). Deterministic, grounded, never the protected core, implemented by a human-gated PR.
+    def _commission(c) -> str:
+        ev = c.get("evidence", {}) if isinstance(c.get("evidence"), dict) else {}
+        ev_txt = " · ".join(f"{esc(k)} {esc(v)}"
+                            for k, v in ev.items() if not isinstance(v, list))
+
+        def row(k, v):
+            return f"<div class=asrow><span class=k>{k}</span> {esc(v)}</div>"
+        return (
+            f"<li><div><span class=chip>extension · non-core</span> "
+            f"<b>{esc(c.get('title',''))}</b></div>"
+            + row("component", c.get("component", ""))
+            + row("why", c.get("motivation", ""))
+            + row("build", c.get("desired_capability", ""))
+            + row("done&nbsp;when", c.get("acceptance", ""))
+            + f"<div class=asrow><span class=k>evidence</span> {ev_txt}</div>"
+            + row("risk", c.get("risk", "—")) + "</li>")
+
+    # Implemented Aufträge (by a human-gated Claude session), with date+time, so the page shows
+    # not only what Joni asked for but what was actually built and when.
+    done = d.get("commissions_done", []) if isinstance(d.get("commissions_done"), list) else []
+    done_titles = {c.get("title", "") for c in done if isinstance(c, dict)}
+
+    commissions = [c for c in ext.get("commissions", [])
+                   if isinstance(c, dict) and c.get("title") and c.get("title") not in done_titles]
+    commissions_html = "".join(_commission(c) for c in commissions) or \
+        "<li class=empty>keine offenen — alle gestellten Aufträge sind umgesetzt.</li>"
+
+    def _done(c) -> str:
+        ts = esc(c.get("implemented_at", "—"))
+        ref = c.get("ref", "")
+        ref_html = f" <span class=src>({esc(ref)})</span>" if ref else ""
+        return (
+            f"<li><div><span class='chip' style='background:var(--good);color:#06210f'>"
+            f"✓ umgesetzt</span> <b>{esc(c.get('title',''))}</b> "
+            f"<span class=src>· {ts}</span>{ref_html}</div>"
+            f"<div class=asrow><span class=k>component</span> {esc(c.get('component',''))}</div>"
+            f"<div class=asrow><span class=k>note</span> {esc(c.get('note',''))}</div></li>")
+    done_html = "".join(_done(c) for c in sorted(
+        done, key=lambda c: c.get("implemented_at", ""), reverse=True)) or \
+        "<li class=empty>noch keiner umgesetzt.</li>"
+
     # Expert panel: what the Alexandria trio discussed the last time Joni was unsure.
     panel = ext.get("panel_last") if isinstance(ext.get("panel_last"), dict) else {}
     if isinstance(panel.get("phase3"), dict) and panel.get("phase3"):
@@ -411,6 +454,13 @@ what is uncertain, what contradicts, and what changed.</p>
   <div class="card full">
     <h2>Self-review · hourly · provisional self-model (not facts)</h2>
     {review_html}
+  </div>
+  <div class="card full">
+    <h2>Aufträge an Claude — extend Joni (non-core, implemented via PR)</h2>
+    <h3 style='margin:4px 0'>Offen</h3>
+    <ul>{commissions_html}</ul>
+    <h3 style='margin:10px 0 4px'>Umgesetzt (mit Datum &amp; Uhrzeit)</h3>
+    <ul>{done_html}</ul>
   </div>
   <div class="card full">
     <h2>Kevin — was er vorschlägt &amp; ob es taugt</h2>

@@ -18,8 +18,9 @@ def _data(ext: dict) -> dict:
     }
 
 
-def test_site_no_longer_renders_the_retired_task_and_forum_surfaces():
-    # The loop is stopped: core asks, Aufträge an Claude and the forum post-mappe are gone.
+def test_site_keeps_auftraege_but_drops_the_retired_ask_and_forum_surfaces():
+    # 'Aufträge an Claude' (Joni's programming suggestions) stay on the site; the core-asks card and
+    # the forum post-mappe were retired.
     html = site.build(_data({
         "forum_outbox": [{"id": "FA-1-aaa", "platform": "moltbook", "question": "Q?",
                           "status": "posted", "posted_url": "https://www.moltbook.com/posts/p1"}],
@@ -27,8 +28,9 @@ def test_site_no_longer_renders_the_retired_task_and_forum_surfaces():
                          "text": "Dein Punkt ignoriert drift.", "treated_as": "source"}],
         "commissions": [{"title": "do a thing", "component": "x"}],
         "asks": [{"request_type": "observation", "component": "core", "proposed_change": "y"}]}))
-    for absent in ("Menschen &amp; Foren", "Aufträge an Claude", "Asks &mdash; waiting",
-                   "du postest", "moltbook.com/posts/p1", "agentX", "do a thing"):
+    assert "Aufträge an Claude" in html and "do a thing" in html      # the suggestions are shown
+    for absent in ("Menschen &amp; Foren", "Asks &mdash; waiting",
+                   "du postest", "moltbook.com/posts/p1", "agentX"):
         assert absent not in html
 
 
