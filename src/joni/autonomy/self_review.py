@@ -232,6 +232,17 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
                        "call this hour - it is opt-in and fired only when warranted.")
     sections.append({"title": "What I took away", "text": " ".join(learned)})
 
+    # The one question that drives getting better: what isn't working yet, and how would I fix it?
+    # (Derived from my measured state; the queries already flow into what I search next.)
+    findings = extensions.get("introspection", [])
+    if isinstance(findings, list) and findings:
+        improve = " ".join(
+            f"({i}) {f.get('issue', '')} → {f.get('improve', '')}"
+            for i, f in enumerate((x for x in findings if isinstance(x, dict)), 1))
+        sections.append({
+            "title": "What isn't working yet — and how I'd improve so I function better",
+            "text": "I ask myself this each review and let it steer what I read next. " + improve})
+
     return sections
 
 

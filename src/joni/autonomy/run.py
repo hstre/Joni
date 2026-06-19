@@ -36,6 +36,7 @@ from . import (
     governance,
     homeostasis,
     humans,
+    introspect,
     invent,
     layer9_view,
     methods,
@@ -332,6 +333,11 @@ def one_cycle() -> dict:
     homeostasis.retire_junk_methods(cs, extensions, proto, cycle)      # drain off-domain methods
     homeostasis.review_numeric_duplicate_conflicts(cs, proto, cycle)   # defuse legacy numeric hards
     vitality = homeostasis.vitality(cs, extensions, proto, cycle)
+
+    # 4g-introspect. Self-diagnostic: from his measured state Joni asks 'what isn't working so I can
+    #     function optimally, and how to improve it?' The findings feed the topic search (their
+    #     queries enter learned_queries) and steer Doktores to the top weakness's module next cycle.
+    introspect.apply(cs, extensions, proto, cycle)
 
     # 4h. Aufträge an Claude: when Joni's own state shows a non-core capability gap the rules
     #     cannot close (semantic channel blind, conflicts unqualifiable, a topic starved of

@@ -223,12 +223,18 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
     filed = extensions.setdefault("doktores_filed", {})        # component_key -> last cycle filed
     log = extensions.setdefault("doktores_review", [])         # for the page
 
-    # Scout literature targeted at the NEXT non-core module (round-robin), reviewed first; the
-    # passively-fetched items fill any remaining slots. Both deduped against Doktores' own seen-set.
+    # Scout literature for a non-core module, reviewed first; the passively-fetched items fill the
+    # rest. The self-diagnostic (introspect) steers Doktores to Joni's TOP measured weakness if it
+    # named one; else round-robin over the modules. Both deduped against Doktores' own seen-set.
     mkeys = list(commission._EXTENSIBLE)
-    midx = int(extensions.get("doktores_module_idx", 0)) % len(mkeys)
-    extensions["doktores_module_idx"] = (midx + 1) % len(mkeys)
-    scouted = _scout(_MODULE_QUERIES.get(mkeys[midx], ()))
+    steer = extensions.get("introspection_module")
+    if steer in mkeys:
+        target_module = steer
+    else:
+        midx = int(extensions.get("doktores_module_idx", 0)) % len(mkeys)
+        extensions["doktores_module_idx"] = (midx + 1) % len(mkeys)
+        target_module = mkeys[midx]
+    scouted = _scout(_MODULE_QUERIES.get(target_module, ()))
     reviewable, batch = [], set()
     for it in list(scouted) + list(items or []):
         k = getattr(it, "key", None)
