@@ -71,8 +71,11 @@ _SYS = (
 
 def enabled() -> bool:
     """On only when the model arm is configured (``JONI_SEMANTIC_PROPOSALS=1``) and a real model
-    client exists - the same gate as the other proposal arms. ``JONI_DOKTORES=0`` force-disables."""
-    return projection.enabled() and os.getenv("JONI_DOKTORES", "1") != "0"
+    client exists - the same gate as the other proposal arms. ``JONI_DOKTORES=0`` force-disables,
+    and the benefit-review can deactivate it (``extension_review``) if it stops contributing."""
+    from . import extension_review
+    return (projection.enabled() and os.getenv("JONI_DOKTORES", "1") != "0"
+            and extension_review.active("doktores"))
 
 
 def _every() -> int:
