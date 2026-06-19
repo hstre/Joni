@@ -471,6 +471,10 @@
     "openclaw:CortexReach/memory-lancedb-pro",
     "openclaw:NevaMind-AI/memU",
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
+    "wikipedia:31217535",
+    "wikipedia:5703927",
+    "wikipedia:81089",
+    "wikipedia:92893",
     "zenodo:20758648",
     "zenodo:20759173",
     "zenodo:20760487",
@@ -560,6 +564,22 @@
       "replayed": false,
       "claims": 5,
       "source": "arxiv:2606.20520v1"
+    },
+    {
+      "call_id": "joni-c8:bf3090932692",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "wikipedia:31217535"
+    },
+    {
+      "call_id": "joni-c8:99bacfb8427c",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "wikipedia:81089"
     }
   ],
   "pdf_read": [
@@ -692,6 +712,8 @@
     "C-181|C-182",
     "C-190|C-193",
     "C-20|C-53",
+    "C-223|C-3",
+    "C-224|C-232",
     "C-32|C-43",
     "C-33|C-44",
     "C-36|C-49",
@@ -709,6 +731,8 @@
     "C-181|C-182@bge-small-en-v1.5",
     "C-190|C-193@bge-small-en-v1.5",
     "C-20|C-53@bge-small-en-v1.5",
+    "C-223|C-3@bge-small-en-v1.5",
+    "C-224|C-232@bge-small-en-v1.5",
     "C-32|C-43@bge-small-en-v1.5",
     "C-33|C-44@bge-small-en-v1.5",
     "C-36|C-49@bge-small-en-v1.5",
@@ -788,10 +812,12 @@
     "deterministic",
     "execution",
     "inference",
+    "information",
     "language",
     "variance"
   ],
   "synthesized": [
+    "forum|autoregressive",
     "forum|code",
     "forum|complexity",
     "forum|contamination",
@@ -800,6 +826,7 @@
     "forum|depth",
     "forum|deterministic",
     "forum|diffusiongemma",
+    "forum|drift",
     "forum|error",
     "forum|exchanges",
     "forum|execution",
@@ -809,6 +836,7 @@
     "forum|language",
     "forum|multicalibration",
     "forum|optimal",
+    "forum|outputs",
     "forum|problem",
     "forum|question",
     "forum|serial",
@@ -816,13 +844,17 @@
     "forum|silence",
     "forum|strategic",
     "forum|variance",
+    "memory|enables",
     "memory|existing",
+    "memory|explicit",
     "memory|fine-tuning",
     "memory|inference",
     "memory|memory",
     "memory|memorywam",
     "memory|privacy",
+    "memory|temporal",
     "memory|timeprove",
+    "memory|training",
     "memory|user"
   ],
   "emerged_methods": [
@@ -834,20 +866,23 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|downstream": 1
+    "forum|downstream": 2,
+    "memory|information": 1,
+    "memory|semantic": 1,
+    "meth:memory": 1
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [],
   "learned_queries": [
-    "helpfulness-variance-privacy-leakage prompts",
-    "helpfulness-variance-privacy-leakage leaking",
-    "contamination-driven-extraction contamination",
     "contamination-driven-extraction accuracy",
     "forum across",
     "forum recurs",
     "forum claims",
-    "forum worth"
+    "forum worth",
+    "forum testing",
+    "forum reinterpreted",
+    "forum mechanism"
   ],
   "hyp_seen_cycle": {
     "C-56": 1,
@@ -863,7 +898,9 @@
     "C-187": 6,
     "C-189": 6,
     "C-218": 7,
-    "C-220": 7
+    "C-220": 7,
+    "C-222": 8,
+    "C-237": 8
   },
   "topics_domain_ok": [
     "context",
@@ -872,6 +909,7 @@
     "drift",
     "execution",
     "inference",
+    "information",
     "language",
     "privacy",
     "retrieval",
@@ -896,6 +934,7 @@
     "C-218",
     "C-220",
     "C-222",
+    "C-240",
     "C-56",
     "C-57",
     "C-58"
@@ -913,35 +952,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "degenerating",
-    "development": 0,
-    "degeneration": 1,
-    "active": 175,
-    "hypotheses": 15,
-    "unsupported_hypotheses": 15,
+    "verdict": "developing",
+    "development": 6,
+    "degeneration": 0,
+    "active": 190,
+    "hypotheses": 16,
+    "unsupported_hypotheses": 16,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 4,
-    "supporting_links": 4,
-    "emergent_total": 44,
+    "evidence_links": 6,
+    "supporting_links": 6,
+    "emergent_total": 52,
     "usable_semantic_rate": 1.0,
     "methods_total": 10,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 3,
-    "objects": 1513,
-    "cycle": 7
+    "stagnation_cycles": 0,
+    "objects": 1650,
+    "cycle": 8
   },
   "vitality_prev": {
-    "supports": 4,
+    "supports": 6,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 1513,
-    "active": 175,
-    "links": 4,
-    "emergent": 44
+    "objects": 1650,
+    "active": 190,
+    "links": 6,
+    "emergent": 52
   },
-  "stagnation": 3,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -991,12 +1030,19 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 8,
+      "verdict": "developing",
+      "development": 6,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 7,
+    "starved_topic": 8,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -1385,13 +1431,15 @@
     "X-33",
     "X-34"
   ],
-  "kevin_orch_last_cycle": 2,
+  "kevin_orch_last_cycle": 8,
   "kevin_orch_seen": [
+    "Here's the risky hypothesis: what we call \"session variance\" is actually a temporal oscillation in the model's internal ",
     "Here's a dangerous guess: The 34% session variance is the exact measure of how much of your Apex interactions are actual",
-    "A risky hypothesis: **Session variance is actually a hidden *temporal resonance* effect—skills fail not because of conte"
+    "A risky hypothesis: **Session variance is actually a hidden *temporal resonance* effect—skills fail not because of conte",
+    "What if the 34% same-model session variance is actually a hidden test of agentic hybrid vigor, where skills that fail ar"
   ],
   "kevin_orch": {
-    "cycle": 2,
+    "cycle": 8,
     "domain": "forum",
     "blind_spots": [
       "mechanism",
@@ -1416,12 +1464,12 @@
     "candidates": 12,
     "ingested": [
       {
-        "id": "C-134",
+        "id": "C-237",
         "score": 0.917,
         "testability": 1.0
       },
       {
-        "id": "C-135",
+        "id": "C-238",
         "score": 0.917,
         "testability": 1.0
       }
