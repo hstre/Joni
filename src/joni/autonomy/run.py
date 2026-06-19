@@ -283,12 +283,12 @@ def one_cycle() -> dict:
     doktores_new = doktores.review(cs, extensions, proto, cycle, items=fetched,
                                    budget=budget, runs_per_week=runs_per_week())
 
-    # 4c-doktores-hyp. Give Joni's OWN hypotheses to Doktores: it scouts literature for the next
-    #     un-researched hypothesis and brings back what a paper finds about it as a SOURCE
-    #     (candidate, conflict-checked, never confirmed) - so the idea can earn support / be
-    #     challenged through the normal gated path. Cadence-spaced, budget-metered; no-op if off.
-    doktores.research_hypotheses(cs, extensions, proto, cycle,
-                                 budget=budget, runs_per_week=runs_per_week())
+    # 4c-doktores-hyp. Doktores assesses Joni's OWN ideas for INTERNAL LOGICAL COHERENCE - not for
+    #     literature support: a novel idea has no paper behind it yet, so external-evidence gating
+    #     would stop Joni inventing. The verdict is recorded/shown; it never confirms or deletes the
+    #     idea (the gated ladder still governs). Cadence-spaced, budget-metered; no-op if off.
+    doktores.assess_hypotheses(cs, extensions, proto, cycle,
+                               budget=budget, runs_per_week=runs_per_week())
 
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
@@ -482,13 +482,15 @@ def _ideas(cs, extensions: dict, *, limit: int = 24) -> dict:
         if rel in ("supports", "contextualizes"):
             support[el.claim_id] = support.get(el.claim_id, 0) + 1
     challenged = {cid for x in cs.core.open_conflicts() for cid in x.claim_ids}
-    researched = set(extensions.get("doktores_hyp_researched", []))
+    # Doktores' coherence verdict per idea (internal logical stringency, NOT paper support).
+    coherence = {e.get("hypothesis"): e.get("coherent")
+                 for e in extensions.get("doktores_hyp_log", []) if e.get("hypothesis")}
 
     hyps = []
     for h in sorted(cs.hypotheses(), key=lambda c: -support.get(c.id, 0))[:limit]:
         hyps.append({"id": h.id, "text": (getattr(h, "text", "") or "")[:240],
                      "topic": getattr(h, "topic", ""), "supports": support.get(h.id, 0),
-                     "challenged": h.id in challenged, "researched": h.id in researched,
+                     "challenged": h.id in challenged, "coherent": coherence.get(h.id),
                      "status": getattr(getattr(h, "status", None), "value", "candidate")})
     return {"hypotheses": hyps,
             "invented": [i for i in (extensions.get("invented") or []) if isinstance(i, str)][-16:],

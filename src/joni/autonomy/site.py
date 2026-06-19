@@ -333,8 +333,10 @@ def build(data: dict) -> str:
         f"<span class=chip>{esc(h.get('supports',0))} support</span>"
         + (" <span class=chip style='border-color:var(--warn)'>angefochten</span>"
            if h.get("challenged") else "")
-        + (" <span class=chip style='background:var(--good);color:#06210f'>Doktores recherchiert"
-           "</span>" if h.get("researched") else "")
+        + (" <span class=chip style='background:var(--good);color:#06210f'>✓ kohärent (Doktores)"
+           "</span>" if h.get("coherent") is True else "")
+        + (" <span class=chip style='border-color:var(--rej)'>⚠ inkohärent (Doktores)</span>"
+           if h.get("coherent") is False else "")
         + "</div></li>"
         for h in (ideas.get("hypotheses") or [])) or \
         "<li class=empty>Noch keine eigenen Hypothesen — Joni erfindet sie aus dem Gelesenen.</li>"

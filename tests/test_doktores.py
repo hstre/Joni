@@ -97,33 +97,30 @@ def _with_hypothesis(cs, text="local routing bounds memory consolidation", topic
     return cs
 
 
-def test_research_brings_evidence_to_a_hypothesis_as_a_source(monkeypatch, tmp_path):
-    _online(monkeypatch, tmp_path, "Latency budgets do bound consolidation in long-run agents.",
-            scout=[_paper("arxiv:h1")])
+def test_assess_judges_internal_coherence_not_paper_support(monkeypatch, tmp_path):
+    # A novel idea need not be backed by literature - the only bar is internal logical coherence.
+    _online(monkeypatch, tmp_path, '{"coherent": true, "reason": "self-consistent and testable"}')
     cs = _with_hypothesis(CoreState(seed_core()))
+    n_claims = len(list(cs.core.all(l9.ObjectType.CLAIM)))
     ext: dict = {}
-    out = doktores.research_hypotheses(cs, ext, _Proto(), 3, budget=None)
-    assert out["researched"] == 1 and out["evidence"] == 1
-    assert out["hypothesis"] in ext["doktores_hyp_researched"]      # marked, won't re-research
-    # the finding entered as a real claim (a SOURCE, never confirmed)
-    got = [c for c in cs.core.all(l9.ObjectType.CLAIM)
-           if "bound consolidation" in getattr(c, "text", "")]
-    assert got and got[0].status is not l9.Status.CONFIRMED
+    out = doktores.assess_hypotheses(cs, ext, _Proto(), 3, budget=None)
+    assert out["assessed"] == 1 and out["coherent"] is True
+    assert out["hypothesis"] in ext["doktores_hyp_assessed"]        # marked, won't re-assess
+    assert ext["doktores_hyp_log"][-1]["coherent"] is True
+    # CRITICAL: it does NOT inject any paper-evidence claim - the idea stands on its own logic
+    assert len(list(cs.core.all(l9.ObjectType.CLAIM))) == n_claims
 
 
-def test_research_irrelevant_paper_adds_no_source(monkeypatch, tmp_path):
-    _online(monkeypatch, tmp_path, "NONE", scout=[_paper("arxiv:h2")])
+def test_assess_can_flag_an_incoherent_idea(monkeypatch, tmp_path):
+    _online(monkeypatch, tmp_path, '{"coherent": false, "reason": "contradicts itself"}')
     cs = _with_hypothesis(CoreState(seed_core()))
-    ext: dict = {}
-    out = doktores.research_hypotheses(cs, ext, _Proto(), 3, budget=None)
-    assert out["researched"] == 0 and out["evidence"] == 0
-    # still marked researched (it was examined), so Doktores moves on next time
-    assert ext["doktores_hyp_researched"]
+    out = doktores.assess_hypotheses(cs, {}, _Proto(), 3, budget=None)
+    assert out["assessed"] == 1 and out["coherent"] is False
 
 
-def test_research_no_op_without_hypotheses(monkeypatch, tmp_path):
-    _online(monkeypatch, tmp_path, "x", scout=[_paper("arxiv:h3")])
-    assert doktores.research_hypotheses(CoreState(seed_core()), {}, _Proto(), 3)["researched"] == 0
+def test_assess_no_op_without_hypotheses(monkeypatch, tmp_path):
+    _online(monkeypatch, tmp_path, '{"coherent": true}')
+    assert doktores.assess_hypotheses(CoreState(seed_core()), {}, _Proto(), 3)["assessed"] == 0
 
 
 def test_cadence_and_dedup(monkeypatch, tmp_path):
