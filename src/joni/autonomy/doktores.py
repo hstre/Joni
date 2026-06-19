@@ -37,6 +37,23 @@ _MAX_REVIEW = 3          # at most this many sources examined per firing (each i
 _MAX_NEW = 1             # at most one fresh Auftrag filed per cycle
 _COOLDOWN = 200          # cycles before Doktores may re-file an order for the same module
 
+# Targeted scouting: each firing, Doktores searches for literature relevant to the NEXT non-core
+# module (round-robin), so reviews are module-relevant instead of whatever the topic-fetch happened
+# to return. The model still judges every candidate freely against the full allowlist (it may answer
+# 'false', or map it to a different module) - the scouting only biases WHICH papers it sees.
+_MODULE_QUERIES = {
+    "semantics-measurement": ("semantic textual similarity", "sentence embedding evaluation",
+                              "distributional semantics distance"),
+    "conflict-qualifier": ("natural language inference contradiction", "claim contradiction "
+                           "detection", "argument relation classification"),
+    "reader-sources": ("scientific paper retrieval", "research literature recommendation",
+                       "scholarly document search"),
+    "emergence": ("automated hypothesis generation", "analogical reasoning across domains",
+                  "scientific concept synthesis"),
+    "method-trialing": ("method ablation evaluation protocol", "benchmark for method transfer",
+                        "experimental validation of techniques"),
+}
+
 _SYS = (
     "You are Doktores, the method-review arm of an autonomous reasoning agent named Joni. You read "
     "ONE external paper or software extension and judge ONE thing: could it concretely improve one "
@@ -94,6 +111,18 @@ def _parse(output: str) -> dict | None:
     return obj if isinstance(obj, dict) else None
 
 
+def _scout(queries) -> list:
+    """Best-effort targeted paper search for one non-core module. Fails quietly to [] (a scouting
+    outage is never fatal - the passively-fetched items still get reviewed)."""
+    if not queries:
+        return []
+    try:
+        from .sources import ArxivFetcher
+        return ArxivFetcher().fetch(list(queries), limit=4)
+    except Exception:  # noqa: BLE001
+        return []
+
+
 def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
            runs_per_week: int = 0) -> list[dict]:
     """Review up to ``_MAX_REVIEW`` fresh papers/OpenClaw extensions for a non-core improvement to
@@ -109,9 +138,20 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
     seen = set(extensions.setdefault("doktores_seen", []))
     filed = extensions.setdefault("doktores_filed", {})        # component_key -> last cycle filed
     log = extensions.setdefault("doktores_review", [])         # for the page
-    reviewable = [it for it in (items or [])
-                  if getattr(it, "source", "") in _REVIEWABLE_SOURCES
-                  and getattr(it, "key", None) and it.key not in seen]
+
+    # Scout literature targeted at the NEXT non-core module (round-robin), reviewed first; the
+    # passively-fetched items fill any remaining slots. Both deduped against Doktores' own seen-set.
+    mkeys = list(commission._EXTENSIBLE)
+    midx = int(extensions.get("doktores_module_idx", 0)) % len(mkeys)
+    extensions["doktores_module_idx"] = (midx + 1) % len(mkeys)
+    scouted = _scout(_MODULE_QUERIES.get(mkeys[midx], ()))
+    reviewable, batch = [], set()
+    for it in list(scouted) + list(items or []):
+        k = getattr(it, "key", None)
+        if (getattr(it, "source", "") in _REVIEWABLE_SOURCES
+                and k and k not in seen and k not in batch):
+            reviewable.append(it)
+            batch.add(k)
     if not reviewable:
         return []
 
