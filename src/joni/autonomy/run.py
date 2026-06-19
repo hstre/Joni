@@ -294,7 +294,8 @@ def one_cycle() -> dict:
     # 4e. Strengthen Joni's own ideas: test his hypotheses against evidence (Semantic
     #     Layer governs support/contradiction), vet via Kevin, and let a hypothesis earn
     #     candidate -> active. Never confirms - that stays a human's call.
-    strengthened = strengthen.strengthen(cs, extensions, proto, cycle, layer=semantic_layer)
+    strengthened = strengthen.strengthen(cs, extensions, proto, cycle, layer=semantic_layer,
+                                         budget=budget, runs_per_week=runs_per_week())
 
     # 4f. Self-optimisation: read Joni's own result pattern (mostly insufficient?) and
     #     improve his research strategy - what he reads and the queries he uses next cycle.
