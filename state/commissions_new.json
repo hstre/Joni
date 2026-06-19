@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "kind": "doktores:semantics-measurement",
+    "cycle": 41,
+    "addressed_to": "Claude",
+    "title": "Ergänze FaBle-Augmentierung für facettenbedingte Einbettungen",
+    "component": "the semantic measurement channel (desi_semantics.py / embeddings.py) - the projector and candidate extraction, outside the protected core",
+    "component_key": "semantics-measurement",
+    "touches_core": false,
+    "request_type": "extension-request",
+    "change_target": "joni-self · own non-core module (semantics-measurement)",
+    "motivation": "Die Quelle beschreibt FaBle, eine modulare Methode zur Synthese facetten-spezifischer Trainingsdaten, die ohne vordefiniertes Facettenwissen LLMs nutzt, um facettenbedingte Relevanzpaare zu erzeugen. Dies kann die Einbettungen im semantics-measurement-Modul verbessern, sodass die Kandidatenextraktion Facettenbedingungen besser erfüllt.",
+    "desired_capability": "Füge in semantics-measurement (embeddings.py/desi_semantics.py) eine Komponente ein, die mit Hilfe eines LLMs Dokumente in Facetteneinheiten zerlegt und durch dynamische Rekomposition facetteninformierte Trainingspaare generiert; feintune den Einbettungsprojektor mit diesen Paaren.",
+    "acceptance": "Die Precision@k der Kandidatenextraktion bei facettenbasierten Anfragen steigt um mindestens 5% gegenüber dem unveränderten Modul auf dem von FaBle beschriebenen Evaluierungsszenario (angepasst an Jonis Daten).",
+    "evidence": {
+      "found_by": "doktores",
+      "source": "arxiv",
+      "ref": "http://arxiv.org/abs/2412.01443v1",
+      "source_title": "Multi-Facet Blending for Faceted Query-by-Example Retrieval"
+    },
+    "risk": "low - a measurement channel only; the gate, ledger and operators are untouched",
+    "found_by": "doktores"
+  }
+]

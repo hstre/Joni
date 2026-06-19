@@ -80,6 +80,28 @@
       },
       "risk": "low - only adds taxonomy markers; conflict detection itself is unchanged",
       "found_by": "doktores"
+    },
+    {
+      "kind": "doktores:semantics-measurement",
+      "cycle": 41,
+      "addressed_to": "Claude",
+      "title": "Ergänze FaBle-Augmentierung für facettenbedingte Einbettungen",
+      "component": "the semantic measurement channel (desi_semantics.py / embeddings.py) - the projector and candidate extraction, outside the protected core",
+      "component_key": "semantics-measurement",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (semantics-measurement)",
+      "motivation": "Die Quelle beschreibt FaBle, eine modulare Methode zur Synthese facetten-spezifischer Trainingsdaten, die ohne vordefiniertes Facettenwissen LLMs nutzt, um facettenbedingte Relevanzpaare zu erzeugen. Dies kann die Einbettungen im semantics-measurement-Modul verbessern, sodass die Kandidatenextraktion Facettenbedingungen besser erfüllt.",
+      "desired_capability": "Füge in semantics-measurement (embeddings.py/desi_semantics.py) eine Komponente ein, die mit Hilfe eines LLMs Dokumente in Facetteneinheiten zerlegt und durch dynamische Rekomposition facetteninformierte Trainingspaare generiert; feintune den Einbettungsprojektor mit diesen Paaren.",
+      "acceptance": "Die Precision@k der Kandidatenextraktion bei facettenbasierten Anfragen steigt um mindestens 5% gegenüber dem unveränderten Modul auf dem von FaBle beschriebenen Evaluierungsszenario (angepasst an Jonis Daten).",
+      "evidence": {
+        "found_by": "doktores",
+        "source": "arxiv",
+        "ref": "http://arxiv.org/abs/2412.01443v1",
+        "source_title": "Multi-Facet Blending for Faceted Query-by-Example Retrieval"
+      },
+      "risk": "low - a measurement channel only; the gate, ledger and operators are untouched",
+      "found_by": "doktores"
     }
   ],
   "forum_heard": [
@@ -1133,6 +1155,7 @@
     "latency",
     "learning",
     "local",
+    "long-term",
     "measure",
     "mechanism",
     "memorywam",
@@ -1159,8 +1182,11 @@
     "forum|abundance",
     "forum|admission",
     "forum|adversarial",
+    "forum|agent",
     "forum|agentic",
+    "forum|agents",
     "forum|aligns",
+    "forum|allows",
     "forum|announcement",
     "forum|anthology",
     "forum|apis",
@@ -1169,6 +1195,7 @@
     "forum|attention",
     "forum|authority",
     "forum|autoregressive",
+    "forum|bacterial",
     "forum|battle",
     "forum|benchmarks",
     "forum|board",
@@ -1261,6 +1288,7 @@
     "forum|replace",
     "forum|repository",
     "forum|review",
+    "forum|role",
     "forum|same",
     "forum|same-model",
     "forum|sample",
@@ -1277,6 +1305,7 @@
     "forum|step",
     "forum|strategic",
     "forum|style",
+    "forum|supporting",
     "forum|systematic",
     "forum|target",
     "forum|theory",
@@ -1322,6 +1351,7 @@
     "memory|world"
   ],
   "emerged_methods": [
+    "attention",
     "awesome-openclaw-usecases",
     "become",
     "complexity",
@@ -1353,8 +1383,6 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|role": 3,
-    "forum|supporting": 3,
     "meth:sample": 1
   },
   "hyp_tested": [],
@@ -1363,17 +1391,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum recurs",
     "forum worth",
     "forum claims",
     "forum repository",
     "forum waterlogged",
     "forum forum",
     "forum testing",
-    "forum across"
+    "forum across",
+    "forum underlying"
   ],
   "hyp_seen_cycle": {
-    "C-244": 29,
     "C-246": 30,
     "C-248": 31,
     "C-256": 32,
@@ -1385,7 +1412,7 @@
     "C-270": 38,
     "C-272": 39,
     "C-280": 40,
-    "C-282": 22,
+    "C-282": 41,
     "C-284": 23,
     "C-286": 24,
     "C-288": 25,
@@ -1403,7 +1430,8 @@
     "C-422": 37,
     "C-424": 38,
     "C-426": 39,
-    "C-428": 40
+    "C-428": 40,
+    "C-430": 41
   },
   "topics_domain_ok": [
     "announcements",
@@ -1435,6 +1463,7 @@
     "latency",
     "learning",
     "local",
+    "long-term",
     "measure",
     "mechanism",
     "memorywam",
@@ -1514,6 +1543,7 @@
     "C-424",
     "C-426",
     "C-428",
+    "C-430",
     "C-56",
     "C-57",
     "C-58"
@@ -1537,6 +1567,7 @@
     "M-23",
     "M-24",
     "M-25",
+    "M-26",
     "M-3",
     "M-4",
     "M-5",
@@ -1548,33 +1579,33 @@
   "vitality": {
     "verdict": "degenerating",
     "development": 0,
-    "degeneration": 2,
-    "active": 337,
+    "degeneration": 1,
+    "active": 338,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 23,
     "supporting_links": 23,
-    "emergent_total": 234,
+    "emergent_total": 242,
     "usable_semantic_rate": 1.0,
-    "methods_total": 25,
+    "methods_total": 26,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 5,
-    "objects": 3444,
-    "cycle": 40
+    "stagnation_cycles": 6,
+    "objects": 3474,
+    "cycle": 41
   },
   "vitality_prev": {
     "supports": 23,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3444,
-    "active": 337,
+    "objects": 3474,
+    "active": 338,
     "links": 23,
-    "emergent": 234
+    "emergent": 242
   },
-  "stagnation": 5,
+  "stagnation": 6,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1855,12 +1886,19 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 41,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 40,
+    "starved_topic": 41,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2781,9 +2819,12 @@
     ]
   },
   "doktores_seen": [
+    "arxiv:1609.01415v1",
     "arxiv:1909.09031v1",
     "arxiv:2101.10952v1",
     "arxiv:2411.05639v1",
+    "arxiv:2412.01443v1",
+    "arxiv:2505.21815v2",
     "arxiv:2606.20520v1",
     "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
@@ -2795,7 +2836,8 @@
     "zenodo:20721436"
   ],
   "doktores_filed": {
-    "conflict-qualifier": 37
+    "conflict-qualifier": 37,
+    "semantics-measurement": 41
   },
   "doktores_review": [
     {
@@ -2896,9 +2938,36 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 41,
+      "source": "arxiv",
+      "title": "Scientific Paper Retrieval with LLM-Guided Semantic-Based Ranking",
+      "url": "http://arxiv.org/abs/2505.21815v2",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 41,
+      "source": "arxiv",
+      "title": "A Framework for Scientific Paper Retrieval and Recommender Systems",
+      "url": "http://arxiv.org/abs/1609.01415v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 41,
+      "source": "arxiv",
+      "title": "Multi-Facet Blending for Faceted Query-by-Example Retrieval",
+      "url": "http://arxiv.org/abs/2412.01443v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "semantics-measurement"
     }
   ],
-  "doktores_last_cycle": 37,
+  "doktores_last_cycle": 41,
   "reconsolidate_lens_idx": 2,
-  "doktores_module_idx": 2
+  "doktores_module_idx": 3
 }
