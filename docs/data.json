@@ -6,6 +6,8 @@
       "memory",
       "drift",
       "attention",
+      "retrieval",
+      "alignment",
       "autoregressive",
       "awesome-openclaw-relationship",
       "awesome-openclaw-skills",
@@ -22,6 +24,7 @@
       "efficient",
       "execution",
       "existing",
+      "flash-attention",
       "forum-discussion",
       "forums",
       "hybrid",
@@ -47,10 +50,10 @@
       "public",
       "real",
       "reasoning",
-      "retrieval",
       "routing",
       "same-model",
       "sample",
+      "semantic",
       "session",
       "spatial",
       "supporting",
@@ -65,12 +68,12 @@
       "variance",
       "verify"
     ],
-    "claims_total": 464,
-    "claims_active": 356,
+    "claims_total": 485,
+    "claims_active": 376,
     "memory": 0,
-    "ledger": 2904,
+    "ledger": 3006,
     "open_conflicts": 36,
-    "methods": 28,
+    "methods": 30,
     "method_trials": 0,
     "methods_ready": 0,
     "preferences": 1,
@@ -79,36 +82,42 @@
     "hypotheses": 30,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.815,
-      "n": 356,
+      "rate": 0.819,
+      "n": 376,
       "flags": {
-        "correctly_typed": 356,
-        "source_anchored": 300,
-        "non_duplicate": 346,
-        "topic_valid": 356,
-        "scope_valid": 356,
-        "provenance_complete": 300
+        "correctly_typed": 376,
+        "source_anchored": 318,
+        "non_duplicate": 366,
+        "topic_valid": 376,
+        "scope_valid": 376,
+        "provenance_complete": 318
       }
     },
     "routing_engine": "DESi",
     "days_running": 0,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 0.558,
     "cap_eur": 20.0,
-    "runs": 50
+    "runs": 51
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 50,
+    "runs": 51,
     "retired": false
   },
   "extensions": {
     "topics_added": [
       "retrieval",
       "distillation",
-      "caching"
+      "caching",
+      "alignment"
     ],
     "notes": [
       {
@@ -639,12 +648,15 @@
       "arxiv:2606.20560v1",
       "arxiv:2606.20561v1",
       "arxiv:2606.20562v1",
+      "arxiv:2606.20563v1",
+      "github:Dao-AILab/flash-attention",
       "github:ManojKumarPatnaik/Major-project-list",
       "github:affaan-m/ECC",
       "github:apache/answer",
       "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
       "github:dotnet/core",
       "github:f/prompts.chat",
+      "github:fighting41love/funNLP",
       "github:flarum/flarum",
       "github:home-assistant/core",
       "github:theDakshJaitly/mex",
@@ -658,11 +670,15 @@
       "hackernews:29154216",
       "hackernews:39161339",
       "hackernews:46220488",
+      "hackernews:48497609",
       "huggingface:2603.11273",
       "huggingface:2606.16429",
       "huggingface:2606.16827",
+      "huggingface:2606.17053",
+      "huggingface:2606.19334",
       "huggingface:2606.20381",
       "huggingface:2606.20515",
+      "huggingface:2606.20536",
       "openalex:W7117395041",
       "openalex:W7128545313",
       "openalex:W7128547584",
@@ -693,6 +709,7 @@
       "wikipedia:31217535",
       "wikipedia:41067",
       "wikipedia:5703927",
+      "wikipedia:68753",
       "wikipedia:73248112",
       "wikipedia:81089",
       "wikipedia:92893",
@@ -953,6 +970,22 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20764790"
+      },
+      {
+        "call_id": "joni-c51:99bb7e8f4fee",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "arxiv:2606.20563v1"
+      },
+      {
+        "call_id": "joni-c51:b00bdeefad30",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "hackernews:48497609"
       }
     ],
     "pdf_read": [
@@ -966,7 +999,8 @@
       "arxiv:2606.20557v1",
       "arxiv:2606.20560v1",
       "arxiv:2606.20561v1",
-      "arxiv:2606.20562v1"
+      "arxiv:2606.20562v1",
+      "arxiv:2606.20563v1"
     ],
     "pdf_urls_seen": [],
     "pdf_inbox_seen": [],
@@ -1032,12 +1066,14 @@
       "arxiv:2606.20560v1",
       "arxiv:2606.20561v1",
       "arxiv:2606.20562v1",
+      "arxiv:2606.20563v1",
       "github:ManojKumarPatnaik/Major-project-list",
       "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
       "github:dotnet/core",
       "github:flarum/flarum",
       "github:theDakshJaitly/mex",
       "huggingface:2606.16827",
+      "huggingface:2606.17053",
       "openalex:W7137578291",
       "openalex:W7164783592",
       "openalex:W7164865069",
@@ -1157,7 +1193,8 @@
       "C-393|C-397",
       "C-395|C-397",
       "C-396|C-397",
-      "C-3|C-344"
+      "C-3|C-344",
+      "C-480|C-55"
     ],
     "semantic_backfilled": [
       "C-109|C-350@bge-small-en-v1.5",
@@ -1203,6 +1240,8 @@
       "C-348|C-349@bge-small-en-v1.5",
       "C-349|C-43@bge-small-en-v1.5",
       "C-34|C-348@bge-small-en-v1.5",
+      "C-34|C-349@bge-small-en-v1.5",
+      "C-351|C-5@bge-small-en-v1.5",
       "C-356|C-367@bge-small-en-v1.5",
       "C-356|C-368@bge-small-en-v1.5",
       "C-360|C-379@bge-small-en-v1.5",
@@ -1224,7 +1263,8 @@
       "C-393|C-397@bge-small-en-v1.5",
       "C-395|C-397@bge-small-en-v1.5",
       "C-396|C-397@bge-small-en-v1.5",
-      "C-3|C-344@bge-small-en-v1.5"
+      "C-3|C-344@bge-small-en-v1.5",
+      "C-480|C-55@bge-small-en-v1.5"
     ],
     "invented": [
       "announcements|drift",
@@ -1334,6 +1374,7 @@
       "reasoning",
       "same-model",
       "sample",
+      "semantic",
       "session",
       "spatial",
       "supporting",
@@ -1392,6 +1433,7 @@
       "forum|cost",
       "forum|cross-attention",
       "forum|cross-model",
+      "forum|denoising",
       "forum|depth",
       "forum|deterministic",
       "forum|devastating",
@@ -1561,6 +1603,7 @@
       "measure",
       "memory",
       "memorywam",
+      "mentioned",
       "openclaw",
       "outputs",
       "prompt",
@@ -1578,6 +1621,7 @@
       "variance"
     ],
     "emerge_insufficient": {
+      "forum|janusmesh": 1,
       "forum|publish": 2,
       "meth:sample": 1,
       "meth:supporting": 1
@@ -1590,18 +1634,16 @@
       "C-383"
     ],
     "learned_queries": [
-      "forum mandibular",
-      "forum claims",
       "forum worth",
       "memory recurs",
       "memory memory",
       "announcements+drift chatgpt",
       "announcements+drift assumptions—(i",
-      "memory factor"
+      "memory factor",
+      "forum across",
+      "forum testing"
     ],
     "hyp_seen_cycle": {
-      "C-272": 39,
-      "C-280": 40,
       "C-282": 41,
       "C-284": 42,
       "C-286": 43,
@@ -1611,7 +1653,7 @@
       "C-335": 47,
       "C-354": 48,
       "C-370": 49,
-      "C-383": 31,
+      "C-383": 51,
       "C-399": 32,
       "C-407": 33,
       "C-416": 34,
@@ -1631,9 +1673,11 @@
       "C-456": 48,
       "C-458": 49,
       "C-462": 50,
-      "C-464": 50
+      "C-464": 50,
+      "C-485": 51
     },
     "topics_domain_ok": [
+      "alignment",
       "announcements",
       "attention",
       "autoregressive",
@@ -1654,6 +1698,7 @@
       "efficient",
       "execution",
       "existing",
+      "flash-attention",
       "forum-discussion",
       "forums",
       "hybrid",
@@ -1684,6 +1729,7 @@
       "same-model",
       "sample",
       "secure-openclaw",
+      "semantic",
       "session",
       "spatial",
       "supporting",
@@ -1700,11 +1746,13 @@
     ],
     "topic_llm_seen": {
       "announcements": "invalid",
+      "attention": "valid",
       "awesome-openclaw-skills": "invalid",
       "awesome-openclaw-usecases": "invalid",
       "drift": "valid",
       "forum": "invalid",
       "memory": "valid",
+      "retrieval": "valid",
       "secure-openclaw": "invalid"
     },
     "hyp_domain_ok": [
@@ -1763,6 +1811,7 @@
       "C-456",
       "C-458",
       "C-464",
+      "C-485",
       "C-56",
       "C-57",
       "C-58"
@@ -1789,7 +1838,9 @@
       "M-26",
       "M-27",
       "M-28",
+      "M-29",
       "M-3",
+      "M-30",
       "M-4",
       "M-5",
       "M-6",
@@ -1798,35 +1849,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "steady",
-      "development": 3,
-      "degeneration": 1,
-      "active": 356,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "active": 376,
       "hypotheses": 30,
       "unsupported_hypotheses": 29,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 26,
       "supporting_links": 26,
-      "emergent_total": 275,
+      "emergent_total": 278,
       "usable_semantic_rate": 1.0,
-      "methods_total": 28,
+      "methods_total": 30,
       "method_trials_total": 0,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 3849,
-      "cycle": 50
+      "stagnation_cycles": 1,
+      "objects": 3980,
+      "cycle": 51
     },
     "vitality_prev": {
       "supports": 26,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 3849,
-      "active": 356,
+      "objects": 3980,
+      "active": 376,
       "links": 26,
-      "emergent": 275
+      "emergent": 278
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -2177,12 +2228,19 @@
         "development": 3,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 51,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 2,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 50,
+      "starved_topic": 51,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -16625,19 +16683,391 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:29+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:30+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:30+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:32+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:37+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:37+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:39+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:40+00:00",
+      "cycle": 51,
+      "kind": "fetched",
+      "summary": "wikipedia: 4 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:40+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: JanusMesh: Fast and Zero-Shot 3D Visual Illusion Generation via Cross-Space Deno",
+      "refs": {
+        "source": "arxiv:2606.20563v1",
+        "topic": "forum",
+        "new_topic": "alignment",
+        "url": "http://arxiv.org/abs/2606.20563v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:42+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: If you are asking for human attention, demonstrate human effort",
+      "refs": {
+        "source": "hackernews:48497609",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://tombedor.dev/human-attention-and-human-effort/"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:44+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: Context-Aware RL for Agentic and Multimodal LLMs",
+      "refs": {
+        "source": "huggingface:2606.17053",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.17053"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:45+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: Freeing the Law with LOCUS: A Local Ordinance Corpus for the United States",
+      "refs": {
+        "source": "huggingface:2606.19334",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.19334"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:47+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: The FID Lottery: Quantifying Hidden Randomness in Generative-Model Evaluation",
+      "refs": {
+        "source": "huggingface:2606.20536",
+        "topic": "forum",
+        "new_topic": "evaluation",
+        "url": "https://huggingface.co/papers/2606.20536"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:49+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: funNLP",
+      "refs": {
+        "source": "github:fighting41love/funNLP",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://github.com/fighting41love/funNLP"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:50+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: flash-attention",
+      "refs": {
+        "source": "github:Dao-AILab/flash-attention",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://github.com/Dao-AILab/flash-attention"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:31:52+00:00",
+      "cycle": 51,
+      "kind": "judged",
+      "summary": "relevant: Attention",
+      "refs": {
+        "source": "wikipedia:68753",
+        "topic": "memory",
+        "new_topic": null,
+        "url": "https://en.wikipedia.org/?curid=68753"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:08+00:00",
+      "cycle": 51,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from arxiv:2606.20563v1 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:14+00:00",
+      "cycle": 51,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from hackernews:48497609 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:16+00:00",
+      "cycle": 51,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: JanusMesh: Fast and Zero-Shot 3D Visual Illusion Generation via Cross- (from arxiv)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:16+00:00",
+      "cycle": 51,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: Context-Aware RL for Agentic and Multimodal LLMs (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:18+00:00",
+      "cycle": 51,
+      "kind": "improved",
+      "summary": "track_topic: alignment",
+      "refs": {
+        "claim": "C-483",
+        "topic": "alignment",
+        "source": "arxiv:2606.20563v1",
+        "url": "http://arxiv.org/abs/2606.20563v1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:20+00:00",
+      "cycle": 51,
+      "kind": "developed",
+      "summary": "C-480/C-55: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:20+00:00",
+      "cycle": 51,
+      "kind": "developed",
+      "summary": "backfill: C-34/C-349 semantic record = duplicate",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:20+00:00",
+      "cycle": 51,
+      "kind": "developed",
+      "summary": "backfill: C-351/C-5 semantic record = duplicate",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:22+00:00",
+      "cycle": 51,
+      "kind": "emerged",
+      "summary": "new topic 'semantic' precipitated from a recurrence across forum, memory",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:22+00:00",
+      "cycle": 51,
+      "kind": "emerged",
+      "summary": "'janusmesh' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:23+00:00",
+      "cycle": 51,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'denoising' (Layer 9 synthesis-eligible, SC-357) from 4 claims (C-125, C-330, C-465, C-474)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:24+00:00",
+      "cycle": 51,
+      "kind": "emerged",
+      "summary": "'mentioned' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:27+00:00",
+      "cycle": 51,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-383 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:27+00:00",
+      "cycle": 51,
+      "kind": "regulate",
+      "summary": "shed C-282: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:30+00:00",
+      "cycle": 51,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 2 · 29 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:32+00:00",
+      "cycle": 51,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:32+00:00",
+      "cycle": 51,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T17:32:32+00:00",
+      "cycle": 51,
+      "kind": "note",
+      "summary": "cycle done · 8 new · 2 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · shed 1 dead idea(s) · degenerating · spend €0.5580 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 66,
-    "granite_calls": 39,
+    "llm_calls": 70,
+    "granite_calls": 43,
     "deepseek_escalations": 25,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 66,
-    "last_call": "2026-06-19T17:24:12+00:00",
+    "live_calls": 70,
+    "last_call": "2026-06-19T17:32:30+00:00",
     "est_cost_eur": 0.108,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 39,
+      "ibm-granite/granite-4.1-8b-20260429": 43,
       "deepseek-v4-pro": 27
     },
     "empty_calls": 0,
@@ -16645,15 +17075,15 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 65,
+      "stop": 69,
       "length": 1
     },
     "panel_rounds": 3,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 0.558,
-    "accepted_claims": 148,
-    "accepted_calls": 35,
-    "accepted_call_yield": 0.53,
+    "accepted_claims": 158,
+    "accepted_calls": 37,
+    "accepted_call_yield": 0.529,
     "est_cost_per_accepted_eur": 0.0007
   },
   "commissions_done": [
@@ -16665,5 +17095,5 @@
       "note": "WikipediaFetcher hinzugefügt: liefert für barren gebliebene Topics (memory, panel, evaluation …) den Wikipedia-Intro-Text als lesbares Item - deckt #128/#126/#118/#108 ab."
     }
   ],
-  "generated": "2026-06-19T17:24:16+00:00"
+  "generated": "2026-06-19T17:32:33+00:00"
 }

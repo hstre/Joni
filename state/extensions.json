@@ -2,7 +2,8 @@
   "topics_added": [
     "retrieval",
     "distillation",
-    "caching"
+    "caching",
+    "alignment"
   ],
   "notes": [
     {
@@ -533,12 +534,15 @@
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
     "arxiv:2606.20562v1",
+    "arxiv:2606.20563v1",
+    "github:Dao-AILab/flash-attention",
     "github:ManojKumarPatnaik/Major-project-list",
     "github:affaan-m/ECC",
     "github:apache/answer",
     "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
     "github:dotnet/core",
     "github:f/prompts.chat",
+    "github:fighting41love/funNLP",
     "github:flarum/flarum",
     "github:home-assistant/core",
     "github:theDakshJaitly/mex",
@@ -552,11 +556,15 @@
     "hackernews:29154216",
     "hackernews:39161339",
     "hackernews:46220488",
+    "hackernews:48497609",
     "huggingface:2603.11273",
     "huggingface:2606.16429",
     "huggingface:2606.16827",
+    "huggingface:2606.17053",
+    "huggingface:2606.19334",
     "huggingface:2606.20381",
     "huggingface:2606.20515",
+    "huggingface:2606.20536",
     "openalex:W7117395041",
     "openalex:W7128545313",
     "openalex:W7128547584",
@@ -587,6 +595,7 @@
     "wikipedia:31217535",
     "wikipedia:41067",
     "wikipedia:5703927",
+    "wikipedia:68753",
     "wikipedia:73248112",
     "wikipedia:81089",
     "wikipedia:92893",
@@ -847,6 +856,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20764790"
+    },
+    {
+      "call_id": "joni-c51:99bb7e8f4fee",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.20563v1"
+    },
+    {
+      "call_id": "joni-c51:b00bdeefad30",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "hackernews:48497609"
     }
   ],
   "pdf_read": [
@@ -860,7 +885,8 @@
     "arxiv:2606.20557v1",
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
-    "arxiv:2606.20562v1"
+    "arxiv:2606.20562v1",
+    "arxiv:2606.20563v1"
   ],
   "pdf_urls_seen": [],
   "pdf_inbox_seen": [],
@@ -926,12 +952,14 @@
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
     "arxiv:2606.20562v1",
+    "arxiv:2606.20563v1",
     "github:ManojKumarPatnaik/Major-project-list",
     "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
     "github:dotnet/core",
     "github:flarum/flarum",
     "github:theDakshJaitly/mex",
     "huggingface:2606.16827",
+    "huggingface:2606.17053",
     "openalex:W7137578291",
     "openalex:W7164783592",
     "openalex:W7164865069",
@@ -1051,7 +1079,8 @@
     "C-393|C-397",
     "C-395|C-397",
     "C-396|C-397",
-    "C-3|C-344"
+    "C-3|C-344",
+    "C-480|C-55"
   ],
   "semantic_backfilled": [
     "C-109|C-350@bge-small-en-v1.5",
@@ -1097,6 +1126,8 @@
     "C-348|C-349@bge-small-en-v1.5",
     "C-349|C-43@bge-small-en-v1.5",
     "C-34|C-348@bge-small-en-v1.5",
+    "C-34|C-349@bge-small-en-v1.5",
+    "C-351|C-5@bge-small-en-v1.5",
     "C-356|C-367@bge-small-en-v1.5",
     "C-356|C-368@bge-small-en-v1.5",
     "C-360|C-379@bge-small-en-v1.5",
@@ -1118,7 +1149,8 @@
     "C-393|C-397@bge-small-en-v1.5",
     "C-395|C-397@bge-small-en-v1.5",
     "C-396|C-397@bge-small-en-v1.5",
-    "C-3|C-344@bge-small-en-v1.5"
+    "C-3|C-344@bge-small-en-v1.5",
+    "C-480|C-55@bge-small-en-v1.5"
   ],
   "invented": [
     "announcements|drift",
@@ -1228,6 +1260,7 @@
     "reasoning",
     "same-model",
     "sample",
+    "semantic",
     "session",
     "spatial",
     "supporting",
@@ -1286,6 +1319,7 @@
     "forum|cost",
     "forum|cross-attention",
     "forum|cross-model",
+    "forum|denoising",
     "forum|depth",
     "forum|deterministic",
     "forum|devastating",
@@ -1455,6 +1489,7 @@
     "measure",
     "memory",
     "memorywam",
+    "mentioned",
     "openclaw",
     "outputs",
     "prompt",
@@ -1472,6 +1507,7 @@
     "variance"
   ],
   "emerge_insufficient": {
+    "forum|janusmesh": 1,
     "forum|publish": 2,
     "meth:sample": 1,
     "meth:supporting": 1
@@ -1484,18 +1520,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum mandibular",
-    "forum claims",
     "forum worth",
     "memory recurs",
     "memory memory",
     "announcements+drift chatgpt",
     "announcements+drift assumptions—(i",
-    "memory factor"
+    "memory factor",
+    "forum across",
+    "forum testing"
   ],
   "hyp_seen_cycle": {
-    "C-272": 39,
-    "C-280": 40,
     "C-282": 41,
     "C-284": 42,
     "C-286": 43,
@@ -1505,7 +1539,7 @@
     "C-335": 47,
     "C-354": 48,
     "C-370": 49,
-    "C-383": 31,
+    "C-383": 51,
     "C-399": 32,
     "C-407": 33,
     "C-416": 34,
@@ -1525,9 +1559,11 @@
     "C-456": 48,
     "C-458": 49,
     "C-462": 50,
-    "C-464": 50
+    "C-464": 50,
+    "C-485": 51
   },
   "topics_domain_ok": [
+    "alignment",
     "announcements",
     "attention",
     "autoregressive",
@@ -1548,6 +1584,7 @@
     "efficient",
     "execution",
     "existing",
+    "flash-attention",
     "forum-discussion",
     "forums",
     "hybrid",
@@ -1578,6 +1615,7 @@
     "same-model",
     "sample",
     "secure-openclaw",
+    "semantic",
     "session",
     "spatial",
     "supporting",
@@ -1594,11 +1632,13 @@
   ],
   "topic_llm_seen": {
     "announcements": "invalid",
+    "attention": "valid",
     "awesome-openclaw-skills": "invalid",
     "awesome-openclaw-usecases": "invalid",
     "drift": "valid",
     "forum": "invalid",
     "memory": "valid",
+    "retrieval": "valid",
     "secure-openclaw": "invalid"
   },
   "hyp_domain_ok": [
@@ -1657,6 +1697,7 @@
     "C-456",
     "C-458",
     "C-464",
+    "C-485",
     "C-56",
     "C-57",
     "C-58"
@@ -1683,7 +1724,9 @@
     "M-26",
     "M-27",
     "M-28",
+    "M-29",
     "M-3",
+    "M-30",
     "M-4",
     "M-5",
     "M-6",
@@ -1692,35 +1735,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 3,
-    "degeneration": 1,
-    "active": 356,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 2,
+    "active": 376,
     "hypotheses": 30,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 26,
     "supporting_links": 26,
-    "emergent_total": 275,
+    "emergent_total": 278,
     "usable_semantic_rate": 1.0,
-    "methods_total": 28,
+    "methods_total": 30,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 3849,
-    "cycle": 50
+    "stagnation_cycles": 1,
+    "objects": 3980,
+    "cycle": 51
   },
   "vitality_prev": {
     "supports": 26,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3849,
-    "active": 356,
+    "objects": 3980,
+    "active": 376,
     "links": 26,
-    "emergent": 275
+    "emergent": 278
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2071,12 +2114,19 @@
       "development": 3,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 51,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 50,
+    "starved_topic": 51,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
