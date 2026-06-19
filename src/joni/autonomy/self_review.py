@@ -58,7 +58,7 @@ def _model_activity(extensions: dict) -> dict:
     no more 'no model was needed' while telemetry shows real calls."""
     return {"granite": len(extensions.get("semantic_calls", [])),
             "deepseek": len(extensions.get("escalations", [])),
-            "kevin": len(extensions.get("kevin_llm", []))}
+            "doktores": len(extensions.get("doktores_review", []))}
 
 
 def _assessments(cs, *, days: int, spend: float, topics_added: int,
@@ -220,13 +220,13 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
                        f"recurring patterns rather than from any source: "
                        f"{', '.join(emergent_topics[:5])}.")
     act = _model_activity(extensions)
-    total = act["granite"] + act["deepseek"] + act["kevin"]
+    total = act["granite"] + act["deepseek"] + act["doktores"]
     if total:
         learned.append(
             f"The deterministic core cost €{spend:.4f}; on top of it the semantic layer made "
             f"model calls ({act['granite']} Granite, {act['deepseek']} DeepSeek escalation(s), "
-            f"{act['kevin']} Kevin) - logged in the telemetry, not free. I report this from the "
-            "same source as the dashboard, so the two never disagree.")
+            f"{act['doktores']} Doktores-Review(s)) - logged in the telemetry, not free. I report "
+            "this from the same source as the dashboard, so the two never disagree.")
     else:
         learned.append(f"All of this hour cost €{spend:.4f}; the semantic layer made no model "
                        "call this hour - it is opt-in and fired only when warranted.")
@@ -243,7 +243,7 @@ def _delta_section(snap: dict, act: dict, extensions: dict) -> dict | None:
            "open_conflicts": snap.get("open_conflicts", 0),
            "research_topics": snap.get("research_topics", 0),
            "usable": (eu.get("rate") if isinstance(eu, dict) else None),
-           "model_calls": act["granite"] + act["deepseek"] + act["kevin"]}
+           "model_calls": act["granite"] + act["deepseek"] + act["doktores"]}
     extensions["last_review_snapshot"] = cur
     if not prev:
         return None
@@ -273,7 +273,7 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     topics_added = len(extensions.get("topics_added", []))
     act = _model_activity(extensions)
     assessments = _assessments(cs, days=days, spend=spend, topics_added=topics_added,
-                               model_calls=act["granite"] + act["deepseek"] + act["kevin"])
+                               model_calls=act["granite"] + act["deepseek"] + act["doktores"])
     # Joni records, once (sm_seen dedupes), that he understands what an Auftrag to Claude IS:
     # in the first place a program change to himself - to his own non-core modules.
     assessments = [*assessments, {

@@ -28,6 +28,7 @@ from . import (
     core_state,
     desi_semantics,
     develop,
+    doktores,
     emerge,
     escalation,
     experts,
@@ -35,7 +36,6 @@ from . import (
     homeostasis,
     humans,
     invent,
-    kevin_llm,
     layer9_view,
     methods,
     model_call,
@@ -272,19 +272,13 @@ def one_cycle() -> dict:
         proto.record(cycle, "note", f"DESi solution-space gaps (top {min(3, len(islands))} of "
                                     f"{len(islands)}): {top}")
 
-    # 4c-kevin. Kevin's creative arm (opt-in, cadence-spaced): his own deepseek-v4-pro profile.
-    #     STEERED by DESi - he aims his divergence at the highest-priority solution-space gap
-    #     (a real target + the missing thinking-move) first, falling back to generic inputs.
-    #     Candidate through the gate, captured. Distinct from his deterministic method trials above.
-    kevin_proposed = kevin_llm.propose(cs, extensions, proto, cycle,
-                                       budget=budget, runs_per_week=runs_per_week())
-
-    # 4c-kevin-orch. Kevin's REAL orchestrator (the Dirigent): DESi predicts the solution-space
-    #     islands, the wild brother explores them, Layer-9 methods discipline, epistemic selection
-    #     keeps the coherent/testable ones - selected candidates enter as non-authoritative
-    #     hypotheses. Runs ONLY with a real Kevin LLM client (KEVIN_USE_REAL_LLM=1); else a no-op.
-    from . import kevin_creative
-    kevin_creative.run(cs, extensions, proto, cycle, budget=budget)
+    # 4c-doktores. Doktores' self-improvement review (replaces Kevin's creative arm): it reads the
+    #     papers Joni just fetched and the OpenClaw extensions on offer and asks, per source,
+    #     whether it could concretely improve one of Joni's OWN non-core modules without the core.
+    #     A grounded yes becomes an Auftrag an Claude (joni-auftrag issue -> human PR). Uses Joni's
+    #     own captured joni-hard model, cadence-spaced and budget-metered; no-op when disabled.
+    doktores_new = doktores.review(cs, extensions, proto, cycle, items=new_items,
+                                   budget=budget, runs_per_week=runs_per_week())
 
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
@@ -319,8 +313,9 @@ def one_cycle() -> dict:
     # 4h. Aufträge an Claude: when Joni's own state shows a non-core capability gap the rules
     #     cannot close (semantic channel blind, conflicts unqualifiable, a topic starved of
     #     reading, development stalled), he commissions an *extension* - never the protected
-    #     core, never self-applied - for a human-gated Claude session to implement.
-    commissions_new = commission.assess(cs, extensions, proto, cycle)
+    #     core, never self-applied - for a human-gated Claude session to implement. Doktores' own
+    #     orders (from the 4c-doktores literature/tool review) are filed through the same channel.
+    commissions_new = commission.assess(cs, extensions, proto, cycle) + doktores_new
 
     # 4i. Humans & forums: Joni may talk to people and register on forums - but a person is a
     #     SOURCE, not an authority. Replies come in through cs.hear (candidate, conflict-checked,
@@ -401,7 +396,8 @@ def one_cycle() -> dict:
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
             "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io,
             "research": research, "projected": projected, "escalated": escalated,
-            "kevin_proposed": kevin_proposed}
+            "doktores": {"orders": len(doktores_new),
+                         "reviewed": len(extensions.get("doktores_review", []))}}
 
 
 def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:

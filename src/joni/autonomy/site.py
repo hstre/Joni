@@ -149,44 +149,25 @@ def build(data: dict) -> str:
                       "Zyklus brauchte kein Modell. Sobald Granite/DeepSeek feuern, steht es "
                       "hier.</p>")
 
-    # Kevin: what his far-analogy arm actually proposed, and whether the panel found it sensible.
-    kevin_log = ext.get("kevin_llm", []) if isinstance(ext.get("kevin_llm"), list) else []
-    panel_q = panel.get("question", "") if isinstance(panel, dict) else ""
-    panel_verdict = ""
-    if isinstance(panel.get("phase3"), dict) and panel.get("phase3"):
-        n, t = next(iter(panel["phase3"].items()))
-        panel_verdict = f"{esc(n)}: {esc(t[:200])}"
-    kevin_items = []
-    for entry in reversed(kevin_log[-6:]):
-        # the triggering INPUT is shown: low input hurdle != low governance.
-        itype = esc(entry.get("input_type", entry.get("trigger", "—")))
-        trig = esc(entry.get("trigger", " × ".join(entry.get("topics", []))))
-        sc = entry.get("source_count", "?")
-        coh = esc(entry.get("internal_coherence", "?"))
-        ceil = esc(entry.get("confirmation_ceiling", "?"))
-        head = (f"<div><span class=chip>{itype}</span> <span class=src>{trig} · "
-                f"Quellen {esc(sc)} · {coh} · ceiling {ceil} · "
-                f"Zyklus {esc(entry.get('cycle',''))}</span></div>")
-        if entry.get("failed"):           # a failed creative call - shown, never a silent zero
-            kevin_items.append(
-                f"<li>{head}<div class=note style='color:var(--warn)'>⚠ kein Vorschlag &mdash; "
-                f"{esc(entry.get('failed',''))} "
-                f"(content_len={esc(entry.get('content_len',0))})</div></li>")
-            continue
-        for p in entry.get("proposals", []):
-            txt = p.get("text", "")
-            assessed = bool(txt) and txt[:48] in panel_q
-            pending = ("<div class=note>nicht-autoritativer Kandidat (origin=kevin, "
-                       "requires_review) &mdash; Bewertung der Expertenrunde steht noch aus; "
-                       "Layer 9 entscheidet über Ablehnung / Quarantäne / Test / Promotion.</div>")
-            verdict = (f"<div class=note><b>Expertenrunde:</b> {panel_verdict} "
-                       "<span class=src>(berät; Joni entscheidet)</span></div>"
-                       if assessed and panel_verdict else pending)
-            kevin_items.append(f"<li>{head}<div class=asrow>{esc(txt)}</div>{verdict}</li>")
-    kevin_props = "".join(kevin_items) or (
-        "<li class=empty>Kevin hat noch keine Fernanalogie vorgeschlagen &mdash; er tagt nach "
-        "Kadenz und nur auf Themen mit echtem Material (nicht auf <code>unsorted</code> oder "
-        "dünnen Wortclustern).</li>")
+    # Doktores: which papers / OpenClaw extensions it reviewed for a NON-CORE self-improvement, and
+    # which became an Auftrag an Claude. (Replaces Kevin's old far-analogy display.)
+    dok_log = ext.get("doktores_review", []) if isinstance(ext.get("doktores_review"), list) else []
+    dok_items = []
+    for entry in reversed(dok_log[-8:]):
+        src = esc(entry.get("source", "?"))
+        ttl = esc(entry.get("title", "")) or "—"
+        url = esc(entry.get("url", "") or "#")
+        if entry.get("applicable"):
+            tag = (f"<span class=chip style='background:var(--good);color:#06210f'>✓ Auftrag → "
+                   f"{esc(entry.get('component_key',''))}</span>")
+        else:
+            tag = "<span class=chip>kein non-core Fit</span>"
+        dok_items.append(
+            f"<li><div>{tag} <span class=src>{src} · Zyklus {esc(entry.get('cycle',''))}</span>"
+            f"</div><div class=asrow><a href='{url}'>{ttl}</a></div></li>")
+    doktores_block = "".join(dok_items) or (
+        "<li class=empty>Doktores hat noch keine Quelle geprüft &mdash; er tagt nach Kadenz und "
+        "nur auf echten Papern / OpenClaw-Erweiterungen.</li>")
     # Make a silent install failure visible: kevin absent -> ALL method-trialing vanishes.
     k_installed = bool(ext.get("kevin_installed", True))
     k_real = bool(ext.get("kevin_real_trial", False))
@@ -216,11 +197,9 @@ def build(data: dict) -> str:
         "(frozen task set · Baseline vs. "
         "Intervention · Messgröße · Wiederholungen · Negativkontrolle · Layer-9-Proposal mit "
         "Provenienz) ist der vorgesehene Ersatz.</div>"
-        "<h3 style='margin:10px 0 4px'>Fernanalogien (kreativer Arm, deepseek-v4-pro)</h3>"
-        f"<ul>{kevin_props}</ul>"
-        "<div class=note>Kevin schlägt vor (Cross-Domain-Hypothesen &amp; Methoden) und probiert "
-        "Methoden durch &mdash; er <b>entscheidet nie</b>. Ob ein Vorschlag taugt, beurteilt die "
-        "Expertenrunde; <b>Joni</b> entscheidet, was er aufnimmt.</div>")
+        "<div class=note>Kevin <b>probiert Methoden durch</b> (Trials) &mdash; er entscheidet nie. "
+        "Der kreative &bdquo;was könnte Joni besser machen&ldquo;-Arm ist jetzt <b>Doktores</b> "
+        "(eigene Karte oben).</div>")
 
     # The REAL method-trial (measured, provenance-bearing) - explicitly distinct from the synthetic
     # simulation above. The decision rests on the predefined metric, never on a model's opinion.
@@ -463,7 +442,15 @@ what is uncertain, what contradicts, and what changed.</p>
     <ul>{done_html}</ul>
   </div>
   <div class="card full">
-    <h2>Kevin — was er vorschlägt &amp; ob es taugt</h2>
+    <h2>Doktores — Selbstverbesserung (Literatur/OpenClaw → Aufträge an Claude)</h2>
+    <p class=note>Liest die gefetchten Paper und OpenClaw-Erweiterungen und prüft je Quelle, ob sie
+      eines von Jonis <b>non-core</b>-Modulen besser machen könnte, <b>ohne den Kern zu berühren</b>
+      &mdash; ein begründetes Ja wird ein Auftrag (joni-auftrag-Issue → menschlicher PR). Ersetzt
+      Kevins kreativen Arm; Joni entscheidet, ein Mensch setzt um.</p>
+    <ul>{doktores_block}</ul>
+  </div>
+  <div class="card full">
+    <h2>Kevin — Methoden-Trials (gemessen; entscheidet nie)</h2>
     {kevin_block}
   </div>
   <div class="card full">
