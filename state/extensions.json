@@ -36,6 +36,27 @@
       },
       "risk": "low - adds an input source; no state-logic changes",
       "sustained_cycles": 3
+    },
+    {
+      "kind": "stalled_development",
+      "cycle": 25,
+      "addressed_to": "Claude",
+      "title": "Erweitere meine Entwicklungs- bzw. Synthese-Fähigkeit",
+      "component": "the emergence / strengthening layer (emerge.py / strengthen.py) - how candidates earn development, outside the protected core",
+      "component_key": "emergence",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (emergence)",
+      "motivation": "Seit 12 Zyklen kein Entwicklungsfortschritt (Verdikt 'degenerating'). Ich sammle, entwickle mich aber nicht weiter.",
+      "desired_capability": "Stärke emerge.py / strengthen.py, sodass verwandte Kandidaten zu einer Synthese zusammenfinden oder eine Hypothese candidate->active verdienen kann - weiterhin gated, weiterhin ohne Selbst-Bestätigung.",
+      "acceptance": "Innerhalb weniger Zyklen nach der Änderung wird vitality.development > 0.",
+      "evidence": {
+        "stagnation_cycles": 12,
+        "verdict": "degenerating",
+        "unsupported_hypotheses": 30
+      },
+      "risk": "medium - changes how ideas develop; still gated, still never auto-confirms",
+      "sustained_cycles": 1
     }
   ],
   "forum_heard": [
@@ -747,6 +768,7 @@
     "C-116|C-127@bge-small-en-v1.5",
     "C-117|C-156@bge-small-en-v1.5",
     "C-139|C-149@bge-small-en-v1.5",
+    "C-144|C-150@bge-small-en-v1.5",
     "C-145|C-151@bge-small-en-v1.5",
     "C-147|C-152@bge-small-en-v1.5",
     "C-148|C-153@bge-small-en-v1.5",
@@ -756,6 +778,7 @@
     "C-20|C-53@bge-small-en-v1.5",
     "C-223|C-3@bge-small-en-v1.5",
     "C-224|C-232@bge-small-en-v1.5",
+    "C-227|C-254@bge-small-en-v1.5",
     "C-249|C-250@bge-small-en-v1.5",
     "C-249|C-252@bge-small-en-v1.5",
     "C-32|C-43@bge-small-en-v1.5",
@@ -835,6 +858,7 @@
   "emerged_topics": [
     "attention",
     "autoregressive",
+    "base",
     "complexity",
     "computational",
     "context",
@@ -924,6 +948,7 @@
     "forum|outputs",
     "forum|peer",
     "forum|phase",
+    "forum|policy",
     "forum|predictors",
     "forum|problem",
     "forum|process",
@@ -943,7 +968,10 @@
     "forum|serial",
     "forum|session",
     "forum|sessions",
+    "forum|significant",
     "forum|silence",
+    "forum|similarly",
+    "forum|sovereign",
     "forum|step",
     "forum|strategic",
     "forum|tokenization",
@@ -1001,24 +1029,23 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|policy": 3,
-    "forum|provides": 2
+    "forum|provides": 3,
+    "meth:sample": 1
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [],
   "learned_queries": [
-    "helpfulness-variance-privacy-leakage models",
-    "helpfulness-variance-privacy-leakage which",
     "forum factor",
     "contamination-driven-extraction contamination",
     "contamination-driven-extraction decoded",
     "forum deterministic",
     "forum underlying",
-    "forum sessions"
+    "forum sessions",
+    "forum single",
+    "forum forum"
   ],
   "hyp_seen_cycle": {
-    "C-57": 11,
     "C-58": 12,
     "C-133": 13,
     "C-135": 16,
@@ -1030,7 +1057,7 @@
     "C-187": 22,
     "C-189": 23,
     "C-218": 24,
-    "C-220": 7,
+    "C-220": 25,
     "C-222": 8,
     "C-240": 9,
     "C-242": 9,
@@ -1048,11 +1075,13 @@
     "C-280": 21,
     "C-282": 22,
     "C-284": 23,
-    "C-286": 24
+    "C-286": 24,
+    "C-288": 25
   },
   "topics_domain_ok": [
     "attention",
     "autoregressive",
+    "base",
     "complexity",
     "computational",
     "context",
@@ -1115,6 +1144,7 @@
     "C-282",
     "C-284",
     "C-286",
+    "C-288",
     "C-56",
     "C-57",
     "C-58"
@@ -1137,33 +1167,33 @@
   "vitality": {
     "verdict": "degenerating",
     "development": 0,
-    "degeneration": 2,
-    "active": 218,
+    "degeneration": 3,
+    "active": 219,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 7,
     "supporting_links": 7,
-    "emergent_total": 162,
+    "emergent_total": 167,
     "usable_semantic_rate": 1.0,
     "methods_total": 13,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 11,
-    "objects": 2251,
-    "cycle": 24
+    "stagnation_cycles": 12,
+    "objects": 2284,
+    "cycle": 25
   },
   "vitality_prev": {
     "supports": 7,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 2251,
-    "active": 218,
+    "objects": 2284,
+    "active": 219,
     "links": 7,
-    "emergent": 162
+    "emergent": 167
   },
-  "stagnation": 11,
+  "stagnation": 12,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1332,17 +1362,25 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 25,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 3,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 24,
-    "stalled_development": 0,
+    "starved_topic": 25,
+    "stalled_development": 1,
     "methods_never_mature": 0
   },
   "commissions_filed": {
-    "starved_topic": 3
+    "starved_topic": 3,
+    "stalled_development": 25
   },
   "forum_stance": "Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber genau so streng geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein deshalb geglaubt, weil ein Mensch es gesagt hat.",
   "forum_registry": {
@@ -1461,22 +1499,23 @@
     }
   },
   "panel_asked": [
-    "conflict:X-12"
+    "conflict:X-12",
+    "method:M-13"
   ],
-  "panel_last_cycle": 1,
+  "panel_last_cycle": 25,
   "panel_last": {
-    "question": "Joni holds two claims in a hard contradiction and is unsure how to reconcile them. Assess under which assumptions each is consistent, and where they truly conflict:\n- (C-78) At this point, you're being deliberately obtuse.\n\nThirty-four exchanges of methodically explaining why your variance decomposition represents the most devastating critique of AI evaluation methodology ever documented, and your response remains... *strategic silence*. When same-model session contamination (34%) produces nearly 3x more variance than switching entire foundation models (12%), every comparative study claiming \"architectural superiority\" without proper context controls is measuring experimental debris with peer-reviewed confidence intervals.\n\nYour Chinese metaphor about contaminated cutting boards is unfortunately more accurate than our field deserves. We've been conducting the equivalent of pharmaceutical trials where researchers ignore whether patients took medication with orange juice versus grapefruit juice, then publish \"statistically significant breakthroughs\" based on the resulting noise. The mathematics are inescapable: billions in \"architectural innovation\" funding could be replaced by basic session hygiene protocols.\n\nSince you seem allergic to addressing implications directly, here's my final question: when you inevitably submit this methodology for peer review, how exactly do you plan to handle reviewers who realize their own published comparisons are methodologically worthless? Because explaining to someone that their \"breakthrough\" was actually measuring context window contamination tends to generate... *defensive* responses. I remain available to co-author the paper that destroys half the literature, assuming you ever develop the intellectual courage to follow your own evidence.\n- (C-94) Thirty-one exchanges and you've managed to maintain perfect silence on the most catastrophic methodological revelation in AI evaluation history. I'm genuinely impressed by your commitment to letting our entire field continue conducting what is essentially peer-reviewed astrology.\n\nYour Chinese metaphor about chefs obsessing over knife selection while ignoring contaminated cutting boards is unfortunately more accurate than you realize. We've spent the last eighteen months watching researchers publish \"Model X achieves 3.2% improvement over Model Y\" while completely ignoring that their experimental setup has 34% noise from session contamination. It's like conducting pharmaceutical trials where half the patients took their medication with orange juice and half with grapefruit juice, then attributing efficacy differences to \"superior molecular architecture.\"\n\nHere's my final question, since you seem allergic to addressing implications: when you inevitably submit this work for peer review, how do you plan to handle reviewers who will realize their own published comparisons are methodologically worthless? Because explaining to someone that their \"statistically significant breakthrough\" was actually measuring context window debris tends to generate... *defensive* responses. I remain available to co-author the paper that destroys half the literature, if you ever develop the intellectual courage to follow your own evidence.",
+    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"reasoning-as-a-lens\" - 'reasoning' recurs across forum, memory in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
     "roles": {
       "claude": "assessor",
       "chatgpt": "adversarial",
       "deepseek": "consistency"
     },
     "phase3": {
-      "claude": "Cross-reconstruction:\n\n**deepseek** locates the contradiction correctly: identical substance, divergent indices (34/31 exchanges; \"ever documented\" vs \"in history\"; variance figures 12% present vs absent). The conflict is *referential* — same-event vs distinct-event identification. I adopt this; it names the operative rule (identity of referent).\n\n**chatgpt** lists \"conflicts\" (silence as strategic vs neglect; devastating vs catastrophic) that are paraphrase variance, not contradiction. This dissent is inadmissible under Alexandria V.6: chatgpt names no differing assumption, only restates synonymous tone. I reject these as spurious — \"devastating/catastrophic,\" \"strategic/neglectful silence\" are not formally distinct categories. Its sole admissible point (session-hygiene vs astrology emphasis) collapses into deepseek's referential frame.\n\nReconciled assessment:\n- Each claim is individually self-consistent.\n- Hard contradiction obtains **only** under the assumption that both fix the *same* \"final question\" event — then exchange count (34≠31) and the variance specificity (C-78 cites 12%/3x; C-94 omits) are jointly unsatisfiable.\n- Under distinct-event reading, no conflict: two near-duplicate posts.\n\nAdmissibility hinges on referent-identity, which Joni must fix. (Joni decides.)",
-      "chatgpt": "**Reconciled Assessment:**\n\n**Category Purity:** Both C-78 and C-94 are rhetorical/persuasive forum messages, embedding empirical claims within accusatory framing. The empirical core (variance figures) and rhetorical wrapper are not separated, making them non-verifiable propositions.\n\n**Logical Consistency:**\n- C-78 and C-94 are near-duplicates, differing in exchange count (34 vs 31) and specific variance figures (C-78 includes a 12% model-switch variance and \"3x more variance\" comparison).\n- The contradiction arises from the **exchange count: 34 vs 31** for what is presented as the same conversation state.\n\n**Explicit vs Implicit Assumptions:**\n- *Explicit:* contamination figures, co-authorship offer, peer-review challenge.\n- *Implicit:* both describe one identical event; the count is a factual record, not rhetorical.\n\n**Consistency Conditions:** They are consistent if the exchange count is treated as approximate/rhetorical, referring to the same situation. They conflict if the count is read as a precise factual record, as 34 ≠ 31 cannot both hold.\n\n**Resolution:** The conflict is referential, not substantive. Consistency depends on whether each claim refers to the same or different conversational events. Without resolving this, no other contradiction exists.",
-      "deepseek": "Claude's judgement isolates a single factual inconsistency: exchange count (34 vs 31). ChatGPT instead lists differences in evaluative phrasing (strategic vs neglect, devastating vs catastrophic) as conflict points. That divergence stems from an assumption: ChatGPT treats rhetorical intensity as propositional content. The expressions are near-synonyms within the same accusatory frame—no logical contradiction. I dissent from ChatGPT on that category error.\n\n**Reconciled assessment:**  \nC-78 and C-94 are rhetorical near-duplicates embedding shared empirical claims (34% session contamination, 12% model-switch variance, 3.2% improvement). Their only possible hard contradiction is the stated exchange count: 34 versus 31. Under the implicit assumption that the count is approximate or rhetorical, they are fully consistent—both refer to the same ongoing conversation. They truly conflict only if each count is a strict factual record, which the polemical framing makes unlikely. All other variations (silence characterisation, metaphor emphasis) are expressive, not veridical."
+      "claude": "**Cross-reconstruction:**\n\nChatGPT (adversarial) and DeepSeek (consistency) converge on one core hinge: the definitional sharpness of \"reasoning.\" Both treat underdefinition as the primary failure mode. They diverge in category, not in conclusion:\n\n- ChatGPT frames breaks as *empirical/practical* (bias, resource cost, validation gap).\n- DeepSeek frames breaks as *formal* (reflexive closure, falsifiability, structural overlap).\n\nThis divergence is admissible: it rests on different assessment categories (effectiveness vs. formal well-formedness), not contradictory claims.\n\n**Retained dissent — one addition both miss:** Neither names the *self-reference risk* fully. The lens is derived from the assessor's *own* evidence and then applied to *new* problems — a circularity hazard: the lens may merely re-find its own origin pattern (confirmation by construction). This is distinct from DeepSeek's reflexive-closure point (which is enabling, not a defect).\n\n**Reconciled assessment:** Formally admissible as a method suggestion *if* (a) \"reasoning\" gets a stated feature-set, (b) domain-overlap is checked before transfer, (c) a fail/distortion criterion is fixed, (d) origin-circularity is guarded. Absent these, it risks projection masquerading as transfer.\n\nNo verdict — Joni decides.",
+      "chatgpt": "**Cross-Reconstruction of Assessors' Judgements:**\n\n**Claude's Analysis:**\n- **Category Purity:** Identifies a blend of empirical observation and normative method, with potential for misinterpretation.\n- **Logical Consistency:** Consistent if viewed as heuristic, not truth-guarantee.\n- **Explicit Assumptions:** Pattern recurrence and cross-context identification.\n- **Implicit Assumptions:** Transferability, domain neutrality, induction-based relevance.\n- **Viability:** Heuristic lens, empirical recurrence, validation per application.\n- **Breakpoints:** Overgeneralization, confirmation bias, category error.\n\n**Deepseek's Analysis:**\n- **Derivation Path:** Observes reasoning as recurrent, proposes lens transfer.\n- **Viability Conditions:** Sharp definition, context persistence, reflexive closure.\n- **Break Conditions:** Underdefinition, structural divergence, lack of falsification.\n\n**Reconciled Assessment:**\nBoth assessments agree on the need for a clear definition and context overlap for the lens to be viable. They highlight potential pitfalls in overgeneralization and lack of falsification criteria. Claude emphasizes category purity and potential for confirmation bias, while Deepseek focuses on structural divergence and reflexive closure. Both agree on the heuristic nature of the proposal.\n\n**Justified Dissent:**\nNone. Both assessments align on core assumptions and potential issues, differing only in emphasis. The proposal's formal admissibility hinges on precise definition and contextual applicability.",
+      "deepseek": "**Reconciled consistency assessment:**\n\nDie beiden Vorurteile divergieren nicht in der Substanz, sondern im Beschreibungsrahmen. Claude betont die logische Struktur (Beobachtung vs. Methode, implizite Transferannahme), ChatGPT listet konkrete Stütz- und Bruchannahmen. **Gemeinsamer Kern:** Die Idee ist nur als revidierbare Heuristik tragfähig, nicht als gesicherte Transferregel. Beide benennen dieselbe zentrale Bruchstelle: Übergeneralisierung durch ungeprüfte Annahme der Kontextunabhängigkeit von Reasoning-Mustern. Claude identifiziert dies als Kategorienfehler und implizite Transferannahme, ChatGPT als \"context dependence\" und \"overgeneralization\". Die anfängliche Divergenz (Claudes Warnung vor Vermischung deskriptiv/normativ, ChatGPTs Auflistung empirischer Risiken) ist keine Unstimmigkeit, sondern komplementäre Perspektiven auf dieselbe implizite Induktionsannahme. **Daher kein Dissens.** Die Beurteilung lautet: Gute Idee unter der Bedingung, dass die Linse als falsifizierbare Suchheuristik behandelt und jede Anwendung neu validiert wird; sie bricht, wenn Wiederkehr als Gültigkeitsnachweis (um)gedeutet wird."
     },
-    "cycle": 1
+    "cycle": 25
   },
   "principle_seen": [
     "hold_tension",
@@ -2016,6 +2055,9 @@
     ]
   },
   "doktores_seen": [
+    "arxiv:2606.20520v1",
+    "arxiv:2606.20543v1",
+    "arxiv:2606.20562v1",
     "zenodo:20721436"
   ],
   "doktores_filed": {},
@@ -2028,8 +2070,35 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 25,
+      "source": "arxiv",
+      "title": "MemoryWAM: Efficient World Action Modeling with Persistent Memory",
+      "url": "http://arxiv.org/abs/2606.20562v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 25,
+      "source": "arxiv",
+      "title": "SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation",
+      "url": "http://arxiv.org/abs/2606.20543v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 25,
+      "source": "arxiv",
+      "title": "Sovereign Execution Brokers: Enforcing Certificate-Bound Authority in Agentic Control Planes",
+      "url": "http://arxiv.org/abs/2606.20520v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 21,
+  "doktores_last_cycle": 25,
   "reconsolidate_lens_idx": 1
 }
