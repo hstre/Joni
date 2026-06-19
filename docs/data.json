@@ -9,6 +9,7 @@
       "deterministic",
       "distillation",
       "execution",
+      "existing",
       "inference",
       "information",
       "language",
@@ -17,10 +18,10 @@
       "routing",
       "variance"
     ],
-    "claims_total": 240,
-    "claims_active": 190,
+    "claims_total": 242,
+    "claims_active": 191,
     "memory": 0,
-    "ledger": 1276,
+    "ledger": 1302,
     "open_conflicts": 34,
     "methods": 10,
     "method_trials": 0,
@@ -28,37 +29,32 @@
     "preferences": 1,
     "evidence_links": 6,
     "self_model": 4,
-    "hypotheses": 16,
+    "hypotheses": 17,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.911,
-      "n": 190,
+      "rate": 0.906,
+      "n": 191,
       "flags": {
-        "correctly_typed": 190,
+        "correctly_typed": 191,
         "source_anchored": 177,
-        "non_duplicate": 186,
-        "topic_valid": 190,
-        "scope_valid": 190,
+        "non_duplicate": 187,
+        "topic_valid": 191,
+        "scope_valid": 191,
         "provenance_complete": 177
       }
     },
     "routing_engine": "DESi",
     "days_running": 0,
-    "last_route": {
-      "model": "meta-llama/llama-3.1-8b-instruct",
-      "cost_usd": 3e-05,
-      "reason": "Pareto-cheapest at score >= 0.5",
-      "task_class": "scientific_claim"
-    }
+    "last_route": null
   },
   "budget": {
     "spent_eur": 0.178,
     "cap_eur": 20.0,
-    "runs": 8
+    "runs": 9
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 8,
+    "runs": 9,
     "retired": false
   },
   "extensions": {
@@ -874,6 +870,7 @@
       "context",
       "deterministic",
       "execution",
+      "existing",
       "inference",
       "information",
       "language",
@@ -881,13 +878,16 @@
     ],
     "synthesized": [
       "forum|autoregressive",
+      "forum|bottleneck",
       "forum|code",
       "forum|complexity",
+      "forum|computational",
       "forum|contamination",
       "forum|context",
       "forum|cross-model",
       "forum|depth",
       "forum|deterministic",
+      "forum|diffusion",
       "forum|diffusiongemma",
       "forum|drift",
       "forum|error",
@@ -896,6 +896,8 @@
       "forum|gemma",
       "forum|generation",
       "forum|identical",
+      "forum|implications",
+      "forum|inference",
       "forum|language",
       "forum|multicalibration",
       "forum|optimal",
@@ -929,23 +931,23 @@
       "variance"
     ],
     "emerge_insufficient": {
-      "forum|downstream": 2,
-      "memory|information": 1,
-      "memory|semantic": 1,
-      "meth:memory": 1
+      "forum|downstream": 3,
+      "memory|information": 2,
+      "memory|semantic": 2,
+      "meth:memory": 2
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
     "hyp_hollow": [],
     "learned_queries": [
-      "contamination-driven-extraction accuracy",
-      "forum across",
       "forum recurs",
       "forum claims",
       "forum worth",
       "forum testing",
       "forum reinterpreted",
-      "forum mechanism"
+      "forum mechanism",
+      "forum forum",
+      "forum single"
     ],
     "hyp_seen_cycle": {
       "C-56": 1,
@@ -963,7 +965,8 @@
       "C-218": 7,
       "C-220": 7,
       "C-222": 8,
-      "C-237": 8
+      "C-240": 9,
+      "C-242": 9
     },
     "topics_domain_ok": [
       "context",
@@ -971,6 +974,7 @@
       "distillation",
       "drift",
       "execution",
+      "existing",
       "inference",
       "information",
       "language",
@@ -998,6 +1002,7 @@
       "C-220",
       "C-222",
       "C-240",
+      "C-242",
       "C-56",
       "C-57",
       "C-58"
@@ -1015,35 +1020,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "developing",
-      "development": 6,
-      "degeneration": 0,
-      "active": 190,
-      "hypotheses": 16,
-      "unsupported_hypotheses": 16,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "active": 191,
+      "hypotheses": 17,
+      "unsupported_hypotheses": 17,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 6,
       "supporting_links": 6,
-      "emergent_total": 52,
+      "emergent_total": 58,
       "usable_semantic_rate": 1.0,
       "methods_total": 10,
       "method_trials_total": 0,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 1650,
-      "cycle": 8
+      "stagnation_cycles": 1,
+      "objects": 1687,
+      "cycle": 9
     },
     "vitality_prev": {
       "supports": 6,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 1650,
-      "active": 190,
+      "objects": 1687,
+      "active": 191,
       "links": 6,
-      "emergent": 52
+      "emergent": 58
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -1100,12 +1105,19 @@
         "development": 6,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 9,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 8,
+      "starved_topic": 9,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -5421,6 +5433,213 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:14+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:15+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:15+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:16+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:20+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:21+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:22+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:23+00:00",
+      "cycle": 9,
+      "kind": "fetched",
+      "summary": "wikipedia: 4 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:26+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "new topic 'existing' precipitated from a recurrence across forum, memory",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:26+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'downstream' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:26+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'information' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:26+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'semantic' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:27+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'bottleneck' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:27+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'computational' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:27+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'diffusion' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:28+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'implications' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:28+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'inference' (Layer 9 synthesis-eligible, SC-79) from 4 claims (C-158, C-195, C-196, C-209)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:28+00:00",
+      "cycle": 9,
+      "kind": "emerged",
+      "summary": "'memory' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:32+00:00",
+      "cycle": 9,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 17 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:33+00:00",
+      "cycle": 9,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T12:57:33+00:00",
+      "cycle": 9,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · degenerating · spend €0.1780 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
@@ -5460,5 +5679,5 @@
       "note": "WikipediaFetcher hinzugefügt: liefert für barren gebliebene Topics (memory, panel, evaluation …) den Wikipedia-Intro-Text als lesbares Item - deckt #128/#126/#118/#108 ab."
     }
   ],
-  "generated": "2026-06-19T12:53:28+00:00"
+  "generated": "2026-06-19T12:57:33+00:00"
 }
