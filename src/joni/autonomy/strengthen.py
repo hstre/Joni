@@ -24,11 +24,57 @@ Bounded per cycle and deduped, so it works through the hypotheses over time.
 
 from __future__ import annotations
 
+import os
+
 from desi_layer9 import SemanticDecision
 from desi_layer9.semantics import adapter, lexical_overlap
 from desi_layer9.semantics.ports import NullSemanticLayer
 
 from ..conflict import _content
+
+# #132 - when the deterministic Semantic Layer returns 'insufficient' it decides nothing, so ideas
+# never earn support and development stays at 0 (the 'degenerating' stall). A gated LLM relation
+# judge renders the decision in that case, so an idea can EARN support from REAL evidence (the
+# claim's own source/provenance, not the LLM's say-so). Promotion still needs >=2 INDEPENDENT
+# supports and a human still confirms - the LLM only judges the relation, never auto-activates.
+_REL_SYS = (
+    "You judge the logical relation between an agent's working HYPOTHESIS and an existing CLAIM. "
+    "Answer with exactly ONE word: SUPPORTS (the claim is evidence FOR the hypothesis), "
+    "CONTRADICTS "
+    "(evidence AGAINST it), or UNRELATED. Judge meaning, be strict; if unsure, answer UNRELATED."
+)
+
+
+def _llm_judge_budget() -> int:
+    """How many LLM relation judgments strengthen may make this cycle (0 = off). Opt-out via
+    JONI_STRENGTHEN_LLM=0; gated like every model arm (needs the semantic-proposals layer)."""
+    from . import projection
+    if not (projection.enabled() and os.getenv("JONI_STRENGTHEN_LLM", "1") != "0"):
+        return 0
+    return max(0, int(os.getenv("JONI_STRENGTHEN_LLM_MAX", "2")))
+
+
+def _llm_relation(h_text: str, c_text: str, *, budget, runs_per_week: int,
+                  cycle: int) -> str | None:
+    """'supports' | 'contradicts' | 'unrelated' | None (model/budget unavailable). Captured."""
+    from . import model_call, model_profile
+    from .config import paths
+    out, _cap = model_call.call(
+        model_profile.profile("joni-hard"), _REL_SYS,
+        f"HYPOTHESIS: {h_text}\nCLAIM: {c_text}\n\nRelation? SUPPORTS / CONTRADICTS / UNRELATED.",
+        run_id=f"joni-c{cycle}-strrel", store_dir=paths().model_calls,
+        escalation_reason="strengthen-relation-judge", budget=budget, runs_per_week=runs_per_week)
+    if not out:
+        return None
+    t = out.strip().upper()
+    if "SUPPORT" in t:
+        return "supports"
+    if "CONTRADICT" in t:
+        return "contradicts"
+    if "UNRELATED" in t:
+        return "unrelated"
+    return None
+
 
 _TRIGGER = 0.2          # be more eager than develop: we *want* to test ideas
 _SUPPORTS_FOR_ACTIVE = 2
@@ -90,6 +136,7 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     from . import plausibility
     conflict_ranker = plausibility.ranker_for(budget=budget, runs_per_week=runs_per_week,
                                               cycle=cycle, max_calls=1)
+    llm_left = _llm_judge_budget()     # #132: gated LLM relation judgments left this cycle
     hyps = cs.hypotheses()
     out = {"tested": 0, "supported": 0, "challenged": 0, "survived": 0,
            "promoted": 0, "rejected": 0, "insufficient": 0}
@@ -156,8 +203,37 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             # permanently consume the pair. Retry it (bounded) on a later cycle, when the
             # Semantic Layer may render a real decision. Layer 9 still governs every support.
             if d is SemanticDecision.INSUFFICIENT:
-                insufficient[key] = insufficient.get(key, 0) + 1
-                out["insufficient"] += 1
+                # #132: the deterministic layer could not decide. When a gated LLM judge is
+                # available (bounded per cycle, budget-metered), let it render the relation so the
+                # idea can earn support from this REAL claim (its own source is the evidence);
+                # else keep the bounded-retry as before. Promotion still needs >=2 independent
+                # supports; a human still confirms. The LLM judges the relation, not promotion.
+                rel = None
+                if llm_left > 0:
+                    llm_left -= 1
+                    rel = _llm_relation(h.text, c.text, budget=budget,
+                                        runs_per_week=runs_per_week, cycle=cycle)
+                if rel is None:
+                    insufficient[key] = insufficient.get(key, 0) + 1
+                    out["insufficient"] += 1
+                    continue
+                tested.add(key)
+                insufficient.pop(key, None)
+                real += 1
+                if rel == "supports":
+                    cs.corroborate(h.id, c, relation="supports")
+                    out["supported"] += 1
+                    proto.record(cycle, "strengthen",
+                                 f"idea {h.id} earned support from {c.id} (LLM-judged relation; "
+                                 "evidence is the claim's own source)")
+                elif rel == "contradicts":
+                    from .qualify import qualify_conflict
+                    ck = qualify_conflict(h.text, c.text, severity="soft", ranker=conflict_ranker)
+                    cid = cs.open_conflict((h.id, c.id), severity="soft", conflict_kind=ck)
+                    out["challenged"] += 1
+                    challenged_here = True
+                    proto.record(cycle, "strengthen",
+                                 f"idea {h.id} challenged by {c.id} (LLM-judged, {ck}) -> {cid}")
                 continue
             tested.add(key)                  # a real Layer-9 decision was rendered
             insufficient.pop(key, None)

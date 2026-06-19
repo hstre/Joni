@@ -140,3 +140,26 @@ def test_non_judgment_retries_are_bounded(monkeypatch):
     for _ in range(strengthen._MAX_INSUFFICIENT_RETRIES + 1):
         strengthen.strengthen(cs, ext, _Proto())             # always insufficient
     assert ext.get("hyp_tested")                             # gave up after a fair number of tries
+
+
+def test_llm_judge_lets_an_idea_earn_support_when_the_layer_is_insufficient(monkeypatch, tmp_path):
+    # #132: with the deterministic layer 'insufficient' (NullSemanticLayer), a gated LLM relation
+    # judge renders the relation so development happens - from REAL evidence, never confirmed.
+    from joni.autonomy import model_call
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_STRENGTHEN_LLM", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    monkeypatch.setattr(model_call, "_complete", lambda profile, system, user: "SUPPORTS")
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: None)
+    cs, h = _cs_with_a_hypothesis()
+    out = strengthen.strengthen(cs, {}, _Proto(), cycle=1)      # layer=None -> insufficient
+    assert out["supported"] >= 1                                # earned support via the LLM judge
+    assert cs.core.get(h).status is not l9.Status.CONFIRMED     # still never auto-confirmed
+
+
+def test_llm_judge_is_off_unless_configured(monkeypatch, tmp_path):
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)   # gate closed
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: None)
+    cs, _h = _cs_with_a_hypothesis()
+    out = strengthen.strengthen(cs, {}, _Proto(), cycle=1)
+    assert out["supported"] == 0 and out["insufficient"] >= 1     # falls back to the bounded retry
