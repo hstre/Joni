@@ -21,10 +21,12 @@ def _paper(key="arxiv:p1", source="arxiv"):
                 "coverage for autonomous reading agents.")
 
 
-def _online(monkeypatch, tmp_path, reply):
+def _online(monkeypatch, tmp_path, reply, scout=()):
     monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
     monkeypatch.setattr(model_call, "_complete", lambda profile, system, user: reply)
+    # deterministic: no real network scouting unless a test asks for it
+    monkeypatch.setattr(doktores, "_scout", lambda queries: list(scout))
 
 
 _APPLICABLE = (
@@ -76,6 +78,16 @@ def test_only_papers_and_extensions_are_reviewed(monkeypatch, tmp_path):
     _online(monkeypatch, tmp_path, _APPLICABLE)
     forum = Item("hackernews", "h1", "a thread", "https://news.ycombinator.com/item?id=h1", "chat")
     assert doktores.review(CoreState(seed_core()), {}, _Proto(), 3, items=[forum]) == []
+
+
+def test_scouted_module_relevant_paper_is_reviewed(monkeypatch, tmp_path):
+    # Doktores scouts targeted literature even when the topic-fetch passed nothing reviewable.
+    scouted = _paper("arxiv:scout1")
+    _online(monkeypatch, tmp_path, _APPLICABLE, scout=[scouted])
+    ext: dict = {}
+    new = doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=[])
+    assert len(new) == 1 and new[0]["component_key"] == "reader-sources"
+    assert ext["doktores_review"][-1]["title"].startswith("A better source-coverage")
 
 
 def test_cadence_and_dedup(monkeypatch, tmp_path):
