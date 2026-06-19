@@ -324,6 +324,27 @@ def build(data: dict) -> str:
     else:
         review_html = "<p class=empty>No self-review yet (runs hourly).</p>"
 
+    # Joni's OWN ideas: his active hypotheses (and how much support each earned / whether it is
+    # challenged or has been researched by Doktores), his cross-topic inventions, emergent topics.
+    ideas = d.get("ideas", {}) if isinstance(d.get("ideas"), dict) else {}
+    hyp_items = "".join(
+        f"<li><div class=asrow>{esc(h.get('text',''))}</div>"
+        f"<div><span class=src>{esc(h.get('topic',''))} · {esc(h.get('id',''))}</span> "
+        f"<span class=chip>{esc(h.get('supports',0))} support</span>"
+        + (" <span class=chip style='border-color:var(--warn)'>angefochten</span>"
+           if h.get("challenged") else "")
+        + (" <span class=chip style='background:var(--good);color:#06210f'>Doktores recherchiert"
+           "</span>" if h.get("researched") else "")
+        + "</div></li>"
+        for h in (ideas.get("hypotheses") or [])) or \
+        "<li class=empty>Noch keine eigenen Hypothesen — Joni erfindet sie aus dem Gelesenen.</li>"
+    inv = ideas.get("invented") or []
+    emt = ideas.get("emerged_topics") or []
+    inv_html = ("".join(f"<span class=pill>{esc(x.replace('|', ' × '))}</span>" for x in inv)
+                or "<span class=empty>—</span>")
+    emt_html = ("".join(f"<span class=pill>{esc(x)}</span>" for x in emt)
+                or "<span class=empty>—</span>")
+
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width, initial-scale=1">
@@ -411,6 +432,16 @@ what is uncertain, what contradicts, and what changed.</p>
     {vit_line}
     <div style=margin-top:12px><b>topics tracked</b><br>{topics}</div>
     <div style=margin-top:10px><b>self-added topics</b><br>{added}</div>
+  </div>
+  <div class="card full">
+    <h2>Jonis Ideen — seine eigenen Hypothesen</h2>
+    <p class=note>Was Joni selbst aus dem Gelesenen erfunden hat: aktive Hypothesen (mit verdientem
+      Support), seine cross-topic-Verknüpfungen und die aus Wiederholung emergenten Topics. Eine
+      Hypothese ist ein <b>arbeitender Kandidat</b>, nie bestätigt — Doktores recherchiert sie und
+      bringt Evidenz zurück; ob sie reift, entscheiden die Regeln, nie Joni selbst.</p>
+    <ul>{hyp_items}</ul>
+    <div style=margin-top:10px><b>cross-topic-Verknüpfungen (erfunden)</b><br>{inv_html}</div>
+    <div style=margin-top:10px><b>emergente Topics (aus Wiederholung)</b><br>{emt_html}</div>
   </div>
   <div class=card>
     <h2>Budget (frugal · cheapest model that suffices)</h2>

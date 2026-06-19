@@ -2,6 +2,7 @@
 concretely improve a NON-CORE module, file an Auftrag an Claude. Never the core, never self-applied.
 Uses Joni's own captured model (stubbed here); cadence- and dedup-bounded."""
 
+import desi_layer9 as l9
 from joni.autonomy import doktores, model_call
 from joni.autonomy.core_state import CoreState, seed_core
 from joni.autonomy.sources import Item
@@ -88,6 +89,41 @@ def test_scouted_module_relevant_paper_is_reviewed(monkeypatch, tmp_path):
     new = doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=[])
     assert len(new) == 1 and new[0]["component_key"] == "reader-sources"
     assert ext["doktores_review"][-1]["title"].startswith("A better source-coverage")
+
+
+def _with_hypothesis(cs, text="local routing bounds memory consolidation", topic="memory"):
+    parent = cs.learn("routing is local at serving time", topic, source_id="arxiv:seed")
+    cs.hypothesize(text, topic, parents=[parent])
+    return cs
+
+
+def test_research_brings_evidence_to_a_hypothesis_as_a_source(monkeypatch, tmp_path):
+    _online(monkeypatch, tmp_path, "Latency budgets do bound consolidation in long-run agents.",
+            scout=[_paper("arxiv:h1")])
+    cs = _with_hypothesis(CoreState(seed_core()))
+    ext: dict = {}
+    out = doktores.research_hypotheses(cs, ext, _Proto(), 3, budget=None)
+    assert out["researched"] == 1 and out["evidence"] == 1
+    assert out["hypothesis"] in ext["doktores_hyp_researched"]      # marked, won't re-research
+    # the finding entered as a real claim (a SOURCE, never confirmed)
+    got = [c for c in cs.core.all(l9.ObjectType.CLAIM)
+           if "bound consolidation" in getattr(c, "text", "")]
+    assert got and got[0].status is not l9.Status.CONFIRMED
+
+
+def test_research_irrelevant_paper_adds_no_source(monkeypatch, tmp_path):
+    _online(monkeypatch, tmp_path, "NONE", scout=[_paper("arxiv:h2")])
+    cs = _with_hypothesis(CoreState(seed_core()))
+    ext: dict = {}
+    out = doktores.research_hypotheses(cs, ext, _Proto(), 3, budget=None)
+    assert out["researched"] == 0 and out["evidence"] == 0
+    # still marked researched (it was examined), so Doktores moves on next time
+    assert ext["doktores_hyp_researched"]
+
+
+def test_research_no_op_without_hypotheses(monkeypatch, tmp_path):
+    _online(monkeypatch, tmp_path, "x", scout=[_paper("arxiv:h3")])
+    assert doktores.research_hypotheses(CoreState(seed_core()), {}, _Proto(), 3)["researched"] == 0
 
 
 def test_cadence_and_dedup(monkeypatch, tmp_path):

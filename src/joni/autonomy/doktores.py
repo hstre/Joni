@@ -141,6 +141,87 @@ def _scout(queries) -> list:
         return []
 
 
+_HYP_SYS = (
+    "You are Doktores' Literature Scout. Given Joni's working HYPOTHESIS and one paper abstract, "
+    "state in ONE plain sentence what this paper actually FINDS that bears on the hypothesis - "
+    "evidence that SUPPORTS or CHALLENGES it - grounded ONLY in the abstract. No citations, no "
+    "hedging preamble. If the abstract is not relevant to the hypothesis, output exactly NONE."
+)
+
+
+def _hyp_every() -> int:
+    return max(1, int(os.getenv("JONI_DOKTORES_HYP_EVERY", "5")))
+
+
+def _hyp_queries(h) -> tuple:
+    import re
+    topic = (getattr(h, "topic", "") or "").strip()
+    words = re.findall(r"[A-Za-z]{5,}", getattr(h, "text", "") or "")[:3]
+    return tuple(dict.fromkeys(q for q in ([topic] + words) if q))[:3]
+
+
+def research_hypotheses(cs, extensions: dict, proto, cycle: int, *, budget=None,
+                        runs_per_week: int = 0) -> dict:
+    """Give Joni's OWN hypotheses to Doktores: scout literature for the next un-researched
+    hypothesis and bring back what a paper FINDS about it as a SOURCE (candidate, conflict-checked,
+    never confirmed) - so the idea can earn support or be challenged through the normal gated path,
+    never by Doktores' say-so. No-op when disabled, not due, or every hypothesis already researched.
+    """
+    if not enabled():
+        return {"researched": 0}
+    last = extensions.get("doktores_hyp_last_cycle")
+    if last is not None and cycle - last < _hyp_every():
+        return {"researched": 0}
+    hyps = cs.hypotheses()
+    if not hyps:
+        return {"researched": 0}
+
+    done = extensions.setdefault("doktores_hyp_researched", [])
+    done_set = set(done)
+    target = next((h for h in sorted(hyps, key=lambda c: int(c.id.split("-")[-1]))
+                   if h.id not in done_set), None)
+    if target is None:
+        return {"researched": 0}                       # all researched until new hypotheses appear
+
+    extensions["doktores_hyp_last_cycle"] = cycle
+    seen = set(extensions.setdefault("doktores_seen", []))
+    papers = [p for p in _scout(_hyp_queries(target))
+              if getattr(p, "key", None) and p.key not in seen][:2]
+    store_dir = paths().model_calls
+    added = 0
+    for p in papers:
+        seen.add(p.key)
+        user = (f"HYPOTHESIS: {getattr(target, 'text', '')}\n\nPAPER: {getattr(p, 'title', '')}\n"
+                f"{(getattr(p, 'summary', '') or '')[:1500]}\n\n"
+                "What does this paper find that bears on the hypothesis? One sentence, or NONE.")
+        out, _cap = model_call.call(
+            model_profile.profile("joni-hard"), _HYP_SYS, user,
+            run_id=f"joni-c{cycle}-dokhyp", store_dir=store_dir,
+            escalation_reason="doktores-hypothesis-research",
+            budget=budget, runs_per_week=runs_per_week)
+        if out is None:
+            break
+        finding = out.strip()
+        if not finding or finding.upper().startswith("NONE"):
+            continue
+        cid = cs.hear(finding[:500], getattr(target, "topic", "") or "research",
+                      handle="doktores", platform="research", origin="internal-research")
+        added += 1
+        log = extensions.setdefault("doktores_hyp_log", [])
+        log.append({"cycle": cycle, "hypothesis": target.id, "topic": getattr(target, "topic", ""),
+                    "source": getattr(p, "title", "")[:120], "ref": getattr(p, "url", ""),
+                    "claim": cid, "finding": finding[:200]})
+        extensions["doktores_hyp_log"] = log[-40:]
+        proto.record(cycle, "research",
+                     f"Doktores researched hypothesis {target.id} "
+                     f"-> evidence from {getattr(p, 'title', '')[:50]} (source {cid}, "
+                     "conflict-checked, never confirmed)")
+    done.append(target.id)
+    extensions["doktores_hyp_researched"] = done[-500:]
+    extensions["doktores_seen"] = sorted(seen)[-3000:]
+    return {"researched": 1 if added else 0, "hypothesis": target.id, "evidence": added}
+
+
 def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
            runs_per_week: int = 0) -> list[dict]:
     """Review up to ``_MAX_REVIEW`` fresh papers/OpenClaw extensions for a non-core improvement to
