@@ -283,6 +283,13 @@ def one_cycle() -> dict:
     doktores_new = doktores.review(cs, extensions, proto, cycle, items=fetched,
                                    budget=budget, runs_per_week=runs_per_week())
 
+    # 4c-doktores-hyp. Give Joni's OWN hypotheses to Doktores: it scouts literature for the next
+    #     un-researched hypothesis and brings back what a paper finds about it as a SOURCE
+    #     (candidate, conflict-checked, never confirmed) - so the idea can earn support / be
+    #     challenged through the normal gated path. Cadence-spaced, budget-metered; no-op if off.
+    doktores.research_hypotheses(cs, extensions, proto, cycle,
+                                 budget=budget, runs_per_week=runs_per_week())
+
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
     #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
     emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
@@ -463,6 +470,32 @@ def _reflect(cs, window: dict, budget, judged: list, proto: Protocol,
     return out
 
 
+def _ideas(cs, extensions: dict, *, limit: int = 24) -> dict:
+    """Joni's OWN self-generated ideas, for the public page: his active hypotheses (with how much
+    support each has earned and whether one is challenged or has been researched by Doktores), the
+    cross-topic connections he invented, and the topics that emerged from recurrence."""
+    import desi_layer9 as l9
+
+    support: dict[str, int] = {}
+    for el in cs.core.all(l9.ObjectType.EVIDENCE_LINK):
+        rel = getattr(getattr(el, "relation", None), "value", "")
+        if rel in ("supports", "contextualizes"):
+            support[el.claim_id] = support.get(el.claim_id, 0) + 1
+    challenged = {cid for x in cs.core.open_conflicts() for cid in x.claim_ids}
+    researched = set(extensions.get("doktores_hyp_researched", []))
+
+    hyps = []
+    for h in sorted(cs.hypotheses(), key=lambda c: -support.get(c.id, 0))[:limit]:
+        hyps.append({"id": h.id, "text": (getattr(h, "text", "") or "")[:240],
+                     "topic": getattr(h, "topic", ""), "supports": support.get(h.id, 0),
+                     "challenged": h.id in challenged, "researched": h.id in researched,
+                     "status": getattr(getattr(h, "status", None), "value", "candidate")})
+    return {"hypotheses": hyps,
+            "invented": [i for i in (extensions.get("invented") or []) if isinstance(i, str)][-16:],
+            "emerged_topics": [t for t in (extensions.get("emerged_topics") or [])
+                               if isinstance(t, str)][-16:]}
+
+
 def _finish(p, cs: core_state.CoreState, budget, window, extensions,
             proto: Protocol, reflect=None) -> None:
     core_state.save(cs, p)
@@ -506,6 +539,7 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
         "protocol": proto.all(),
         "telemetry": tele,
         "commissions_done": commissions_done if isinstance(commissions_done, list) else [],
+        "ideas": _ideas(cs, extensions),
     })
     # The human-facing Layer-9 map (living map, not a logfile).
     layer9_view.render(p.docs_layer9, {
