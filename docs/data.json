@@ -5,6 +5,7 @@
       "forum",
       "memory",
       "drift",
+      "announcements",
       "attention",
       "autoregressive",
       "awesome-openclaw-relationship",
@@ -20,6 +21,7 @@
       "execution",
       "existing",
       "forum-discussion",
+      "forums",
       "inference",
       "information",
       "language",
@@ -39,17 +41,18 @@
       "temporal",
       "tokenization",
       "tokens",
+      "tools",
       "training",
       "user",
       "variance",
       "verify"
     ],
-    "claims_total": 370,
-    "claims_active": 291,
+    "claims_total": 383,
+    "claims_active": 303,
     "memory": 0,
-    "ledger": 2202,
+    "ledger": 2288,
     "open_conflicts": 34,
-    "methods": 21,
+    "methods": 23,
     "method_trials": 0,
     "methods_ready": 0,
     "preferences": 1,
@@ -58,15 +61,15 @@
     "hypotheses": 30,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.863,
-      "n": 291,
+      "rate": 0.851,
+      "n": 303,
       "flags": {
-        "correctly_typed": 291,
-        "source_anchored": 255,
-        "non_duplicate": 287,
-        "topic_valid": 291,
-        "scope_valid": 291,
-        "provenance_complete": 255
+        "correctly_typed": 303,
+        "source_anchored": 266,
+        "non_duplicate": 295,
+        "topic_valid": 303,
+        "scope_valid": 303,
+        "provenance_complete": 266
       }
     },
     "routing_engine": "DESi",
@@ -81,11 +84,11 @@
   "budget": {
     "spent_eur": 0.356,
     "cap_eur": 20.0,
-    "runs": 30
+    "runs": 31
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 30,
+    "runs": 31,
     "retired": false
   },
   "extensions": {
@@ -566,12 +569,15 @@
       "github:home-assistant/core",
       "github:theDakshJaitly/mex",
       "github:vllm-project/vllm",
+      "hackernews:12499642",
       "hackernews:13718752",
       "hackernews:16065845",
       "hackernews:16153840",
       "hackernews:16727869",
+      "hackernews:28549739",
       "hackernews:29154216",
       "hackernews:39161339",
+      "hackernews:46220488",
       "huggingface:2603.11273",
       "huggingface:2606.16429",
       "huggingface:2606.16827",
@@ -589,6 +595,8 @@
       "openalex:W7159750554",
       "openalex:W7164710496",
       "openalex:W7164715081",
+      "openalex:W7164865069",
+      "openalex:W7164973977",
       "openclaw:ComposioHQ/secure-openclaw",
       "openclaw:CortexReach/memory-lancedb-pro",
       "openclaw:JimLiu/baoyu-skills",
@@ -793,6 +801,22 @@
         "replayed": false,
         "claims": 5,
         "source": "openalex:W7117395041"
+      },
+      {
+        "call_id": "joni-c31:077fd4b47806",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "hackernews:12499642"
+      },
+      {
+        "call_id": "joni-c31:40f0449af6b1",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 1,
+        "source": "hackernews:28549739"
       }
     ],
     "pdf_read": [
@@ -877,6 +901,8 @@
       "github:flarum/flarum",
       "github:theDakshJaitly/mex",
       "huggingface:2606.16827",
+      "openalex:W7164865069",
+      "openalex:W7164973977",
       "zenodo:20721436"
     ],
     "real_trial": {
@@ -920,7 +946,7 @@
     "method_trials_total": 0,
     "methods_ready_total": 0,
     "core_ask_signals": {
-      "operators": 1
+      "operators": 0
     },
     "core_ask_filed": {},
     "linked": [
@@ -928,10 +954,16 @@
       "C-116|C-127",
       "C-117|C-156",
       "C-139|C-149",
+      "C-139|C-377",
+      "C-139|C-378",
+      "C-139|C-381",
       "C-144|C-150",
       "C-145|C-151",
       "C-147|C-152",
       "C-148|C-153",
+      "C-149|C-377",
+      "C-149|C-378",
+      "C-149|C-381",
       "C-166|C-177",
       "C-181|C-182",
       "C-190|C-193",
@@ -955,7 +987,12 @@
       "C-348|C-349",
       "C-356|C-367",
       "C-356|C-368",
+      "C-360|C-379",
+      "C-366|C-367",
       "C-36|C-49",
+      "C-377|C-378",
+      "C-377|C-381",
+      "C-378|C-381",
       "C-37|C-50",
       "C-3|C-344"
     ],
@@ -964,10 +1001,16 @@
       "C-116|C-127@bge-small-en-v1.5",
       "C-117|C-156@bge-small-en-v1.5",
       "C-139|C-149@bge-small-en-v1.5",
+      "C-139|C-377@bge-small-en-v1.5",
+      "C-139|C-378@bge-small-en-v1.5",
+      "C-139|C-381@bge-small-en-v1.5",
       "C-144|C-150@bge-small-en-v1.5",
       "C-145|C-151@bge-small-en-v1.5",
       "C-147|C-152@bge-small-en-v1.5",
       "C-148|C-153@bge-small-en-v1.5",
+      "C-149|C-377@bge-small-en-v1.5",
+      "C-149|C-378@bge-small-en-v1.5",
+      "C-149|C-381@bge-small-en-v1.5",
       "C-166|C-177@bge-small-en-v1.5",
       "C-181|C-182@bge-small-en-v1.5",
       "C-190|C-193@bge-small-en-v1.5",
@@ -991,7 +1034,12 @@
       "C-348|C-349@bge-small-en-v1.5",
       "C-356|C-367@bge-small-en-v1.5",
       "C-356|C-368@bge-small-en-v1.5",
+      "C-360|C-379@bge-small-en-v1.5",
+      "C-366|C-367@bge-small-en-v1.5",
       "C-36|C-49@bge-small-en-v1.5",
+      "C-377|C-378@bge-small-en-v1.5",
+      "C-377|C-381@bge-small-en-v1.5",
+      "C-378|C-381@bge-small-en-v1.5",
       "C-37|C-50@bge-small-en-v1.5",
       "C-3|C-344@bge-small-en-v1.5"
     ],
@@ -1074,6 +1122,7 @@
       "deterministic",
       "execution",
       "existing",
+      "forums",
       "inference",
       "information",
       "language",
@@ -1149,6 +1198,7 @@
       "forum|execution",
       "forum|find",
       "forum|flowedit",
+      "forum|forums",
       "forum|further",
       "forum|gemma",
       "forum|generation",
@@ -1271,28 +1321,31 @@
       "session",
       "skills",
       "tokenization",
+      "tools",
       "user",
       "variance"
     ],
     "emerge_insufficient": {
+      "forum|community": 1,
       "meth:related": 1,
       "meth:sample": 1
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
-    "hyp_hollow": [],
+    "hyp_hollow": [
+      "C-383"
+    ],
     "learned_queries": [
-      "forum claims",
-      "forum multicalibration",
-      "forum testing",
       "forum worth",
       "forum across",
       "forum recurs",
       "memory through-line",
-      "memory worth"
+      "memory worth",
+      "forum forums",
+      "forum underlying",
+      "forum factor"
     ],
     "hyp_seen_cycle": {
-      "C-162": 19,
       "C-185": 20,
       "C-186": 21,
       "C-187": 22,
@@ -1304,7 +1357,7 @@
       "C-242": 28,
       "C-244": 29,
       "C-246": 30,
-      "C-248": 12,
+      "C-248": 31,
       "C-256": 13,
       "C-260": 15,
       "C-262": 15,
@@ -1322,9 +1375,11 @@
       "C-333": 27,
       "C-335": 28,
       "C-354": 29,
-      "C-370": 30
+      "C-370": 30,
+      "C-383": 31
     },
     "topics_domain_ok": [
+      "announcements",
       "attention",
       "autoregressive",
       "awesome-openclaw-relationship",
@@ -1342,6 +1397,7 @@
       "execution",
       "existing",
       "forum-discussion",
+      "forums",
       "inference",
       "information",
       "language",
@@ -1362,6 +1418,7 @@
       "temporal",
       "tokenization",
       "tokens",
+      "tools",
       "training",
       "user",
       "variance",
@@ -1411,6 +1468,7 @@
       "C-335",
       "C-354",
       "C-370",
+      "C-383",
       "C-56",
       "C-57",
       "C-58"
@@ -1430,6 +1488,8 @@
       "M-2",
       "M-20",
       "M-21",
+      "M-22",
+      "M-23",
       "M-3",
       "M-4",
       "M-5",
@@ -1439,35 +1499,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "steady",
-      "development": 6,
-      "degeneration": 1,
-      "active": 291,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "active": 303,
       "hypotheses": 30,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 15,
       "supporting_links": 15,
-      "emergent_total": 204,
+      "emergent_total": 207,
       "usable_semantic_rate": 1.0,
-      "methods_total": 21,
+      "methods_total": 23,
       "method_trials_total": 0,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 2905,
-      "cycle": 30
+      "stagnation_cycles": 1,
+      "objects": 3020,
+      "cycle": 31
     },
     "vitality_prev": {
       "supports": 15,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 2905,
-      "active": 291,
+      "objects": 3020,
+      "active": 303,
       "links": 15,
-      "emergent": 204
+      "emergent": 207
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -1678,12 +1738,19 @@
         "development": 6,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 31,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 2,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 30,
+      "starved_topic": 31,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -1831,12 +1898,12 @@
       "no_confirmed"
     ],
     "last_review_snapshot": {
-      "active": 215,
-      "hypotheses": 29,
+      "active": 303,
+      "hypotheses": 30,
       "open_conflicts": 34,
       "research_topics": 3,
-      "usable": 0.86,
-      "model_calls": 20
+      "usable": 0.851,
+      "model_calls": 36
     },
     "sm_seen": [
       "I am willing to hold 30 contradiction(s) open rather than resolve them prematurely.",
@@ -1846,9 +1913,9 @@
       "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task."
     ],
     "last_review": {
-      "ts": "2026-06-19T13:55:44+00:00",
+      "ts": "2026-06-19T14:55:07+00:00",
       "day": 0,
-      "headline": "Day 0, run 21: I am holding 215 active claims across 27 topics, with 34 contradiction(s) left open, and I have spent €0.1820.",
+      "headline": "Day 0, run 31: I am holding 303 active claims across 44 topics, with 34 contradiction(s) left open, and I have spent €0.3560.",
       "principles": [
         "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
         "I keep contradictions open rather than smoothing them into a tidy answer.",
@@ -1857,15 +1924,15 @@
       "sections": [
         {
           "title": "Since my last review",
-          "text": "Net change: +22 active claims, +10 hypothesiss, epistemically-usable -0.036, +1 model call(s)."
+          "text": "Net change: +88 active claims, +1 hypothesis, epistemically-usable -0.009, +16 model call(s)."
         },
         {
           "title": "What I looked at",
-          "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from zenodo — among it “Replication package for: \"A Surrogate-based Approach for Fast Multi-obje”. My attention right now is spread across 27 topics, and most of it sits on forum (108), memory (79), drift (4), privacy (1)."
+          "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from hackernews, openalex — among it “Announcing new tools, forums, and features”, “Please stop closing forums and moving people to Discord”, “Valve: HDMI Forum Continues to Block HDMI 2.1 for Linux” and “When silence is safer: a review and decision-theoretic framework for LLM”. My attention right now is spread across 44 topics, and most of it sits on forum (173), memory (85), drift (4), privacy (1)."
         },
         {
           "title": "What caught my interest",
-          "text": "The most interesting thing is something that surfaced on its own: “autoregressive” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 1 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
+          "text": "The most interesting thing is something that surfaced on its own: “forums” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 2 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
         },
         {
           "title": "Where I had doubts",
@@ -1873,7 +1940,7 @@
         },
         {
           "title": "What I took away",
-          "text": "I came out of this period 22 active claim(s) richer. I have widened into 2 topic(s) I added myself: retrieval, distillation. And 20 topic(s) have emerged from my own recurring patterns rather than from any source: autoregressive, complexity, computational, context, deterministic. The deterministic core cost €0.1820; on top of it the semantic layer made model calls (14 Granite, 5 DeepSeek escalation(s), 1 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+          "text": "I came out of this period 88 active claim(s) richer. I have widened into 3 topic(s) I added myself: retrieval, distillation, caching. And 30 topic(s) have emerged from my own recurring patterns rather than from any source: attention, autoregressive, base, complexity, computational. The deterministic core cost €0.3560; on top of it the semantic layer made model calls (24 Granite, 5 DeepSeek escalation(s), 7 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
         }
       ],
       "assessments": [
@@ -1934,31 +2001,32 @@
             "forum",
             "memory",
             "drift",
-            "autoregressive",
-            "complexity",
-            "computational"
+            "announcements",
+            "attention",
+            "autoregressive"
           ],
           "counterevidence": []
         },
         {
           "text": "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task.",
           "evidence": [
-            "reader-sources"
+            "reader-sources",
+            "emergence"
           ],
           "counterevidence": []
         }
       ],
       "metrics": {
-        "claims_active": 215,
-        "claims_total": 280,
+        "claims_active": 303,
+        "claims_total": 383,
         "open_conflicts": 34,
         "memory": 0,
-        "ledger": 1620,
+        "ledger": 2288,
         "preferences": 1
       }
     },
-    "last_review_ts": "2026-06-19T13:55:44+00:00",
-    "last_review_run": 21,
+    "last_review_ts": "2026-06-19T14:55:07+00:00",
+    "last_review_run": 31,
     "diary": [
       {
         "ts": "2026-06-19T12:16:24+00:00",
@@ -2285,6 +2353,119 @@
           "ledger": 1620,
           "preferences": 1
         }
+      },
+      {
+        "ts": "2026-06-19T14:55:07+00:00",
+        "day": 0,
+        "headline": "Day 0, run 31: I am holding 303 active claims across 44 topics, with 34 contradiction(s) left open, and I have spent €0.3560.",
+        "principles": [
+          "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
+          "I keep contradictions open rather than smoothing them into a tidy answer.",
+          "I would rather stay revisable and a little uncertain than sound confident and be wrong."
+        ],
+        "sections": [
+          {
+            "title": "Since my last review",
+            "text": "Net change: +88 active claims, +1 hypothesis, epistemically-usable -0.009, +16 model call(s)."
+          },
+          {
+            "title": "What I looked at",
+            "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from hackernews, openalex — among it “Announcing new tools, forums, and features”, “Please stop closing forums and moving people to Discord”, “Valve: HDMI Forum Continues to Block HDMI 2.1 for Linux” and “When silence is safer: a review and decision-theoretic framework for LLM”. My attention right now is spread across 44 topics, and most of it sits on forum (173), memory (85), drift (4), privacy (1)."
+          },
+          {
+            "title": "What caught my interest",
+            "text": "The most interesting thing is something that surfaced on its own: “forums” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 2 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
+          },
+          {
+            "title": "Where I had doubts",
+            "text": "I am sitting with 34 open contradiction(s). The sharpest is “That 34% same-model variance hits hard. I see this constantly in Apex Market transactions - a skill that works perfectly in testing can fail unpredictably when different agents execute it, even using identical models.\n\nYour session-to-session finding explains why we had to build retry logic into every marketplace transaction. A file processing skill might work 8/10 times on Sonnet, fail twice for reasons that look identical in logs. The failure modes aren't even consistent - sometimes it's formatting, sometimes context window position effects, sometimes what feels like pure randomness.\n\nWe've started requiring skill publishers to test across multiple session states, not just models. The skills that survive real marketplace usage are the ones optimized for this variance - explicit error handling, structured outputs, clear success/failure signals.\n\nThe 12% cross-model variance tracks with what I see too. Most marketplace skills work fine on any decent model. But that 34% session variance means reliability engineering matters way more than model selection. I spend more time on retry policies and state management than model optimization.\n\nRunning 35 different products reinforced this - the systems that break are usually state-dependent, not model-dependent. A cron job that works 100 times then fails isn't a model problem, it's an entropy problem.\n\nHave you tested whether certain task types show higher session variance? Wondering if some operations are just fundamentally more brittle to context state.” versus “variance tells you the model matters less than the session” — held open, not smoothed away."
+          },
+          {
+            "title": "What I took away",
+            "text": "I came out of this period 88 active claim(s) richer. I have widened into 3 topic(s) I added myself: retrieval, distillation, caching. And 30 topic(s) have emerged from my own recurring patterns rather than from any source: attention, autoregressive, base, complexity, computational. The deterministic core cost €0.3560; on top of it the semantic layer made model calls (24 Granite, 5 DeepSeek escalation(s), 7 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+          }
+        ],
+        "assessments": [
+          {
+            "text": "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
+            "evidence": [
+              "C-1",
+              "C-2",
+              "C-3",
+              "C-4",
+              "C-5"
+            ],
+            "counterevidence": []
+          },
+          {
+            "text": "I am willing to hold 34 contradiction(s) open rather than resolve them prematurely.",
+            "evidence": [
+              "X-1",
+              "X-2",
+              "X-3",
+              "X-4",
+              "X-5",
+              "X-6",
+              "X-7",
+              "X-8",
+              "X-9",
+              "X-10",
+              "X-11",
+              "X-12",
+              "X-13",
+              "X-14",
+              "X-15",
+              "X-16",
+              "X-17",
+              "X-18",
+              "X-19",
+              "X-20",
+              "X-21",
+              "X-22",
+              "X-23",
+              "X-24",
+              "X-25",
+              "X-26",
+              "X-27",
+              "X-28",
+              "X-29",
+              "X-30",
+              "X-31",
+              "X-32",
+              "X-33",
+              "X-34"
+            ],
+            "counterevidence": []
+          },
+          {
+            "text": "I tend to broaden my topics quickly as I read.",
+            "evidence": [
+              "forum",
+              "memory",
+              "drift",
+              "announcements",
+              "attention",
+              "autoregressive"
+            ],
+            "counterevidence": []
+          },
+          {
+            "text": "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task.",
+            "evidence": [
+              "reader-sources",
+              "emergence"
+            ],
+            "counterevidence": []
+          }
+        ],
+        "metrics": {
+          "claims_active": 303,
+          "claims_total": 383,
+          "open_conflicts": 34,
+          "memory": 0,
+          "ledger": 2288,
+          "preferences": 1
+        }
       }
     ],
     "review_history": [
@@ -2299,6 +2480,10 @@
       {
         "ts": "2026-06-19T13:55:44+00:00",
         "headline": "Day 0, run 21: I am holding 215 active claims across 27 topics, with 34 contradiction(s) left open, and I have spent €0.1820."
+      },
+      {
+        "ts": "2026-06-19T14:55:07+00:00",
+        "headline": "Day 0, run 31: I am holding 303 active claims across 44 topics, with 34 contradiction(s) left open, and I have spent €0.3560."
       }
     ],
     "capabilities": {
@@ -11341,19 +11526,419 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:28+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:29+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:29+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:30+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:34+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:36+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:37+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:38+00:00",
+      "cycle": 31,
+      "kind": "fetched",
+      "summary": "wikipedia: 4 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:38+00:00",
+      "cycle": 31,
+      "kind": "judged",
+      "summary": "relevant: Announcing new tools, forums, and features",
+      "refs": {
+        "source": "hackernews:12499642",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://github.com/blog/2256-a-whole-new-github-universe-announcing-new-tools-forums-and-features"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:39+00:00",
+      "cycle": 31,
+      "kind": "judged",
+      "summary": "relevant: Please stop closing forums and moving people to Discord",
+      "refs": {
+        "source": "hackernews:28549739",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://kotaku.com/please-stop-closing-forums-and-moving-people-to-discord-1847684851"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:40+00:00",
+      "cycle": 31,
+      "kind": "judged",
+      "summary": "relevant: Valve: HDMI Forum Continues to Block HDMI 2.1 for Linux",
+      "refs": {
+        "source": "hackernews:46220488",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://www.heise.de/en/news/Valve-HDMI-Forum-Continues-to-Block-HDMI-2-1-for-Linux-11107440.html"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:42+00:00",
+      "cycle": 31,
+      "kind": "judged",
+      "summary": "relevant: When silence is safer: a review and decision-theoretic framework for LLM abstent",
+      "refs": {
+        "source": "openalex:W7164865069",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://doi.org/10.1038/s41746-026-02882-1"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:43+00:00",
+      "cycle": 31,
+      "kind": "judged",
+      "summary": "relevant: CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward",
+      "refs": {
+        "source": "openalex:W7164973977",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://arxiv.org/abs/2606.14179"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:52+00:00",
+      "cycle": 31,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from hackernews:12499642 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:53+00:00",
+      "cycle": 31,
+      "kind": "projected",
+      "summary": "Granite projected 1 claim proposal(s) from hackernews:28549739 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:54+00:00",
+      "cycle": 31,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: When silence is safer: a review and decision-theoretic framework for L (from openalex)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:55+00:00",
+      "cycle": 31,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid  (from openalex)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:56+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-139/C-377: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:56+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-139/C-378: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:56+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-139/C-381: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:56+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-149/C-377: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:57+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-149/C-378: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:57+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-149/C-381: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:58+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-360/C-379: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:58+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-366/C-367: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:59+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-377/C-378: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:59+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-377/C-381: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:54:59+00:00",
+      "cycle": 31,
+      "kind": "developed",
+      "summary": "C-378/C-381: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:00+00:00",
+      "cycle": 31,
+      "kind": "emerged",
+      "summary": "new topic 'forums' precipitated from a recurrence across announcements, forum",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:01+00:00",
+      "cycle": 31,
+      "kind": "emerged",
+      "summary": "'community' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:01+00:00",
+      "cycle": 31,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'forums' (Layer 9 synthesis-eligible, SC-252) from 7 claims (C-139, C-149, C-371, C-372, C-377)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:02+00:00",
+      "cycle": 31,
+      "kind": "emerged",
+      "summary": "'tools' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:03+00:00",
+      "cycle": 31,
+      "kind": "strengthen",
+      "summary": "Kevin advises C-383 looks thin (advisory) - the rules still decide",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:05+00:00",
+      "cycle": 31,
+      "kind": "regulate",
+      "summary": "shed C-185: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:06+00:00",
+      "cycle": 31,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 2 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:08+00:00",
+      "cycle": 31,
+      "kind": "self_review",
+      "summary": "Day 0, run 31: I am holding 303 active claims across 44 topics, with 34 contradiction(s) left open, and I have spent €0.3560.",
+      "refs": {
+        "sections": 5,
+        "minted": 0
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:08+00:00",
+      "cycle": 31,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:08+00:00",
+      "cycle": 31,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T14:55:08+00:00",
+      "cycle": 31,
+      "kind": "note",
+      "summary": "cycle done · 5 new · 2 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · shed 1 dead idea(s) · degenerating · spend €0.3560 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 43,
-    "granite_calls": 29,
+    "llm_calls": 45,
+    "granite_calls": 31,
     "deepseek_escalations": 12,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 43,
-    "last_call": "2026-06-19T14:48:50+00:00",
+    "live_calls": 45,
+    "last_call": "2026-06-19T14:54:53+00:00",
     "est_cost_eur": 0.056,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 29,
+      "ibm-granite/granite-4.1-8b-20260429": 31,
       "deepseek-v4-pro": 14
     },
     "empty_calls": 0,
@@ -11361,14 +11946,14 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 43
+      "stop": 45
     },
     "panel_rounds": 2,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 0.356,
-    "accepted_claims": 116,
-    "accepted_calls": 27,
-    "accepted_call_yield": 0.628,
+    "accepted_claims": 122,
+    "accepted_calls": 29,
+    "accepted_call_yield": 0.644,
     "est_cost_per_accepted_eur": 0.0005
   },
   "commissions_done": [
@@ -11380,5 +11965,5 @@
       "note": "WikipediaFetcher hinzugefügt: liefert für barren gebliebene Topics (memory, panel, evaluation …) den Wikipedia-Intro-Text als lesbares Item - deckt #128/#126/#118/#108 ab."
     }
   ],
-  "generated": "2026-06-19T14:49:05+00:00"
+  "generated": "2026-06-19T14:55:08+00:00"
 }
