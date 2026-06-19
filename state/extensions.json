@@ -10,7 +10,34 @@
     }
   ],
   "asks": [],
-  "commissions": [],
+  "commissions": [
+    {
+      "kind": "starved_topic",
+      "cycle": 3,
+      "addressed_to": "Claude",
+      "title": "Erweitere meine Quellen für 'memory'",
+      "component": "the reading layer (sources.py / reader.py) - which feeds Joni can draw on, outside the protected core",
+      "component_key": "reader-sources",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (reader-sources)",
+      "motivation": "Ich habe 4 Hypothesen zu 'memory', aber 0 stützende Evidenz - meine Quellen liefern dazu nichts, die Ideen bleiben barren.",
+      "desired_capability": "Füge in sources.py / reader.py eine Quelle hinzu, die zu 'memory' Material liefert (eine gezielte Query oder ein passender Feed).",
+      "acceptance": "Ein Lauf bringt mindestens ein gelesenes Item zu 'memory', das eine Hypothese stützen oder ihr widersprechen kann.",
+      "evidence": {
+        "topic": "memory",
+        "hypotheses": 4,
+        "hypothesis_ids": [
+          "C-56",
+          "C-57",
+          "C-58",
+          "C-162"
+        ]
+      },
+      "risk": "low - adds an input source; no state-logic changes",
+      "sustained_cycles": 3
+    }
+  ],
   "forum_heard": [
     {
       "cycle": 1,
@@ -407,17 +434,21 @@
     "arxiv:2606.20544v1",
     "arxiv:2606.20546v1",
     "arxiv:2606.20553v1",
+    "arxiv:2606.20554v1",
     "arxiv:2606.20559v1",
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
     "arxiv:2606.20562v1",
     "github:affaan-m/ECC",
+    "github:apache/answer",
     "github:f/prompts.chat",
+    "github:flarum/flarum",
     "github:home-assistant/core",
     "github:vllm-project/vllm",
     "hackernews:13718752",
     "hackernews:16065845",
     "hackernews:16727869",
+    "hackernews:29154216",
     "hackernews:39161339",
     "huggingface:2603.11273",
     "huggingface:2606.16429",
@@ -429,6 +460,8 @@
     "openalex:W7137590217",
     "openalex:W7137681926",
     "openalex:W7155587480",
+    "openalex:W7164710496",
+    "openalex:W7164715081",
     "openclaw:ComposioHQ/secure-openclaw",
     "openclaw:CortexReach/memory-lancedb-pro",
     "openclaw:NevaMind-AI/memU",
@@ -473,10 +506,27 @@
       "replayed": false,
       "claims": 5,
       "source": "arxiv:2606.20560v1"
+    },
+    {
+      "call_id": "joni-c3:866525783a4e",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.20554v1"
+    },
+    {
+      "call_id": "joni-c3:5de578a8460d",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 2,
+      "source": "hackernews:29154216"
     }
   ],
   "pdf_read": [
     "arxiv:2606.20553v1",
+    "arxiv:2606.20554v1",
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
     "arxiv:2606.20562v1"
@@ -505,13 +555,24 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-12"
+    },
+    {
+      "call_id": "joni-c3:0584b186f765",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-32"
     }
   ],
   "methods_seen": [
     "arxiv:2606.20553v1",
+    "arxiv:2606.20554v1",
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
-    "arxiv:2606.20562v1"
+    "arxiv:2606.20562v1",
+    "github:flarum/flarum"
   ],
   "real_trial": {
     "method_id": "contradiction-first-review",
@@ -558,6 +619,11 @@
   "linked": [
     "C-110|C-118",
     "C-116|C-127",
+    "C-117|C-156",
+    "C-139|C-149",
+    "C-145|C-151",
+    "C-147|C-152",
+    "C-148|C-153",
     "C-20|C-53",
     "C-32|C-43",
     "C-33|C-44",
@@ -567,6 +633,11 @@
   "semantic_backfilled": [
     "C-110|C-118@bge-small-en-v1.5",
     "C-116|C-127@bge-small-en-v1.5",
+    "C-117|C-156@bge-small-en-v1.5",
+    "C-139|C-149@bge-small-en-v1.5",
+    "C-145|C-151@bge-small-en-v1.5",
+    "C-147|C-152@bge-small-en-v1.5",
+    "C-148|C-153@bge-small-en-v1.5",
     "C-20|C-53@bge-small-en-v1.5",
     "C-32|C-43@bge-small-en-v1.5",
     "C-33|C-44@bge-small-en-v1.5",
@@ -574,7 +645,8 @@
     "C-37|C-50@bge-small-en-v1.5"
   ],
   "invented": [
-    "drift|forum"
+    "drift|forum",
+    "drift|memory"
   ],
   "desi_blind_spots": [],
   "kevin_last_cycle": 1,
@@ -612,6 +684,7 @@
     }
   ],
   "emerged_topics": [
+    "context",
     "variance"
   ],
   "synthesized": [
@@ -624,38 +697,43 @@
     "forum|silence",
     "forum|strategic",
     "forum|variance",
+    "memory|existing",
     "memory|inference",
     "memory|memorywam",
     "memory|privacy",
     "memory|timeprove"
   ],
   "emerged_methods": [
+    "become",
     "context"
   ],
   "emerge_insufficient": {
-    "memory|fine-tuning": 2,
-    "memory|memory": 2
+    "memory|fine-tuning": 3,
+    "memory|memory": 3
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
   "hyp_hollow": [],
   "learned_queries": [
-    "memory prediction",
-    "memory action",
-    "memory compared",
-    "memory based",
     "memory testing",
     "memory across",
     "drift+forum combine",
-    "drift+forum across"
+    "drift+forum across",
+    "forum actually",
+    "forum exact",
+    "forum claims",
+    "forum worth"
   ],
   "hyp_seen_cycle": {
     "C-56": 1,
     "C-57": 1,
     "C-58": 2,
-    "C-133": 2
+    "C-133": 2,
+    "C-135": 3,
+    "C-137": 3
   },
   "topics_domain_ok": [
+    "context",
     "distillation",
     "drift",
     "privacy",
@@ -672,6 +750,8 @@
     "C-133",
     "C-135",
     "C-137",
+    "C-160",
+    "C-162",
     "C-56",
     "C-57",
     "C-58"
@@ -680,38 +760,40 @@
     "M-1",
     "M-2",
     "M-3",
-    "M-4"
+    "M-4",
+    "M-5",
+    "M-6"
   ],
   "vitality": {
-    "verdict": "developing",
-    "development": 6,
-    "degeneration": 0,
-    "active": 103,
-    "hypotheses": 6,
-    "unsupported_hypotheses": 6,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 1,
+    "active": 124,
+    "hypotheses": 8,
+    "unsupported_hypotheses": 8,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 3,
     "supporting_links": 3,
-    "emergent_total": 15,
+    "emergent_total": 18,
     "usable_semantic_rate": 1.0,
-    "methods_total": 4,
+    "methods_total": 6,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 965,
-    "cycle": 2
+    "stagnation_cycles": 1,
+    "objects": 1126,
+    "cycle": 3
   },
   "vitality_prev": {
     "supports": 3,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 965,
-    "active": 103,
+    "objects": 1126,
+    "active": 124,
     "links": 3,
-    "emergent": 15
+    "emergent": 18
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -726,16 +808,25 @@
       "development": 6,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 3,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 2,
+    "starved_topic": 3,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
-  "commissions_filed": {},
+  "commissions_filed": {
+    "starved_topic": 3
+  },
   "forum_stance": "Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber genau so streng geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein deshalb geglaubt, weil ein Mensch es gesagt hat.",
   "forum_registry": {
     "huggingface": {
@@ -1113,7 +1204,8 @@
   "kevin_installed": true,
   "kevin_real_trial": true,
   "escalated_conflicts": [
-    "X-12"
+    "X-12",
+    "X-32"
   ],
   "kevin_orch_last_cycle": 2,
   "kevin_orch_seen": [
