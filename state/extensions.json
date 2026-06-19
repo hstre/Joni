@@ -3,7 +3,8 @@
     "retrieval",
     "distillation",
     "caching",
-    "alignment"
+    "alignment",
+    "calibration"
   ],
   "notes": [
     {
@@ -565,10 +566,12 @@
     "huggingface:2606.16429",
     "huggingface:2606.16827",
     "huggingface:2606.17053",
+    "huggingface:2606.18021",
     "huggingface:2606.19334",
     "huggingface:2606.19602",
     "huggingface:2606.20381",
     "huggingface:2606.20515",
+    "huggingface:2606.20529",
     "huggingface:2606.20536",
     "openalex:W7117395041",
     "openalex:W7128545313",
@@ -931,6 +934,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20766665"
+    },
+    {
+      "call_id": "joni-c72:a1fdf0775d05",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.20529"
+    },
+    {
+      "call_id": "joni-c72:9621d3e59c62",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.18021"
     }
   ],
   "pdf_read": [
@@ -1019,7 +1038,9 @@
     "github:theDakshJaitly/mex",
     "huggingface:2606.16827",
     "huggingface:2606.17053",
+    "huggingface:2606.18021",
     "huggingface:2606.19602",
+    "huggingface:2606.20529",
     "openalex:W7137578291",
     "openalex:W7164783592",
     "openalex:W7164865069",
@@ -1149,7 +1170,9 @@
     "C-517|C-521",
     "C-518|C-521",
     "C-555|C-557",
-    "C-556|C-558"
+    "C-555|C-559",
+    "C-556|C-558",
+    "C-556|C-560"
   ],
   "semantic_backfilled": [
     "C-109|C-350@bge-small-en-v1.5",
@@ -1227,7 +1250,9 @@
     "C-517|C-521@bge-small-en-v1.5",
     "C-518|C-521@bge-small-en-v1.5",
     "C-555|C-557@bge-small-en-v1.5",
-    "C-556|C-558@bge-small-en-v1.5"
+    "C-555|C-559@bge-small-en-v1.5",
+    "C-556|C-558@bge-small-en-v1.5",
+    "C-556|C-560@bge-small-en-v1.5"
   ],
   "invented": [
     "announcements|drift",
@@ -1364,6 +1389,7 @@
     "timeprove",
     "tokenization",
     "tokens",
+    "tool",
     "training",
     "understanding",
     "user",
@@ -1481,6 +1507,7 @@
     "forum|generation",
     "forum|geometry",
     "forum|group",
+    "forum|hallucination",
     "forum|histories",
     "forum|hygiene",
     "forum|identical",
@@ -1647,6 +1674,7 @@
     "real",
     "reasoning",
     "related",
+    "relevant",
     "session",
     "skills",
     "supporting",
@@ -1660,7 +1688,7 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|action": 1,
+    "forum|action": 2,
     "forum|evaluated": 1,
     "forum|floor": 1,
     "forum|generating": 1,
@@ -1675,18 +1703,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "announcements+drift claude",
-    "memory mechanism",
-    "forum evaluation",
     "memory evaluation",
     "forum testing",
     "forum claims",
     "memory testing",
     "memory claims",
-    "forum memory"
+    "forum memory",
+    "forum across",
+    "forum through-line"
   ],
   "hyp_seen_cycle": {
-    "C-432": 62,
     "C-440": 63,
     "C-448": 64,
     "C-450": 65,
@@ -1696,7 +1722,7 @@
     "C-458": 69,
     "C-462": 70,
     "C-464": 71,
-    "C-485": 51,
+    "C-485": 72,
     "C-493": 52,
     "C-508": 53,
     "C-516": 54,
@@ -1716,7 +1742,8 @@
     "C-550": 68,
     "C-552": 69,
     "C-554": 70,
-    "C-562": 71
+    "C-562": 71,
+    "C-577": 72
   },
   "topics_domain_ok": [
     "accurate",
@@ -1733,6 +1760,7 @@
     "baseline",
     "behavior",
     "caching",
+    "calibration",
     "claude",
     "claude-skills",
     "complexity",
@@ -1798,6 +1826,7 @@
     "timeprove",
     "tokenization",
     "tokens",
+    "tool",
     "tools",
     "training",
     "understanding",
@@ -1896,6 +1925,7 @@
     "C-56",
     "C-562",
     "C-57",
+    "C-577",
     "C-58"
   ],
   "methods_domain_ok": [
@@ -1928,6 +1958,9 @@
     "M-33",
     "M-34",
     "M-35",
+    "M-36",
+    "M-37",
+    "M-38",
     "M-4",
     "M-5",
     "M-6",
@@ -1939,30 +1972,30 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 433,
+    "active": 447,
     "hypotheses": 30,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 32,
-    "supporting_links": 32,
-    "emergent_total": 354,
+    "evidence_links": 34,
+    "supporting_links": 34,
+    "emergent_total": 357,
     "usable_semantic_rate": 1.0,
-    "methods_total": 35,
+    "methods_total": 38,
     "method_trials_total": 0,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 4762,
-    "cycle": 71
+    "objects": 4871,
+    "cycle": 72
   },
   "vitality_prev": {
-    "supports": 32,
+    "supports": 34,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 4762,
-    "active": 433,
-    "links": 32,
-    "emergent": 354
+    "objects": 4871,
+    "active": 447,
+    "links": 34,
+    "emergent": 357
   },
   "stagnation": 0,
   "vitality_history": [
@@ -2462,12 +2495,19 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 72,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 71,
+    "starved_topic": 72,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -4243,7 +4283,7 @@
     }
   ],
   "doktores_last_cycle": 69,
-  "reconsolidate_lens_idx": 4,
+  "reconsolidate_lens_idx": 5,
   "doktores_module_idx": 0,
   "doktores_hyp_researched": [
     "C-370"

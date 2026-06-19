@@ -18,6 +18,7 @@
       "baseline",
       "behavior",
       "caching",
+      "calibration",
       "claude",
       "claude-skills",
       "complexity",
@@ -80,6 +81,7 @@
       "timeprove",
       "tokenization",
       "tokens",
+      "tool",
       "tools",
       "training",
       "understanding",
@@ -88,29 +90,29 @@
       "verify",
       "world"
     ],
-    "claims_total": 562,
-    "claims_active": 433,
+    "claims_total": 577,
+    "claims_active": 447,
     "memory": 0,
-    "ledger": 3588,
+    "ledger": 3670,
     "open_conflicts": 36,
-    "methods": 35,
+    "methods": 38,
     "method_trials": 0,
     "methods_ready": 0,
     "preferences": 2,
-    "evidence_links": 32,
+    "evidence_links": 34,
     "self_model": 8,
     "hypotheses": 30,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.792,
-      "n": 433,
+      "rate": 0.794,
+      "n": 447,
       "flags": {
-        "correctly_typed": 433,
-        "source_anchored": 355,
-        "non_duplicate": 421,
-        "topic_valid": 433,
-        "scope_valid": 433,
-        "provenance_complete": 355
+        "correctly_typed": 447,
+        "source_anchored": 367,
+        "non_duplicate": 435,
+        "topic_valid": 447,
+        "scope_valid": 447,
+        "provenance_complete": 367
       }
     },
     "routing_engine": "DESi",
@@ -125,11 +127,11 @@
   "budget": {
     "spent_eur": 0.634,
     "cap_eur": 20.0,
-    "runs": 71
+    "runs": 72
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 71,
+    "runs": 72,
     "retired": false
   },
   "extensions": {
@@ -137,7 +139,8 @@
       "retrieval",
       "distillation",
       "caching",
-      "alignment"
+      "alignment",
+      "calibration"
     ],
     "notes": [
       {
@@ -699,10 +702,12 @@
       "huggingface:2606.16429",
       "huggingface:2606.16827",
       "huggingface:2606.17053",
+      "huggingface:2606.18021",
       "huggingface:2606.19334",
       "huggingface:2606.19602",
       "huggingface:2606.20381",
       "huggingface:2606.20515",
+      "huggingface:2606.20529",
       "huggingface:2606.20536",
       "openalex:W7117395041",
       "openalex:W7128545313",
@@ -1065,6 +1070,22 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20766665"
+      },
+      {
+        "call_id": "joni-c72:a1fdf0775d05",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "huggingface:2606.20529"
+      },
+      {
+        "call_id": "joni-c72:9621d3e59c62",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "huggingface:2606.18021"
       }
     ],
     "pdf_read": [
@@ -1153,7 +1174,9 @@
       "github:theDakshJaitly/mex",
       "huggingface:2606.16827",
       "huggingface:2606.17053",
+      "huggingface:2606.18021",
       "huggingface:2606.19602",
+      "huggingface:2606.20529",
       "openalex:W7137578291",
       "openalex:W7164783592",
       "openalex:W7164865069",
@@ -1283,7 +1306,9 @@
       "C-517|C-521",
       "C-518|C-521",
       "C-555|C-557",
-      "C-556|C-558"
+      "C-555|C-559",
+      "C-556|C-558",
+      "C-556|C-560"
     ],
     "semantic_backfilled": [
       "C-109|C-350@bge-small-en-v1.5",
@@ -1361,7 +1386,9 @@
       "C-517|C-521@bge-small-en-v1.5",
       "C-518|C-521@bge-small-en-v1.5",
       "C-555|C-557@bge-small-en-v1.5",
-      "C-556|C-558@bge-small-en-v1.5"
+      "C-555|C-559@bge-small-en-v1.5",
+      "C-556|C-558@bge-small-en-v1.5",
+      "C-556|C-560@bge-small-en-v1.5"
     ],
     "invented": [
       "announcements|drift",
@@ -1498,6 +1525,7 @@
       "timeprove",
       "tokenization",
       "tokens",
+      "tool",
       "training",
       "understanding",
       "user",
@@ -1615,6 +1643,7 @@
       "forum|generation",
       "forum|geometry",
       "forum|group",
+      "forum|hallucination",
       "forum|histories",
       "forum|hygiene",
       "forum|identical",
@@ -1781,6 +1810,7 @@
       "real",
       "reasoning",
       "related",
+      "relevant",
       "session",
       "skills",
       "supporting",
@@ -1794,7 +1824,7 @@
       "variance"
     ],
     "emerge_insufficient": {
-      "forum|action": 1,
+      "forum|action": 2,
       "forum|evaluated": 1,
       "forum|floor": 1,
       "forum|generating": 1,
@@ -1809,18 +1839,16 @@
       "C-383"
     ],
     "learned_queries": [
-      "announcements+drift claude",
-      "memory mechanism",
-      "forum evaluation",
       "memory evaluation",
       "forum testing",
       "forum claims",
       "memory testing",
       "memory claims",
-      "forum memory"
+      "forum memory",
+      "forum across",
+      "forum through-line"
     ],
     "hyp_seen_cycle": {
-      "C-432": 62,
       "C-440": 63,
       "C-448": 64,
       "C-450": 65,
@@ -1830,7 +1858,7 @@
       "C-458": 69,
       "C-462": 70,
       "C-464": 71,
-      "C-485": 51,
+      "C-485": 72,
       "C-493": 52,
       "C-508": 53,
       "C-516": 54,
@@ -1850,7 +1878,8 @@
       "C-550": 68,
       "C-552": 69,
       "C-554": 70,
-      "C-562": 71
+      "C-562": 71,
+      "C-577": 72
     },
     "topics_domain_ok": [
       "accurate",
@@ -1867,6 +1896,7 @@
       "baseline",
       "behavior",
       "caching",
+      "calibration",
       "claude",
       "claude-skills",
       "complexity",
@@ -1932,6 +1962,7 @@
       "timeprove",
       "tokenization",
       "tokens",
+      "tool",
       "tools",
       "training",
       "understanding",
@@ -2030,6 +2061,7 @@
       "C-56",
       "C-562",
       "C-57",
+      "C-577",
       "C-58"
     ],
     "methods_domain_ok": [
@@ -2062,6 +2094,9 @@
       "M-33",
       "M-34",
       "M-35",
+      "M-36",
+      "M-37",
+      "M-38",
       "M-4",
       "M-5",
       "M-6",
@@ -2073,30 +2108,30 @@
       "verdict": "steady",
       "development": 6,
       "degeneration": 1,
-      "active": 433,
+      "active": 447,
       "hypotheses": 30,
       "unsupported_hypotheses": 29,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
-      "evidence_links": 32,
-      "supporting_links": 32,
-      "emergent_total": 354,
+      "evidence_links": 34,
+      "supporting_links": 34,
+      "emergent_total": 357,
       "usable_semantic_rate": 1.0,
-      "methods_total": 35,
+      "methods_total": 38,
       "method_trials_total": 0,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 4762,
-      "cycle": 71
+      "objects": 4871,
+      "cycle": 72
     },
     "vitality_prev": {
-      "supports": 32,
+      "supports": 34,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 4762,
-      "active": 433,
-      "links": 32,
-      "emergent": 354
+      "objects": 4871,
+      "active": 447,
+      "links": 34,
+      "emergent": 357
     },
     "stagnation": 0,
     "vitality_history": [
@@ -2596,12 +2631,19 @@
         "development": 6,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 72,
+        "verdict": "steady",
+        "development": 6,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 71,
+      "starved_topic": 72,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -4377,7 +4419,7 @@
       }
     ],
     "doktores_last_cycle": 69,
-    "reconsolidate_lens_idx": 4,
+    "reconsolidate_lens_idx": 5,
     "doktores_module_idx": 0,
     "doktores_hyp_researched": [
       "C-370"
@@ -22033,19 +22075,307 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:46+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:47+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:47+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:49+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:54+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:56+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:57+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:36:58+00:00",
+      "cycle": 72,
+      "kind": "fetched",
+      "summary": "wikipedia: 4 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:00+00:00",
+      "cycle": 72,
+      "kind": "judged",
+      "summary": "relevant: LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents",
+      "refs": {
+        "source": "huggingface:2606.20529",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://huggingface.co/papers/2606.20529"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:02+00:00",
+      "cycle": 72,
+      "kind": "judged",
+      "summary": "relevant: LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agent Debate f",
+      "refs": {
+        "source": "huggingface:2606.18021",
+        "topic": "forum",
+        "new_topic": "calibration",
+        "url": "https://huggingface.co/papers/2606.18021"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:18+00:00",
+      "cycle": 72,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from huggingface:2606.20529 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:24+00:00",
+      "cycle": 72,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from huggingface:2606.18021 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:26+00:00",
+      "cycle": 72,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:26+00:00",
+      "cycle": 72,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agen (from huggingface)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:28+00:00",
+      "cycle": 72,
+      "kind": "improved",
+      "summary": "track_topic: calibration",
+      "refs": {
+        "claim": "C-575",
+        "topic": "calibration",
+        "source": "huggingface:2606.18021",
+        "url": "https://huggingface.co/papers/2606.18021"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:31+00:00",
+      "cycle": 72,
+      "kind": "developed",
+      "summary": "linked C-555 <-> C-559 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:31+00:00",
+      "cycle": 72,
+      "kind": "developed",
+      "summary": "linked C-556 <-> C-560 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:33+00:00",
+      "cycle": 72,
+      "kind": "emerged",
+      "summary": "new topic 'tool' precipitated from a recurrence across drift, forum, memory, tools",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:34+00:00",
+      "cycle": 72,
+      "kind": "emerged",
+      "summary": "'action' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:35+00:00",
+      "cycle": 72,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'hallucination' (Layer 9 synthesis-eligible, SC-466) from 5 claims (C-205, C-564, C-570, C-571, C-574)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:36+00:00",
+      "cycle": 72,
+      "kind": "emerged",
+      "summary": "method candidate for Kevin: 'relevant-as-a-lens' (Layer 9 synthesis-eligible, SC-467) across forum, memory, tools",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:36+00:00",
+      "cycle": 72,
+      "kind": "reconsolidated",
+      "summary": "re-read memory through Kevin lens 'forums-as-a-lens' across announcements, forum: 0 pair(s) examined, 0 new cross-topic link(s)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:39+00:00",
+      "cycle": 72,
+      "kind": "regulate",
+      "summary": "shed C-440: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:40+00:00",
+      "cycle": 72,
+      "kind": "vitality",
+      "summary": "steady · dev 6 · degen 1 · 29 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:40+00:00",
+      "cycle": 72,
+      "kind": "note",
+      "summary": "self-diagnostic: 1 thing(s) to improve · top: 2 Topics, auf denen ich denke, haben keine stützende Evidenz: forum, memory. -> searching 'forum memory', steer Doktores at reader-sources",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:42+00:00",
+      "cycle": 72,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:42+00:00",
+      "cycle": 72,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T21:37:42+00:00",
+      "cycle": 72,
+      "kind": "note",
+      "summary": "cycle done · 2 new · 2 method(s) · 0 trialed · 2 new link(s) · 0 hypothesis(es) · 3 emergent · shed 1 dead idea(s) · reconsolidated 0 link(s) via 'forums-as-a-lens' · steady · spend €0.6340 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 95,
-    "granite_calls": 49,
+    "llm_calls": 97,
+    "granite_calls": 51,
     "deepseek_escalations": 44,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 95,
-    "last_call": "2026-06-19T21:26:52+00:00",
+    "live_calls": 97,
+    "last_call": "2026-06-19T21:37:20+00:00",
     "est_cost_eur": 0.184,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 49,
+      "ibm-granite/granite-4.1-8b-20260429": 51,
       "deepseek-v4-pro": 46
     },
     "empty_calls": 1,
@@ -22053,16 +22383,16 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 92,
+      "stop": 94,
       "length": 3
     },
     "panel_rounds": 3,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 0.634,
-    "accepted_claims": 188,
-    "accepted_calls": 43,
-    "accepted_call_yield": 0.453,
-    "est_cost_per_accepted_eur": 0.001
+    "accepted_claims": 198,
+    "accepted_calls": 45,
+    "accepted_call_yield": 0.464,
+    "est_cost_per_accepted_eur": 0.0009
   },
   "commissions_done": [
     {
@@ -22080,15 +22410,6 @@
         "text": "Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] Reconciling divergent judgements: Claude’s strict category separation (observation ≠ method) and ChatGPT’s practical transferability assumptions diffe",
         "topic": "announcements+drift",
         "supports": 1,
-        "challenged": false,
-        "coherent": null,
-        "status": "candidate"
-      },
-      {
-        "id": "C-440",
-        "text": "Across my forum claims, 'juri' recurs as a through-line worth testing as a single underlying factor.",
-        "topic": "forum",
-        "supports": 0,
         "challenged": false,
         "coherent": null,
         "status": "candidate"
@@ -22290,6 +22611,15 @@
         "challenged": false,
         "coherent": null,
         "status": "candidate"
+      },
+      {
+        "id": "C-546",
+        "text": "Across my forum claims, 'digital' recurs as a through-line worth testing as a single underlying factor.",
+        "topic": "forum",
+        "supports": 0,
+        "challenged": false,
+        "coherent": null,
+        "status": "candidate"
       }
     ],
     "invented": [
@@ -22299,7 +22629,6 @@
       "forum|memory"
     ],
     "emerged_topics": [
-      "signals",
       "spatial",
       "supporting",
       "temporal",
@@ -22309,6 +22638,7 @@
       "timeprove",
       "tokenization",
       "tokens",
+      "tool",
       "training",
       "understanding",
       "user",
@@ -22317,5 +22647,5 @@
       "world"
     ]
   },
-  "generated": "2026-06-19T21:27:11+00:00"
+  "generated": "2026-06-19T21:37:42+00:00"
 }
