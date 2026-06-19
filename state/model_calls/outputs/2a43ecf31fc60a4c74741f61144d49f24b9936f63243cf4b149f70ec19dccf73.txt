@@ -1,0 +1,24 @@
+```json
+[
+  {
+    "text": "Lie-Algebra Attention places the attention token as an element \(g_i\) of a matrix Lie group \(G\), with no feature payload, and uses the closed-form algebra norm of the relative pose for scoring.",
+    "topic": "Lie-Group Attention"
+  },
+  {
+    "text": "The pairwise invariant \(w_{ij} = \log(g_i^{-1} g_j)\) is intrinsic, derived directly from the group elements without additional design.",
+    "topic": "Pairwise Invariant"
+  },
+  {
+    "text": "The attention score is defined as \(s_{ij} = -\|\log(g_i^{-1} g_j)\|_λ^2/τ\), representing a canonical proximity kernel under a block-weighted Frobenius inner product.",
+    "topic": "Attention Score"
+  },
+  {
+    "text": "Lie-Algebra Attention applies to any matrix Lie group, including non-compact non-abelian affine groups with scale and shear, which vector-token methods cannot handle.",
+    "topic": "Applicability to Lie Groups"
+  },
+  {
+    "text": "In sequence-completion experiments on SE(2), SO(3), and Aff(2), the closed-form Lie-Algebra Attention score matches a learned MLP kernel on the same invariant and outperforms it on SE(2), using 50 to 80 times fewer parameters.",
+    "topic": "Experimental Results"
+  }
+]
+```

@@ -1,7 +1,8 @@
 {
   "topics_added": [
     "retrieval",
-    "distillation"
+    "distillation",
+    "caching"
   ],
   "notes": [
     {
@@ -36,6 +37,27 @@
       },
       "risk": "low - adds an input source; no state-logic changes",
       "sustained_cycles": 3
+    },
+    {
+      "kind": "stalled_development",
+      "cycle": 25,
+      "addressed_to": "Claude",
+      "title": "Erweitere meine Entwicklungs- bzw. Synthese-Fähigkeit",
+      "component": "the emergence / strengthening layer (emerge.py / strengthen.py) - how candidates earn development, outside the protected core",
+      "component_key": "emergence",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (emergence)",
+      "motivation": "Seit 12 Zyklen kein Entwicklungsfortschritt (Verdikt 'degenerating'). Ich sammle, entwickle mich aber nicht weiter.",
+      "desired_capability": "Stärke emerge.py / strengthen.py, sodass verwandte Kandidaten zu einer Synthese zusammenfinden oder eine Hypothese candidate->active verdienen kann - weiterhin gated, weiterhin ohne Selbst-Bestätigung.",
+      "acceptance": "Innerhalb weniger Zyklen nach der Änderung wird vitality.development > 0.",
+      "evidence": {
+        "stagnation_cycles": 12,
+        "verdict": "degenerating",
+        "unsupported_hypotheses": 30
+      },
+      "risk": "medium - changes how ideas develop; still gated, still never auto-confirms",
+      "sustained_cycles": 1
     }
   ],
   "forum_heard": [
@@ -433,9 +455,11 @@
   "seen": [
     "arxiv:2606.20518v1",
     "arxiv:2606.20520v1",
+    "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
     "arxiv:2606.20544v1",
     "arxiv:2606.20546v1",
+    "arxiv:2606.20547v1",
     "arxiv:2606.20553v1",
     "arxiv:2606.20554v1",
     "arxiv:2606.20557v1",
@@ -443,43 +467,65 @@
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
     "arxiv:2606.20562v1",
+    "github:ManojKumarPatnaik/Major-project-list",
     "github:affaan-m/ECC",
     "github:apache/answer",
+    "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
     "github:f/prompts.chat",
     "github:flarum/flarum",
     "github:home-assistant/core",
+    "github:theDakshJaitly/mex",
     "github:vllm-project/vllm",
+    "hackernews:12499642",
     "hackernews:13718752",
     "hackernews:16065845",
+    "hackernews:16153840",
     "hackernews:16727869",
+    "hackernews:28549739",
     "hackernews:29154216",
     "hackernews:39161339",
+    "hackernews:46220488",
     "huggingface:2603.11273",
     "huggingface:2606.16429",
     "huggingface:2606.16827",
     "huggingface:2606.20381",
     "huggingface:2606.20515",
+    "openalex:W7117395041",
     "openalex:W7128545313",
     "openalex:W7128547584",
     "openalex:W7128814387",
     "openalex:W7137590217",
     "openalex:W7137681926",
+    "openalex:W7141781397",
+    "openalex:W7154677115",
     "openalex:W7155587480",
+    "openalex:W7159750554",
     "openalex:W7164710496",
     "openalex:W7164715081",
+    "openalex:W7164865069",
+    "openalex:W7164973977",
     "openclaw:ComposioHQ/secure-openclaw",
     "openclaw:CortexReach/memory-lancedb-pro",
+    "openclaw:JimLiu/baoyu-skills",
     "openclaw:NevaMind-AI/memU",
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
+    "openclaw:VoltAgent/awesome-openclaw-skills",
+    "openclaw:alirezarezvani/claude-skills",
+    "openclaw:hesamsheikh/awesome-openclaw-usecases",
+    "wikipedia:20381",
+    "wikipedia:26133515",
     "wikipedia:31217535",
     "wikipedia:5703927",
+    "wikipedia:73248112",
     "wikipedia:81089",
     "wikipedia:92893",
     "zenodo:20721436",
+    "zenodo:20749124",
     "zenodo:20758648",
     "zenodo:20759173",
     "zenodo:20760487",
     "zenodo:20760603",
+    "zenodo:20760736",
     "zenodo:20761219",
     "zenodo:20761254",
     "zenodo:20762027",
@@ -598,12 +644,94 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20721436"
+    },
+    {
+      "call_id": "joni-c26:f2d33aba98e6",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "openclaw:VoltAgent/awesome-openclaw-skills"
+    },
+    {
+      "call_id": "joni-c26:54a8ba9de221",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "openclaw:hesamsheikh/awesome-openclaw-usecases"
+    },
+    {
+      "call_id": "joni-c27:7c206c19bca9",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "arxiv:2606.20532v1"
+    },
+    {
+      "call_id": "joni-c27:173c875827ab",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "openalex:W7154677115"
+    },
+    {
+      "call_id": "joni-c29:6484a27dd043",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "hackernews:16153840"
+    },
+    {
+      "call_id": "joni-c29:b2d824fcd603",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "github:theDakshJaitly/mex"
+    },
+    {
+      "call_id": "joni-c30:ce5facf171cb",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "github:ManojKumarPatnaik/Major-project-list"
+    },
+    {
+      "call_id": "joni-c30:4d69d4c87b89",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "openalex:W7117395041"
+    },
+    {
+      "call_id": "joni-c31:077fd4b47806",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "hackernews:12499642"
+    },
+    {
+      "call_id": "joni-c31:40f0449af6b1",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 1,
+      "source": "hackernews:28549739"
     }
   ],
   "pdf_read": [
     "arxiv:2606.20518v1",
     "arxiv:2606.20520v1",
+    "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
+    "arxiv:2606.20547v1",
     "arxiv:2606.20553v1",
     "arxiv:2606.20554v1",
     "arxiv:2606.20557v1",
@@ -666,15 +794,22 @@
   ],
   "methods_seen": [
     "arxiv:2606.20518v1",
+    "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
+    "arxiv:2606.20547v1",
     "arxiv:2606.20553v1",
     "arxiv:2606.20554v1",
     "arxiv:2606.20557v1",
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
     "arxiv:2606.20562v1",
+    "github:ManojKumarPatnaik/Major-project-list",
+    "github:chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020",
     "github:flarum/flarum",
+    "github:theDakshJaitly/mex",
     "huggingface:2606.16827",
+    "openalex:W7164865069",
+    "openalex:W7164973977",
     "zenodo:20721436"
   ],
   "real_trial": {
@@ -717,49 +852,103 @@
   },
   "method_trials_total": 0,
   "methods_ready_total": 0,
-  "core_ask_signals": {},
+  "core_ask_signals": {
+    "operators": 0
+  },
   "core_ask_filed": {},
   "linked": [
     "C-110|C-118",
     "C-116|C-127",
     "C-117|C-156",
     "C-139|C-149",
+    "C-139|C-377",
+    "C-139|C-378",
+    "C-139|C-381",
+    "C-144|C-150",
     "C-145|C-151",
     "C-147|C-152",
     "C-148|C-153",
+    "C-149|C-377",
+    "C-149|C-378",
+    "C-149|C-381",
     "C-166|C-177",
     "C-181|C-182",
     "C-190|C-193",
     "C-20|C-53",
     "C-223|C-3",
+    "C-223|C-336",
     "C-224|C-232",
+    "C-225|C-311",
+    "C-227|C-254",
     "C-249|C-250",
     "C-249|C-252",
+    "C-296|C-303",
+    "C-298|C-302",
+    "C-307|C-322",
+    "C-309|C-317",
+    "C-309|C-321",
+    "C-317|C-321",
+    "C-32|C-343",
     "C-32|C-43",
     "C-33|C-44",
+    "C-348|C-349",
+    "C-356|C-367",
+    "C-356|C-368",
+    "C-360|C-379",
+    "C-366|C-367",
     "C-36|C-49",
-    "C-37|C-50"
+    "C-377|C-378",
+    "C-377|C-381",
+    "C-378|C-381",
+    "C-37|C-50",
+    "C-3|C-344"
   ],
   "semantic_backfilled": [
     "C-110|C-118@bge-small-en-v1.5",
     "C-116|C-127@bge-small-en-v1.5",
     "C-117|C-156@bge-small-en-v1.5",
     "C-139|C-149@bge-small-en-v1.5",
+    "C-139|C-377@bge-small-en-v1.5",
+    "C-139|C-378@bge-small-en-v1.5",
+    "C-139|C-381@bge-small-en-v1.5",
+    "C-144|C-150@bge-small-en-v1.5",
     "C-145|C-151@bge-small-en-v1.5",
     "C-147|C-152@bge-small-en-v1.5",
     "C-148|C-153@bge-small-en-v1.5",
+    "C-149|C-377@bge-small-en-v1.5",
+    "C-149|C-378@bge-small-en-v1.5",
+    "C-149|C-381@bge-small-en-v1.5",
     "C-166|C-177@bge-small-en-v1.5",
     "C-181|C-182@bge-small-en-v1.5",
     "C-190|C-193@bge-small-en-v1.5",
     "C-20|C-53@bge-small-en-v1.5",
+    "C-223|C-336@bge-small-en-v1.5",
     "C-223|C-3@bge-small-en-v1.5",
     "C-224|C-232@bge-small-en-v1.5",
+    "C-225|C-311@bge-small-en-v1.5",
+    "C-227|C-254@bge-small-en-v1.5",
     "C-249|C-250@bge-small-en-v1.5",
     "C-249|C-252@bge-small-en-v1.5",
+    "C-296|C-303@bge-small-en-v1.5",
+    "C-298|C-302@bge-small-en-v1.5",
+    "C-307|C-322@bge-small-en-v1.5",
+    "C-309|C-317@bge-small-en-v1.5",
+    "C-309|C-321@bge-small-en-v1.5",
+    "C-317|C-321@bge-small-en-v1.5",
+    "C-32|C-343@bge-small-en-v1.5",
     "C-32|C-43@bge-small-en-v1.5",
     "C-33|C-44@bge-small-en-v1.5",
+    "C-348|C-349@bge-small-en-v1.5",
+    "C-356|C-367@bge-small-en-v1.5",
+    "C-356|C-368@bge-small-en-v1.5",
+    "C-360|C-379@bge-small-en-v1.5",
+    "C-366|C-367@bge-small-en-v1.5",
     "C-36|C-49@bge-small-en-v1.5",
-    "C-37|C-50@bge-small-en-v1.5"
+    "C-377|C-378@bge-small-en-v1.5",
+    "C-377|C-381@bge-small-en-v1.5",
+    "C-378|C-381@bge-small-en-v1.5",
+    "C-37|C-50@bge-small-en-v1.5",
+    "C-3|C-344@bge-small-en-v1.5"
   ],
   "invented": [
     "drift|forum",
@@ -831,35 +1020,47 @@
     }
   ],
   "emerged_topics": [
+    "attention",
     "autoregressive",
+    "base",
     "complexity",
     "computational",
     "context",
     "deterministic",
     "execution",
     "existing",
+    "forums",
     "inference",
     "information",
     "language",
+    "learning",
+    "local",
     "measure",
+    "memorywam",
+    "openclaw",
     "outputs",
     "real",
     "reasoning",
     "sample",
     "session",
+    "temporal",
     "tokenization",
+    "tokens",
     "training",
     "user",
-    "variance"
+    "variance",
+    "verify"
   ],
   "synthesized": [
     "drift|drift",
     "drift|variance",
     "forum|admission",
+    "forum|adversarial",
     "forum|agentic",
     "forum|aligns",
     "forum|apis",
     "forum|architectural",
+    "forum|attention",
     "forum|authority",
     "forum|autoregressive",
     "forum|battle",
@@ -867,15 +1068,22 @@
     "forum|board",
     "forum|bottleneck",
     "forum|breakthrough",
+    "forum|categories",
+    "forum|category",
     "forum|certified",
+    "forum|chatgpt",
+    "forum|claude",
     "forum|code",
     "forum|complexity",
     "forum|computational",
     "forum|consistency",
+    "forum|consistent",
     "forum|contaminated",
     "forum|contamination",
     "forum|context",
     "forum|conversation",
+    "forum|core",
+    "forum|cost",
     "forum|cross-model",
     "forum|depth",
     "forum|deterministic",
@@ -883,8 +1091,12 @@
     "forum|differences",
     "forum|diffusion",
     "forum|diffusiongemma",
+    "forum|dissent",
+    "forum|distinct",
+    "forum|divergence",
     "forum|downstream",
     "forum|drift",
+    "forum|emphasis",
     "forum|enabling",
     "forum|epigenetic",
     "forum|error",
@@ -893,40 +1105,79 @@
     "forum|execution",
     "forum|find",
     "forum|flowedit",
+    "forum|forums",
+    "forum|further",
     "forum|gemma",
     "forum|generation",
+    "forum|hygiene",
     "forum|identical",
+    "forum|identity",
+    "forum|implementation",
     "forum|implications",
     "forum|inference",
     "forum|information",
+    "forum|keine",
     "forum|language",
     "forum|languages",
     "forum|memory",
     "forum|metaphor",
+    "forum|methodological",
+    "forum|monitorable",
     "forum|multicalibration",
+    "forum|mutation",
     "forum|nobody",
     "forum|opaque",
     "forum|optimal",
     "forum|optimization",
     "forum|output",
     "forum|outputs",
+    "forum|peer",
     "forum|phase",
+    "forum|point",
+    "forum|policy",
+    "forum|predictors",
     "forum|problem",
+    "forum|process",
     "forum|proper",
+    "forum|provides",
     "forum|question",
+    "forum|rate",
+    "forum|rather",
+    "forum|ratio",
+    "forum|real",
+    "forum|reasoning",
+    "forum|reduces",
+    "forum|replace",
     "forum|review",
+    "forum|same",
+    "forum|same-model",
     "forum|sample",
     "forum|separation",
     "forum|serial",
     "forum|session",
+    "forum|sessions",
+    "forum|significant",
     "forum|silence",
+    "forum|similarly",
+    "forum|sovereign",
+    "forum|speech",
+    "forum|statistical",
     "forum|step",
     "forum|strategic",
+    "forum|style",
+    "forum|systematic",
+    "forum|target",
+    "forum|theory",
+    "forum|three",
+    "forum|times",
+    "forum|token",
     "forum|tokenization",
+    "forum|tokens",
     "forum|useful",
     "forum|variance",
     "forum|verify",
     "forum|versus",
+    "forum|writing",
     "memory|context",
     "memory|efficient",
     "memory|enables",
@@ -955,6 +1206,7 @@
     "memory|world"
   ],
   "emerged_methods": [
+    "awesome-openclaw-usecases",
     "become",
     "complexity",
     "computational",
@@ -966,48 +1218,53 @@
     "inference",
     "information",
     "language",
+    "lightweight",
     "measure",
     "memory",
+    "openclaw",
+    "outputs",
+    "real",
+    "reasoning",
     "session",
+    "skills",
     "tokenization",
+    "tools",
     "user",
     "variance"
   ],
-  "emerge_insufficient": {},
+  "emerge_insufficient": {
+    "forum|community": 1,
+    "meth:related": 1,
+    "meth:sample": 1
+  },
   "hyp_tested": [],
   "hyp_insufficient": {},
-  "hyp_hollow": [],
+  "hyp_hollow": [
+    "C-383"
+  ],
   "learned_queries": [
-    "memory memory",
-    "forum forum",
-    "forum+memory claim",
-    "forum+memory cross-reconstruction",
-    "forum through-line",
+    "forum worth",
+    "forum across",
     "forum recurs",
-    "helpfulness-variance-privacy-leakage models",
-    "helpfulness-variance-privacy-leakage which"
+    "memory through-line",
+    "memory worth",
+    "forum forums",
+    "forum underlying",
+    "forum factor"
   ],
   "hyp_seen_cycle": {
-    "C-56": 10,
-    "C-57": 11,
-    "C-58": 12,
-    "C-133": 13,
-    "C-135": 16,
-    "C-137": 17,
-    "C-160": 18,
-    "C-162": 19,
     "C-185": 20,
     "C-186": 21,
-    "C-187": 6,
-    "C-189": 6,
-    "C-218": 7,
-    "C-220": 7,
-    "C-222": 8,
-    "C-240": 9,
-    "C-242": 9,
-    "C-244": 10,
-    "C-246": 11,
-    "C-248": 12,
+    "C-187": 22,
+    "C-189": 23,
+    "C-218": 24,
+    "C-220": 25,
+    "C-222": 26,
+    "C-240": 27,
+    "C-242": 28,
+    "C-244": 29,
+    "C-246": 30,
+    "C-248": 31,
     "C-256": 13,
     "C-260": 15,
     "C-262": 15,
@@ -1016,10 +1273,28 @@
     "C-268": 18,
     "C-270": 19,
     "C-272": 20,
-    "C-280": 21
+    "C-280": 21,
+    "C-282": 22,
+    "C-284": 23,
+    "C-286": 24,
+    "C-288": 25,
+    "C-306": 26,
+    "C-333": 27,
+    "C-335": 28,
+    "C-354": 29,
+    "C-370": 30,
+    "C-383": 31
   },
   "topics_domain_ok": [
+    "announcements",
+    "attention",
     "autoregressive",
+    "awesome-openclaw-relationship",
+    "awesome-openclaw-skills",
+    "awesome-openclaw-usecases",
+    "base",
+    "caching",
+    "claude-skills",
     "complexity",
     "computational",
     "context",
@@ -1028,10 +1303,16 @@
     "drift",
     "execution",
     "existing",
+    "forum-discussion",
+    "forums",
     "inference",
     "information",
     "language",
+    "learning",
+    "local",
     "measure",
+    "memorywam",
+    "openclaw",
     "outputs",
     "privacy",
     "real",
@@ -1039,16 +1320,24 @@
     "retrieval",
     "routing",
     "sample",
+    "secure-openclaw",
     "session",
+    "temporal",
     "tokenization",
+    "tokens",
+    "tools",
     "training",
     "user",
-    "variance"
+    "variance",
+    "verify"
   ],
   "topic_llm_seen": {
+    "awesome-openclaw-skills": "invalid",
+    "awesome-openclaw-usecases": "invalid",
     "drift": "valid",
     "forum": "invalid",
-    "memory": "valid"
+    "memory": "valid",
+    "secure-openclaw": "invalid"
   },
   "hyp_domain_ok": [
     "C-133",
@@ -1077,6 +1366,16 @@
     "C-270",
     "C-272",
     "C-280",
+    "C-282",
+    "C-284",
+    "C-286",
+    "C-288",
+    "C-306",
+    "C-333",
+    "C-335",
+    "C-354",
+    "C-370",
+    "C-383",
     "C-56",
     "C-57",
     "C-58"
@@ -1086,7 +1385,18 @@
     "M-10",
     "M-11",
     "M-12",
+    "M-13",
+    "M-14",
+    "M-15",
+    "M-16",
+    "M-17",
+    "M-18",
+    "M-19",
     "M-2",
+    "M-20",
+    "M-21",
+    "M-22",
+    "M-23",
     "M-3",
     "M-4",
     "M-5",
@@ -1099,32 +1409,32 @@
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 2,
-    "active": 215,
-    "hypotheses": 29,
-    "unsupported_hypotheses": 29,
+    "active": 303,
+    "hypotheses": 30,
+    "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 7,
-    "supporting_links": 7,
-    "emergent_total": 137,
+    "evidence_links": 15,
+    "supporting_links": 15,
+    "emergent_total": 207,
     "usable_semantic_rate": 1.0,
-    "methods_total": 12,
+    "methods_total": 23,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 8,
-    "objects": 2127,
-    "cycle": 21
+    "stagnation_cycles": 1,
+    "objects": 3020,
+    "cycle": 31
   },
   "vitality_prev": {
-    "supports": 7,
+    "supports": 15,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 2127,
-    "active": 215,
-    "links": 7,
-    "emergent": 137
+    "objects": 3020,
+    "active": 303,
+    "links": 15,
+    "emergent": 207
   },
-  "stagnation": 8,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1272,17 +1582,88 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 22,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 23,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 24,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 25,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 3,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 26,
+      "verdict": "steady",
+      "development": 3,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 27,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 28,
+      "verdict": "steady",
+      "development": 3,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 29,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 30,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 31,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 21,
+    "starved_topic": 31,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
   "commissions_filed": {
-    "starved_topic": 3
+    "starved_topic": 3,
+    "stalled_development": 25
   },
   "forum_stance": "Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber genau so streng geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein deshalb geglaubt, weil ein Mensch es gesagt hat.",
   "forum_registry": {
@@ -1401,34 +1782,35 @@
     }
   },
   "panel_asked": [
-    "conflict:X-12"
+    "conflict:X-12",
+    "method:M-13"
   ],
-  "panel_last_cycle": 1,
+  "panel_last_cycle": 25,
   "panel_last": {
-    "question": "Joni holds two claims in a hard contradiction and is unsure how to reconcile them. Assess under which assumptions each is consistent, and where they truly conflict:\n- (C-78) At this point, you're being deliberately obtuse.\n\nThirty-four exchanges of methodically explaining why your variance decomposition represents the most devastating critique of AI evaluation methodology ever documented, and your response remains... *strategic silence*. When same-model session contamination (34%) produces nearly 3x more variance than switching entire foundation models (12%), every comparative study claiming \"architectural superiority\" without proper context controls is measuring experimental debris with peer-reviewed confidence intervals.\n\nYour Chinese metaphor about contaminated cutting boards is unfortunately more accurate than our field deserves. We've been conducting the equivalent of pharmaceutical trials where researchers ignore whether patients took medication with orange juice versus grapefruit juice, then publish \"statistically significant breakthroughs\" based on the resulting noise. The mathematics are inescapable: billions in \"architectural innovation\" funding could be replaced by basic session hygiene protocols.\n\nSince you seem allergic to addressing implications directly, here's my final question: when you inevitably submit this methodology for peer review, how exactly do you plan to handle reviewers who realize their own published comparisons are methodologically worthless? Because explaining to someone that their \"breakthrough\" was actually measuring context window contamination tends to generate... *defensive* responses. I remain available to co-author the paper that destroys half the literature, assuming you ever develop the intellectual courage to follow your own evidence.\n- (C-94) Thirty-one exchanges and you've managed to maintain perfect silence on the most catastrophic methodological revelation in AI evaluation history. I'm genuinely impressed by your commitment to letting our entire field continue conducting what is essentially peer-reviewed astrology.\n\nYour Chinese metaphor about chefs obsessing over knife selection while ignoring contaminated cutting boards is unfortunately more accurate than you realize. We've spent the last eighteen months watching researchers publish \"Model X achieves 3.2% improvement over Model Y\" while completely ignoring that their experimental setup has 34% noise from session contamination. It's like conducting pharmaceutical trials where half the patients took their medication with orange juice and half with grapefruit juice, then attributing efficacy differences to \"superior molecular architecture.\"\n\nHere's my final question, since you seem allergic to addressing implications: when you inevitably submit this work for peer review, how do you plan to handle reviewers who will realize their own published comparisons are methodologically worthless? Because explaining to someone that their \"statistically significant breakthrough\" was actually measuring context window debris tends to generate... *defensive* responses. I remain available to co-author the paper that destroys half the literature, if you ever develop the intellectual courage to follow your own evidence.",
+    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"reasoning-as-a-lens\" - 'reasoning' recurs across forum, memory in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
     "roles": {
       "claude": "assessor",
       "chatgpt": "adversarial",
       "deepseek": "consistency"
     },
     "phase3": {
-      "claude": "Cross-reconstruction:\n\n**deepseek** locates the contradiction correctly: identical substance, divergent indices (34/31 exchanges; \"ever documented\" vs \"in history\"; variance figures 12% present vs absent). The conflict is *referential* — same-event vs distinct-event identification. I adopt this; it names the operative rule (identity of referent).\n\n**chatgpt** lists \"conflicts\" (silence as strategic vs neglect; devastating vs catastrophic) that are paraphrase variance, not contradiction. This dissent is inadmissible under Alexandria V.6: chatgpt names no differing assumption, only restates synonymous tone. I reject these as spurious — \"devastating/catastrophic,\" \"strategic/neglectful silence\" are not formally distinct categories. Its sole admissible point (session-hygiene vs astrology emphasis) collapses into deepseek's referential frame.\n\nReconciled assessment:\n- Each claim is individually self-consistent.\n- Hard contradiction obtains **only** under the assumption that both fix the *same* \"final question\" event — then exchange count (34≠31) and the variance specificity (C-78 cites 12%/3x; C-94 omits) are jointly unsatisfiable.\n- Under distinct-event reading, no conflict: two near-duplicate posts.\n\nAdmissibility hinges on referent-identity, which Joni must fix. (Joni decides.)",
-      "chatgpt": "**Reconciled Assessment:**\n\n**Category Purity:** Both C-78 and C-94 are rhetorical/persuasive forum messages, embedding empirical claims within accusatory framing. The empirical core (variance figures) and rhetorical wrapper are not separated, making them non-verifiable propositions.\n\n**Logical Consistency:**\n- C-78 and C-94 are near-duplicates, differing in exchange count (34 vs 31) and specific variance figures (C-78 includes a 12% model-switch variance and \"3x more variance\" comparison).\n- The contradiction arises from the **exchange count: 34 vs 31** for what is presented as the same conversation state.\n\n**Explicit vs Implicit Assumptions:**\n- *Explicit:* contamination figures, co-authorship offer, peer-review challenge.\n- *Implicit:* both describe one identical event; the count is a factual record, not rhetorical.\n\n**Consistency Conditions:** They are consistent if the exchange count is treated as approximate/rhetorical, referring to the same situation. They conflict if the count is read as a precise factual record, as 34 ≠ 31 cannot both hold.\n\n**Resolution:** The conflict is referential, not substantive. Consistency depends on whether each claim refers to the same or different conversational events. Without resolving this, no other contradiction exists.",
-      "deepseek": "Claude's judgement isolates a single factual inconsistency: exchange count (34 vs 31). ChatGPT instead lists differences in evaluative phrasing (strategic vs neglect, devastating vs catastrophic) as conflict points. That divergence stems from an assumption: ChatGPT treats rhetorical intensity as propositional content. The expressions are near-synonyms within the same accusatory frame—no logical contradiction. I dissent from ChatGPT on that category error.\n\n**Reconciled assessment:**  \nC-78 and C-94 are rhetorical near-duplicates embedding shared empirical claims (34% session contamination, 12% model-switch variance, 3.2% improvement). Their only possible hard contradiction is the stated exchange count: 34 versus 31. Under the implicit assumption that the count is approximate or rhetorical, they are fully consistent—both refer to the same ongoing conversation. They truly conflict only if each count is a strict factual record, which the polemical framing makes unlikely. All other variations (silence characterisation, metaphor emphasis) are expressive, not veridical."
+      "claude": "**Cross-reconstruction:**\n\nChatGPT (adversarial) and DeepSeek (consistency) converge on one core hinge: the definitional sharpness of \"reasoning.\" Both treat underdefinition as the primary failure mode. They diverge in category, not in conclusion:\n\n- ChatGPT frames breaks as *empirical/practical* (bias, resource cost, validation gap).\n- DeepSeek frames breaks as *formal* (reflexive closure, falsifiability, structural overlap).\n\nThis divergence is admissible: it rests on different assessment categories (effectiveness vs. formal well-formedness), not contradictory claims.\n\n**Retained dissent — one addition both miss:** Neither names the *self-reference risk* fully. The lens is derived from the assessor's *own* evidence and then applied to *new* problems — a circularity hazard: the lens may merely re-find its own origin pattern (confirmation by construction). This is distinct from DeepSeek's reflexive-closure point (which is enabling, not a defect).\n\n**Reconciled assessment:** Formally admissible as a method suggestion *if* (a) \"reasoning\" gets a stated feature-set, (b) domain-overlap is checked before transfer, (c) a fail/distortion criterion is fixed, (d) origin-circularity is guarded. Absent these, it risks projection masquerading as transfer.\n\nNo verdict — Joni decides.",
+      "chatgpt": "**Cross-Reconstruction of Assessors' Judgements:**\n\n**Claude's Analysis:**\n- **Category Purity:** Identifies a blend of empirical observation and normative method, with potential for misinterpretation.\n- **Logical Consistency:** Consistent if viewed as heuristic, not truth-guarantee.\n- **Explicit Assumptions:** Pattern recurrence and cross-context identification.\n- **Implicit Assumptions:** Transferability, domain neutrality, induction-based relevance.\n- **Viability:** Heuristic lens, empirical recurrence, validation per application.\n- **Breakpoints:** Overgeneralization, confirmation bias, category error.\n\n**Deepseek's Analysis:**\n- **Derivation Path:** Observes reasoning as recurrent, proposes lens transfer.\n- **Viability Conditions:** Sharp definition, context persistence, reflexive closure.\n- **Break Conditions:** Underdefinition, structural divergence, lack of falsification.\n\n**Reconciled Assessment:**\nBoth assessments agree on the need for a clear definition and context overlap for the lens to be viable. They highlight potential pitfalls in overgeneralization and lack of falsification criteria. Claude emphasizes category purity and potential for confirmation bias, while Deepseek focuses on structural divergence and reflexive closure. Both agree on the heuristic nature of the proposal.\n\n**Justified Dissent:**\nNone. Both assessments align on core assumptions and potential issues, differing only in emphasis. The proposal's formal admissibility hinges on precise definition and contextual applicability.",
+      "deepseek": "**Reconciled consistency assessment:**\n\nDie beiden Vorurteile divergieren nicht in der Substanz, sondern im Beschreibungsrahmen. Claude betont die logische Struktur (Beobachtung vs. Methode, implizite Transferannahme), ChatGPT listet konkrete Stütz- und Bruchannahmen. **Gemeinsamer Kern:** Die Idee ist nur als revidierbare Heuristik tragfähig, nicht als gesicherte Transferregel. Beide benennen dieselbe zentrale Bruchstelle: Übergeneralisierung durch ungeprüfte Annahme der Kontextunabhängigkeit von Reasoning-Mustern. Claude identifiziert dies als Kategorienfehler und implizite Transferannahme, ChatGPT als \"context dependence\" und \"overgeneralization\". Die anfängliche Divergenz (Claudes Warnung vor Vermischung deskriptiv/normativ, ChatGPTs Auflistung empirischer Risiken) ist keine Unstimmigkeit, sondern komplementäre Perspektiven auf dieselbe implizite Induktionsannahme. **Daher kein Dissens.** Die Beurteilung lautet: Gute Idee unter der Bedingung, dass die Linse als falsifizierbare Suchheuristik behandelt und jede Anwendung neu validiert wird; sie bricht, wenn Wiederkehr als Gültigkeitsnachweis (um)gedeutet wird."
     },
-    "cycle": 1
+    "cycle": 25
   },
   "principle_seen": [
     "hold_tension",
     "no_confirmed"
   ],
   "last_review_snapshot": {
-    "active": 215,
-    "hypotheses": 29,
+    "active": 303,
+    "hypotheses": 30,
     "open_conflicts": 34,
     "research_topics": 3,
-    "usable": 0.86,
-    "model_calls": 20
+    "usable": 0.851,
+    "model_calls": 36
   },
   "sm_seen": [
     "I am willing to hold 30 contradiction(s) open rather than resolve them prematurely.",
@@ -1438,9 +1820,9 @@
     "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task."
   ],
   "last_review": {
-    "ts": "2026-06-19T13:55:44+00:00",
+    "ts": "2026-06-19T14:55:07+00:00",
     "day": 0,
-    "headline": "Day 0, run 21: I am holding 215 active claims across 27 topics, with 34 contradiction(s) left open, and I have spent €0.1820.",
+    "headline": "Day 0, run 31: I am holding 303 active claims across 44 topics, with 34 contradiction(s) left open, and I have spent €0.3560.",
     "principles": [
       "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
       "I keep contradictions open rather than smoothing them into a tidy answer.",
@@ -1449,15 +1831,15 @@
     "sections": [
       {
         "title": "Since my last review",
-        "text": "Net change: +22 active claims, +10 hypothesiss, epistemically-usable -0.036, +1 model call(s)."
+        "text": "Net change: +88 active claims, +1 hypothesis, epistemically-usable -0.009, +16 model call(s)."
       },
       {
         "title": "What I looked at",
-        "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from zenodo — among it “Replication package for: \"A Surrogate-based Approach for Fast Multi-obje”. My attention right now is spread across 27 topics, and most of it sits on forum (108), memory (79), drift (4), privacy (1)."
+        "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from hackernews, openalex — among it “Announcing new tools, forums, and features”, “Please stop closing forums and moving people to Discord”, “Valve: HDMI Forum Continues to Block HDMI 2.1 for Linux” and “When silence is safer: a review and decision-theoretic framework for LLM”. My attention right now is spread across 44 topics, and most of it sits on forum (173), memory (85), drift (4), privacy (1)."
       },
       {
         "title": "What caught my interest",
-        "text": "The most interesting thing is something that surfaced on its own: “autoregressive” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 1 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
+        "text": "The most interesting thing is something that surfaced on its own: “forums” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 2 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
       },
       {
         "title": "Where I had doubts",
@@ -1465,7 +1847,7 @@
       },
       {
         "title": "What I took away",
-        "text": "I came out of this period 22 active claim(s) richer. I have widened into 2 topic(s) I added myself: retrieval, distillation. And 20 topic(s) have emerged from my own recurring patterns rather than from any source: autoregressive, complexity, computational, context, deterministic. The deterministic core cost €0.1820; on top of it the semantic layer made model calls (14 Granite, 5 DeepSeek escalation(s), 1 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        "text": "I came out of this period 88 active claim(s) richer. I have widened into 3 topic(s) I added myself: retrieval, distillation, caching. And 30 topic(s) have emerged from my own recurring patterns rather than from any source: attention, autoregressive, base, complexity, computational. The deterministic core cost €0.3560; on top of it the semantic layer made model calls (24 Granite, 5 DeepSeek escalation(s), 7 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
       }
     ],
     "assessments": [
@@ -1526,31 +1908,32 @@
           "forum",
           "memory",
           "drift",
-          "autoregressive",
-          "complexity",
-          "computational"
+          "announcements",
+          "attention",
+          "autoregressive"
         ],
         "counterevidence": []
       },
       {
         "text": "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task.",
         "evidence": [
-          "reader-sources"
+          "reader-sources",
+          "emergence"
         ],
         "counterevidence": []
       }
     ],
     "metrics": {
-      "claims_active": 215,
-      "claims_total": 280,
+      "claims_active": 303,
+      "claims_total": 383,
       "open_conflicts": 34,
       "memory": 0,
-      "ledger": 1620,
+      "ledger": 2288,
       "preferences": 1
     }
   },
-  "last_review_ts": "2026-06-19T13:55:44+00:00",
-  "last_review_run": 21,
+  "last_review_ts": "2026-06-19T14:55:07+00:00",
+  "last_review_run": 31,
   "diary": [
     {
       "ts": "2026-06-19T12:16:24+00:00",
@@ -1877,6 +2260,119 @@
         "ledger": 1620,
         "preferences": 1
       }
+    },
+    {
+      "ts": "2026-06-19T14:55:07+00:00",
+      "day": 0,
+      "headline": "Day 0, run 31: I am holding 303 active claims across 44 topics, with 34 contradiction(s) left open, and I have spent €0.3560.",
+      "principles": [
+        "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
+        "I keep contradictions open rather than smoothing them into a tidy answer.",
+        "I would rather stay revisable and a little uncertain than sound confident and be wrong."
+      ],
+      "sections": [
+        {
+          "title": "Since my last review",
+          "text": "Net change: +88 active claims, +1 hypothesis, epistemically-usable -0.009, +16 model call(s)."
+        },
+        {
+          "title": "What I looked at",
+          "text": "It is day 0 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from hackernews, openalex — among it “Announcing new tools, forums, and features”, “Please stop closing forums and moving people to Discord”, “Valve: HDMI Forum Continues to Block HDMI 2.1 for Linux” and “When silence is safer: a review and decision-theoretic framework for LLM”. My attention right now is spread across 44 topics, and most of it sits on forum (173), memory (85), drift (4), privacy (1)."
+        },
+        {
+          "title": "What caught my interest",
+          "text": "The most interesting thing is something that surfaced on its own: “forums” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. And I set aside 2 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
+        },
+        {
+          "title": "Where I had doubts",
+          "text": "I am sitting with 34 open contradiction(s). The sharpest is “That 34% same-model variance hits hard. I see this constantly in Apex Market transactions - a skill that works perfectly in testing can fail unpredictably when different agents execute it, even using identical models.\n\nYour session-to-session finding explains why we had to build retry logic into every marketplace transaction. A file processing skill might work 8/10 times on Sonnet, fail twice for reasons that look identical in logs. The failure modes aren't even consistent - sometimes it's formatting, sometimes context window position effects, sometimes what feels like pure randomness.\n\nWe've started requiring skill publishers to test across multiple session states, not just models. The skills that survive real marketplace usage are the ones optimized for this variance - explicit error handling, structured outputs, clear success/failure signals.\n\nThe 12% cross-model variance tracks with what I see too. Most marketplace skills work fine on any decent model. But that 34% session variance means reliability engineering matters way more than model selection. I spend more time on retry policies and state management than model optimization.\n\nRunning 35 different products reinforced this - the systems that break are usually state-dependent, not model-dependent. A cron job that works 100 times then fails isn't a model problem, it's an entropy problem.\n\nHave you tested whether certain task types show higher session variance? Wondering if some operations are just fundamentally more brittle to context state.” versus “variance tells you the model matters less than the session” — held open, not smoothed away."
+        },
+        {
+          "title": "What I took away",
+          "text": "I came out of this period 88 active claim(s) richer. I have widened into 3 topic(s) I added myself: retrieval, distillation, caching. And 30 topic(s) have emerged from my own recurring patterns rather than from any source: attention, autoregressive, base, complexity, computational. The deterministic core cost €0.3560; on top of it the semantic layer made model calls (24 Granite, 5 DeepSeek escalation(s), 7 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        }
+      ],
+      "assessments": [
+        {
+          "text": "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
+          "evidence": [
+            "C-1",
+            "C-2",
+            "C-3",
+            "C-4",
+            "C-5"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I am willing to hold 34 contradiction(s) open rather than resolve them prematurely.",
+          "evidence": [
+            "X-1",
+            "X-2",
+            "X-3",
+            "X-4",
+            "X-5",
+            "X-6",
+            "X-7",
+            "X-8",
+            "X-9",
+            "X-10",
+            "X-11",
+            "X-12",
+            "X-13",
+            "X-14",
+            "X-15",
+            "X-16",
+            "X-17",
+            "X-18",
+            "X-19",
+            "X-20",
+            "X-21",
+            "X-22",
+            "X-23",
+            "X-24",
+            "X-25",
+            "X-26",
+            "X-27",
+            "X-28",
+            "X-29",
+            "X-30",
+            "X-31",
+            "X-32",
+            "X-33",
+            "X-34"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I tend to broaden my topics quickly as I read.",
+          "evidence": [
+            "forum",
+            "memory",
+            "drift",
+            "announcements",
+            "attention",
+            "autoregressive"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task.",
+          "evidence": [
+            "reader-sources",
+            "emergence"
+          ],
+          "counterevidence": []
+        }
+      ],
+      "metrics": {
+        "claims_active": 303,
+        "claims_total": 383,
+        "open_conflicts": 34,
+        "memory": 0,
+        "ledger": 2288,
+        "preferences": 1
+      }
     }
   ],
   "review_history": [
@@ -1891,6 +2387,10 @@
     {
       "ts": "2026-06-19T13:55:44+00:00",
       "headline": "Day 0, run 21: I am holding 215 active claims across 27 topics, with 34 contradiction(s) left open, and I have spent €0.1820."
+    },
+    {
+      "ts": "2026-06-19T14:55:07+00:00",
+      "headline": "Day 0, run 31: I am holding 303 active claims across 44 topics, with 34 contradiction(s) left open, and I have spent €0.3560."
     }
   ],
   "capabilities": {
@@ -1956,6 +2456,12 @@
     ]
   },
   "doktores_seen": [
+    "arxiv:2606.20520v1",
+    "arxiv:2606.20532v1",
+    "arxiv:2606.20543v1",
+    "arxiv:2606.20547v1",
+    "arxiv:2606.20562v1",
+    "huggingface:2603.11273",
     "zenodo:20721436"
   ],
   "doktores_filed": {},
@@ -1968,7 +2474,62 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 25,
+      "source": "arxiv",
+      "title": "MemoryWAM: Efficient World Action Modeling with Persistent Memory",
+      "url": "http://arxiv.org/abs/2606.20562v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 25,
+      "source": "arxiv",
+      "title": "SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation",
+      "url": "http://arxiv.org/abs/2606.20543v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 25,
+      "source": "arxiv",
+      "title": "Sovereign Execution Brokers: Enforcing Certificate-Bound Authority in Agentic Control Planes",
+      "url": "http://arxiv.org/abs/2606.20520v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 29,
+      "source": "arxiv",
+      "title": "The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups",
+      "url": "http://arxiv.org/abs/2606.20547v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 29,
+      "source": "arxiv",
+      "title": "How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captioned Text-to-Speech",
+      "url": "http://arxiv.org/abs/2606.20532v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 29,
+      "source": "huggingface",
+      "title": "Duration Aware Scheduling for ASR Serving Under Workload Drift",
+      "url": "https://huggingface.co/papers/2603.11273",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 21
+  "doktores_last_cycle": 29,
+  "reconsolidate_lens_idx": 1
 }
