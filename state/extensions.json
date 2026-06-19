@@ -1054,6 +1054,7 @@
     "C-3|C-344"
   ],
   "semantic_backfilled": [
+    "C-109|C-350@bge-small-en-v1.5",
     "C-110|C-118@bge-small-en-v1.5",
     "C-116|C-127@bge-small-en-v1.5",
     "C-117|C-156@bge-small-en-v1.5",
@@ -1073,6 +1074,7 @@
     "C-18|C-408@bge-small-en-v1.5",
     "C-190|C-193@bge-small-en-v1.5",
     "C-20|C-53@bge-small-en-v1.5",
+    "C-223|C-311@bge-small-en-v1.5",
     "C-223|C-336@bge-small-en-v1.5",
     "C-223|C-3@bge-small-en-v1.5",
     "C-224|C-232@bge-small-en-v1.5",
@@ -1088,6 +1090,7 @@
     "C-309|C-321@bge-small-en-v1.5",
     "C-317|C-321@bge-small-en-v1.5",
     "C-32|C-343@bge-small-en-v1.5",
+    "C-32|C-347@bge-small-en-v1.5",
     "C-32|C-43@bge-small-en-v1.5",
     "C-33|C-44@bge-small-en-v1.5",
     "C-348|C-349@bge-small-en-v1.5",
@@ -1221,6 +1224,7 @@
     "same-model",
     "sample",
     "session",
+    "spatial",
     "supporting",
     "temporal",
     "text",
@@ -1380,6 +1384,7 @@
     "forum|supporting",
     "forum|systematic",
     "forum|target",
+    "forum|text",
     "forum|theory",
     "forum|third",
     "forum|three",
@@ -1395,6 +1400,7 @@
     "forum|waterlogged",
     "forum|wood",
     "forum|writing",
+    "memory|attention",
     "memory|context",
     "memory|efficient",
     "memory|enables",
@@ -1459,7 +1465,9 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "meth:sample": 1
+    "forum|publish": 1,
+    "meth:sample": 1,
+    "meth:supporting": 1
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
@@ -1467,17 +1475,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum across",
-    "forum underlying",
     "forum factor",
     "forum recurs",
     "forum single",
     "forum mandibular",
     "forum claims",
-    "forum worth"
+    "forum worth",
+    "memory recurs",
+    "memory memory"
   ],
   "hyp_seen_cycle": {
-    "C-268": 37,
     "C-270": 38,
     "C-272": 39,
     "C-280": 40,
@@ -1489,7 +1496,7 @@
     "C-333": 46,
     "C-335": 47,
     "C-354": 48,
-    "C-370": 30,
+    "C-370": 49,
     "C-383": 31,
     "C-399": 32,
     "C-407": 33,
@@ -1507,7 +1514,8 @@
     "C-450": 45,
     "C-452": 46,
     "C-454": 47,
-    "C-456": 48
+    "C-456": 48,
+    "C-458": 49
   },
   "topics_domain_ok": [
     "announcements",
@@ -1560,6 +1568,7 @@
     "sample",
     "secure-openclaw",
     "session",
+    "spatial",
     "supporting",
     "temporal",
     "text",
@@ -1634,6 +1643,7 @@
     "C-452",
     "C-454",
     "C-456",
+    "C-458",
     "C-56",
     "C-57",
     "C-58"
@@ -1669,35 +1679,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 6,
-    "degeneration": 1,
-    "active": 355,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 2,
+    "active": 356,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 25,
     "supporting_links": 25,
-    "emergent_total": 269,
+    "emergent_total": 272,
     "usable_semantic_rate": 1.0,
     "methods_total": 28,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 3745,
-    "cycle": 48
+    "stagnation_cycles": 1,
+    "objects": 3784,
+    "cycle": 49
   },
   "vitality_prev": {
     "supports": 25,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3745,
-    "active": 355,
+    "objects": 3784,
+    "active": 356,
     "links": 25,
-    "emergent": 269
+    "emergent": 272
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2034,12 +2044,19 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 49,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 48,
+    "starved_topic": 49,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2165,22 +2182,23 @@
   },
   "panel_asked": [
     "conflict:X-12",
-    "method:M-13"
+    "method:M-13",
+    "method:M-28"
   ],
-  "panel_last_cycle": 25,
+  "panel_last_cycle": 49,
   "panel_last": {
-    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"reasoning-as-a-lens\" - 'reasoning' recurs across forum, memory in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
+    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"forums-as-a-lens\" - 'forums' recurs across announcements, forum in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
     "roles": {
       "claude": "assessor",
       "chatgpt": "adversarial",
       "deepseek": "consistency"
     },
     "phase3": {
-      "claude": "**Cross-reconstruction:**\n\nChatGPT (adversarial) and DeepSeek (consistency) converge on one core hinge: the definitional sharpness of \"reasoning.\" Both treat underdefinition as the primary failure mode. They diverge in category, not in conclusion:\n\n- ChatGPT frames breaks as *empirical/practical* (bias, resource cost, validation gap).\n- DeepSeek frames breaks as *formal* (reflexive closure, falsifiability, structural overlap).\n\nThis divergence is admissible: it rests on different assessment categories (effectiveness vs. formal well-formedness), not contradictory claims.\n\n**Retained dissent — one addition both miss:** Neither names the *self-reference risk* fully. The lens is derived from the assessor's *own* evidence and then applied to *new* problems — a circularity hazard: the lens may merely re-find its own origin pattern (confirmation by construction). This is distinct from DeepSeek's reflexive-closure point (which is enabling, not a defect).\n\n**Reconciled assessment:** Formally admissible as a method suggestion *if* (a) \"reasoning\" gets a stated feature-set, (b) domain-overlap is checked before transfer, (c) a fail/distortion criterion is fixed, (d) origin-circularity is guarded. Absent these, it risks projection masquerading as transfer.\n\nNo verdict — Joni decides.",
-      "chatgpt": "**Cross-Reconstruction of Assessors' Judgements:**\n\n**Claude's Analysis:**\n- **Category Purity:** Identifies a blend of empirical observation and normative method, with potential for misinterpretation.\n- **Logical Consistency:** Consistent if viewed as heuristic, not truth-guarantee.\n- **Explicit Assumptions:** Pattern recurrence and cross-context identification.\n- **Implicit Assumptions:** Transferability, domain neutrality, induction-based relevance.\n- **Viability:** Heuristic lens, empirical recurrence, validation per application.\n- **Breakpoints:** Overgeneralization, confirmation bias, category error.\n\n**Deepseek's Analysis:**\n- **Derivation Path:** Observes reasoning as recurrent, proposes lens transfer.\n- **Viability Conditions:** Sharp definition, context persistence, reflexive closure.\n- **Break Conditions:** Underdefinition, structural divergence, lack of falsification.\n\n**Reconciled Assessment:**\nBoth assessments agree on the need for a clear definition and context overlap for the lens to be viable. They highlight potential pitfalls in overgeneralization and lack of falsification criteria. Claude emphasizes category purity and potential for confirmation bias, while Deepseek focuses on structural divergence and reflexive closure. Both agree on the heuristic nature of the proposal.\n\n**Justified Dissent:**\nNone. Both assessments align on core assumptions and potential issues, differing only in emphasis. The proposal's formal admissibility hinges on precise definition and contextual applicability.",
-      "deepseek": "**Reconciled consistency assessment:**\n\nDie beiden Vorurteile divergieren nicht in der Substanz, sondern im Beschreibungsrahmen. Claude betont die logische Struktur (Beobachtung vs. Methode, implizite Transferannahme), ChatGPT listet konkrete Stütz- und Bruchannahmen. **Gemeinsamer Kern:** Die Idee ist nur als revidierbare Heuristik tragfähig, nicht als gesicherte Transferregel. Beide benennen dieselbe zentrale Bruchstelle: Übergeneralisierung durch ungeprüfte Annahme der Kontextunabhängigkeit von Reasoning-Mustern. Claude identifiziert dies als Kategorienfehler und implizite Transferannahme, ChatGPT als \"context dependence\" und \"overgeneralization\". Die anfängliche Divergenz (Claudes Warnung vor Vermischung deskriptiv/normativ, ChatGPTs Auflistung empirischer Risiken) ist keine Unstimmigkeit, sondern komplementäre Perspektiven auf dieselbe implizite Induktionsannahme. **Daher kein Dissens.** Die Beurteilung lautet: Gute Idee unter der Bedingung, dass die Linse als falsifizierbare Suchheuristik behandelt und jede Anwendung neu validiert wird; sie bricht, wenn Wiederkehr als Gültigkeitsnachweis (um)gedeutet wird."
+      "claude": "**Cross-reconstruction:**\n\nChatGPT and DeepSeek diverge on the *core risk category*. ChatGPT treats the weakness empirically — forum data quality, noise, bias, temporal drift. DeepSeek treats it formally — whether \"forums\" names a genuine isomorphic structure or mere lexical recurrence (Namensgleichheit). This divergence is admissible: it traces to different assumptions about what \"lens\" means — ChatGPT assumes a *content lens* (read forum data into a problem), DeepSeek a *structural lens* (read shared deep-form). Both are valid readings of the underspecified proposal.\n\n**Reconciled assessment:**\n\nThe proposal's admissibility hinges on disambiguating the lens-type, which Joni's claim graph leaves open (\"applicable to: announcements, forum\"). DeepSeek's structural condition is the stricter gate: if recurrence is only lexical, the lens is projective, not diagnostic. ChatGPT's empirical cautions apply only once a content-reading is chosen. \n\nFormally: the idea is admissible iff (a) lens-definition is separated from application-condition, and (b) recurrence demonstrates structure-preserving mapping, not coincidence. Otherwise inadmissible as pseudo-evidence.\n\nNo verdict — Joni decides.",
+      "chatgpt": "**Cross-reconstruction:**\n\n1. **Category Purity:**\n   - Claude identifies a category conflation between observation and method claim. Deepseek implies a need for structural stability but does not explicitly address category purity.\n   - Reconciled: The proposition mixes empirical observation with methodological assertion, requiring explicit separation for clarity.\n\n2. **Logical Consistency:**\n   - Claude emphasizes treating recurrence as heuristic motivation, not justification. Deepseek warns against inductive overreach and vague analogies.\n   - Reconciled: Consistent if recurrence is heuristic, not proof; breaks with inductive overreach or vague application.\n\n3. **Explicit/Implicit Assumptions:**\n   - Both assessors highlight assumptions about structural similarity and genuine patterns.\n   - Reconciled: Assumptions must be explicit; structural similarity and pattern genuineness are crucial.\n\n4. **Scope and Application:**\n   - Claude suggests restricting scope to forum-analogous problems. Deepseek stresses precise lens definition and application conditions.\n   - Reconciled: Method is valid under restricted scope with clear lens definition and application conditions.\n\n**Reconciled Assessment:**\nThe \"forums-as-a-lens\" method is formally admissible if treated as a heuristic, with explicit assumptions about structural similarity and pattern genuineness. It breaks if assumed universally transferable or derived solely from recurrence without clear lens definition and application conditions.",
+      "deepseek": "Reconciling divergent judgements: Claude’s strict category separation (observation ≠ method) and ChatGPT’s practical transferability assumptions differ on the rule for deriving method from recurrence. Claude requires explicit justification of transferability; ChatGPT treats recurrence as indicative of transferability. My assessment adopts Claude’s rule: the method is admissible only if transferability is a defeasible heuristic, not a logical entailment. Under explicit assumptions—(i) the new problem shares structural features with forum contexts, (ii) recurrence indicates a genuine pattern, (iii) “lens” is well-defined—it is a good idea, providing a structured analogy to surface community-insight and patterns. It breaks when transferability is asserted universally or without these scope restrictions, or when forum noise, context-dependency, or temporal mismatch overwhelm signal. Thus, the proposition’s quality hinges on restricting the claim to forum-analogous problems and making the lens operational."
     },
-    "cycle": 25
+    "cycle": 49
   },
   "principle_seen": [
     "hold_tension",
@@ -3087,14 +3105,17 @@
   },
   "doktores_seen": [
     "arxiv:1609.01415v1",
+    "arxiv:1709.03426v1",
     "arxiv:1909.09031v1",
     "arxiv:2101.10952v1",
+    "arxiv:2108.01561v2",
     "arxiv:2411.05639v1",
     "arxiv:2412.01443v1",
     "arxiv:2504.08810v1",
     "arxiv:2504.16728v2",
     "arxiv:2505.16982v1",
     "arxiv:2505.21815v2",
+    "arxiv:2507.02168v2",
     "arxiv:2606.20520v1",
     "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
@@ -3263,9 +3284,36 @@
       "served_model": "deepseek-v4-pro",
       "applicable": true,
       "component_key": "reader-sources"
+    },
+    {
+      "cycle": 49,
+      "source": "arxiv",
+      "title": "Learning a Neural Diff for Speech Models",
+      "url": "http://arxiv.org/abs/2108.01561v2",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 49,
+      "source": "arxiv",
+      "title": "Trajectory Synthesis for Fisher Information Maximization",
+      "url": "http://arxiv.org/abs/1709.03426v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 49,
+      "source": "arxiv",
+      "title": "Experimental Multiport-Network Parameter Estimation and Optimization for Multi-Bit RIS",
+      "url": "http://arxiv.org/abs/2507.02168v2",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 45,
+  "doktores_last_cycle": 49,
   "reconsolidate_lens_idx": 3,
-  "doktores_module_idx": 4
+  "doktores_module_idx": 0
 }
