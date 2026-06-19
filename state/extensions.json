@@ -517,6 +517,7 @@
     "wikipedia:20381",
     "wikipedia:26133515",
     "wikipedia:31217535",
+    "wikipedia:41067",
     "wikipedia:5703927",
     "wikipedia:73248112",
     "wikipedia:81089",
@@ -744,6 +745,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20762563"
+    },
+    {
+      "call_id": "joni-c33:57236f396dd1",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "wikipedia:41067"
     }
   ],
   "pdf_read": [
@@ -901,6 +910,7 @@
     "C-223|C-3",
     "C-223|C-336",
     "C-224|C-232",
+    "C-224|C-400",
     "C-225|C-311",
     "C-227|C-254",
     "C-249|C-250",
@@ -925,6 +935,8 @@
     "C-378|C-381",
     "C-37|C-50",
     "C-384|C-388",
+    "C-384|C-389",
+    "C-384|C-391",
     "C-385|C-393",
     "C-385|C-397",
     "C-3|C-344"
@@ -951,6 +963,7 @@
     "C-223|C-336@bge-small-en-v1.5",
     "C-223|C-3@bge-small-en-v1.5",
     "C-224|C-232@bge-small-en-v1.5",
+    "C-224|C-400@bge-small-en-v1.5",
     "C-225|C-311@bge-small-en-v1.5",
     "C-227|C-254@bge-small-en-v1.5",
     "C-249|C-250@bge-small-en-v1.5",
@@ -975,6 +988,8 @@
     "C-378|C-381@bge-small-en-v1.5",
     "C-37|C-50@bge-small-en-v1.5",
     "C-384|C-388@bge-small-en-v1.5",
+    "C-384|C-389@bge-small-en-v1.5",
+    "C-384|C-391@bge-small-en-v1.5",
     "C-385|C-393@bge-small-en-v1.5",
     "C-385|C-397@bge-small-en-v1.5",
     "C-3|C-344@bge-small-en-v1.5"
@@ -1074,6 +1089,7 @@
     "session",
     "supporting",
     "temporal",
+    "timeprove",
     "tokenization",
     "tokens",
     "training",
@@ -1084,6 +1100,7 @@
   "synthesized": [
     "drift|drift",
     "drift|variance",
+    "forum|abundance",
     "forum|admission",
     "forum|adversarial",
     "forum|agentic",
@@ -1204,6 +1221,7 @@
     "forum|token",
     "forum|tokenization",
     "forum|tokens",
+    "forum|tools",
     "forum|useful",
     "forum|variance",
     "forum|verify",
@@ -1265,8 +1283,8 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|community": 2,
-    "meth:related": 1,
+    "forum|community": 3,
+    "meth:related": 2,
     "meth:sample": 1
   },
   "hyp_tested": [],
@@ -1275,17 +1293,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum across",
-    "forum recurs",
     "memory through-line",
     "memory worth",
     "forum forums",
     "forum underlying",
     "forum factor",
-    "forum single"
+    "forum single",
+    "forum through-line",
+    "forum phase"
   ],
   "hyp_seen_cycle": {
-    "C-186": 21,
     "C-187": 22,
     "C-189": 23,
     "C-218": 24,
@@ -1297,7 +1314,7 @@
     "C-246": 30,
     "C-248": 31,
     "C-256": 32,
-    "C-260": 15,
+    "C-260": 33,
     "C-262": 15,
     "C-264": 16,
     "C-266": 17,
@@ -1315,7 +1332,8 @@
     "C-354": 29,
     "C-370": 30,
     "C-383": 31,
-    "C-399": 32
+    "C-399": 32,
+    "C-407": 33
   },
   "topics_domain_ok": [
     "announcements",
@@ -1356,6 +1374,7 @@
     "session",
     "supporting",
     "temporal",
+    "timeprove",
     "tokenization",
     "tokens",
     "tools",
@@ -1410,6 +1429,7 @@
     "C-370",
     "C-383",
     "C-399",
+    "C-407",
     "C-56",
     "C-57",
     "C-58"
@@ -1444,30 +1464,30 @@
     "verdict": "steady",
     "development": 6,
     "degeneration": 1,
-    "active": 316,
+    "active": 323,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 17,
-    "supporting_links": 17,
-    "emergent_total": 210,
+    "evidence_links": 19,
+    "supporting_links": 19,
+    "emergent_total": 213,
     "usable_semantic_rate": 1.0,
     "methods_total": 24,
     "method_trials_total": 0,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 3136,
-    "cycle": 32
+    "objects": 3207,
+    "cycle": 33
   },
   "vitality_prev": {
-    "supports": 17,
+    "supports": 19,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3136,
-    "active": 316,
-    "links": 17,
-    "emergent": 210
+    "objects": 3207,
+    "active": 323,
+    "links": 19,
+    "emergent": 213
   },
   "stagnation": 0,
   "vitality_history": [
@@ -1694,12 +1714,19 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 33,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 32,
+    "starved_topic": 33,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2502,7 +2529,9 @@
     "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
     "arxiv:2606.20547v1",
+    "arxiv:2606.20561v1",
     "arxiv:2606.20562v1",
+    "arxiv:2606.20563v1",
     "huggingface:2603.11273",
     "zenodo:20721436"
   ],
@@ -2570,8 +2599,18 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 33,
+      "source": "arxiv",
+      "title": "JanusMesh: Fast and Zero-Shot 3D Visual Illusion Generation via Cross-Space Denoising",
+      "url": "http://arxiv.org/abs/2606.20563v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 29,
-  "reconsolidate_lens_idx": 1
+  "doktores_last_cycle": 33,
+  "reconsolidate_lens_idx": 1,
+  "doktores_module_idx": 1
 }
