@@ -112,13 +112,31 @@ def _parse(output: str) -> dict | None:
 
 
 def _scout(queries) -> list:
-    """Best-effort targeted paper search for one non-core module. Fails quietly to [] (a scouting
-    outage is never fatal - the passively-fetched items still get reviewed)."""
+    """Best-effort targeted paper search for one non-core module: arXiv, **relevance-sorted** and
+    **phrase-quoted**, so it returns the most ON-TOPIC methods (the default ArxivFetcher sorts by
+    date, which returns the newest paper regardless of relevance). Fails quietly to [] - a scouting
+    outage is never fatal, the passively-fetched items still get reviewed."""
     if not queries:
         return []
     try:
-        from .sources import ArxivFetcher
-        return ArxivFetcher().fetch(list(queries), limit=4)
+        import urllib.parse
+        from xml.etree import ElementTree as ET
+
+        from .sources import Item, _get
+        q = " OR ".join(f'all:"{t}"' for t in queries)
+        url = "http://export.arxiv.org/api/query?" + urllib.parse.urlencode(
+            {"search_query": q, "start": 0, "max_results": 4,
+             "sortBy": "relevance", "sortOrder": "descending"})
+        root = ET.fromstring(_get(url))
+        ns = {"a": "http://www.w3.org/2005/Atom"}
+        out = []
+        for e in root.findall("a:entry", ns):
+            title = (e.findtext("a:title", default="", namespaces=ns) or "").strip()
+            summary = (e.findtext("a:summary", default="", namespaces=ns) or "").strip()
+            url_ = (e.findtext("a:id", default="", namespaces=ns) or "").strip()
+            if title:
+                out.append(Item("arxiv", url_.rsplit("/", 1)[-1], title, url_, summary))
+        return out
     except Exception:  # noqa: BLE001
         return []
 
