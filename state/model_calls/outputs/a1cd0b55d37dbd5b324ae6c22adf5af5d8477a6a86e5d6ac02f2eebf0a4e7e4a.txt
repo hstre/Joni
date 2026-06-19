@@ -1,0 +1,8 @@
+{
+  "applicable": true,
+  "component_key": "semantics-measurement",
+  "title": "Nutze Cross-Encoder-Ensembles mit Boosting zur Ähnlichkeitsmessung",
+  "motivation": "Die Quelle zeigt, dass fine-getunte Cross-Encoder (BERT, RoBERTa, DeBERTa) in Kombination mit handgefertigten Merkmalen und Boosting-Algorithmen die semantische Textähnlichkeit signifikant verbessern. Diese Methode kann direkt die Genauigkeit der semantischen Messung in Joni erhöhen, was eine präzisere Kandidatenextraktion ermöglicht.",
+  "desired": "Ersetze die aktuelle Ähnlichkeitsmetrik im semantics-measurement-Modul durch ein Ensemble aus mehreren Cross-Encodern, die für binäre Klassifikation oder Regression fine-getuned sind. Integriere zusätzliche handgefertigte Merkmale und trainiere einen Boosting-Algorithmus (z.B. XGBoost) auf den kombinierten Ausgaben, um die endgültige Ähnlichkeitsbewertung zu erzeugen.",
+  "acceptance": "Die Pearson-Korrelation der vom Modul ausgegebenen Ähnlichkeitswerte mit menschlichen Urteilen auf einem Validierungsdatensatz steigt gegenüber der bisherigen Methode um mindestens 5 Prozentpunkte."
+}

@@ -1,0 +1,8 @@
+{
+  "applicable": true,
+  "component_key": "semantics-measurement",
+  "title": "Ersetze Kosinus-Ähnlichkeit durch Rangkorrelation",
+  "motivation": "Die Arbeit zeigt, dass für viele Wortvektoren Pearson-Korrelation (und damit Kosinus) ungeeignet ist und Rangkorrelationskoeffizienten die Leistung bei semantischer Textähnlichkeit signifikant verbessern.",
+  "desired": "Ändere die Ähnlichkeitsberechnung im Kanal semantics-measurement (z.B. in embeddings.py) von Kosinus-Ähnlichkeit auf einen nichtparametrischen Rangkorrelationskoeffizienten wie Spearmans ρ.",
+  "acceptance": "Die Übereinstimmung mit menschlichen Ähnlichkeitsbewertungen auf einem Standard-Benchmark (z.B. SimLex-999) verbessert sich gemessen an Pearson- oder Spearman-Korrelation um mindestens 2 Prozentpunkte."
+}
