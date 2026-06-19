@@ -43,6 +43,7 @@
       "session",
       "supporting",
       "temporal",
+      "text",
       "timeprove",
       "tokenization",
       "tokens",
@@ -52,10 +53,10 @@
       "variance",
       "verify"
     ],
-    "claims_total": 420,
-    "claims_active": 333,
+    "claims_total": 422,
+    "claims_active": 334,
     "memory": 0,
-    "ledger": 2520,
+    "ledger": 2540,
     "open_conflicts": 35,
     "methods": 24,
     "method_trials": 0,
@@ -66,14 +67,14 @@
     "hypotheses": 30,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.844,
-      "n": 333,
+      "rate": 0.841,
+      "n": 334,
       "flags": {
-        "correctly_typed": 333,
+        "correctly_typed": 334,
         "source_anchored": 291,
-        "non_duplicate": 323,
-        "topic_valid": 333,
-        "scope_valid": 333,
+        "non_duplicate": 324,
+        "topic_valid": 334,
+        "scope_valid": 334,
         "provenance_complete": 291
       }
     },
@@ -82,13 +83,13 @@
     "last_route": null
   },
   "budget": {
-    "spent_eur": 0.36,
+    "spent_eur": 0.372,
     "cap_eur": 20.0,
-    "runs": 36
+    "runs": 37
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 36,
+    "runs": 37,
     "retired": false
   },
   "extensions": {
@@ -151,6 +152,28 @@
         },
         "risk": "medium - changes how ideas develop; still gated, still never auto-confirms",
         "sustained_cycles": 1
+      },
+      {
+        "kind": "doktores:conflict-qualifier",
+        "cycle": 37,
+        "addressed_to": "Claude",
+        "title": "Verwende den Rekonstruktionstrick, um Konfliktarten durch Plausibilitätsranking zu bestimmen.",
+        "component": "the conflict qualifier (qualify.py) - the markers that name a conflict's kind, outside the protected core",
+        "component_key": "conflict-qualifier",
+        "touches_core": false,
+        "request_type": "extension-request",
+        "change_target": "joni-self · own non-core module (conflict-qualifier)",
+        "motivation": "Die Quelle zeigt, dass argumentative Relationen (Stützen/Angriff) mit einem Rangierverfahren auf Basis von Minimalpaaren plausibler/implausibler Texte präziser klassifiziert werden können, insbesondere für die seltene Angriffsklasse bei geringem Recall-Verlust. Dies verbessert direkt die Markierung von Konfliktarten.",
+        "desired_capability": "Ergänze den Konfliktqualifizierer um die Rekonstruktionsmethode: Baue zu jeder zu klassifizierenden Einheit ein Minimalpaar, das einen plausiblen und einen implausiblen Kontext simuliert, und ersetze den bestehenden Klassifikator durch einen Plausibilitätsranger (z. B. über Sprachmodellbewertungen), der angibt, ob es sich um einen stützenden oder angreifenden Konflikt handelt.",
+        "acceptance": "Der Macro-F1-Wert für die Angriffsklasse steigt auf einem repräsentativen Testset um mindestens 10 Prozentpunkte (wie in der Quelle) und die Gesamtgenauigkeit der Konfliktartenerkennung verbessert sich signifikant.",
+        "evidence": {
+          "found_by": "doktores",
+          "source": "arxiv",
+          "ref": "http://arxiv.org/abs/1909.09031v1",
+          "source_title": "Argumentative Relation Classification as Plausibility Ranking"
+        },
+        "risk": "low - only adds taxonomy markers; conflict detection itself is unchanged",
+        "found_by": "doktores"
       }
     ],
     "forum_heard": [
@@ -1212,6 +1235,7 @@
       "session",
       "supporting",
       "temporal",
+      "text",
       "timeprove",
       "tokenization",
       "tokens",
@@ -1262,6 +1286,7 @@
       "forum|depth",
       "forum|deterministic",
       "forum|devastating",
+      "forum|developer",
       "forum|differences",
       "forum|diffusion",
       "forum|diffusiongemma",
@@ -1322,7 +1347,9 @@
       "forum|real",
       "forum|reasoning",
       "forum|reduces",
+      "forum|relative",
       "forum|replace",
+      "forum|repository",
       "forum|review",
       "forum|same",
       "forum|same-model",
@@ -1411,8 +1438,9 @@
       "variance"
     ],
     "emerge_insufficient": {
+      "forum|learning": 1,
       "meth:sample": 1,
-      "meth:tool": 1
+      "meth:tool": 2
     },
     "hyp_tested": [],
     "hyp_insufficient": {},
@@ -1420,17 +1448,16 @@
       "C-383"
     ],
     "learned_queries": [
-      "forum underlying",
       "forum factor",
       "forum single",
       "forum through-line",
       "forum phase",
       "forum recurs",
       "forum worth",
-      "forum claims"
+      "forum claims",
+      "forum repository"
     ],
     "hyp_seen_cycle": {
-      "C-220": 25,
       "C-222": 26,
       "C-240": 27,
       "C-242": 28,
@@ -1442,7 +1469,7 @@
       "C-262": 34,
       "C-264": 35,
       "C-266": 36,
-      "C-268": 18,
+      "C-268": 37,
       "C-270": 19,
       "C-272": 20,
       "C-280": 21,
@@ -1460,7 +1487,8 @@
       "C-407": 33,
       "C-416": 34,
       "C-418": 35,
-      "C-420": 36
+      "C-420": 36,
+      "C-422": 37
     },
     "topics_domain_ok": [
       "announcements",
@@ -1504,6 +1532,7 @@
       "session",
       "supporting",
       "temporal",
+      "text",
       "timeprove",
       "tokenization",
       "tokens",
@@ -1563,6 +1592,7 @@
       "C-416",
       "C-418",
       "C-420",
+      "C-422",
       "C-56",
       "C-57",
       "C-58"
@@ -1597,32 +1627,32 @@
       "verdict": "degenerating",
       "development": 0,
       "degeneration": 1,
-      "active": 333,
+      "active": 334,
       "hypotheses": 30,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 23,
       "supporting_links": 23,
-      "emergent_total": 221,
+      "emergent_total": 225,
       "usable_semantic_rate": 1.0,
       "methods_total": 24,
       "method_trials_total": 0,
       "methods_ready_total": 0,
-      "stagnation_cycles": 1,
-      "objects": 3333,
-      "cycle": 36
+      "stagnation_cycles": 2,
+      "objects": 3360,
+      "cycle": 37
     },
     "vitality_prev": {
       "supports": 23,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 3333,
-      "active": 333,
+      "objects": 3360,
+      "active": 334,
       "links": 23,
-      "emergent": 221
+      "emergent": 225
     },
-    "stagnation": 1,
+    "stagnation": 2,
     "vitality_history": [
       {
         "cycle": 1,
@@ -1875,12 +1905,19 @@
         "development": 0,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 37,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 1,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 36,
+      "starved_topic": 37,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -2679,6 +2716,9 @@
       ]
     },
     "doktores_seen": [
+      "arxiv:1909.09031v1",
+      "arxiv:2101.10952v1",
+      "arxiv:2411.05639v1",
       "arxiv:2606.20520v1",
       "arxiv:2606.20532v1",
       "arxiv:2606.20543v1",
@@ -2689,7 +2729,9 @@
       "huggingface:2603.11273",
       "zenodo:20721436"
     ],
-    "doktores_filed": {},
+    "doktores_filed": {
+      "conflict-qualifier": 37
+    },
     "doktores_review": [
       {
         "cycle": 21,
@@ -2762,11 +2804,38 @@
         "served_model": "deepseek-v4-pro",
         "applicable": false,
         "component_key": ""
+      },
+      {
+        "cycle": 37,
+        "source": "arxiv",
+        "title": "Argumentative Relation Classification as Plausibility Ranking",
+        "url": "http://arxiv.org/abs/1909.09031v1",
+        "served_model": "deepseek-v4-pro",
+        "applicable": true,
+        "component_key": "conflict-qualifier"
+      },
+      {
+        "cycle": 37,
+        "source": "arxiv",
+        "title": "\"Laughing at you or with you\": The Role of Sarcasm in Shaping the Disagreement Space",
+        "url": "http://arxiv.org/abs/2101.10952v1",
+        "served_model": "deepseek-v4-pro",
+        "applicable": true,
+        "component_key": "conflict-qualifier"
+      },
+      {
+        "cycle": 37,
+        "source": "arxiv",
+        "title": "Assessing Open-Source Large Language Models on Argumentation Mining Subtasks",
+        "url": "http://arxiv.org/abs/2411.05639v1",
+        "served_model": "deepseek-v4-pro",
+        "applicable": false,
+        "component_key": ""
       }
     ],
-    "doktores_last_cycle": 33,
+    "doktores_last_cycle": 37,
     "reconsolidate_lens_idx": 2,
-    "doktores_module_idx": 1
+    "doktores_module_idx": 2
   },
   "protocol": [
     {
@@ -13192,35 +13261,224 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:11+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:12+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:12+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:14+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:18+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:18+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:20+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:21+00:00",
+      "cycle": 37,
+      "kind": "fetched",
+      "summary": "wikipedia: 4 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:48:48+00:00",
+      "cycle": 37,
+      "kind": "commission",
+      "summary": "Doktores-Auftrag an Claude: Verwende den Rekonstruktionstrick, um Konfliktarten durch Plausibilitätsranking zu bestimmen. - conflict-qualifier (non-core, aus arxiv: Argumentative Relation Classification as Plausibility Rankin)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:13+00:00",
+      "cycle": 37,
+      "kind": "emerged",
+      "summary": "new topic 'text' precipitated from a recurrence across forum, memory",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:13+00:00",
+      "cycle": 37,
+      "kind": "emerged",
+      "summary": "'developer' cluster not synthesised: Layer 9 says duplicate (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:13+00:00",
+      "cycle": 37,
+      "kind": "emerged",
+      "summary": "'learning' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:14+00:00",
+      "cycle": 37,
+      "kind": "emerged",
+      "summary": "'relative' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:15+00:00",
+      "cycle": 37,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'repository' (Layer 9 synthesis-eligible, SC-283) from 5 claims (C-275, C-359, C-360, C-361, C-379)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:15+00:00",
+      "cycle": 37,
+      "kind": "emerged",
+      "summary": "'tool' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:18+00:00",
+      "cycle": 37,
+      "kind": "regulate",
+      "summary": "shed C-222: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:19+00:00",
+      "cycle": 37,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 1 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:21+00:00",
+      "cycle": 37,
+      "kind": "tooled",
+      "summary": "DESi date_math: 0 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-19T15:49:21+00:00",
+      "cycle": 37,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · shed 1 dead idea(s) · degenerating · spend €0.3720 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 51,
+    "llm_calls": 54,
     "granite_calls": 36,
-    "deepseek_escalations": 13,
+    "deepseek_escalations": 16,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 51,
-    "last_call": "2026-06-19T15:22:09+00:00",
-    "est_cost_eur": 0.06,
+    "live_calls": 54,
+    "last_call": "2026-06-19T15:49:11+00:00",
+    "est_cost_eur": 0.072,
     "by_model": {
       "ibm-granite/granite-4.1-8b-20260429": 36,
-      "deepseek-v4-pro": 15
+      "deepseek-v4-pro": 18
     },
     "empty_calls": 0,
     "empty_truncated": 0,
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 51
+      "stop": 54
     },
     "panel_rounds": 2,
     "reserved_budget_eur": 20.0,
-    "spent_budget_eur": 0.36,
+    "spent_budget_eur": 0.372,
     "accepted_claims": 141,
     "accepted_calls": 33,
-    "accepted_call_yield": 0.647,
-    "est_cost_per_accepted_eur": 0.0004
+    "accepted_call_yield": 0.611,
+    "est_cost_per_accepted_eur": 0.0005
   },
   "commissions_done": [
     {
@@ -13231,5 +13489,5 @@
       "note": "WikipediaFetcher hinzugefügt: liefert für barren gebliebene Topics (memory, panel, evaluation …) den Wikipedia-Intro-Text als lesbares Item - deckt #128/#126/#118/#108 ab."
     }
   ],
-  "generated": "2026-06-19T15:42:01+00:00"
+  "generated": "2026-06-19T15:49:21+00:00"
 }

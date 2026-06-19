@@ -58,6 +58,28 @@
       },
       "risk": "medium - changes how ideas develop; still gated, still never auto-confirms",
       "sustained_cycles": 1
+    },
+    {
+      "kind": "doktores:conflict-qualifier",
+      "cycle": 37,
+      "addressed_to": "Claude",
+      "title": "Verwende den Rekonstruktionstrick, um Konfliktarten durch Plausibilitätsranking zu bestimmen.",
+      "component": "the conflict qualifier (qualify.py) - the markers that name a conflict's kind, outside the protected core",
+      "component_key": "conflict-qualifier",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (conflict-qualifier)",
+      "motivation": "Die Quelle zeigt, dass argumentative Relationen (Stützen/Angriff) mit einem Rangierverfahren auf Basis von Minimalpaaren plausibler/implausibler Texte präziser klassifiziert werden können, insbesondere für die seltene Angriffsklasse bei geringem Recall-Verlust. Dies verbessert direkt die Markierung von Konfliktarten.",
+      "desired_capability": "Ergänze den Konfliktqualifizierer um die Rekonstruktionsmethode: Baue zu jeder zu klassifizierenden Einheit ein Minimalpaar, das einen plausiblen und einen implausiblen Kontext simuliert, und ersetze den bestehenden Klassifikator durch einen Plausibilitätsranger (z. B. über Sprachmodellbewertungen), der angibt, ob es sich um einen stützenden oder angreifenden Konflikt handelt.",
+      "acceptance": "Der Macro-F1-Wert für die Angriffsklasse steigt auf einem repräsentativen Testset um mindestens 10 Prozentpunkte (wie in der Quelle) und die Gesamtgenauigkeit der Konfliktartenerkennung verbessert sich signifikant.",
+      "evidence": {
+        "found_by": "doktores",
+        "source": "arxiv",
+        "ref": "http://arxiv.org/abs/1909.09031v1",
+        "source_title": "Argumentative Relation Classification as Plausibility Ranking"
+      },
+      "risk": "low - only adds taxonomy markers; conflict detection itself is unchanged",
+      "found_by": "doktores"
     }
   ],
   "forum_heard": [
@@ -1119,6 +1141,7 @@
     "session",
     "supporting",
     "temporal",
+    "text",
     "timeprove",
     "tokenization",
     "tokens",
@@ -1169,6 +1192,7 @@
     "forum|depth",
     "forum|deterministic",
     "forum|devastating",
+    "forum|developer",
     "forum|differences",
     "forum|diffusion",
     "forum|diffusiongemma",
@@ -1229,7 +1253,9 @@
     "forum|real",
     "forum|reasoning",
     "forum|reduces",
+    "forum|relative",
     "forum|replace",
+    "forum|repository",
     "forum|review",
     "forum|same",
     "forum|same-model",
@@ -1318,8 +1344,9 @@
     "variance"
   ],
   "emerge_insufficient": {
+    "forum|learning": 1,
     "meth:sample": 1,
-    "meth:tool": 1
+    "meth:tool": 2
   },
   "hyp_tested": [],
   "hyp_insufficient": {},
@@ -1327,17 +1354,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum underlying",
     "forum factor",
     "forum single",
     "forum through-line",
     "forum phase",
     "forum recurs",
     "forum worth",
-    "forum claims"
+    "forum claims",
+    "forum repository"
   ],
   "hyp_seen_cycle": {
-    "C-220": 25,
     "C-222": 26,
     "C-240": 27,
     "C-242": 28,
@@ -1349,7 +1375,7 @@
     "C-262": 34,
     "C-264": 35,
     "C-266": 36,
-    "C-268": 18,
+    "C-268": 37,
     "C-270": 19,
     "C-272": 20,
     "C-280": 21,
@@ -1367,7 +1393,8 @@
     "C-407": 33,
     "C-416": 34,
     "C-418": 35,
-    "C-420": 36
+    "C-420": 36,
+    "C-422": 37
   },
   "topics_domain_ok": [
     "announcements",
@@ -1411,6 +1438,7 @@
     "session",
     "supporting",
     "temporal",
+    "text",
     "timeprove",
     "tokenization",
     "tokens",
@@ -1470,6 +1498,7 @@
     "C-416",
     "C-418",
     "C-420",
+    "C-422",
     "C-56",
     "C-57",
     "C-58"
@@ -1504,32 +1533,32 @@
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 1,
-    "active": 333,
+    "active": 334,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 23,
     "supporting_links": 23,
-    "emergent_total": 221,
+    "emergent_total": 225,
     "usable_semantic_rate": 1.0,
     "methods_total": 24,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 3333,
-    "cycle": 36
+    "stagnation_cycles": 2,
+    "objects": 3360,
+    "cycle": 37
   },
   "vitality_prev": {
     "supports": 23,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3333,
-    "active": 333,
+    "objects": 3360,
+    "active": 334,
     "links": 23,
-    "emergent": 221
+    "emergent": 225
   },
-  "stagnation": 1,
+  "stagnation": 2,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1782,12 +1811,19 @@
       "development": 0,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 37,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 36,
+    "starved_topic": 37,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2586,6 +2622,9 @@
     ]
   },
   "doktores_seen": [
+    "arxiv:1909.09031v1",
+    "arxiv:2101.10952v1",
+    "arxiv:2411.05639v1",
     "arxiv:2606.20520v1",
     "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
@@ -2596,7 +2635,9 @@
     "huggingface:2603.11273",
     "zenodo:20721436"
   ],
-  "doktores_filed": {},
+  "doktores_filed": {
+    "conflict-qualifier": 37
+  },
   "doktores_review": [
     {
       "cycle": 21,
@@ -2669,9 +2710,36 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 37,
+      "source": "arxiv",
+      "title": "Argumentative Relation Classification as Plausibility Ranking",
+      "url": "http://arxiv.org/abs/1909.09031v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "conflict-qualifier"
+    },
+    {
+      "cycle": 37,
+      "source": "arxiv",
+      "title": "\"Laughing at you or with you\": The Role of Sarcasm in Shaping the Disagreement Space",
+      "url": "http://arxiv.org/abs/2101.10952v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "conflict-qualifier"
+    },
+    {
+      "cycle": 37,
+      "source": "arxiv",
+      "title": "Assessing Open-Source Large Language Models on Argumentation Mining Subtasks",
+      "url": "http://arxiv.org/abs/2411.05639v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 33,
+  "doktores_last_cycle": 37,
   "reconsolidate_lens_idx": 2,
-  "doktores_module_idx": 1
+  "doktores_module_idx": 2
 }
