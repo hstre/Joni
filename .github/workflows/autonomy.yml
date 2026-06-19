@@ -70,13 +70,16 @@ jobs:
           JONI_RUNTIME_DAYS: "2"      # fresh start: a clean two-day run, retiring ~2026-06-21
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
-          KEVIN_USE_REAL_LLM: "1"     # Kevin's orchestrator uses the real DeepSeek client
-          KEVIN_USE_DESI: "1"         # Kevin's space_predictor uses real DESi blind-spot coverage
-          JONI_KEVIN_ORCHESTRATOR: "1"  # run Kevin's real orchestrator in the loop
+          KEVIN_USE_REAL_LLM: "1"     # Kevin's trial runner + the strengthen vetting use the real client
+          # Doktores replaces Kevin's creative/orchestrator arm: it reviews the fetched papers and
+          # OpenClaw extensions for a NON-CORE self-improvement and files an Auftrag an Claude.
+          # Kevin's deterministic method-trialing stays. (JONI_KEVIN_ORCHESTRATOR/JONI_KEVIN_LLM are
+          # retired - those steps are no longer in the loop.)
+          JONI_DOKTORES: "1"
           # Semantic proposal layer ON: the pinned models read sources and *propose* candidate
           # claims through the Layer-9 gate (never authoritative). Granite 4.1 8B for structured
-          # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard). Capped
-          # at a few projections per cycle; budget is the hard ceiling. No provider fallbacks.
+          # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard, also used
+          # by the Doktores review). Capped per cycle; budget is the hard ceiling. No fallbacks.
           JONI_SEMANTIC_PROPOSALS: "1"
           # The synthetic keyword-trial mock carries no epistemic weight and the REAL trial
           # protocol now exists, so keep the mock OUT of the production loop (no protocol noise).
