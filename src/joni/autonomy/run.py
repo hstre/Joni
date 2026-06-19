@@ -277,7 +277,9 @@ def one_cycle() -> dict:
     #     whether it could concretely improve one of Joni's OWN non-core modules without the core.
     #     A grounded yes becomes an Auftrag an Claude (joni-auftrag issue -> human PR). Uses Joni's
     #     own captured joni-hard model, cadence-spaced and budget-metered; no-op when disabled.
-    doktores_new = doktores.review(cs, extensions, proto, cycle, items=new_items,
+    #     (Reviews the full fetched set, deduped by Doktores' OWN seen-set - not run's
+    #     claim-learning dedup - so a saturated run still has papers/extensions to examine.)
+    doktores_new = doktores.review(cs, extensions, proto, cycle, items=fetched,
                                    budget=budget, runs_per_week=runs_per_week())
 
     # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
