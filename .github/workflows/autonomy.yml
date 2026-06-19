@@ -11,13 +11,13 @@ name: joni-autonomy
 # only a re-launcher - it starts the next continuous job when the previous one ends (the
 # concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
 on:
-  # RESTARTED 2026-06-18 for TWO MORE DAYS: the new Kevin (real orchestrator + DESi blind-spot
-  # prediction + sealed trial events) is built in and the last live-loop mock is gone. Joni's
-  # pre-stop memory is backed up on branch backup/joni-2026-06-18. The window start stays at the
-  # ORIGINAL 2026-06-16 (do NOT reset it - the journal's logical clock is already at day 2, and
-  # set_day must never move that clock backward), and JONI_RUNTIME_DAYS=4 means Joni lives 4 days
-  # total = the 2 he already ran + 2 more, retiring ~2026-06-20. The 20 EUR/week budget stays the
-  # hard ceiling. To stop early: re-comment the schedule (or cancel the in-flight run).
+  # FRESH START 2026-06-19: reset to zero. The accumulated state hit GitHub's 100 MB/file limit
+  # (the fast-load snapshot dump inside state/layer9.json grew to ~103 MB), so every cycle's push
+  # was rejected and Joni could no longer persist. The prior memory is backed up on branch
+  # backup/joni-2026-06-19 (and backup/joni-2026-06-18). State is reset to a fresh seeded core,
+  # window start = now, runs/spend = 0. JONI_RUNTIME_DAYS=2 -> a clean two-day run, retiring
+  # ~2026-06-21. The 20 EUR/week budget stays the hard ceiling. To stop early: re-comment the
+  # schedule (or cancel the in-flight run).
   schedule:
     - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
@@ -67,7 +67,7 @@ jobs:
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
-          JONI_RUNTIME_DAYS: "4"      # 4 days total = 2 already lived (clock at day 2) + 2 more
+          JONI_RUNTIME_DAYS: "2"      # fresh start: a clean two-day run, retiring ~2026-06-21
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           KEVIN_USE_REAL_LLM: "1"     # Kevin's orchestrator uses the real DeepSeek client
@@ -81,11 +81,13 @@ jobs:
           # The synthetic keyword-trial mock carries no epistemic weight and the REAL trial
           # protocol now exists, so keep the mock OUT of the production loop (no protocol noise).
           JONI_SYNTHETIC_TRIALS: "0"
-          # Verified snapshot fast-load (#120): skip the O(n²) journal replay on load. The journal
-          # stays the source of truth + fallback; the snapshot is accepted only if it reproduces
-          # the recorded snapshot_hash AND verify_chain passes, else it falls back to full replay.
-          # The first save after this writes the snapshot; subsequent cycles load in O(n).
-          JONI_FAST_LOAD: "1"
+          # Fast-load (#120) is OFF after the 2026-06-19 reset: it writes a full state snapshot
+          # INTO state/layer9.json, which is what pushed the committed file past GitHub's 100 MB
+          # limit and broke persistence. Journal-only keeps the committed file small (~tens of MB
+          # even after days), so pushes never bounce. Trade-off: the O(n²) replay returns as the
+          # journal grows; for a fresh two-day run it stays moderate. (Proper long-term fix: store
+          # the snapshot in a git-ignored sidecar instead of inside layer9.json.)
+          JONI_FAST_LOAD: "0"
           JONI_LOOP_MINUTES: "320"    # run cycles for ~5.3h, then let the next job take over
           JONI_LOOP_PAUSE_SECONDS: "180"   # a polite pause between cycles
           DESI_ROOT: ${{ github.workspace }}/_desi
