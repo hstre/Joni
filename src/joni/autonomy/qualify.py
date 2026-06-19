@@ -34,8 +34,13 @@ def _has(markers, text: str) -> bool:
 
 
 def qualify_conflict(a_text: str, b_text: str, *, severity: str = "soft",
-                     contradictory: bool = False) -> str:
-    """Return the ConflictKind value for the incompatibility between two claims."""
+                     contradictory: bool = False, ranker=None) -> str:
+    """Return the ConflictKind value for the incompatibility between two claims.
+
+    When the surface heuristics are inconclusive (the soft, unmarked default) and a plausibility
+    ``ranker`` is supplied (the reconstruction trick, ``plausibility.ranker_for``), let it decide
+    between a flat contradiction and a scope tension. The ranker is opt-in and never overrides a
+    clear marker-based decision."""
     ta, tb = (a_text or "").lower(), (b_text or "").lower()
     both = ta + " || " + tb
 
@@ -52,4 +57,10 @@ def qualify_conflict(a_text: str, b_text: str, *, severity: str = "soft",
         return ConflictKind.CONDITIONAL_COMPATIBILITY.value
     if contradictory or severity == "hard":
         return ConflictKind.CONTRADICTION.value
+    # Ambiguous soft tension with no marker: the reconstruction-trick plausibility ranker decides
+    # (if provided), else the conservative default - a scope tension, not an over-stated clash.
+    if ranker is not None:
+        refined = ranker(a_text, b_text)
+        if refined:
+            return refined
     return ConflictKind.SCOPE_TENSION.value

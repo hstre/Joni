@@ -82,8 +82,14 @@ def _independently_supported(cs, claim_id: str) -> bool:
 
 
 def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
-               max_hyp: int = 2, max_tests: int = 3) -> dict:
+               max_hyp: int = 2, max_tests: int = 3, budget=None,
+               runs_per_week: int = 0) -> dict:
     layer = layer or NullSemanticLayer()
+    # The reconstruction-trick plausibility ranker (Auftrag #135) refines an ambiguous conflict's
+    # kind; opt-in (default off), bounded to one ranking per cycle, the weekly budget the ceiling.
+    from . import plausibility
+    conflict_ranker = plausibility.ranker_for(budget=budget, runs_per_week=runs_per_week,
+                                              cycle=cycle, max_calls=1)
     hyps = cs.hypotheses()
     out = {"tested": 0, "supported": 0, "challenged": 0, "survived": 0,
            "promoted": 0, "rejected": 0, "insufficient": 0}
@@ -165,7 +171,8 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
                 from .qualify import qualify_conflict
                 sev = "hard" if d is SemanticDecision.CONTRADICTORY else "soft"
                 ck = qualify_conflict(h.text, c.text, severity=sev,
-                                      contradictory=(d is SemanticDecision.CONTRADICTORY))
+                                      contradictory=(d is SemanticDecision.CONTRADICTORY),
+                                      ranker=conflict_ranker)
                 cid = cs.open_conflict((h.id, c.id), severity=sev, conflict_kind=ck)
                 out["challenged"] += 1
                 challenged_here = True
