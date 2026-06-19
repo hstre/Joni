@@ -48,6 +48,32 @@ def test_openalex_fetcher_rebuilds_abstract_and_parses(monkeypatch):
     assert it.score == 7.0
 
 
+def test_online_fetchers_include_wikipedia():
+    # Auftrag #128: the encyclopedic source for topics the paper feeds miss is wired in online.
+    assert "wikipedia" in {f.name for f in sources.get_fetchers(online=True)}
+
+
+def test_wikipedia_fetcher_returns_topic_extracts(monkeypatch):
+    payload = {"query": {"pages": {
+        "12345": {"pageid": 12345, "title": "Memory",
+                  "extract": "Memory is the faculty of the mind by which data is encoded, stored "
+                             "and retrieved when needed."}}}}
+    monkeypatch.setattr(sources, "_get", _canned(payload))
+    items = sources.WikipediaFetcher().fetch(["memory"], limit=4)
+    assert len(items) == 1
+    it = items[0]
+    assert it.source == "wikipedia" and it.title == "Memory"
+    assert it.url == "https://en.wikipedia.org/?curid=12345"
+    assert "encoded" in it.summary               # a real item that can support/contradict an idea
+
+
+def test_wikipedia_fetcher_degrades_quietly(monkeypatch):
+    def _boom(url, headers=None):
+        raise OSError("network down")
+    monkeypatch.setattr(sources, "_get", _boom)
+    assert sources.WikipediaFetcher().fetch(["memory"], limit=4) == []
+
+
 def test_openclaw_fetcher_surfaces_community_modules(monkeypatch):
     payload = {"items": [
         {"full_name": "openclaw/clawhub", "name": "clawhub",

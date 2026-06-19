@@ -144,6 +144,44 @@ class HuggingFaceFetcher:
         return items
 
 
+class WikipediaFetcher:
+    """Encyclopedic background for a topic (Auftrag #128/#126/#118/#108: 'erweitere meine Quellen').
+
+    Bare single-word topics Joni keeps thinking about - 'memory', 'panel', 'evaluation' - often
+    get nothing from the paper feeds (arXiv/HF), so hypotheses stay barren. Almost every such term
+    has a solid Wikipedia article whose intro can support or challenge a hypothesis. One
+    ``generator=search + prop=extracts`` call per term returns the matching pages' intro text. No
+    key, polite, fails quietly. Encyclopedic (lower-grade than a paper), so ``source='wikipedia'``
+    weights it downstream.
+    """
+
+    name = "wikipedia"
+
+    def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
+        terms = [q for q in queries if q][:4] or ["machine learning"]
+        per = max(1, limit // max(1, len(terms)))
+        merged: dict[str, Item] = {}
+        for term in terms:
+            url = "https://en.wikipedia.org/w/api.php?" + urllib.parse.urlencode({
+                "action": "query", "format": "json", "generator": "search",
+                "gsrsearch": term, "gsrlimit": per, "prop": "extracts",
+                "exintro": 1, "explaintext": 1, "exlimit": "max"})
+            try:
+                pages = json.loads(_get(url)).get("query", {}).get("pages", {})
+            except Exception:  # noqa: BLE001 - a failing term is just skipped
+                continue
+            for pid, page in pages.items():
+                title = (page.get("title") or "").strip()
+                extract = (page.get("extract") or "").strip()
+                if not title or not extract or str(pid) in merged:
+                    continue
+                merged[str(pid)] = Item("wikipedia", str(pid), title,
+                                        f"https://en.wikipedia.org/?curid={pid}", extract[:1500])
+            if len(merged) >= limit:
+                break
+        return list(merged.values())[:limit]
+
+
 class MockFetcher:
     """Deterministic, offline source. Keeps the loop and tests reproducible."""
 
@@ -335,5 +373,5 @@ class OpenClawFetcher:
 def get_fetchers(*, online: bool) -> list[Fetcher]:
     if online:
         return [ArxivFetcher(), HackerNewsFetcher(), HuggingFaceFetcher(), GitHubFetcher(),
-                ZenodoFetcher(), OpenAlexFetcher(), OpenClawFetcher()]
+                ZenodoFetcher(), OpenAlexFetcher(), OpenClawFetcher(), WikipediaFetcher()]
     return [MockFetcher()]
