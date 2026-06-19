@@ -562,6 +562,7 @@
     "huggingface:2606.16827",
     "huggingface:2606.17053",
     "huggingface:2606.19334",
+    "huggingface:2606.19602",
     "huggingface:2606.20381",
     "huggingface:2606.20515",
     "huggingface:2606.20536",
@@ -872,6 +873,14 @@
       "replayed": false,
       "claims": 5,
       "source": "hackernews:48497609"
+    },
+    {
+      "call_id": "joni-c52:ccf48eaaefc5",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "huggingface:2606.19602"
     }
   ],
   "pdf_read": [
@@ -960,6 +969,7 @@
     "github:theDakshJaitly/mex",
     "huggingface:2606.16827",
     "huggingface:2606.17053",
+    "huggingface:2606.19602",
     "openalex:W7137578291",
     "openalex:W7164783592",
     "openalex:W7164865069",
@@ -1057,6 +1067,7 @@
     "C-349|C-43",
     "C-34|C-348",
     "C-34|C-349",
+    "C-350|C-491",
     "C-351|C-5",
     "C-356|C-367",
     "C-356|C-368",
@@ -1127,6 +1138,7 @@
     "C-349|C-43@bge-small-en-v1.5",
     "C-34|C-348@bge-small-en-v1.5",
     "C-34|C-349@bge-small-en-v1.5",
+    "C-350|C-491@bge-small-en-v1.5",
     "C-351|C-5@bge-small-en-v1.5",
     "C-356|C-367@bge-small-en-v1.5",
     "C-356|C-368@bge-small-en-v1.5",
@@ -1229,6 +1241,7 @@
     "complexity",
     "computational",
     "context",
+    "contexts",
     "core",
     "cost",
     "deterministic",
@@ -1340,6 +1353,7 @@
     "forum|epigenetic",
     "forum|error",
     "forum|evaluation",
+    "forum|evidence",
     "forum|exchanges",
     "forum|execution",
     "forum|extraction",
@@ -1349,6 +1363,7 @@
     "forum|further",
     "forum|gemma",
     "forum|generation",
+    "forum|geometry",
     "forum|hygiene",
     "forum|identical",
     "forum|identity",
@@ -1507,10 +1522,11 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|janusmesh": 1,
+    "forum|existing": 1,
+    "forum|janusmesh": 2,
     "forum|publish": 2,
     "meth:sample": 1,
-    "meth:supporting": 1
+    "meth:supporting": 2
   },
   "hyp_tested": [
     "C-462|C-460"
@@ -1520,17 +1536,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum worth",
     "memory recurs",
     "memory memory",
     "announcements+drift chatgpt",
     "announcements+drift assumptions—(i",
     "memory factor",
     "forum across",
-    "forum testing"
+    "forum testing",
+    "forum through-line"
   ],
   "hyp_seen_cycle": {
-    "C-282": 41,
     "C-284": 42,
     "C-286": 43,
     "C-288": 44,
@@ -1540,7 +1555,7 @@
     "C-354": 48,
     "C-370": 49,
     "C-383": 51,
-    "C-399": 32,
+    "C-399": 52,
     "C-407": 33,
     "C-416": 34,
     "C-418": 35,
@@ -1560,7 +1575,8 @@
     "C-458": 49,
     "C-462": 50,
     "C-464": 50,
-    "C-485": 51
+    "C-485": 51,
+    "C-493": 52
   },
   "topics_domain_ok": [
     "alignment",
@@ -1576,6 +1592,7 @@
     "complexity",
     "computational",
     "context",
+    "contexts",
     "core",
     "cost",
     "deterministic",
@@ -1698,6 +1715,7 @@
     "C-458",
     "C-464",
     "C-485",
+    "C-493",
     "C-56",
     "C-57",
     "C-58"
@@ -1727,6 +1745,7 @@
     "M-29",
     "M-3",
     "M-30",
+    "M-31",
     "M-4",
     "M-5",
     "M-6",
@@ -1738,32 +1757,32 @@
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 2,
-    "active": 376,
+    "active": 383,
     "hypotheses": 30,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 26,
     "supporting_links": 26,
-    "emergent_total": 278,
+    "emergent_total": 281,
     "usable_semantic_rate": 1.0,
-    "methods_total": 30,
+    "methods_total": 31,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 3980,
-    "cycle": 51
+    "stagnation_cycles": 2,
+    "objects": 4043,
+    "cycle": 52
   },
   "vitality_prev": {
     "supports": 26,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3980,
-    "active": 376,
+    "objects": 4043,
+    "active": 383,
     "links": 26,
-    "emergent": 278
+    "emergent": 281
   },
-  "stagnation": 1,
+  "stagnation": 2,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2121,12 +2140,19 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 52,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 51,
+    "starved_topic": 52,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
