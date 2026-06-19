@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tick": 0,
-  "snapshot_hash": "6aa0ac9e4931e2a6fbea3cf3f9cdc3cc63c2f8109940e83ae8486bb175e823e3",
+  "snapshot_hash": "d60e2a34800ee72397a4b8231c4e2ade402f73a5021809be2300785431e3736d",
   "journal": [
     {
       "operator": "claim_create",
@@ -69650,6 +69650,864 @@
       },
       "target_objects": [
         "C-260"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "method_trial_recorded",
+      "proposal_type": "method_proposal",
+      "payload": {
+        "affinities": [
+          "adversarial"
+        ],
+        "artifact_ids": [],
+        "attribution_level": "variant",
+        "attribution_strength": "none",
+        "baseline_id": "baseline_solver",
+        "claim_ids": [],
+        "confounders": [],
+        "decision": {
+          "confidence_interval": null,
+          "decision_rule_hash": "sha256:91f2d789b4982ee2b9271b77380fbc8377feefd4fa79fb96d1d3b37e0b24039d",
+          "decision_rule_id": "rule_v2",
+          "effect_size": null,
+          "minimum_effect": null,
+          "verdict": "success"
+        },
+        "epistemic_result": "success",
+        "estimand": {
+          "contrast": "intervention_minus_baseline",
+          "decision_rule_id": "rule_v2",
+          "direction": "lower_is_better",
+          "minimum_effect": 0.2,
+          "outcome_metric": "misclassification_rate"
+        },
+        "evaluation_envelope": {
+          "capsule_hash": "sha256:1f2282fa0fdc5e1c53969b113a1735907782724730eecc4107b604d3072626df",
+          "claimed_verdict": "success",
+          "envelope_version": "evaluation_envelope_v1",
+          "evaluation_body_hash": "sha256:17c0c786e2564fff8f06219ed9c62c10f48d6ef9738b7906376663e07b5ee0fa",
+          "rule_hash": "sha256:91f2d789b4982ee2b9271b77380fbc8377feefd4fa79fb96d1d3b37e0b24039d",
+          "rule_id": "rule_v2",
+          "schema_version": "method_trial_recorded_v4"
+        },
+        "evaluator_id": "metric:misclassification_rate",
+        "event_type": "METHOD_TRIAL_RECORDED",
+        "execution_status": "completed",
+        "failure_kind": "none",
+        "field_sources": {},
+        "implementation_id": "unknown",
+        "ledger_tick": 0,
+        "legacy": false,
+        "legacy_reported_success": false,
+        "legacy_validation": null,
+        "measurement": {
+          "baseline_value": 0.5,
+          "confidence_interval": [
+            0.333333,
+            0.333333
+          ],
+          "effect_size": 0.333333,
+          "intervention_value": 0.166667,
+          "metric_name": "misclassification_rate",
+          "uncertainty": 0.0
+        },
+        "method_id": "contradiction-first-review",
+        "method_variant": "contradiction-first-review",
+        "method_version": 1,
+        "model": "none",
+        "model_family": "unknown",
+        "note": "",
+        "protocol_status": "valid",
+        "run_id": "real_trial_protocol_v1",
+        "sampling": {},
+        "schema_version": "method_trial_recorded_v4",
+        "scope_description": "frozen transfer task set (misclassification_rate)",
+        "scope_id": "frozen_joni_conflict_cases@v1",
+        "target_id": "frozen_joni_conflict_cases@v1",
+        "target_type": "open_question",
+        "task_sample_id": "16f797d1ce0e",
+        "task_set_id": "frozen_joni_conflict_cases@v1",
+        "timestamp": "2026-06-19T16:45:05+00:00",
+        "trial_id": "realtrial-contradiction-first-review-16f797d1ce0e"
+      },
+      "proposer": "kevin",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "kevin",
+        "origin_type": "local_model",
+        "provider": "unknown",
+        "run_id": "unknown",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [],
+      "actor": "kevin",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "text": "'prompt' keeps recurring across 3 of my topics, so I am tracking it as its own topic.",
+        "topic": "prompt"
+      },
+      "proposer": "source",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "source",
+        "provider": "unknown",
+        "run_id": "unknown",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_revise",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "to_status": "active"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "unknown",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-449"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "decision": "insufficient-semantic-evidence",
+        "decision_rationale": "the group could not be fully measured",
+        "lexical_trigger": 0.2381,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-316",
+              "b": "C-441",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0357
+            },
+            {
+              "a": "C-316",
+              "b": "C-443",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0385
+            },
+            {
+              "a": "C-316",
+              "b": "C-444",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0385
+            },
+            {
+              "a": "C-316",
+              "b": "C-445",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0357
+            },
+            {
+              "a": "C-441",
+              "b": "C-443",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.1818
+            },
+            {
+              "a": "C-441",
+              "b": "C-444",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.2381
+            },
+            {
+              "a": "C-441",
+              "b": "C-445",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.12
+            },
+            {
+              "a": "C-443",
+              "b": "C-444",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.1429
+            },
+            {
+              "a": "C-443",
+              "b": "C-445",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.04
+            },
+            {
+              "a": "C-444",
+              "b": "C-445",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.04
+            }
+          ]
+        },
+        "members": [
+          "C-316",
+          "C-441",
+          "C-443",
+          "C-444",
+          "C-445"
+        ],
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0",
+        "semantic_state": "human-review-required",
+        "surface_terms": [
+          "entropy"
+        ]
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "joni-c45",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-316",
+        "C-441",
+        "C-443",
+        "C-444",
+        "C-445"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "decision": "insufficient-semantic-evidence",
+        "decision_rationale": "the group could not be fully measured",
+        "lexical_trigger": 0.25,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-359",
+              "b": "C-363",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "tool_computable",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.25
+            },
+            {
+              "a": "C-359",
+              "b": "C-434",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0286
+            },
+            {
+              "a": "C-359",
+              "b": "C-436",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0303
+            },
+            {
+              "a": "C-359",
+              "b": "C-445",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0278
+            },
+            {
+              "a": "C-363",
+              "b": "C-434",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "tool_computable",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0417
+            },
+            {
+              "a": "C-363",
+              "b": "C-436",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "tool_computable",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0455
+            },
+            {
+              "a": "C-363",
+              "b": "C-445",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "tool_computable",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.04
+            },
+            {
+              "a": "C-434",
+              "b": "C-436",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0909
+            },
+            {
+              "a": "C-434",
+              "b": "C-445",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0385
+            },
+            {
+              "a": "C-436",
+              "b": "C-445",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0417
+            }
+          ]
+        },
+        "members": [
+          "C-359",
+          "C-363",
+          "C-434",
+          "C-436",
+          "C-445"
+        ],
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0",
+        "semantic_state": "human-review-required",
+        "surface_terms": [
+          "includes"
+        ]
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "joni-c45",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-359",
+        "C-363",
+        "C-434",
+        "C-436",
+        "C-445"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "decision": "insufficient-semantic-evidence",
+        "decision_rationale": "the group could not be fully measured",
+        "lexical_trigger": 0.381,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-175",
+              "b": "C-365",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.037
+            },
+            {
+              "a": "C-175",
+              "b": "C-366",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0312
+            },
+            {
+              "a": "C-175",
+              "b": "C-367",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0345
+            },
+            {
+              "a": "C-365",
+              "b": "C-366",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.1739
+            },
+            {
+              "a": "C-365",
+              "b": "C-367",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.2
+            },
+            {
+              "a": "C-366",
+              "b": "C-367",
+              "decision": "duplicate",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.381
+            }
+          ]
+        },
+        "members": [
+          "C-175",
+          "C-365",
+          "C-366",
+          "C-367"
+        ],
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0",
+        "semantic_state": "human-review-required",
+        "surface_terms": [
+          "instruction"
+        ]
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "joni-c45",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-175",
+        "C-365",
+        "C-366",
+        "C-367"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "decision": "complementary",
+        "decision_rationale": "same-frame, compatible, non-duplicate group - a synthesis candidate",
+        "lexical_trigger": 0.4375,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-347",
+              "b": "C-348",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0435
+            },
+            {
+              "a": "C-347",
+              "b": "C-349",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.05
+            },
+            {
+              "a": "C-347",
+              "b": "C-351",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.05
+            },
+            {
+              "a": "C-348",
+              "b": "C-349",
+              "decision": "duplicate",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.4375
+            },
+            {
+              "a": "C-348",
+              "b": "C-351",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0952
+            },
+            {
+              "a": "C-349",
+              "b": "C-351",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.1111
+            }
+          ]
+        },
+        "members": [
+          "C-347",
+          "C-348",
+          "C-349",
+          "C-351"
+        ],
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0",
+        "semantic_state": "synthesis-eligible",
+        "surface_terms": [
+          "memorywam"
+        ]
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "joni-c45",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-347",
+        "C-348",
+        "C-349",
+        "C-351"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_create",
+      "proposal_type": "claim_proposal",
+      "payload": {
+        "support": 0.4,
+        "text": "Across my forum claims, 'memorywam' recurs as a through-line worth testing as a single underlying factor.",
+        "topic": "forum"
+      },
+      "proposer": "joni",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "unknown",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-347",
+        "C-348",
+        "C-349",
+        "C-351"
+      ],
+      "actor": "joni",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "semantic_cluster_propose",
+      "proposal_type": "semantic_proposal",
+      "payload": {
+        "decision": "insufficient-semantic-evidence",
+        "decision_rationale": "the group could not be fully measured",
+        "lexical_trigger": 0.25,
+        "measurement": {
+          "pairs": [
+            {
+              "a": "C-229",
+              "b": "C-344",
+              "decision": "supports",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0909
+            },
+            {
+              "a": "C-229",
+              "b": "C-359",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.027
+            },
+            {
+              "a": "C-229",
+              "b": "C-363",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "tool_computable",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0385
+            },
+            {
+              "a": "C-229",
+              "b": "C-434",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.037
+            },
+            {
+              "a": "C-229",
+              "b": "C-436",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.04
+            },
+            {
+              "a": "C-344",
+              "b": "C-359",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0323
+            },
+            {
+              "a": "C-344",
+              "b": "C-363",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "tool_computable",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.05
+            },
+            {
+              "a": "C-344",
+              "b": "C-434",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0476
+            },
+            {
+              "a": "C-344",
+              "b": "C-436",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0526
+            },
+            {
+              "a": "C-359",
+              "b": "C-363",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "tool_computable",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.25
+            },
+            {
+              "a": "C-359",
+              "b": "C-434",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0286
+            },
+            {
+              "a": "C-359",
+              "b": "C-436",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0303
+            },
+            {
+              "a": "C-363",
+              "b": "C-434",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "tool_computable",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0417
+            },
+            {
+              "a": "C-363",
+              "b": "C-436",
+              "decision": "insufficient-semantic-evidence",
+              "frame_a": "tool_computable",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0455
+            },
+            {
+              "a": "C-434",
+              "b": "C-436",
+              "decision": "complementary",
+              "frame_a": "frame_undeclared",
+              "frame_b": "frame_undeclared",
+              "frame_tension": "undecidable",
+              "lexical_trigger": 0.0909
+            }
+          ]
+        },
+        "members": [
+          "C-229",
+          "C-344",
+          "C-359",
+          "C-363",
+          "C-434",
+          "C-436"
+        ],
+        "semantic_layer": "desi-semantic-layer",
+        "semantic_layer_version": "0.1.0",
+        "semantic_state": "human-review-required",
+        "surface_terms": [
+          "includes"
+        ]
+      },
+      "proposer": "semantic_layer",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "joni-c45",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-229",
+        "C-344",
+        "C-359",
+        "C-363",
+        "C-434",
+        "C-436"
+      ],
+      "actor": "semantic_layer",
+      "governance_approved": false,
+      "reason": "",
+      "tick": 0
+    },
+    {
+      "operator": "claim_reject",
+      "proposal_type": "claim_proposal",
+      "payload": {},
+      "proposer": "joni",
+      "provenance": {
+        "call_id": "unknown",
+        "model_id": "unknown",
+        "origin_type": "deterministic_operator",
+        "provider": "unknown",
+        "run_id": "unknown",
+        "sampling_config_sha256": "unverified",
+        "served_model": "unknown",
+        "source_ids": []
+      },
+      "target_objects": [
+        "C-262"
       ],
       "actor": "joni",
       "governance_approved": false,

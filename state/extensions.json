@@ -102,6 +102,28 @@
       },
       "risk": "low - a measurement channel only; the gate, ledger and operators are untouched",
       "found_by": "doktores"
+    },
+    {
+      "kind": "doktores:reader-sources",
+      "cycle": 45,
+      "addressed_to": "Claude",
+      "title": "Integriere abfragebasierte Literatursynthese in das Lesemodul",
+      "component": "the reading layer (sources.py / reader.py) - which feeds Joni can draw on, outside the protected core",
+      "component_key": "reader-sources",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (reader-sources)",
+      "motivation": "IRIS stellt eine Methode zur abfragebasierten Literatursynthese bereit, die aus wissenschaftlichen Artikeln automatisch relevante Informationen extrahiert und zusammenfasst, um Hypothesen zu stützen.",
+      "desired_capability": "Das reader-sources-Modul wird um eine Komponente erweitert, die Nutzeranfragen entgegennimmt, daraufhin externe Quellen durchsucht und die Ergebnisse mithilfe der IRIS-Literatursynthesetechnik zu kohärenten Feed-Elementen verdichtet, die Joni als Wissensgrundlage dienen.",
+      "acceptance": "Die synthetisierten Feed-Elemente erreichen in einer Doppelblindbewertung durch zwei Fachexperten eine durchschnittliche Relevanzbewertung von mindestens 4 von 5 Punkten auf einer Likert-Skala.",
+      "evidence": {
+        "found_by": "doktores",
+        "source": "arxiv",
+        "ref": "http://arxiv.org/abs/2504.16728v2",
+        "source_title": "IRIS: Interactive Research Ideation System for Accelerating Scientific Discovery"
+      },
+      "risk": "low - adds an input source; no state-logic changes",
+      "found_by": "doktores"
     }
   ],
   "forum_heard": [
@@ -1183,6 +1205,7 @@
     "openclaw",
     "outputs",
     "projects",
+    "prompt",
     "real",
     "reasoning",
     "sample",
@@ -1287,6 +1310,7 @@
     "forum|lists",
     "forum|mandibular",
     "forum|memory",
+    "forum|memorywam",
     "forum|metaphor",
     "forum|methodological",
     "forum|monitorable",
@@ -1415,10 +1439,10 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|entropy": 1,
-    "forum|includes": 2,
-    "forum|instruction": 2,
-    "meth:includes": 1,
+    "forum|entropy": 2,
+    "forum|includes": 3,
+    "forum|instruction": 3,
+    "meth:includes": 2,
     "meth:sample": 1
   },
   "hyp_tested": [],
@@ -1437,7 +1461,6 @@
     "forum mandibular"
   ],
   "hyp_seen_cycle": {
-    "C-260": 33,
     "C-262": 34,
     "C-264": 35,
     "C-266": 36,
@@ -1449,7 +1472,7 @@
     "C-284": 42,
     "C-286": 43,
     "C-288": 44,
-    "C-306": 26,
+    "C-306": 45,
     "C-333": 27,
     "C-335": 28,
     "C-354": 29,
@@ -1467,7 +1490,8 @@
     "C-430": 41,
     "C-432": 42,
     "C-440": 43,
-    "C-448": 44
+    "C-448": 44,
+    "C-450": 45
   },
   "topics_domain_ok": [
     "announcements",
@@ -1509,6 +1533,7 @@
     "outputs",
     "privacy",
     "projects",
+    "prompt",
     "real",
     "reasoning",
     "retrieval",
@@ -1586,6 +1611,7 @@
     "C-432",
     "C-440",
     "C-448",
+    "C-450",
     "C-56",
     "C-57",
     "C-58"
@@ -1623,33 +1649,33 @@
   "vitality": {
     "verdict": "degenerating",
     "development": 0,
-    "degeneration": 2,
-    "active": 351,
+    "degeneration": 1,
+    "active": 352,
     "hypotheses": 30,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 23,
     "supporting_links": 23,
-    "emergent_total": 255,
+    "emergent_total": 257,
     "usable_semantic_rate": 1.0,
     "methods_total": 28,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 9,
-    "objects": 3629,
-    "cycle": 44
+    "stagnation_cycles": 10,
+    "objects": 3656,
+    "cycle": 45
   },
   "vitality_prev": {
     "supports": 23,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 3629,
-    "active": 351,
+    "objects": 3656,
+    "active": 352,
     "links": 23,
-    "emergent": 255
+    "emergent": 257
   },
-  "stagnation": 9,
+  "stagnation": 10,
   "vitality_history": [
     {
       "cycle": 1,
@@ -1958,12 +1984,19 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 45,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 44,
+    "starved_topic": 45,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2889,6 +2922,9 @@
     "arxiv:2101.10952v1",
     "arxiv:2411.05639v1",
     "arxiv:2412.01443v1",
+    "arxiv:2504.08810v1",
+    "arxiv:2504.16728v2",
+    "arxiv:2505.16982v1",
     "arxiv:2505.21815v2",
     "arxiv:2606.20520v1",
     "arxiv:2606.20532v1",
@@ -2902,7 +2938,8 @@
   ],
   "doktores_filed": {
     "conflict-qualifier": 37,
-    "semantics-measurement": 41
+    "semantics-measurement": 41,
+    "reader-sources": 45
   },
   "doktores_review": [
     {
@@ -3030,9 +3067,36 @@
       "served_model": "deepseek-v4-pro",
       "applicable": true,
       "component_key": "semantics-measurement"
+    },
+    {
+      "cycle": 45,
+      "source": "arxiv",
+      "title": "Beyond Correlation: Towards Causal Large Language Model Agents in Biomedicine",
+      "url": "http://arxiv.org/abs/2505.16982v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 45,
+      "source": "arxiv",
+      "title": "PriM: Principle-Inspired Material Discovery through Multi-Agent Collaboration",
+      "url": "http://arxiv.org/abs/2504.08810v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 45,
+      "source": "arxiv",
+      "title": "IRIS: Interactive Research Ideation System for Accelerating Scientific Discovery",
+      "url": "http://arxiv.org/abs/2504.16728v2",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "reader-sources"
     }
   ],
-  "doktores_last_cycle": 41,
+  "doktores_last_cycle": 45,
   "reconsolidate_lens_idx": 2,
-  "doktores_module_idx": 3
+  "doktores_module_idx": 4
 }
