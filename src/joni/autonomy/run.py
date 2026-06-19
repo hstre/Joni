@@ -47,6 +47,7 @@ from . import (
     site,
     strategy,
     strengthen,
+    synthesis,
     topic_review,
     trials,
 )
@@ -300,6 +301,12 @@ def one_cycle() -> dict:
     # 4f. Self-optimisation: read Joni's own result pattern (mostly insufficient?) and
     #     improve his research strategy - what he reads and the queries he uses next cycle.
     strategy_out = strategy.adapt(cs, extensions, proto, cycle)
+
+    # 4f-synth. Query-based literature synthesis (Auftrag · reader-sources, opt-in): condense the
+    #     several papers fetched on one topic into a single coherent SOURCE feed item (candidate,
+    #     conflict-checked, never confirmed). Uses Joni's own joni-hard model; no-op when disabled.
+    synthesis.synthesize(cs, extensions, proto, cycle, items=fetched,
+                         budget=budget, runs_per_week=runs_per_week())
 
     # 4g. Homeostasis: shed dead ideas and cap the backlog so a long run does not silt up,
     #     then grade Joni's own trajectory (developing / steady / degenerating).
