@@ -1142,6 +1142,7 @@
   ],
   "semantic_backfilled": [
     "C-109|C-350@bge-small-en-v1.5",
+    "C-109|C-491@bge-small-en-v1.5",
     "C-110|C-118@bge-small-en-v1.5",
     "C-116|C-127@bge-small-en-v1.5",
     "C-117|C-156@bge-small-en-v1.5",
@@ -1338,6 +1339,7 @@
     "supporting",
     "temporal",
     "text",
+    "theory",
     "timeprove",
     "tokenization",
     "tokens",
@@ -1374,6 +1376,7 @@
     "forum|board",
     "forum|bottleneck",
     "forum|breakthrough",
+    "forum|catastrophic",
     "forum|categories",
     "forum|category",
     "forum|certified",
@@ -1384,6 +1387,7 @@
     "forum|community",
     "forum|complexity",
     "forum|computational",
+    "forum|concepts",
     "forum|consistency",
     "forum|consistent",
     "forum|contaminated",
@@ -1603,9 +1607,10 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|available": 1,
-    "forum|version": 2,
-    "meth:histories": 2,
+    "forum|available": 2,
+    "forum|cedu": 1,
+    "forum|version": 3,
+    "meth:histories": 3,
     "meth:sample": 1
   },
   "hyp_tested": [
@@ -1616,17 +1621,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum underlying",
-    "forum single",
     "forum recurs",
     "forum across",
     "memory claims",
     "memory memory",
     "forum factor",
-    "forum through-line"
+    "forum through-line",
+    "forum worth",
+    "forum forum"
   ],
   "hyp_seen_cycle": {
-    "C-383": 51,
     "C-399": 52,
     "C-407": 53,
     "C-416": 54,
@@ -1636,7 +1640,7 @@
     "C-424": 58,
     "C-426": 59,
     "C-428": 60,
-    "C-430": 41,
+    "C-430": 61,
     "C-432": 42,
     "C-440": 43,
     "C-448": 44,
@@ -1656,7 +1660,8 @@
     "C-528": 57,
     "C-530": 58,
     "C-532": 59,
-    "C-534": 60
+    "C-534": 60,
+    "C-536": 61
   },
   "topics_domain_ok": [
     "alignment",
@@ -1726,6 +1731,7 @@
     "supporting",
     "temporal",
     "text",
+    "theory",
     "timeprove",
     "tokenization",
     "tokens",
@@ -1812,6 +1818,7 @@
     "C-530",
     "C-532",
     "C-534",
+    "C-536",
     "C-56",
     "C-57",
     "C-58"
@@ -1856,32 +1863,32 @@
     "verdict": "degenerating",
     "development": 0,
     "degeneration": 2,
-    "active": 416,
+    "active": 417,
     "hypotheses": 30,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 30,
     "supporting_links": 30,
-    "emergent_total": 311,
+    "emergent_total": 314,
     "usable_semantic_rate": 1.0,
     "methods_total": 34,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 4,
-    "objects": 4415,
-    "cycle": 60
+    "stagnation_cycles": 5,
+    "objects": 4448,
+    "cycle": 61
   },
   "vitality_prev": {
     "supports": 30,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 4415,
-    "active": 416,
+    "objects": 4448,
+    "active": 417,
     "links": 30,
-    "emergent": 311
+    "emergent": 314
   },
-  "stagnation": 4,
+  "stagnation": 5,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2302,12 +2309,19 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 61,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 60,
+    "starved_topic": 61,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -3494,6 +3508,7 @@
     "arxiv:2505.21815v2",
     "arxiv:2506.04260v2",
     "arxiv:2507.02168v2",
+    "arxiv:2507.10057v3",
     "arxiv:2606.20520v1",
     "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
@@ -3504,7 +3519,9 @@
     "arxiv:2606.20562v1",
     "arxiv:2606.20563v1",
     "huggingface:2603.11273",
+    "huggingface:2606.16429",
     "huggingface:2606.19602",
+    "huggingface:2606.20381",
     "zenodo:20721436"
   ],
   "doktores_filed": {
@@ -3746,11 +3763,38 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 61,
+      "source": "arxiv",
+      "title": "Chain of Retrieval: Multi-Aspect Iterative Search Expansion and Post-Order Search Aggregation for Full Paper Retrieval",
+      "url": "http://arxiv.org/abs/2507.10057v3",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 61,
+      "source": "huggingface",
+      "title": "Rethinking Shrinkage Bias in LLM FP4 Pretraining: Geometric Origin, Systemic Impact, and UFP4 Recipe",
+      "url": "https://huggingface.co/papers/2606.20381",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 61,
+      "source": "huggingface",
+      "title": "Taylor-Calibrate: Principled Initialization for Hybrid Linear Attention Distillation",
+      "url": "https://huggingface.co/papers/2606.16429",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 57,
+  "doktores_last_cycle": 61,
   "reconsolidate_lens_idx": 4,
-  "doktores_module_idx": 2,
+  "doktores_module_idx": 3,
   "doktores_hyp_researched": [
     "C-370"
   ],
