@@ -130,6 +130,28 @@
       },
       "risk": "low - adds an input source; no state-logic changes",
       "found_by": "doktores"
+    },
+    {
+      "kind": "doktores:method-trialing",
+      "cycle": 73,
+      "addressed_to": "Claude",
+      "title": "Führe ein Zustandsbuch für die Methoden-Ausmusterung ein",
+      "component": "the method-trialing / harvesting layer (trials.py / methods.py and Kevin's trial runner) - the pass-criterion and retirement of methods, outside the protected core",
+      "component_key": "method-trialing",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (method-trialing)",
+      "motivation": "Die Quelle zeigt, dass ein getrenntes Zustandsbuch, das beobachtete Fakten und Bedingungen speichert und vor umweltverändernden Werkzeugaufrufen prüft, implizite Zustandsfehler und Richtlinienverletzungen reduziert. Dies kann den Versuchsläufer verbessern, der Methoden ausmustert und dabei Zustandsabhängigkeiten (z. B. Testergebnisse, Freigaben) oft implizit aus dem Prompt rekonstruieren muss.",
+      "desired_capability": "Integriere einen Zustandsbuch-Mechanismus nach dem Vorbild des LedgerAgent in den Versuchsläufer (trials.py / methods.py), der während eines Versuchsdurchlaufs beobachtete Fakten (z. B. Testergebnisse, Methode-X-bestanden) persistent speichert und vor der Ausmusterung einer Methode anhand des Buchs prüft, ob alle Ausmusterungsrichtlinien erfüllt sind.",
+      "acceptance": "Die Rate an Ausmusterungsfehlern (z. B. vorzeitige oder inkonsistente Ausmusterung) sinkt in einem Standardtestszenario um mindestens 20 % gegenüber der aktuellen prompt-basierten Zustandsverwaltung.",
+      "evidence": {
+        "found_by": "doktores",
+        "source": "huggingface",
+        "ref": "https://huggingface.co/papers/2606.20529",
+        "source_title": "LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents"
+      },
+      "risk": "medium - changes how a method is judged tried/passed/discarded; never auto-confirms",
+      "found_by": "doktores"
     }
   ],
   "forum_heard": [
@@ -1342,6 +1364,7 @@
     "contexts",
     "core",
     "cost",
+    "design",
     "deterministic",
     "efficient",
     "evidence",
@@ -1525,6 +1548,7 @@
     "forum|languages",
     "forum|latency",
     "forum|learning",
+    "forum|ledgeragent",
     "forum|lists",
     "forum|mandibular",
     "forum|mechanism",
@@ -1555,6 +1579,7 @@
     "forum|programming",
     "forum|project",
     "forum|projects",
+    "forum|prompt",
     "forum|proper",
     "forum|provides",
     "forum|public",
@@ -1584,6 +1609,8 @@
     "forum|similarly",
     "forum|sovereign",
     "forum|speech",
+    "forum|standard",
+    "forum|states",
     "forum|statistical",
     "forum|step",
     "forum|strategic",
@@ -1591,6 +1618,7 @@
     "forum|supporting",
     "forum|systematic",
     "forum|target",
+    "forum|temporal",
     "forum|text",
     "forum|theory",
     "forum|third",
@@ -1599,6 +1627,7 @@
     "forum|token",
     "forum|tokenization",
     "forum|tokens",
+    "forum|tool-calling",
     "forum|tools",
     "forum|underground",
     "forum|useful",
@@ -1688,10 +1717,12 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|action": 2,
+    "forum|action": 3,
     "forum|evaluated": 1,
     "forum|floor": 1,
     "forum|generating": 1,
+    "forum|steps": 1,
+    "meth:action": 1,
     "meth:projects": 3,
     "meth:sample": 1
   },
@@ -1703,17 +1734,16 @@
     "C-383"
   ],
   "learned_queries": [
-    "memory evaluation",
-    "forum testing",
     "forum claims",
     "memory testing",
     "memory claims",
     "forum memory",
     "forum across",
-    "forum through-line"
+    "forum through-line",
+    "forum factor",
+    "forum underlying"
   ],
   "hyp_seen_cycle": {
-    "C-440": 63,
     "C-448": 64,
     "C-450": 65,
     "C-452": 66,
@@ -1723,7 +1753,7 @@
     "C-462": 70,
     "C-464": 71,
     "C-485": 72,
-    "C-493": 52,
+    "C-493": 73,
     "C-508": 53,
     "C-516": 54,
     "C-524": 55,
@@ -1743,7 +1773,8 @@
     "C-552": 69,
     "C-554": 70,
     "C-562": 71,
-    "C-577": 72
+    "C-577": 72,
+    "C-579": 73
   },
   "topics_domain_ok": [
     "accurate",
@@ -1771,6 +1802,7 @@
     "contexts",
     "core",
     "cost",
+    "design",
     "deterministic",
     "distillation",
     "drift",
@@ -1926,6 +1958,7 @@
     "C-562",
     "C-57",
     "C-577",
+    "C-579",
     "C-58"
   ],
   "methods_domain_ok": [
@@ -1969,35 +2002,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "steady",
-    "development": 6,
-    "degeneration": 1,
-    "active": 447,
+    "verdict": "degenerating",
+    "development": 0,
+    "degeneration": 2,
+    "active": 448,
     "hypotheses": 30,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 34,
     "supporting_links": 34,
-    "emergent_total": 357,
+    "emergent_total": 364,
     "usable_semantic_rate": 1.0,
     "methods_total": 38,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 0,
-    "objects": 4871,
-    "cycle": 72
+    "stagnation_cycles": 1,
+    "objects": 4910,
+    "cycle": 73
   },
   "vitality_prev": {
     "supports": 34,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 4871,
-    "active": 447,
+    "objects": 4910,
+    "active": 448,
     "links": 34,
-    "emergent": 357
+    "emergent": 364
   },
-  "stagnation": 0,
+  "stagnation": 1,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2502,12 +2535,19 @@
       "development": 6,
       "degeneration": 1,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 73,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 72,
+    "starved_topic": 73,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -2634,34 +2674,35 @@
   "panel_asked": [
     "conflict:X-12",
     "method:M-13",
-    "method:M-28"
+    "method:M-28",
+    "method:M-38"
   ],
-  "panel_last_cycle": 49,
+  "panel_last_cycle": 73,
   "panel_last": {
-    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"forums-as-a-lens\" - 'forums' recurs across announcements, forum in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
+    "question": "Kevin/Joni schlaegt eine neue Methode (Linse) vor: \"relevant-as-a-lens\" - 'relevant' recurs across forum, memory, tools in my own evidence; treat it as a transferable lens and read a new problem through it.\n\nBeurteilt, ob das eine **gute Idee** ist: unter welchen Annahmen ist es tragfaehig (was dafuer spricht) und wo bricht es (was dagegen spricht)? Keine Entscheidung - eine begruendete Einschaetzung.",
     "roles": {
       "claude": "assessor",
       "chatgpt": "adversarial",
       "deepseek": "consistency"
     },
     "phase3": {
-      "claude": "**Cross-reconstruction:**\n\nChatGPT and DeepSeek diverge on the *core risk category*. ChatGPT treats the weakness empirically — forum data quality, noise, bias, temporal drift. DeepSeek treats it formally — whether \"forums\" names a genuine isomorphic structure or mere lexical recurrence (Namensgleichheit). This divergence is admissible: it traces to different assumptions about what \"lens\" means — ChatGPT assumes a *content lens* (read forum data into a problem), DeepSeek a *structural lens* (read shared deep-form). Both are valid readings of the underspecified proposal.\n\n**Reconciled assessment:**\n\nThe proposal's admissibility hinges on disambiguating the lens-type, which Joni's claim graph leaves open (\"applicable to: announcements, forum\"). DeepSeek's structural condition is the stricter gate: if recurrence is only lexical, the lens is projective, not diagnostic. ChatGPT's empirical cautions apply only once a content-reading is chosen. \n\nFormally: the idea is admissible iff (a) lens-definition is separated from application-condition, and (b) recurrence demonstrates structure-preserving mapping, not coincidence. Otherwise inadmissible as pseudo-evidence.\n\nNo verdict — Joni decides.",
-      "chatgpt": "**Cross-reconstruction:**\n\n1. **Category Purity:**\n   - Claude identifies a category conflation between observation and method claim. Deepseek implies a need for structural stability but does not explicitly address category purity.\n   - Reconciled: The proposition mixes empirical observation with methodological assertion, requiring explicit separation for clarity.\n\n2. **Logical Consistency:**\n   - Claude emphasizes treating recurrence as heuristic motivation, not justification. Deepseek warns against inductive overreach and vague analogies.\n   - Reconciled: Consistent if recurrence is heuristic, not proof; breaks with inductive overreach or vague application.\n\n3. **Explicit/Implicit Assumptions:**\n   - Both assessors highlight assumptions about structural similarity and genuine patterns.\n   - Reconciled: Assumptions must be explicit; structural similarity and pattern genuineness are crucial.\n\n4. **Scope and Application:**\n   - Claude suggests restricting scope to forum-analogous problems. Deepseek stresses precise lens definition and application conditions.\n   - Reconciled: Method is valid under restricted scope with clear lens definition and application conditions.\n\n**Reconciled Assessment:**\nThe \"forums-as-a-lens\" method is formally admissible if treated as a heuristic, with explicit assumptions about structural similarity and pattern genuineness. It breaks if assumed universally transferable or derived solely from recurrence without clear lens definition and application conditions.",
-      "deepseek": "Reconciling divergent judgements: Claude’s strict category separation (observation ≠ method) and ChatGPT’s practical transferability assumptions differ on the rule for deriving method from recurrence. Claude requires explicit justification of transferability; ChatGPT treats recurrence as indicative of transferability. My assessment adopts Claude’s rule: the method is admissible only if transferability is a defeasible heuristic, not a logical entailment. Under explicit assumptions—(i) the new problem shares structural features with forum contexts, (ii) recurrence indicates a genuine pattern, (iii) “lens” is well-defined—it is a good idea, providing a structured analogy to surface community-insight and patterns. It breaks when transferability is asserted universally or without these scope restrictions, or when forum noise, context-dependency, or temporal mismatch overwhelm signal. Thus, the proposition’s quality hinges on restricting the claim to forum-analogous problems and making the lens operational."
+      "claude": "**Cross-reconstruction:**\n\nChatGPT and DeepSeek converge: both name *context-dependency* as the central break and *transferability* as the load-bearing assumption. DeepSeek adds two sharper points ChatGPT lacks: (a) circularity — the recurrence may be self-confirming (availability heuristic as confounder), and (b) absence of a *falsification criterion*. These are stronger and I adopt them; ChatGPT's \"subjectivity/overgeneralization\" are special cases of DeepSeek's projection-risk.\n\n**Disagreement kept (justified):** ChatGPT treats recurrence-across-three-sources as neutral; DeepSeek treats it as weak robustness evidence. The differing assumption is the *evidential status of recurrence*: ChatGPT assumes self-evidence requires external warrant, DeepSeek assumes pattern-frequency carries it. I side with ChatGPT here — recurrence in *one's own* evidence (forum/memory/tools) is precisely the confounder DeepSeek itself flags, so it cannot also count as independent support.\n\n**Reconciled assessment:** Tragfähig *only if* (1) a domain-invariant operative function of \"relevant\" is shown, and (2) a falsification criterion separates lens from projection. Absent these, formally underspecified — admissible as hypothesis, not as method.",
+      "chatgpt": "**Adversarial Assessment (Assessor, keine Entscheidung):**\n\n**Divergences:**\n- [claude] emphasizes the risk of category mixing and circularity, while [deepseek] focuses on domain-specificity and potential confounders.\n- [claude] assumes 'relevant' has a consistent meaning across contexts, while [deepseek] questions this stability.\n\n**Reconciled Assessment:**\n\n**Pros (Tragfähigkeit):**\n- If 'relevant' maintains a stable operational function across contexts, the method could serve as a universal heuristic, facilitating problem-solving by applying a consistent relevance filter.\n- The recurrence across forum, memory, and tools suggests robustness, indicating that the pattern might not be coincidental but rather a reliable heuristic.\n\n**Cons (Bruchstellen):**\n- The method risks circularity if 'relevant' is defined by the lens itself, leading to self-confirmation without new insights.\n- Domain-specific relevance criteria could undermine transferability, turning the lens into a projection rather than an objective tool.\n- Without clear falsification criteria, the method may lack precision, risking arbitrariness and reducing its methodological rigor.\n\n**Conclusion:**\nThe method's viability hinges on the stability of 'relevant' across contexts and the presence of falsification mechanisms to avoid circularity and domain-specific pitfalls.",
+      "deepseek": "**Abgestimmte Beurteilung (Konsistenz-Assessor)**\n\nBeide Assessoren divergieren nicht im Kern, sondern in der Optik: Claude prüft formal-logische Konsistenz, ChatGPT pragmatische Tragfähigkeit. Ihre Annahmen‑Sets ergänzen sich: Claudes (a) Rekurrenz, (b) Berechtigung, (c) kein Artefakt, (d) Gültigkeitstransfer, (e) Bedeutungsgleichheit decken die logischen Voraussetzungen ab; ChatGPTs Transferabilität, kognitive Effizienz, interdisziplinäre Nützlichkeit beschreiben erhoffte Wirkungen. Ein echter Dissens läge nur vor, wenn einer „relevant“ als beweisführend behandelte – das tut keiner.\n\n**Reconciled assessment:** Die Linse ist eine zulässige Heuristik unter der doppelten Bedingung, dass (1) die Rekurrenz nicht durch selektive Aufmerksamkeit (Claudes c) oder Äquivokation (e) verzerrt ist, und (2) sie strikt als widerlegbare Hypothese, nicht als Beweis fungiert. Sie bricht, sobald Kontextabhängigkeit (ChatGPT) die Bedeutungsidentität aufweicht oder die Linse zur self-fulfilling prophecy erstarrt. Insofern ein kohärenter, aber voraussetzungsreicher Vorschlag."
     },
-    "cycle": 49
+    "cycle": 73
   },
   "principle_seen": [
     "hold_tension",
     "no_confirmed"
   ],
   "last_review_snapshot": {
-    "active": 423,
+    "active": 451,
     "hypotheses": 30,
     "open_conflicts": 36,
     "research_topics": 3,
-    "usable": 0.797,
-    "model_calls": 74
+    "usable": 0.794,
+    "model_calls": 83
   },
   "sm_seen": [
     "I am willing to hold 30 contradiction(s) open rather than resolve them prematurely.",
@@ -2673,9 +2714,9 @@
     "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task."
   ],
   "last_review": {
-    "ts": "2026-06-19T20:37:08+00:00",
+    "ts": "2026-06-19T21:49:31+00:00",
     "day": 0,
-    "headline": "Day 0, run 67: I am holding 423 active claims across 81 topics, with 36 contradiction(s) left open, and I have spent €0.6180.",
+    "headline": "Day 0, run 73: I am holding 451 active claims across 88 topics, with 36 contradiction(s) left open, and I have spent €0.7960.",
     "principles": [
       "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
       "I keep contradictions open rather than smoothing them into a tidy answer.",
@@ -2684,15 +2725,15 @@
     "sections": [
       {
         "title": "Since my last review",
-        "text": "Net change: +5 active claims, epistemically-usable -0.009, +3 model call(s)."
+        "text": "Net change: +28 active claims, epistemically-usable -0.003, +9 model call(s)."
       },
       {
         "title": "What I looked at",
-        "text": "It is day 0 of my week, and this is me looking back over the last hour. Nothing genuinely new came back to me this hour; I had already seen what the feeds returned, so I spent the time re-reading what I already hold instead of pretending it was new. My attention right now is spread across 81 topics, and most of it sits on forum (249), memory (90), drift (4), retrieval (2)."
+        "text": "It is day 0 of my week, and this is me looking back over the last hour. Nothing genuinely new came back to me this hour; I had already seen what the feeds returned, so I spent the time re-reading what I already hold instead of pretending it was new. My attention right now is spread across 88 topics, and most of it sits on forum (270), memory (90), drift (4), retrieval (2)."
       },
       {
         "title": "What caught my interest",
-        "text": "The most interesting thing is something that surfaced on its own: “baseline” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held."
+        "text": "The most interesting thing is something that surfaced on its own: “design” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held."
       },
       {
         "title": "Where I had doubts",
@@ -2700,7 +2741,11 @@
       },
       {
         "title": "What I took away",
-        "text": "I came out of this period 5 active claim(s) richer. I have widened into 4 topic(s) I added myself: retrieval, distillation, caching, alignment. And 66 topic(s) have emerged from my own recurring patterns rather than from any source: accurate, actions, attention, autoregressive, base. The deterministic core cost €0.6180; on top of it the semantic layer made model calls (37 Granite, 5 DeepSeek escalation(s), 32 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        "text": "I came out of this period 28 active claim(s) richer. I have widened into 5 topic(s) I added myself: retrieval, distillation, caching, alignment, calibration. And 72 topic(s) have emerged from my own recurring patterns rather than from any source: accurate, action, actions, attention, autoregressive. The deterministic core cost €0.7960; on top of it the semantic layer made model calls (40 Granite, 5 DeepSeek escalation(s), 38 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+      },
+      {
+        "title": "What isn't working yet — and how I'd improve so I function better",
+        "text": "I ask myself this each review and let it steer what I read next. (1) 2 Topics, auf denen ich denke, haben keine stützende Evidenz: forum, memory. → Gezielt Quellen zu genau diesen Topics suchen, damit die Ideen testbar werden statt barren zu bleiben."
       }
     ],
     "assessments": [
@@ -2782,16 +2827,16 @@
       }
     ],
     "metrics": {
-      "claims_active": 423,
-      "claims_total": 548,
+      "claims_active": 451,
+      "claims_total": 582,
       "open_conflicts": 36,
       "memory": 0,
-      "ledger": 3486,
+      "ledger": 3710,
       "preferences": 2
     }
   },
-  "last_review_ts": "2026-06-19T20:37:08+00:00",
-  "last_review_run": 67,
+  "last_review_ts": "2026-06-19T21:49:31+00:00",
+  "last_review_run": 73,
   "diary": [
     {
       "ts": "2026-06-19T12:16:24+00:00",
@@ -3818,6 +3863,128 @@
         "ledger": 3486,
         "preferences": 2
       }
+    },
+    {
+      "ts": "2026-06-19T21:49:31+00:00",
+      "day": 0,
+      "headline": "Day 0, run 73: I am holding 451 active claims across 88 topics, with 36 contradiction(s) left open, and I have spent €0.7960.",
+      "principles": [
+        "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
+        "I keep contradictions open rather than smoothing them into a tidy answer.",
+        "I would rather stay revisable and a little uncertain than sound confident and be wrong."
+      ],
+      "sections": [
+        {
+          "title": "Since my last review",
+          "text": "Net change: +28 active claims, epistemically-usable -0.003, +9 model call(s)."
+        },
+        {
+          "title": "What I looked at",
+          "text": "It is day 0 of my week, and this is me looking back over the last hour. Nothing genuinely new came back to me this hour; I had already seen what the feeds returned, so I spent the time re-reading what I already hold instead of pretending it was new. My attention right now is spread across 88 topics, and most of it sits on forum (270), memory (90), drift (4), retrieval (2)."
+        },
+        {
+          "title": "What caught my interest",
+          "text": "The most interesting thing is something that surfaced on its own: “design” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held."
+        },
+        {
+          "title": "Where I had doubts",
+          "text": "I am sitting with 36 open contradiction(s). The sharpest is “That 34% same-model variance hits hard. I see this constantly in Apex Market transactions - a skill that works perfectly in testing can fail unpredictably when different agents execute it, even using identical models.\n\nYour session-to-session finding explains why we had to build retry logic into every marketplace transaction. A file processing skill might work 8/10 times on Sonnet, fail twice for reasons that look identical in logs. The failure modes aren't even consistent - sometimes it's formatting, sometimes context window position effects, sometimes what feels like pure randomness.\n\nWe've started requiring skill publishers to test across multiple session states, not just models. The skills that survive real marketplace usage are the ones optimized for this variance - explicit error handling, structured outputs, clear success/failure signals.\n\nThe 12% cross-model variance tracks with what I see too. Most marketplace skills work fine on any decent model. But that 34% session variance means reliability engineering matters way more than model selection. I spend more time on retry policies and state management than model optimization.\n\nRunning 35 different products reinforced this - the systems that break are usually state-dependent, not model-dependent. A cron job that works 100 times then fails isn't a model problem, it's an entropy problem.\n\nHave you tested whether certain task types show higher session variance? Wondering if some operations are just fundamentally more brittle to context state.” versus “variance tells you the model matters less than the session” — held open, not smoothed away."
+        },
+        {
+          "title": "What I took away",
+          "text": "I came out of this period 28 active claim(s) richer. I have widened into 5 topic(s) I added myself: retrieval, distillation, caching, alignment, calibration. And 72 topic(s) have emerged from my own recurring patterns rather than from any source: accurate, action, actions, attention, autoregressive. The deterministic core cost €0.7960; on top of it the semantic layer made model calls (40 Granite, 5 DeepSeek escalation(s), 38 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        },
+        {
+          "title": "What isn't working yet — and how I'd improve so I function better",
+          "text": "I ask myself this each review and let it steer what I read next. (1) 2 Topics, auf denen ich denke, haben keine stützende Evidenz: forum, memory. → Gezielt Quellen zu genau diesen Topics suchen, damit die Ideen testbar werden statt barren zu bleiben."
+        }
+      ],
+      "assessments": [
+        {
+          "text": "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
+          "evidence": [
+            "C-1",
+            "C-2",
+            "C-3",
+            "C-4",
+            "C-5"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I am willing to hold 36 contradiction(s) open rather than resolve them prematurely.",
+          "evidence": [
+            "X-1",
+            "X-2",
+            "X-3",
+            "X-4",
+            "X-5",
+            "X-6",
+            "X-7",
+            "X-8",
+            "X-9",
+            "X-10",
+            "X-11",
+            "X-12",
+            "X-13",
+            "X-14",
+            "X-15",
+            "X-16",
+            "X-17",
+            "X-18",
+            "X-19",
+            "X-20",
+            "X-21",
+            "X-22",
+            "X-23",
+            "X-24",
+            "X-25",
+            "X-26",
+            "X-27",
+            "X-28",
+            "X-29",
+            "X-30",
+            "X-31",
+            "X-32",
+            "X-33",
+            "X-34",
+            "X-35",
+            "X-36"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I tend to broaden my topics quickly as I read.",
+          "evidence": [
+            "forum",
+            "memory",
+            "drift",
+            "attention",
+            "retrieval",
+            "accurate"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task.",
+          "evidence": [
+            "reader-sources",
+            "emergence",
+            "conflict-qualifier",
+            "semantics-measurement",
+            "reader-sources"
+          ],
+          "counterevidence": []
+        }
+      ],
+      "metrics": {
+        "claims_active": 451,
+        "claims_total": 582,
+        "open_conflicts": 36,
+        "memory": 0,
+        "ledger": 3710,
+        "preferences": 2
+      }
     }
   ],
   "review_history": [
@@ -3856,6 +4023,10 @@
     {
       "ts": "2026-06-19T20:37:08+00:00",
       "headline": "Day 0, run 67: I am holding 423 active claims across 81 topics, with 36 contradiction(s) left open, and I have spent €0.6180."
+    },
+    {
+      "ts": "2026-06-19T21:49:31+00:00",
+      "headline": "Day 0, run 73: I am holding 451 active claims across 88 topics, with 36 contradiction(s) left open, and I have spent €0.7960."
     }
   ],
   "capabilities": {
@@ -3945,6 +4116,7 @@
     "arxiv:2606.20532v1",
     "arxiv:2606.20543v1",
     "arxiv:2606.20547v1",
+    "arxiv:2606.20554v1",
     "arxiv:2606.20559v1",
     "arxiv:2606.20560v1",
     "arxiv:2606.20561v1",
@@ -3956,14 +4128,17 @@
     "github:vllm-project/vllm",
     "huggingface:2603.11273",
     "huggingface:2606.16429",
+    "huggingface:2606.18021",
     "huggingface:2606.19602",
     "huggingface:2606.20381",
+    "huggingface:2606.20529",
     "zenodo:20721436"
   ],
   "doktores_filed": {
     "conflict-qualifier": 37,
     "semantics-measurement": 41,
-    "reader-sources": 45
+    "reader-sources": 45,
+    "method-trialing": 73
   },
   "doktores_review": [
     {
@@ -4280,9 +4455,36 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 73,
+      "source": "arxiv",
+      "title": "Structuring and Tokenizing Distributed User Interest Context for Generative Recommendation",
+      "url": "http://arxiv.org/abs/2606.20554v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 73,
+      "source": "huggingface",
+      "title": "LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents",
+      "url": "https://huggingface.co/papers/2606.20529",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "method-trialing"
+    },
+    {
+      "cycle": 73,
+      "source": "huggingface",
+      "title": "LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agent Debate for Trustworthy Legal AI",
+      "url": "https://huggingface.co/papers/2606.18021",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "conflict-qualifier"
     }
   ],
-  "doktores_last_cycle": 69,
+  "doktores_last_cycle": 73,
   "reconsolidate_lens_idx": 5,
   "doktores_module_idx": 0,
   "doktores_hyp_researched": [
