@@ -1,0 +1,18 @@
+[
+  {
+    "text": "Define a serial operation as a computation where operation i cannot begin until operation i-1 has completed and its output is available; then classify whether the tokenization step in DiffusionGemma meets this condition relative to the subsequent diffusion steps.",
+    "topic": "Serial operation definition"
+  },
+  {
+    "text": "Measure the end-to-end generation wall-clock time of DiffusionGemma and Gemma 4 under identical hardware, batch size 1, and equivalent output length to verify if the latency ratio aligns with a 28.6 serial depth multiplier.",
+    "topic": "Latency measurement"
+  },
+  {
+    "text": "Replace the discrete tokenization bottleneck in DiffusionGemma with a continuous bottleneck of identical channel capacity and measure the serial depth ratio to Gemma 4, to isolate the effect of discretization.",
+    "topic": "Continuous bottleneck ablation"
+  },
+  {
+    "text": "Instrument the model's execution trace to check whether any subsequent diffusion step is blocked on the completion of the tokenization commit, confirming or negating a true sequential dependency.",
+    "topic": "Dependency trace"
+  }
+]
