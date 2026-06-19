@@ -29,7 +29,9 @@ _SYS = (
 
 
 def enabled() -> bool:
-    return projection.enabled() and os.getenv("JONI_LITERATURE_SYNTHESIS", "0") == "1"
+    from . import extension_review
+    return (projection.enabled() and os.getenv("JONI_LITERATURE_SYNTHESIS", "0") == "1"
+            and extension_review.active("literature_synthesis"))
 
 
 def _every() -> int:

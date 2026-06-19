@@ -32,6 +32,7 @@ from . import (
     emerge,
     escalation,
     experts,
+    extension_review,
     governance,
     homeostasis,
     humans,
@@ -308,6 +309,11 @@ def one_cycle() -> dict:
     # 4f. Self-optimisation: read Joni's own result pattern (mostly insufficient?) and
     #     improve his research strategy - what he reads and the queries he uses next cycle.
     strategy_out = strategy.adapt(cs, extensions, proto, cycle)
+
+    # 4f-extrev. Benefit-review of adopted extensions: an arm active a full window with no
+    #     measurable contribution is auto-deactivated (flag overridden off in state; code kept,
+    #     re-enable after a fix) - review the value, prune the failures, never self-edit source.
+    extension_review.review(extensions, proto, cycle)
 
     # 4f-synth. Query-based literature synthesis (Auftrag · reader-sources, opt-in): condense the
     #     several papers fetched on one topic into a single coherent SOURCE feed item (candidate,

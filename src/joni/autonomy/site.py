@@ -168,6 +168,16 @@ def build(data: dict) -> str:
     doktores_block = "".join(dok_items) or (
         "<li class=empty>Doktores hat noch keine Quelle geprüft &mdash; er tagt nach Kadenz und "
         "nur auf echten Papern / OpenClaw-Erweiterungen.</li>")
+
+    # Benefit-review: which adopted extensions are active, and which the review auto-deactivated
+    # because they delivered no measurable contribution within their window.
+    ers = ext.get("ext_review_status", {}) if isinstance(ext.get("ext_review_status"), dict) else {}
+    ext_review_block = "".join(
+        f"<span class=pill>{esc(name)}"
+        + (" · <b style='color:var(--rej)'>deaktiviert</b>" if st.get("disabled")
+           else (" · live" if st.get("active") else " · aus"))
+        + "</span>"
+        for name, st in sorted(ers.items())) or "<span class=empty>—</span>"
     # Make a silent install failure visible: kevin absent -> ALL method-trialing vanishes.
     k_installed = bool(ext.get("kevin_installed", True))
     k_real = bool(ext.get("kevin_real_trial", False))
@@ -481,6 +491,9 @@ what is uncertain, what contradicts, and what changed.</p>
       &mdash; ein begründetes Ja wird ein Auftrag (joni-auftrag-Issue → menschlicher PR). Ersetzt
       Kevins kreativen Arm; Joni entscheidet, ein Mensch setzt um.</p>
     <ul>{doktores_block}</ul>
+    <div style='margin-top:8px'><b>Erweiterungs-Review (Nutzen-Check)</b> <span class=src>— eine
+      adoptierte Erweiterung, die ein ganzes Fenster lang nichts beiträgt, wird automatisch
+      deaktiviert (Code bleibt, fixbar &amp; reaktivierbar)</span><br>{ext_review_block}</div>
   </div>
   <div class="card full">
     <h2>Kevin — Methoden-Trials (gemessen; entscheidet nie)</h2>
