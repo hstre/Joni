@@ -623,7 +623,8 @@
     "zenodo:20764790",
     "zenodo:20765626",
     "zenodo:20765715",
-    "zenodo:20765821"
+    "zenodo:20765821",
+    "zenodo:20766665"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -922,6 +923,14 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20042069"
+    },
+    {
+      "call_id": "joni-c71:8885e9b37d6c",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20766665"
     }
   ],
   "pdf_read": [
@@ -1138,7 +1147,9 @@
     "C-495|C-502",
     "C-517|C-518",
     "C-517|C-521",
-    "C-518|C-521"
+    "C-518|C-521",
+    "C-555|C-557",
+    "C-556|C-558"
   ],
   "semantic_backfilled": [
     "C-109|C-350@bge-small-en-v1.5",
@@ -1214,7 +1225,9 @@
     "C-495|C-502@bge-small-en-v1.5",
     "C-517|C-518@bge-small-en-v1.5",
     "C-517|C-521@bge-small-en-v1.5",
-    "C-518|C-521@bge-small-en-v1.5"
+    "C-518|C-521@bge-small-en-v1.5",
+    "C-555|C-557@bge-small-en-v1.5",
+    "C-556|C-558@bge-small-en-v1.5"
   ],
   "invented": [
     "announcements|drift",
@@ -1288,6 +1301,7 @@
   ],
   "emerged_topics": [
     "accurate",
+    "action",
     "actions",
     "attention",
     "autoregressive",
@@ -1498,6 +1512,7 @@
     "forum|multicalibration",
     "forum|mutation",
     "forum|nobody",
+    "forum|note",
     "forum|opaque",
     "forum|optimal",
     "forum|optimization",
@@ -1609,6 +1624,7 @@
     "drift",
     "execution",
     "existing",
+    "forum",
     "forums",
     "histories",
     "includes",
@@ -1644,6 +1660,7 @@
     "variance"
   ],
   "emerge_insufficient": {
+    "forum|action": 1,
     "forum|evaluated": 1,
     "forum|floor": 1,
     "forum|generating": 1,
@@ -1658,17 +1675,17 @@
     "C-383"
   ],
   "learned_queries": [
-    "memory single",
-    "forum mechanism",
-    "forum group",
-    "announcements+drift assumptions—(i",
     "announcements+drift claude",
     "memory mechanism",
     "forum evaluation",
-    "memory evaluation"
+    "memory evaluation",
+    "forum testing",
+    "forum claims",
+    "memory testing",
+    "memory claims",
+    "forum memory"
   ],
   "hyp_seen_cycle": {
-    "C-430": 61,
     "C-432": 62,
     "C-440": 63,
     "C-448": 64,
@@ -1678,7 +1695,7 @@
     "C-456": 68,
     "C-458": 69,
     "C-462": 70,
-    "C-464": 50,
+    "C-464": 71,
     "C-485": 51,
     "C-493": 52,
     "C-508": 53,
@@ -1698,10 +1715,12 @@
     "C-548": 67,
     "C-550": 68,
     "C-552": 69,
-    "C-554": 70
+    "C-554": 70,
+    "C-562": 71
   },
   "topics_domain_ok": [
     "accurate",
+    "action",
     "actions",
     "alignment",
     "announcements",
@@ -1875,6 +1894,7 @@
     "C-552",
     "C-554",
     "C-56",
+    "C-562",
     "C-57",
     "C-58"
   ],
@@ -1916,35 +1936,35 @@
     "M-9"
   ],
   "vitality": {
-    "verdict": "degenerating",
-    "development": 0,
-    "degeneration": 3,
-    "active": 426,
+    "verdict": "steady",
+    "development": 6,
+    "degeneration": 1,
+    "active": 433,
     "hypotheses": 30,
     "unsupported_hypotheses": 29,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
-    "evidence_links": 30,
-    "supporting_links": 30,
-    "emergent_total": 351,
+    "evidence_links": 32,
+    "supporting_links": 32,
+    "emergent_total": 354,
     "usable_semantic_rate": 1.0,
     "methods_total": 35,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 14,
-    "objects": 4697,
-    "cycle": 70
+    "stagnation_cycles": 0,
+    "objects": 4762,
+    "cycle": 71
   },
   "vitality_prev": {
-    "supports": 30,
+    "supports": 32,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 4697,
-    "active": 426,
-    "links": 30,
-    "emergent": 351
+    "objects": 4762,
+    "active": 433,
+    "links": 32,
+    "emergent": 354
   },
-  "stagnation": 14,
+  "stagnation": 0,
   "vitality_history": [
     {
       "cycle": 1,
@@ -2435,13 +2455,20 @@
       "development": 0,
       "degeneration": 3,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 71,
+      "verdict": "steady",
+      "development": 6,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 70,
-    "stalled_development": 3,
+    "starved_topic": 71,
+    "stalled_development": 0,
     "methods_never_mature": 0
   },
   "commissions_filed": {
@@ -4266,5 +4293,14 @@
   "read_fulltext_priority": true,
   "strategy_sm": [
     "underframed"
-  ]
+  ],
+  "introspection": [
+    {
+      "issue": "2 Topics, auf denen ich denke, haben keine stützende Evidenz: forum, memory.",
+      "improve": "Gezielt Quellen zu genau diesen Topics suchen, damit die Ideen testbar werden statt barren zu bleiben.",
+      "query": "forum memory",
+      "module": "reader-sources"
+    }
+  ],
+  "introspection_module": "reader-sources"
 }
