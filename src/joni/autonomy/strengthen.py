@@ -271,21 +271,22 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
         # earned ladder: candidate -> active once the rules are met. Standard bar: >=2 INDEPENDENT
         # supports (distinct source families or an external card), no open hard contradiction.
         # PLATEAU LEVER (opt-out JONI_PROMOTE_ON_COHERENCE=0): an idea Doktores judged internally
-        # COHERENT may mature on just >=1 independent support - thinner evidence, deliberately a
-        # little into the risk, but coherence-gated, still ACTIVE not confirmed, and fully
-        # reversible: a wrong call shows up as a contradiction/degeneration and homeostasis demotes
-        # it, and Joni's introspection reflects it. Kevin's advisory verdict is never a gate here.
+        # COHERENT may mature on COHERENCE ALONE, as long as no HARD contradiction is open - no
+        # support required. Deliberately into the risk to break the development plateau: a novel
+        # idea need not be evidenced yet to become a *working* claim. Still ACTIVE, never confirmed,
+        # and fully reversible - a wrong call surfaces as a contradiction/degeneration and
+        # homeostasis demotes it, and Joni's introspection reflects it. Bounded to the few
+        # hypotheses attended per cycle, so it promotes the coherent shelf gradually, not at once.
         families, external = cs.supporter_families(h.id)
         sup = _supports_on(cs, h.id)
         independent = len(families) >= _INDEP_SOURCES_FOR_ACTIVE or external >= 1
         standard = sup >= _SUPPORTS_FOR_ACTIVE and independent
         coherent = os.getenv("JONI_PROMOTE_ON_COHERENCE", "1") != "0" and h.id in coherent_ids
-        lever = coherent and sup >= 1 and (len(families) >= 1 or external >= 1)
-        if not _hard_conflict_on(cs, h.id) and (standard or lever):
+        if not _hard_conflict_on(cs, h.id) and (standard or coherent):
             cs.activate_claim(h.id)
             out["promoted"] += 1
             how = ("earned >=2 independent supports" if standard
-                   else "Doktores-coherent + 1 independent support")
+                   else "Doktores-coherent, no hard contradiction (coherence-matured)")
             aside = " (Kevin flagged it thin - advisory)" if h.id in hollow else ""
             proto.record(cycle, "strengthen",
                          f"idea {h.id} promoted candidate -> active ({how}, unchallenged) - "
