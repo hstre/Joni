@@ -155,9 +155,13 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     # spreads across all ideas. A fixed oldest-id order let the oldest hypothesis hog the only
     # slot every cycle while the other 30 starved. Kevin's advisory verdict does NOT influence
     # the order - it must never shape outcomes, only inform.
+    # Plateau-breaker: prefer hypotheses Doktores judged COHERENT so the ones that CAN mature on
+    # >=1 support (the coherence lever) earn their support first - closes the coherent-but-
+    # unsupported gap. Coherence is Doktores' measured verdict, not an outcome shortcut.
     def _idnum(c) -> int:
         return int(c.id.split("-")[-1])
-    chosen = sorted(hyps, key=lambda c: (seen_cycle.get(c.id, -1), _idnum(c)))[:max_hyp]
+    chosen = sorted(hyps, key=lambda c: (c.id not in coherent_ids, seen_cycle.get(c.id, -1),
+                                         _idnum(c)))[:max_hyp]
     for h in chosen:
         seen_cycle[h.id] = cycle
 
