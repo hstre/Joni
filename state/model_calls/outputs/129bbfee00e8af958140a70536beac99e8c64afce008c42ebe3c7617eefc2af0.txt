@@ -1,0 +1,8 @@
+{
+  "applicable": true,
+  "component_key": "reader-sources",
+  "title": "Füge strukturiertes Gedächtnis hinzu",
+  "motivation": "Das Paper beschreibt eine Methode zur Integration von strukturiertem Gedächtnis für Large Language Models, die persistente Speicherung und Abruf über Sitzungen hinweg ermöglicht. Diese Technik kann direkt als neuer Feed in Jonis Leseschicht eingebunden werden, um kontinuierlichen Zugriff auf vergangene Informationen zu gewährleisten, ohne den Kern zu verändern.",
+  "desired": "Implementiere eine neue Quelldatei im reader-sources-Modul (z. B. structured_memory_source.py), die auf dem im Paper beschriebenen strukturierten Gedächtnissystem basiert, um persistente Speicherung und kontextbezogenen Abruf früherer Interaktionen als Datenquelle für Joni bereitzustellen.",
+  "acceptance": "Automatisierter Test: Joni wird mit einer initialen Information konfrontiert und dann neu gestartet. Nach dem Neustart muss er auf die gespeicherte Information über die neue Gedächtnisquelle zugreifen können, wobei die korrekte Wiederfindung in mindestens 95 % der Testfälle erreicht wird."
+}
