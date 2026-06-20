@@ -1470,6 +1470,7 @@
     "inference",
     "information",
     "instead",
+    "intelligence",
     "interest",
     "keine",
     "lack",
@@ -1660,6 +1661,7 @@
     "forum|feedback",
     "forum|figures",
     "forum|find",
+    "forum|fixed",
     "forum|floor",
     "forum|flowedit",
     "forum|forum",
@@ -1961,12 +1963,12 @@
     "variance"
   ],
   "emerge_insufficient": {
-    "forum|communication": 2,
-    "forum|described": 1,
-    "forum|designed": 1,
+    "forum|communication": 3,
+    "forum|described": 2,
+    "forum|designed": 2,
     "forum|typed": 1,
     "meth:efficient": 1,
-    "meth:including": 2
+    "meth:including": 3
   },
   "hyp_tested": [
     "C-462|C-460"
@@ -1976,18 +1978,17 @@
     "C-383"
   ],
   "learned_queries": [
-    "forum forum",
     "forum underlying",
     "forum legalhallulens",
     "automated hypothesis development scientific synthesis",
     "forum gateway",
     "forum worth",
     "forum memory",
-    "forum recurs"
+    "forum recurs",
+    "forum across"
   ],
   "hyp_seen_cycle": {
     "C-462": 91,
-    "C-592": 100,
     "C-594": 101,
     "C-596": 102,
     "C-598": 103,
@@ -1996,7 +1997,7 @@
     "C-616": 106,
     "C-618": 107,
     "C-620": 108,
-    "C-622": 87,
+    "C-622": 109,
     "C-624": 88,
     "C-626": 89,
     "C-628": 90,
@@ -2017,7 +2018,8 @@
     "C-679": 105,
     "C-681": 106,
     "C-689": 107,
-    "C-691": 108
+    "C-691": 108,
+    "C-693": 109
   },
   "topics_domain_ok": [
     "accurate",
@@ -2083,6 +2085,7 @@
     "inference",
     "information",
     "instead",
+    "intelligence",
     "interest",
     "keine",
     "lack",
@@ -2272,7 +2275,8 @@
     "C-679",
     "C-681",
     "C-689",
-    "C-691"
+    "C-691",
+    "C-693"
   ],
   "methods_domain_ok": [
     "M-1",
@@ -2321,33 +2325,33 @@
   "vitality": {
     "verdict": "degenerating",
     "development": 0,
-    "degeneration": 2,
-    "active": 522,
+    "degeneration": 1,
+    "active": 523,
     "hypotheses": 31,
     "unsupported_hypotheses": 30,
     "promoted_ideas": 0,
     "confirmed_claims": 0,
     "evidence_links": 41,
     "supporting_links": 41,
-    "emergent_total": 536,
+    "emergent_total": 538,
     "usable_semantic_rate": 1.0,
     "methods_total": 42,
     "method_trials_total": 0,
     "methods_ready_total": 0,
-    "stagnation_cycles": 1,
-    "objects": 6230,
-    "cycle": 108
+    "stagnation_cycles": 2,
+    "objects": 6257,
+    "cycle": 109
   },
   "vitality_prev": {
     "supports": 41,
     "promoted": 0,
     "confirmed": 0,
-    "objects": 6230,
-    "active": 522,
+    "objects": 6257,
+    "active": 523,
     "links": 41,
-    "emergent": 536
+    "emergent": 538
   },
-  "stagnation": 1,
+  "stagnation": 2,
   "vitality_history": [
     {
       "cycle": 1,
@@ -3104,12 +3108,19 @@
       "development": 0,
       "degeneration": 2,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 109,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 1,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
     "semantic_blind_spot": 0,
     "unqualified_conflicts": 0,
-    "starved_topic": 108,
+    "starved_topic": 109,
     "stalled_development": 0,
     "methods_never_mature": 0
   },
@@ -5994,7 +6005,7 @@
   "doktores_hyp_researched": [
     "C-370"
   ],
-  "doktores_hyp_last_cycle": 104,
+  "doktores_hyp_last_cycle": 109,
   "ext_review": {
     "doktores": {
       "since": 63,
@@ -6025,7 +6036,8 @@
     "C-532",
     "C-542",
     "C-552",
-    "C-584"
+    "C-584",
+    "C-594"
   ],
   "doktores_hyp_log": [
     {
@@ -6090,6 +6102,13 @@
       "topic": "forum",
       "coherent": true,
       "reason": "The hypothesis makes a clear, testable conjecture that a recurrent theme reflects a single underlying factor, without internal contradiction."
+    },
+    {
+      "cycle": 109,
+      "hypothesis": "C-594",
+      "topic": "forum",
+      "coherent": true,
+      "reason": "The hypothesis posits a testable, single-factor explanation for a recurring theme without internal contradiction."
     }
   ],
   "read_fulltext_priority": true,
@@ -6098,223 +6117,229 @@
   ],
   "introspection": [
     {
+      "issue": "Ich entwickle meine Ideen kaum weiter (development 0, degenerating).",
+      "improve": "Verwandte Kandidaten zu Synthesen verbinden und Hypothesen mit Evidenz stützen, damit sie candidate→active reifen können.",
+      "query": "automated hypothesis development scientific synthesis",
+      "module": "emergence"
+    },
+    {
       "issue": "2 Topics, auf denen ich denke, haben keine stützende Evidenz: forum, memory.",
       "improve": "Gezielt Quellen zu genau diesen Topics suchen, damit die Ideen testbar werden statt barren zu bleiben.",
       "query": "forum memory",
       "module": "reader-sources"
     }
   ],
-  "introspection_module": "reader-sources",
+  "introspection_module": "emergence",
   "method_ledger": {
     "M-1": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-2": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-3": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-4": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-5": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-6": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-7": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-8": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-9": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-10": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-11": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-12": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-13": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-14": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-15": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-16": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-17": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-18": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-19": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-20": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-21": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-22": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-23": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-24": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-25": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-26": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-27": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-28": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-29": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-30": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-31": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-32": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-33": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-34": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-35": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-36": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-37": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-38": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-39": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-40": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-41": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     },
     "M-42": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 108
+      "last_seen_cycle": 109
     }
   }
 }
