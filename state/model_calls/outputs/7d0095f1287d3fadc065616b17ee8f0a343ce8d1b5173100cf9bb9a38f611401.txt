@@ -1,0 +1,8 @@
+{
+  "applicable": true,
+  "component_key": "method-trialing",
+  "title": "Führe meta-analytische Pass-Kriterien ein",
+  "motivation": "Die Quelle zeigt, dass systematische Übersichten mit statistischer Synthese (Meta-Analyse) die Effektivität von Yoga- und Achtsamkeitsmaßnahmen robust belegen. Diese Methodik lässt sich auf die Bewertung von Joni’s Methoden übertragen, um Evidenz aus mehreren Testläufen zu aggregieren.",
+  "desired": "Erweitere trials.py um ein Meta-Analyse-Passkriterium: Sammle Testergebnisse einer Methode, berechne Effektstärken (z.B. Cohen’s d) und führe ein Modell mit zufälligen Effekten durch, um einen kombinierten p-Wert und eine Gesamteffektstärke zu schätzen. Bei Unterschreitung eines Signifikanzschwellwerts und einer Mindesteffektstärke gilt die Methode als bestanden; bei wiederholt nicht-signifikanten Meta-Ergebnissen wird sie in den Ruhestand versetzt.",
+  "acceptance": "Eine Methode muss nach spätestens 3 unabhängigen Trials eine aggregierte Effektstärke > 0,2 und einen kombinierten p-Wert < 0,05 im Random-Effects-Modell aufweisen, um als bestanden zu gelten. Der Ruhestands-Mechanismus greift, sobald nach 5 Trials der kombinierte p-Wert stets ≥ 0,05 bleibt."
+}
