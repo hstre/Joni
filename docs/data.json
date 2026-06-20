@@ -37,6 +37,7 @@
       "detailed",
       "deterministic",
       "distillation",
+      "dominant",
       "efficiency",
       "efficient",
       "episodic",
@@ -117,12 +118,12 @@
       "verify",
       "world"
     ],
-    "claims_total": 655,
-    "claims_active": 495,
+    "claims_total": 663,
+    "claims_active": 502,
     "memory": 0,
-    "ledger": 4416,
+    "ledger": 4458,
     "open_conflicts": 38,
-    "methods": 40,
+    "methods": 41,
     "method_trials": 0,
     "methods_ready": 0,
     "preferences": 2,
@@ -131,29 +132,34 @@
     "hypotheses": 31,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.764,
-      "n": 495,
+      "rate": 0.765,
+      "n": 502,
       "flags": {
-        "correctly_typed": 495,
-        "source_anchored": 388,
-        "non_duplicate": 485,
-        "topic_valid": 495,
-        "scope_valid": 495,
-        "provenance_complete": 388
+        "correctly_typed": 502,
+        "source_anchored": 394,
+        "non_duplicate": 492,
+        "topic_valid": 502,
+        "scope_valid": 502,
+        "provenance_complete": 394
       }
     },
     "routing_engine": "DESi",
     "days_running": 1,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
     "spent_eur": 1.03,
     "cap_eur": 20.0,
-    "runs": 99
+    "runs": 100
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 99,
+    "runs": 100,
     "retired": false
   },
   "extensions": {
@@ -810,7 +816,8 @@
       "zenodo:20765821",
       "zenodo:20766665",
       "zenodo:20767803",
-      "zenodo:20768686"
+      "zenodo:20768686",
+      "zenodo:20768928"
     ],
     "fetch_errors": [],
     "semantic_calls": [
@@ -1157,6 +1164,14 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20768686"
+      },
+      {
+        "call_id": "joni-c100:d8b68c9f2525",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20768928"
       }
     ],
     "pdf_read": [
@@ -1256,7 +1271,8 @@
       "zenodo:20721436",
       "zenodo:20754037",
       "zenodo:20762563",
-      "zenodo:20764771"
+      "zenodo:20764771",
+      "zenodo:20768928"
     ],
     "real_trial": {
       "method_id": "contradiction-first-review",
@@ -1567,6 +1583,7 @@
       "design",
       "detailed",
       "deterministic",
+      "dominant",
       "efficiency",
       "efficient",
       "episodic",
@@ -1650,6 +1667,7 @@
       "forum|academic",
       "forum|accountability",
       "forum|action",
+      "forum|admissibility",
       "forum|admission",
       "forum|adversarial",
       "forum|agent",
@@ -2017,6 +2035,7 @@
       "mentioned",
       "module",
       "openclaw",
+      "order",
       "outputs",
       "projects",
       "prompt",
@@ -2044,7 +2063,7 @@
     ],
     "emerge_insufficient": {
       "forum|artificial": 2,
-      "forum|feedback": 2,
+      "forum|feedback": 3,
       "forum|typed": 1,
       "forum|university": 1
     },
@@ -2056,18 +2075,17 @@
       "C-383"
     ],
     "learned_queries": [
-      "memory testing",
       "memory recurs",
       "forum testing",
       "forum memory",
       "forum forum",
       "forum underlying",
       "forum hinges",
-      "forum worth"
+      "forum worth",
+      "forum single"
     ],
     "hyp_seen_cycle": {
       "C-462": 91,
-      "C-552": 90,
       "C-554": 92,
       "C-562": 93,
       "C-577": 94,
@@ -2076,7 +2094,7 @@
       "C-586": 97,
       "C-588": 98,
       "C-590": 99,
-      "C-592": 78,
+      "C-592": 100,
       "C-594": 79,
       "C-596": 80,
       "C-598": 81,
@@ -2097,7 +2115,8 @@
       "C-640": 96,
       "C-642": 97,
       "C-653": 98,
-      "C-655": 99
+      "C-655": 99,
+      "C-663": 100
     },
     "topics_domain_ok": [
       "accurate",
@@ -2133,6 +2152,7 @@
       "detailed",
       "deterministic",
       "distillation",
+      "dominant",
       "drift",
       "efficiency",
       "efficient",
@@ -2334,7 +2354,8 @@
       "C-640",
       "C-642",
       "C-653",
-      "C-655"
+      "C-655",
+      "C-663"
     ],
     "methods_domain_ok": [
       "M-1",
@@ -2372,6 +2393,7 @@
       "M-39",
       "M-4",
       "M-40",
+      "M-41",
       "M-5",
       "M-6",
       "M-7",
@@ -2379,35 +2401,35 @@
       "M-9"
     ],
     "vitality": {
-      "verdict": "steady",
-      "development": 3,
-      "degeneration": 1,
-      "active": 495,
+      "verdict": "degenerating",
+      "development": 0,
+      "degeneration": 2,
+      "active": 502,
       "hypotheses": 31,
       "unsupported_hypotheses": 30,
       "promoted_ideas": 0,
       "confirmed_claims": 0,
       "evidence_links": 39,
       "supporting_links": 39,
-      "emergent_total": 494,
+      "emergent_total": 497,
       "usable_semantic_rate": 1.0,
-      "methods_total": 40,
+      "methods_total": 41,
       "method_trials_total": 0,
       "methods_ready_total": 0,
-      "stagnation_cycles": 0,
-      "objects": 5889,
-      "cycle": 99
+      "stagnation_cycles": 1,
+      "objects": 5943,
+      "cycle": 100
     },
     "vitality_prev": {
       "supports": 39,
       "promoted": 0,
       "confirmed": 0,
-      "objects": 5889,
-      "active": 495,
+      "objects": 5943,
+      "active": 502,
       "links": 39,
-      "emergent": 494
+      "emergent": 497
     },
-    "stagnation": 0,
+    "stagnation": 1,
     "vitality_history": [
       {
         "cycle": 1,
@@ -3101,12 +3123,19 @@
         "development": 3,
         "degeneration": 1,
         "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 100,
+        "verdict": "degenerating",
+        "development": 0,
+        "degeneration": 2,
+        "usable_semantic_rate": 1.0
       }
     ],
     "commission_signals": {
       "semantic_blind_spot": 0,
       "unqualified_conflicts": 0,
-      "starved_topic": 99,
+      "starved_topic": 100,
       "stalled_development": 0,
       "methods_never_mature": 0
     },
@@ -29654,19 +29683,234 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:21+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:22+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:22+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:24+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:28+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:29+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:30+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:31+00:00",
+      "cycle": 100,
+      "kind": "fetched",
+      "summary": "wikipedia: 4 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:34+00:00",
+      "cycle": 100,
+      "kind": "judged",
+      "summary": "relevant: The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the",
+      "refs": {
+        "source": "zenodo:20768928",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20768928"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:50+00:00",
+      "cycle": 100,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20768928 [ibm-granite/granite-4.1-8b-20260429, replayed=False] - candidates via the gate, not authoritative",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:52+00:00",
+      "cycle": 100,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: The Mathematical and Topological Substrate of Reversible Dynamics: Exp (from zenodo)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:57+00:00",
+      "cycle": 100,
+      "kind": "emerged",
+      "summary": "new topic 'dominant' precipitated from a recurrence across drift, forum",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:58+00:00",
+      "cycle": 100,
+      "kind": "emerged",
+      "summary": "'feedback' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:15:59+00:00",
+      "cycle": 100,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'admissibility' (Layer 9 synthesis-eligible, SC-647) from 4 claims (C-290, C-643, C-659, C-98)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:16:00+00:00",
+      "cycle": 100,
+      "kind": "emerged",
+      "summary": "'order' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:16:03+00:00",
+      "cycle": 100,
+      "kind": "regulate",
+      "summary": "shed C-554: backlog over cap (30)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:16:04+00:00",
+      "cycle": 100,
+      "kind": "vitality",
+      "summary": "degenerating · dev 0 · degen 2 · 30 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:16:04+00:00",
+      "cycle": 100,
+      "kind": "note",
+      "summary": "self-diagnostic: 1 thing(s) to improve · top: 2 Topics, auf denen ich denke, haben keine stützende Evidenz: forum, memory. -> searching 'forum memory', steer Doktores at reader-sources",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:16:06+00:00",
+      "cycle": 100,
+      "kind": "tooled",
+      "summary": "DESi date_math: 1 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:16:06+00:00",
+      "cycle": 100,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-20T03:16:06+00:00",
+      "cycle": 100,
+      "kind": "note",
+      "summary": "cycle done · 1 new · 1 method(s) · 0 trialed · 0 new link(s) · 0 hypothesis(es) · 2 emergent · shed 1 dead idea(s) · degenerating · spend €1.0300 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 124,
-    "granite_calls": 54,
+    "llm_calls": 125,
+    "granite_calls": 55,
     "deepseek_escalations": 68,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 124,
-    "last_call": "2026-06-20T03:02:14+00:00",
+    "live_calls": 125,
+    "last_call": "2026-06-20T03:15:45+00:00",
     "est_cost_eur": 0.28,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 54,
+      "ibm-granite/granite-4.1-8b-20260429": 55,
       "deepseek-v4-pro": 70
     },
     "empty_calls": 3,
@@ -29674,15 +29918,15 @@
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 118,
+      "stop": 119,
       "length": 6
     },
     "panel_rounds": 5,
     "reserved_budget_eur": 20.0,
     "spent_budget_eur": 1.03,
-    "accepted_claims": 212,
-    "accepted_calls": 48,
-    "accepted_call_yield": 0.387,
+    "accepted_claims": 217,
+    "accepted_calls": 49,
+    "accepted_call_yield": 0.392,
     "est_cost_per_accepted_eur": 0.0013
   },
   "commissions_done": [
@@ -29703,15 +29947,6 @@
         "supports": 1,
         "challenged": false,
         "coherent": false,
-        "status": "candidate"
-      },
-      {
-        "id": "C-554",
-        "text": "Across my forum claims, 'group' recurs as a through-line worth testing as a single underlying factor.",
-        "topic": "forum",
-        "supports": 0,
-        "challenged": false,
-        "coherent": null,
         "status": "candidate"
       },
       {
@@ -29911,6 +30146,15 @@
         "challenged": false,
         "coherent": null,
         "status": "candidate"
+      },
+      {
+        "id": "C-634",
+        "text": "Across my forum claims, 'spatial' recurs as a through-line worth testing as a single underlying factor.",
+        "topic": "forum",
+        "supports": 0,
+        "challenged": false,
+        "coherent": null,
+        "status": "candidate"
       }
     ],
     "invented": [
@@ -29938,5 +30182,5 @@
       "world"
     ]
   },
-  "generated": "2026-06-20T03:02:27+00:00"
+  "generated": "2026-06-20T03:16:07+00:00"
 }
