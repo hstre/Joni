@@ -81,6 +81,14 @@ jobs:
           # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard, also used
           # by the Doktores review). Capped per cycle; budget is the hard ceiling. No fallbacks.
           JONI_SEMANTIC_PROPOSALS: "1"
+          # Plateau-breaker (deliberately a little into the risk; reflectable + reversible): clock
+          # the expensive arms faster so more development happens per cycle, and let a Doktores-
+          # COHERENT idea mature on >=1 independent support (not >=2). Nothing is auto-confirmed;
+          # homeostasis demotes a wrong call and Joni's introspection reflects it.
+          JONI_DOKTORES_EVERY: "2"          # paper/self-improvement review every 2 cycles (was 4)
+          JONI_DOKTORES_HYP_EVERY: "3"      # coherence assessment of own ideas every 3 (was 5)
+          JONI_STRENGTHEN_LLM_MAX: "4"      # up to 4 LLM relation judgments per cycle (was 2)
+          JONI_PROMOTE_ON_COHERENCE: "1"    # coherence-gated promotion on 1 independent support
           # The synthetic keyword-trial mock carries no epistemic weight and the REAL trial
           # protocol now exists, so keep the mock OUT of the production loop (no protocol noise).
           JONI_SYNTHETIC_TRIALS: "0"
