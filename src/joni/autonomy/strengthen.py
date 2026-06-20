@@ -137,6 +137,9 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     conflict_ranker = plausibility.ranker_for(budget=budget, runs_per_week=runs_per_week,
                                               cycle=cycle, max_calls=1)
     llm_left = _llm_judge_budget()     # #132: gated LLM relation judgments left this cycle
+    # Plateau lever: ideas Doktores judged internally COHERENT may mature on thinner evidence.
+    coherent_ids = {e.get("hypothesis") for e in extensions.get("doktores_hyp_log", [])
+                    if isinstance(e, dict) and e.get("coherent") and e.get("hypothesis")}
     hyps = cs.hypotheses()
     out = {"tested": 0, "supported": 0, "challenged": 0, "survived": 0,
            "promoted": 0, "rejected": 0, "insufficient": 0}
@@ -261,20 +264,28 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             proto.record(cycle, "strengthen",
                          f"idea {h.id} survived {real} challenge(s) - no contradiction found")
 
-        # earned ladder: candidate -> active once the *rules* are met - enough support, that
-        # support is INDEPENDENT (>=2 distinct source families or an external evidence card, not
-        # claim-to-claim circularity from a common origin), and no open hard contradiction. Kevin's
-        # verdict is not a gate here: an idea that earned independent support is promoted even if
-        # Kevin called it thin.
-        if (_supports_on(cs, h.id) >= _SUPPORTS_FOR_ACTIVE
-                and _independently_supported(cs, h.id)
-                and not _hard_conflict_on(cs, h.id)):
+        # earned ladder: candidate -> active once the rules are met. Standard bar: >=2 INDEPENDENT
+        # supports (distinct source families or an external card), no open hard contradiction.
+        # PLATEAU LEVER (opt-out JONI_PROMOTE_ON_COHERENCE=0): an idea Doktores judged internally
+        # COHERENT may mature on just >=1 independent support - thinner evidence, deliberately a
+        # little into the risk, but coherence-gated, still ACTIVE not confirmed, and fully
+        # reversible: a wrong call shows up as a contradiction/degeneration and homeostasis demotes
+        # it, and Joni's introspection reflects it. Kevin's advisory verdict is never a gate here.
+        families, external = cs.supporter_families(h.id)
+        sup = _supports_on(cs, h.id)
+        independent = len(families) >= _INDEP_SOURCES_FOR_ACTIVE or external >= 1
+        standard = sup >= _SUPPORTS_FOR_ACTIVE and independent
+        coherent = os.getenv("JONI_PROMOTE_ON_COHERENCE", "1") != "0" and h.id in coherent_ids
+        lever = coherent and sup >= 1 and (len(families) >= 1 or external >= 1)
+        if not _hard_conflict_on(cs, h.id) and (standard or lever):
             cs.activate_claim(h.id)
             out["promoted"] += 1
+            how = ("earned >=2 independent supports" if standard
+                   else "Doktores-coherent + 1 independent support")
             aside = " (Kevin flagged it thin - advisory)" if h.id in hollow else ""
             proto.record(cycle, "strengthen",
-                         f"idea {h.id} promoted candidate -> active (earned support, "
-                         f"unchallenged) - a working idea, not confirmed{aside}")
+                         f"idea {h.id} promoted candidate -> active ({how}, unchallenged) - "
+                         f"a working idea, not confirmed{aside}")
 
     extensions["hyp_tested"] = sorted(tested)[-4000:]
     extensions["hyp_insufficient"] = dict(sorted(insufficient.items())[-4000:])

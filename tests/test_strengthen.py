@@ -163,3 +163,30 @@ def test_llm_judge_is_off_unless_configured(monkeypatch, tmp_path):
     cs, _h = _cs_with_a_hypothesis()
     out = strengthen.strengthen(cs, {}, _Proto(), cycle=1)
     assert out["supported"] == 0 and out["insufficient"] >= 1     # falls back to the bounded retry
+
+
+def test_coherence_lever_matures_an_idea_on_one_independent_support(monkeypatch):
+    # Plateau lever: a Doktores-COHERENT idea may go candidate->active on just 1 independent
+    # support (still ACTIVE, never confirmed). Reflectable + reversible by design.
+    monkeypatch.setenv("JONI_PROMOTE_ON_COHERENCE", "1")
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)   # no LLM judge -> no NEW supports
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: None)
+    cs, h = _cs_with_a_hypothesis()
+    sup = cs.learn("an independent finding backing the idea", "routing", source_id="arxiv:indep")
+    cs.corroborate(h, cs.core.get(sup), relation="supports")       # exactly ONE independent support
+    ext = {"doktores_hyp_log": [{"hypothesis": h, "coherent": True}]}
+    out = strengthen.strengthen(cs, ext, _Proto(), cycle=1)
+    assert out["promoted"] >= 1
+    assert cs.core.get(h).status is l9.Status.ACTIVE
+    assert cs.core.get(h).status is not l9.Status.CONFIRMED
+
+
+def test_without_coherence_the_two_support_bar_still_holds(monkeypatch):
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: None)
+    cs, h = _cs_with_a_hypothesis()
+    sup = cs.learn("a single finding", "routing", source_id="arxiv:indep")
+    cs.corroborate(h, cs.core.get(sup), relation="supports")       # only one support, not coherent
+    out = strengthen.strengthen(cs, {}, _Proto(), cycle=1)
+    assert out["promoted"] == 0
+    assert cs.core.get(h).status is not l9.Status.ACTIVE
