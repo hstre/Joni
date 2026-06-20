@@ -107,28 +107,47 @@ def project_and_learn(cs, judged, extensions: dict, proto, cycle: int, *,
     out = {"projected": 0, "claims": 0}
     if not enabled():
         return out
+    from . import facets
     store_dir = paths().model_calls
     run_id = f"joni-c{cycle}"
     log = extensions.setdefault("semantic_calls", [])
+    facet_log = extensions.setdefault("facet_log", [])
     for item, rel in judged:
         if out["projected"] >= max_items:
             break
         text = f"{getattr(item, 'title', '')}. {getattr(item, 'summary', '')}".strip()
-        props, cap = claim_proposals(text, topic_hint=getattr(rel, "topic", None) or "unsorted",
-                                     cs=cs, run_id=run_id, store_dir=store_dir,
-                                     budget=budget, runs_per_week=runs_per_week)
-        if not props or cap is None:
+        topic_hint = getattr(rel, "topic", None) or "unsorted"
+        # FaBle (#136): project each FACET of the source on its own, so a faceted source yields
+        # faceted candidates instead of one blurred whole. Disabled -> one unit (the whole text),
+        # i.e. exactly the original behaviour.
+        units = facets.decompose(text, budget=budget, runs_per_week=runs_per_week,
+                                 cycle=cycle, store_dir=store_dir) or [text]
+        item_claims = 0
+        last_cap = None
+        for unit in units[:3]:
+            props, cap = claim_proposals(unit, topic_hint=topic_hint, cs=cs, run_id=run_id,
+                                         store_dir=store_dir, budget=budget,
+                                         runs_per_week=runs_per_week)
+            if not props or cap is None:
+                continue
+            for p in props:
+                cs.learn(p["text"], p["topic"], source_id=f"granite:{cap.call_id}")
+                out["claims"] += 1
+                item_claims += 1
+            last_cap = cap
+            log.append({"call_id": cap.call_id, "served_model": cap.served_model,
+                        "state_k": cap.state_k, "replayed": cap.replayed,
+                        "claims": len(props), "source": getattr(item, "key", "")})
+        if item_claims == 0:
             continue
-        for p in props:
-            cs.learn(p["text"], p["topic"], source_id=f"granite:{cap.call_id}")
-            out["claims"] += 1
         out["projected"] += 1
-        log.append({"call_id": cap.call_id, "served_model": cap.served_model,
-                    "state_k": cap.state_k, "replayed": cap.replayed,
-                    "claims": len(props), "source": getattr(item, "key", "")})
+        if len(units) > 1:
+            facet_log.append({"cycle": cycle, "source": getattr(item, "key", ""),
+                              "facets": len(units), "claims": item_claims})
         proto.record(cycle, "projected",
-                     f"Granite projected {len(props)} claim proposal(s) from "
-                     f"{getattr(item, 'key', '?')} [{cap.served_model}, replayed={cap.replayed}] "
-                     "- candidates via the gate, not authoritative")
+                     f"Granite projected {item_claims} claim proposal(s) from "
+                     f"{getattr(item, 'key', '?')} across {len(units)} facet(s) "
+                     f"[{getattr(last_cap, 'served_model', '?')}] - candidates via the gate")
+    extensions["facet_log"] = facet_log[-200:]
     extensions["semantic_calls"] = log[-200:]
     return out
