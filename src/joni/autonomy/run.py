@@ -208,7 +208,7 @@ def one_cycle() -> dict:
     # 3c-auftrag. The trial now has a clear pass/FAIL criterion (joni-auftrag · method-trialing):
     #     a method that has been trialed enough times without a measurable gain is discarded, so
     #     the shelf does not grow without ever maturing. Pass = activation-ready (unchanged).
-    trialed["retired"] = trials.retire_unproductive(cs, proto, cycle)
+    trialed["retired"] = trials.retire_unproductive(cs, proto, cycle, extensions=extensions)
     # 3c-real. The REAL method-trial protocol (measured: frozen task set, baseline vs intervention,
     #     predefined metric, negative control, provenance) - kept separate from, and honest about,
     #     the synthetic simulator above. Decision rests on the metric, not a model's opinion.

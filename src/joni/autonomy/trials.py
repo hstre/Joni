@@ -113,7 +113,8 @@ def run_real_method_trial(cs, extensions: dict, proto, cycle: int = 0) -> dict:
             "recorded": rec.get("recorded", False)}
 
 
-def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5) -> int:
+def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
+                        extensions: dict | None = None) -> int:
     """Joni's *Auftrag* (joni-auftrag · method-trialing): give the trial a clear pass/fail
     criterion so the shelf does not grow without ever maturing.
 
@@ -123,17 +124,48 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5) -> in
     rejected through the gate
     (``METHOD_REJECT``) - a negative result is a result. This bounds the method count and never
     auto-confirms anything; a maturing method (success > failure) is never touched here.
+
+    **State ledger (Auftrag #145, after LedgerAgent)**: retirement used only the in-the-moment
+    counts, which can discard a method that *just* passed (a premature / inconsistent retirement). A
+    persisted ``method_ledger`` records observed facts per method - its success count over time and
+    the cycle it last gained a pass - and the retirement consults it: a method with a pass within
+    ``JONI_METHOD_LEDGER_WINDOW`` cycles is HELD, not discarded. Nothing is auto-confirmed.
     """
 
     import desi_layer9 as l9
     max_trials = int(os.getenv("JONI_METHOD_MAX_TRIALS", "8"))
+    window = max(1, int(os.getenv("JONI_METHOD_LEDGER_WINDOW", "6")))
+    ledger = extensions.setdefault("method_ledger", {}) if isinstance(extensions, dict) else {}
+
     live = [m for m in cs.core.all(l9.ObjectType.METHOD)
             if m.status in (l9.Status.CANDIDATE, l9.Status.PROVISIONAL)]
+    live_ids = {m.id for m in live}
+    # 1. Update the ledger: record each live method's observed facts (success count, and the cycle
+    #    it last gained a pass). This persisted state is what the retirement consults.
+    for m in live:
+        rec = ledger.get(m.id) or {"success": 0, "last_pass_cycle": -(10**9)}
+        if m.success_count > rec.get("success", 0):
+            rec["last_pass_cycle"] = cycle           # observed: this method passed since last seen
+        rec["success"] = m.success_count
+        rec["last_seen_cycle"] = cycle
+        ledger[m.id] = rec
+    for mid in [k for k in ledger if k not in live_ids]:
+        ledger.pop(mid, None)                         # drop methods no longer on the shelf
+
     retired = 0
     for m in sorted(live, key=lambda x: (x.success_count - x.failure_count, x.id)):
         if retired >= max_retire:
             break
         if m.trial_count >= max_trials and m.success_count <= m.failure_count:
+            # 2. Check the ledger BEFORE discarding: a recent pass means retiring now would be
+            #    premature / inconsistent - hold the method another window instead.
+            last_pass = ledger.get(m.id, {}).get("last_pass_cycle", -(10**9))
+            if cycle - last_pass < window:
+                proto.record(cycle, "trialed",
+                             f"holding method {m.id} '{getattr(m, 'name', m.id)}' - the ledger "
+                             f"shows a pass within {window} cycle(s); retiring now would be "
+                             "premature")
+                continue
             cs.reject_method(m.id)
             retired += 1
             proto.record(cycle, "trialed",
@@ -141,4 +173,7 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5) -> in
                          f"{m.trial_count} trial(s) with no measurable gain "
                          f"(success {m.success_count} <= failure {m.failure_count}) - discarded so "
                          "the shelf does not grow unbounded; a negative result is a result")
+
+    if isinstance(extensions, dict):
+        extensions["method_ledger"] = ledger
     return retired

@@ -127,3 +127,21 @@ def test_the_writer_is_switchable(monkeypatch):
         return
     assert out["recorded"] is False
     assert bridge.trial_event_count(cs) == 0
+
+
+def test_state_ledger_holds_a_method_that_recently_passed(monkeypatch):
+    """Auftrag #145 (LedgerAgent): the persisted method ledger is checked before retirement, so a
+    method that passed within the window is HELD, not prematurely discarded; past the window it is
+    retired as before. The ledger never auto-confirms anything."""
+    from joni.autonomy.core_state import seed_core
+    cs = CoreState(seed_core())
+    mid = cs.propose_method(name="m1", summary="s", applicable_to=("routing",))
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "0")     # would otherwise retire it
+    # the ledger records that this method gained a pass at cycle 5 (a real observed fact)
+    ext = {"method_ledger": {mid: {"success": 1, "last_pass_cycle": 5, "last_seen_cycle": 5}}}
+    # cycle 6, window 6: a pass 1 cycle ago -> HELD, not retired
+    assert trials.retire_unproductive(cs, _Proto(), 6, extensions=ext) == 0
+    assert cs.core.get(mid).status.value != "rejected"
+    # well past the window -> no recent pass -> retired through the gate
+    assert trials.retire_unproductive(cs, _Proto(), 40, extensions=ext) == 1
+    assert cs.core.get(mid).status.value == "rejected"
