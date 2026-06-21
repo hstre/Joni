@@ -93,13 +93,13 @@ jobs:
           # The synthetic keyword-trial mock carries no epistemic weight and the REAL trial
           # protocol now exists, so keep the mock OUT of the production loop (no protocol noise).
           JONI_SYNTHETIC_TRIALS: "0"
-          # Fast-load (#120) is OFF after the 2026-06-19 reset: it writes a full state snapshot
-          # INTO state/layer9.json, which is what pushed the committed file past GitHub's 100 MB
-          # limit and broke persistence. Journal-only keeps the committed file small (~tens of MB
-          # even after days), so pushes never bounce. Trade-off: the O(n²) replay returns as the
-          # journal grows; for a fresh two-day run it stays moderate. (Proper long-term fix: store
-          # the snapshot in a git-ignored sidecar instead of inside layer9.json.)
-          JONI_FAST_LOAD: "0"
+          # Fast-load (#120) is back ON via the SIDECAR design (#152): the snapshot is written to a
+          # git-ignored state/layer9.snapshot.json, never into the committed layer9.json. So the
+          # committed file stays journal-only (small, no 100 MB push failures) AND cycles skip the
+          # O(n²) replay - the sidecar is untracked, survives `git reset --hard`, so only the first
+          # cycle of each job replays; every later cycle fast-loads. Verified cache: mismatch/absence
+          # falls back to a full replay, so it can only skip work, never change the result.
+          JONI_FAST_LOAD: "1"
           JONI_LOOP_MINUTES: "320"    # run cycles for ~5.3h, then let the next job take over
           JONI_LOOP_PAUSE_SECONDS: "180"   # a polite pause between cycles
           DESI_ROOT: ${{ github.workspace }}/_desi

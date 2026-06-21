@@ -49,34 +49,39 @@ def _fast_load_enabled() -> bool:
     return os.getenv("JONI_FAST_LOAD", "0") == "1"
 
 
+def _sidecar_path(path: Path) -> Path:
+    """The fast-load snapshot lives in a SIDECAR next to the committed file (e.g.
+    ``layer9.json`` -> ``layer9.snapshot.json``), never inside it. The committed file stays
+    journal-only (small, no multi-MB snapshot in git); the sidecar is git-ignored, so it survives a
+    ``git reset --hard`` as an untracked file and speeds every cycle after the first of a job."""
+    return path.with_name(path.stem + ".snapshot.json")
+
+
 def to_doc(state: Layer9) -> dict:
-    doc = {
+    # Journal-only, ALWAYS. The snapshot never goes in here - it is written to the sidecar by
+    # ``save``. This keeps the committed state file small regardless of fast-load.
+    return {
         "schema_version": SCHEMA_VERSION,
         "tick": state.tick,
         "snapshot_hash": snapshot_hash(state),
         "journal": [e.to_dict() for e in state.journal],
     }
-    if _fast_load_enabled():
-        # A VERIFIED fast-load cache (never the source of truth - the journal is). ``from_doc``
-        # restores it and re-checks it against ``snapshot_hash`` + ``verify_chain``; on any mismatch
-        # it falls back to a full replay. So it only ever skips work, never changes the result.
-        doc["state_snapshot"] = snapshot.capture(state)
-    return doc
 
 
-def from_doc(doc: dict, *, verify: bool = True) -> Layer9:
+def from_doc(doc: dict, *, verify: bool = True, sidecar: dict | None = None) -> Layer9:
     journal = [JournalEntry.from_dict(e) for e in doc.get("journal", [])]
     recorded = doc.get("snapshot_hash")
-    # FAST PATH (opt-in, verify=True only): restore the snapshot and accept it ONLY if it
-    # reproduces the recorded snapshot_hash AND verify_chain passes. Any problem -> replay instead.
-    snap = doc.get("state_snapshot")
+    # FAST PATH (opt-in, verify=True, sidecar present): restore the sidecar snapshot and accept it
+    # ONLY if it reproduces the committed file's ``snapshot_hash`` AND verify_chain passes. Any
+    # problem -> replay instead. So it only ever skips work, never changes the result.
+    snap = (sidecar or {}).get("state_snapshot")
     if _fast_load_enabled() and verify and snap is not None:
         try:
             state = snapshot.restore(snap, journal, tick=int(doc.get("tick", 0)))
             ok_chain, _ = verify_chain(state)
             if ok_chain and recorded and snapshot_hash(state) == recorded:
                 return state
-        except Exception:  # noqa: BLE001 - a malformed/old snapshot is never fatal; replay instead
+        except Exception:  # noqa: BLE001 - a malformed/old sidecar is never fatal; replay instead
             pass
     # SLOW PATH: full replay - the journal is the source of truth.
     state = replay(journal, tick=int(doc.get("tick", 0)))
@@ -94,6 +99,15 @@ def save(state: Layer9, path: str | Path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(to_doc(state), ensure_ascii=False, indent=2), encoding="utf-8")
+    sidecar = _sidecar_path(path)
+    if _fast_load_enabled():
+        # Write the verified fast-load cache alongside (git-ignored). It carries the same hash the
+        # committed file records, so ``load`` can confirm the sidecar matches this exact journal.
+        sidecar.write_text(json.dumps(
+            {"snapshot_hash": snapshot_hash(state), "tick": state.tick,
+             "state_snapshot": snapshot.capture(state)}, ensure_ascii=False), encoding="utf-8")
+    elif sidecar.exists():
+        sidecar.unlink()                              # fast-load off: never leave a stale sidecar
     return path
 
 
@@ -101,7 +115,14 @@ def load(path: str | Path, *, verify: bool = True) -> Layer9 | None:
     path = Path(path)
     if not path.exists():
         return None
-    return from_doc(json.loads(path.read_text(encoding="utf-8")), verify=verify)
+    sidecar = None
+    sc_path = _sidecar_path(path)
+    if _fast_load_enabled() and sc_path.exists():
+        try:
+            sidecar = json.loads(sc_path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001 - a garbled sidecar just means we replay
+            sidecar = None
+    return from_doc(json.loads(path.read_text(encoding="utf-8")), verify=verify, sidecar=sidecar)
 
 
 def repair(path: str | Path) -> bool:
