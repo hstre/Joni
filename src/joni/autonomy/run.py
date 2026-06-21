@@ -103,6 +103,10 @@ def one_cycle() -> dict:
     now = datetime.now(UTC)
     expired = now - started > timedelta(days=runtime_days())
     days_running = (now.date() - started.date()).days     # real time - no tick jumps
+    if not expired and window.get("retired"):
+        # the runtime window was extended (JONI_RUNTIME_DAYS raised) - clear a stale retirement so
+        # Joni picks back up instead of staying stood-down on the old, shorter window.
+        window["retired"] = False
 
     cs = core_state.load_or_migrate(p)
     cs.set_day(days_running)
