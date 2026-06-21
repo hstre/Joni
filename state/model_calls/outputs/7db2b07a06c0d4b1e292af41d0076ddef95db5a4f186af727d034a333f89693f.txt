@@ -1,0 +1,8 @@
+{
+  "applicable": true,
+  "component_key": "conflict-qualifier",
+  "title": "Nutze multilinguales NLI-Transferlernen als Marker für Widerspruchsart",
+  "motivation": "Die Quelle beschreibt ein Transferlernverfahren für Natural Language Inference, das speziell auf das Erkennen von Widersprüchen (Contradictions) und Implikationen (Entailment) in mehrsprachigen Texten abzielt. Dies liefert einen robusten Klassifikator, der unmittelbar die Art eines Konflikts identifizieren kann.",
+  "desired": "In qualify.py einen neuen Marker einbauen, der ein vortrainiertes multilinguales NLI-Modell (z.B. XLM-RoBERTa) aus der Quelle nutzt, um bei einem Satzpaar die Relation 'Widerspruch', 'Implikation' oder 'neutral' vorherzusagen und diese Vorhersage als Konfliktart-Merkmal zu verwenden.",
+  "acceptance": "Die Präzision und Trefferquote der Konfliktart-Benennung auf einem mehrsprachigen Validierungsset steigt nachweisbar um mindestens 10 Prozentpunkte gegenüber dem bisher besten Einzelmarker."
+}
