@@ -31,11 +31,21 @@ from .config import paths
 # Which fetched items Doktores reviews: external papers + community software extensions.
 # (Encyclopedic Wikipedia background and raw HN threads are not method/tool sources, so they are not
 # reviewed here.)
-_REVIEWABLE_SOURCES = {"arxiv", "huggingface", "zenodo", "openalex", "openclaw", "github"}
+_REVIEWABLE_SOURCES = {"arxiv", "huggingface", "zenodo", "openalex", "ssrn", "openclaw", "github"}
 
 _MAX_REVIEW = 3          # at most this many sources examined per firing (each is one model call)
 _MAX_NEW = 1             # at most one fresh Auftrag filed per cycle
 _COOLDOWN = 200          # cycles before Doktores may re-file an order for the same module
+
+# Scouting weights toward the high-signal sources. The passively-fetched topic feed is dominated by
+# Zenodo's "most recent" firehose (mostly off-topic), so Doktores reviews the relevance-scouted
+# papers FIRST and admits at most this many passive Zenodo items per firing.
+_SCOUT_PER_SOURCE = 3
+_ZENODO_PASSIVE_MAX = 1
+# OpenAlex source id for SSRN's working-paper series; used to pull a dedicated SSRN slice. Best-
+# effort: if it ever changes, that sub-query just returns [] and the rest of the scout still runs
+# (and general OpenAlex search already surfaces SSRN works anyway).
+_SSRN_OPENALEX_SOURCE = "S4210172589"
 
 # Targeted scouting: each firing, Doktores searches for literature relevant to the NEXT non-core
 # module (round-robin), so reviews are module-relevant instead of whatever the topic-fetch happened
@@ -114,13 +124,9 @@ def _parse(output: str) -> dict | None:
     return obj if isinstance(obj, dict) else None
 
 
-def _scout(queries) -> list:
-    """Best-effort targeted paper search for one non-core module: arXiv, **relevance-sorted** and
-    **phrase-quoted**, so it returns the most ON-TOPIC methods (the default ArxivFetcher sorts by
-    date, which returns the newest paper regardless of relevance). Fails quietly to [] - a scouting
-    outage is never fatal, the passively-fetched items still get reviewed."""
-    if not queries:
-        return []
+def _arxiv_scout(queries) -> list:
+    """arXiv, **relevance-sorted** and **phrase-quoted**, so it returns the most ON-TOPIC methods
+    (the default ArxivFetcher sorts by date). Fails quietly to []."""
     try:
         import urllib.parse
         from xml.etree import ElementTree as ET
@@ -128,7 +134,7 @@ def _scout(queries) -> list:
         from .sources import Item, _get
         q = " OR ".join(f'all:"{t}"' for t in queries)
         url = "http://export.arxiv.org/api/query?" + urllib.parse.urlencode(
-            {"search_query": q, "start": 0, "max_results": 4,
+            {"search_query": q, "start": 0, "max_results": _SCOUT_PER_SOURCE,
              "sortBy": "relevance", "sortOrder": "descending"})
         root = ET.fromstring(_get(url))
         ns = {"a": "http://www.w3.org/2005/Atom"}
@@ -142,6 +148,63 @@ def _scout(queries) -> list:
         return out
     except Exception:  # noqa: BLE001
         return []
+
+
+def _openalex_scout(queries, *, ssrn: bool = False) -> list:
+    """OpenAlex, **relevance-sorted** for the module's queries. ``ssrn=True`` restricts the slice to
+    SSRN working papers via the source filter, so SSRN is scouted directly (not only whenever it
+    happens to rank in the open search). Fails quietly to []."""
+    try:
+        import urllib.parse
+
+        from .sources import Item, _get, _openalex_abstract
+        params = {"search": " ".join(list(queries)[:3]), "per_page": _SCOUT_PER_SOURCE,
+                  "sort": "relevance_score:desc",
+                  "mailto": "joni-autonomy@users.noreply.github.com"}
+        if ssrn:
+            params["filter"] = f"primary_location.source.id:{_SSRN_OPENALEX_SOURCE}"
+        url = "https://api.openalex.org/works?" + urllib.parse.urlencode(params)
+        out = []
+        for w in json.loads(_get(url)).get("results", []):
+            wid = str(w.get("id") or "").rsplit("/", 1)[-1]
+            title = (w.get("title") or w.get("display_name") or "").strip()
+            if not title or not wid:
+                continue
+            loc = w.get("primary_location") or {}
+            link = loc.get("landing_page_url") or w.get("doi") or f"https://openalex.org/{wid}"
+            out.append(Item("ssrn" if ssrn else "openalex", wid, title, link,
+                            _openalex_abstract(w.get("abstract_inverted_index"))))
+        return out
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _github_scout(queries) -> list:
+    """Search GitHub directly for module-relevant repositories (sorted by stars), so a tool/method
+    shipped only as code - not a paper - is seen too. Reuses GitHubFetcher; quiet on []."""
+    try:
+        from .sources import GitHubFetcher
+        return GitHubFetcher().fetch(list(queries)[:3], limit=_SCOUT_PER_SOURCE)
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _scout(queries) -> list:
+    """Best-effort targeted scouting for one non-core module across the high-signal sources, each
+    **relevance-sorted** and best-effort: arXiv + OpenAlex (which also indexes SSRN) + a dedicated
+    SSRN slice + a direct GitHub repo search. The merged, deduped list is reviewed FIRST, ahead of
+    the Zenodo-heavy passive feed. A scouting outage is never fatal - passive items still get
+    reviewed."""
+    if not queries:
+        return []
+    out, seen = [], set()
+    for it in (_arxiv_scout(queries) + _openalex_scout(queries)
+               + _openalex_scout(queries, ssrn=True) + _github_scout(queries)):
+        k = getattr(it, "key", None)
+        if k and k not in seen:
+            seen.add(k)
+            out.append(it)
+    return out
 
 
 _COH_SYS = (
@@ -235,13 +298,21 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
         extensions["doktores_module_idx"] = (midx + 1) % len(mkeys)
         target_module = mkeys[midx]
     scouted = _scout(_MODULE_QUERIES.get(target_module, ()))
-    reviewable, batch = [], set()
+    # Scouted (relevance-sorted arXiv/OpenAlex/SSRN/GitHub) is reviewed first; the passive feed
+    # fills the rest, but the Zenodo "most recent" firehose is capped so it cannot crowd out the
+    # on-topic finds.
+    reviewable, batch, zen = [], set(), 0
     for it in list(scouted) + list(items or []):
+        src = getattr(it, "source", "")
         k = getattr(it, "key", None)
-        if (getattr(it, "source", "") in _REVIEWABLE_SOURCES
-                and k and k not in seen and k not in batch):
-            reviewable.append(it)
-            batch.add(k)
+        if src not in _REVIEWABLE_SOURCES or not k or k in seen or k in batch:
+            continue
+        if src == "zenodo":
+            if zen >= _ZENODO_PASSIVE_MAX:
+                continue
+            zen += 1
+        reviewable.append(it)
+        batch.add(k)
     if not reviewable:
         return []
 

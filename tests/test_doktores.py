@@ -91,6 +91,24 @@ def test_scouted_module_relevant_paper_is_reviewed(monkeypatch, tmp_path):
     assert ext["doktores_review"][-1]["title"].startswith("A better source-coverage")
 
 
+def test_ssrn_is_a_reviewable_source(monkeypatch, tmp_path):
+    # SSRN papers (scouted via OpenAlex's SSRN slice) are reviewed like any other paper source.
+    _online(monkeypatch, tmp_path, _APPLICABLE, scout=[_paper("ssrn:w1", source="ssrn")])
+    new = doktores.review(CoreState(seed_core()), {}, _Proto(), 3, items=[])
+    assert len(new) == 1 and new[0]["evidence"]["source"] == "ssrn"
+
+
+def test_zenodo_passive_items_are_throttled(monkeypatch, tmp_path):
+    # The Zenodo firehose is capped to one passive item; a scouted paper is still reviewed first.
+    _online(monkeypatch, tmp_path, _INAPPLICABLE, scout=[_paper("arxiv:s1")])
+    zen = [_paper(f"zenodo:z{i}", source="zenodo") for i in range(5)]
+    ext: dict = {}
+    doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=zen)
+    reviewed = ext["doktores_review"]
+    assert sum(1 for e in reviewed if e["source"] == "zenodo") <= 1
+    assert any(e["source"] == "arxiv" for e in reviewed)    # the scouted paper got reviewed
+
+
 def _with_hypothesis(cs, text="local routing bounds memory consolidation", topic="memory"):
     parent = cs.learn("routing is local at serving time", topic, source_id="arxiv:seed")
     cs.hypothesize(text, topic, parents=[parent])
