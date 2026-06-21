@@ -16,5 +16,9 @@ joni.json
 
 _desi/
 
+# fast-load snapshot sidecar (git-ignored cache; the committed layer9.json journal is the source of
+# truth). Survives `git reset --hard` as an untracked file so cycles after the first skip replay.
+state/*.snapshot.json
+
 # generated, rendered on demand from FORSCHUNGSTAGEBUCH.md
 FORSCHUNGSTAGEBUCH.pdf
