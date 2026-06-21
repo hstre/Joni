@@ -153,6 +153,7 @@
       "simulation",
       "solutions",
       "spatial",
+      "stability",
       "stored",
       "structure",
       "suggests",
@@ -178,43 +179,48 @@
       "windows",
       "world"
     ],
-    "claims_total": 960,
-    "claims_active": 729,
+    "claims_total": 969,
+    "claims_active": 737,
     "memory": 0,
-    "ledger": 7456,
+    "ledger": 7536,
     "open_conflicts": 53,
-    "methods": 55,
+    "methods": 57,
     "method_trials": 0,
     "methods_ready": 0,
     "preferences": 2,
-    "evidence_links": 283,
+    "evidence_links": 291,
     "self_model": 15,
-    "hypotheses": 45,
+    "hypotheses": 46,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.738,
-      "n": 729,
+      "rate": 0.739,
+      "n": 737,
       "flags": {
-        "correctly_typed": 729,
-        "source_anchored": 564,
-        "non_duplicate": 715,
-        "topic_valid": 729,
-        "scope_valid": 729,
-        "provenance_complete": 552
+        "correctly_typed": 737,
+        "source_anchored": 571,
+        "non_duplicate": 723,
+        "topic_valid": 737,
+        "scope_valid": 737,
+        "provenance_complete": 559
       }
     },
     "routing_engine": "DESi",
     "days_running": 2,
-    "last_route": null
+    "last_route": {
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_usd": 3e-05,
+      "reason": "Pareto-cheapest at score >= 0.5",
+      "task_class": "scientific_claim"
+    }
   },
   "budget": {
-    "spent_eur": 1.546,
+    "spent_eur": 1.554,
     "cap_eur": 20.0,
-    "runs": 156
+    "runs": 157
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 156,
+    "runs": 157,
     "retired": false
   },
   "extensions": {
@@ -907,7 +913,9 @@
       "zenodo:20778451",
       "zenodo:20778609",
       "zenodo:20778647",
-      "zenodo:20779040"
+      "zenodo:20779040",
+      "zenodo:20779644",
+      "zenodo:20779661"
     ],
     "fetch_errors": [],
     "semantic_calls": [
@@ -1462,6 +1470,14 @@
         "replayed": false,
         "claims": 5,
         "source": "zenodo:20778609"
+      },
+      {
+        "call_id": "joni-c157:c164f100ee3b",
+        "served_model": "ibm-granite/granite-4.1-8b-20260429",
+        "state_k": 5,
+        "replayed": false,
+        "claims": 5,
+        "source": "zenodo:20779661"
       }
     ],
     "pdf_read": [
@@ -1620,7 +1636,9 @@
       "zenodo:20777916",
       "zenodo:20778294",
       "zenodo:20778647",
-      "zenodo:20779040"
+      "zenodo:20779040",
+      "zenodo:20779644",
+      "zenodo:20779661"
     ],
     "real_trial": {
       "method_id": "contradiction-first-review",
@@ -1765,6 +1783,7 @@
       "C-634|C-679",
       "C-634|C-681",
       "C-634|C-689",
+      "C-634|C-691",
       "C-640|C-655",
       "C-640|C-663",
       "C-640|C-665",
@@ -1774,6 +1793,7 @@
       "C-640|C-679",
       "C-640|C-681",
       "C-640|C-689",
+      "C-640|C-691",
       "C-646|C-648",
       "C-647|C-651",
       "C-648|C-650",
@@ -1934,6 +1954,7 @@
       "C-634|C-679@bge-small-en-v1.5",
       "C-634|C-681@bge-small-en-v1.5",
       "C-634|C-689@bge-small-en-v1.5",
+      "C-634|C-691@bge-small-en-v1.5",
       "C-640|C-655@bge-small-en-v1.5",
       "C-640|C-663@bge-small-en-v1.5",
       "C-640|C-665@bge-small-en-v1.5",
@@ -1943,6 +1964,7 @@
       "C-640|C-679@bge-small-en-v1.5",
       "C-640|C-681@bge-small-en-v1.5",
       "C-640|C-689@bge-small-en-v1.5",
+      "C-640|C-691@bge-small-en-v1.5",
       "C-646|C-648@bge-small-en-v1.5",
       "C-647|C-651@bge-small-en-v1.5",
       "C-648|C-650@bge-small-en-v1.5",
@@ -2207,6 +2229,7 @@
       "simulation",
       "solutions",
       "spatial",
+      "stability",
       "stored",
       "structure",
       "suggests",
@@ -2828,11 +2851,13 @@
       "world"
     ],
     "emerge_insufficient": {
+      "forum|action": 1,
       "forum|effects": 3,
       "forum|elements": 3,
       "forum|logically": 1,
       "forum|prospective": 2,
-      "forum|typed": 1
+      "forum|typed": 1,
+      "meth:processing": 1
     },
     "hyp_tested": [
       "C-462|C-460",
@@ -2925,6 +2950,9 @@
       "C-781|C-655",
       "C-781|C-663",
       "C-789|C-634",
+      "C-789|C-640",
+      "C-789|C-655",
+      "C-789|C-663",
       "C-791|C-634",
       "C-791|C-640",
       "C-793|C-634",
@@ -3014,7 +3042,10 @@
       "C-958|C-655",
       "C-960|C-634",
       "C-960|C-640",
-      "C-960|C-655"
+      "C-960|C-655",
+      "C-969|C-634",
+      "C-969|C-640",
+      "C-969|C-655"
     ],
     "hyp_insufficient": {},
     "hyp_hollow": [
@@ -3034,7 +3065,6 @@
     ],
     "hyp_seen_cycle": {
       "C-462": 143,
-      "C-691": 156,
       "C-693": 137,
       "C-695": 139,
       "C-697": 140,
@@ -3047,7 +3077,7 @@
       "C-765": 152,
       "C-773": 154,
       "C-781": 155,
-      "C-789": 125,
+      "C-789": 157,
       "C-791": 126,
       "C-793": 127,
       "C-795": 128,
@@ -3078,7 +3108,8 @@
       "C-953": 153,
       "C-956": 154,
       "C-958": 155,
-      "C-960": 156
+      "C-960": 156,
+      "C-969": 157
     },
     "topics_domain_ok": [
       "accurate",
@@ -3233,6 +3264,7 @@
       "simulation",
       "solutions",
       "spatial",
+      "stability",
       "stored",
       "structure",
       "suggests",
@@ -3454,6 +3486,8 @@
       "M-53",
       "M-54",
       "M-55",
+      "M-56",
+      "M-57",
       "M-6",
       "M-7",
       "M-8",
@@ -3461,32 +3495,32 @@
     ],
     "vitality": {
       "verdict": "developing",
-      "development": 28,
+      "development": 24,
       "degeneration": 0,
-      "active": 729,
-      "hypotheses": 45,
+      "active": 737,
+      "hypotheses": 46,
       "unsupported_hypotheses": 0,
       "promoted_ideas": 12,
       "confirmed_claims": 0,
-      "evidence_links": 283,
-      "supporting_links": 283,
-      "emergent_total": 747,
+      "evidence_links": 291,
+      "supporting_links": 291,
+      "emergent_total": 748,
       "usable_semantic_rate": 1.0,
-      "methods_total": 55,
+      "methods_total": 57,
       "method_trials_total": 0,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 10328,
-      "cycle": 156
+      "objects": 10447,
+      "cycle": 157
     },
     "vitality_prev": {
-      "supports": 283,
+      "supports": 291,
       "promoted": 12,
       "confirmed": 0,
-      "objects": 10328,
-      "active": 729,
-      "links": 283,
-      "emergent": 747
+      "objects": 10447,
+      "active": 737,
+      "links": 291,
+      "emergent": 748
     },
     "stagnation": 0,
     "vitality_history": [
@@ -4579,6 +4613,13 @@
         "cycle": 156,
         "verdict": "developing",
         "development": 28,
+        "degeneration": 0,
+        "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 157,
+        "verdict": "developing",
+        "development": 24,
         "degeneration": 0,
         "usable_semantic_rate": 1.0
       }
@@ -8769,7 +8810,9 @@
       "zenodo:20778451",
       "zenodo:20778609",
       "zenodo:20778647",
-      "zenodo:20779040"
+      "zenodo:20779040",
+      "zenodo:20779644",
+      "zenodo:20779661"
     ],
     "doktores_filed": {
       "conflict-qualifier": 37,
@@ -8778,24 +8821,6 @@
       "method-trialing": 73
     },
     "doktores_review": [
-      {
-        "cycle": 61,
-        "source": "arxiv",
-        "title": "Chain of Retrieval: Multi-Aspect Iterative Search Expansion and Post-Order Search Aggregation for Full Paper Retrieval",
-        "url": "http://arxiv.org/abs/2507.10057v3",
-        "served_model": "deepseek-v4-pro",
-        "applicable": false,
-        "component_key": ""
-      },
-      {
-        "cycle": 61,
-        "source": "huggingface",
-        "title": "Rethinking Shrinkage Bias in LLM FP4 Pretraining: Geometric Origin, Systemic Impact, and UFP4 Recipe",
-        "url": "https://huggingface.co/papers/2606.20381",
-        "served_model": "deepseek-v4-pro",
-        "applicable": false,
-        "component_key": ""
-      },
       {
         "cycle": 61,
         "source": "huggingface",
@@ -9317,11 +9342,29 @@
         "served_model": "deepseek-v4-pro",
         "applicable": true,
         "component_key": "reader-sources"
+      },
+      {
+        "cycle": 157,
+        "source": "zenodo",
+        "title": "Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detection in Satellite Imagery",
+        "url": "https://zenodo.org/records/20779661",
+        "served_model": "deepseek-v4-pro",
+        "applicable": false,
+        "component_key": ""
+      },
+      {
+        "cycle": 157,
+        "source": "zenodo",
+        "title": "Quotient-Defect Generators for Physical Field Equations: A Reduction-Quotient Framework for Generating PDE Shadows",
+        "url": "https://zenodo.org/records/20779644",
+        "served_model": "deepseek-v4-pro",
+        "applicable": false,
+        "component_key": ""
       }
     ],
-    "doktores_last_cycle": 155,
+    "doktores_last_cycle": 157,
     "reconsolidate_lens_idx": 12,
-    "doktores_module_idx": 1,
+    "doktores_module_idx": 2,
     "doktores_hyp_researched": [
       "C-370"
     ],
@@ -9558,277 +9601,287 @@
       "M-1": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-2": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-3": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-4": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-5": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-6": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-7": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-8": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-9": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-10": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-11": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-12": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-13": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-14": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-15": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-16": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-17": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-18": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-19": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-20": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-21": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-22": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-23": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-24": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-25": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-26": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-27": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-28": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-29": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-30": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-31": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-32": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-33": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-34": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-35": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-36": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-37": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-38": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-39": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-40": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-41": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-42": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-43": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-44": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-45": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-46": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-47": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-48": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-49": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-50": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-51": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-52": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-53": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-54": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
       },
       "M-55": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 156
+        "last_seen_cycle": 157
+      },
+      "M-56": {
+        "success": 0,
+        "last_pass_cycle": -1000000000,
+        "last_seen_cycle": 157
+      },
+      "M-57": {
+        "success": 0,
+        "last_pass_cycle": -1000000000,
+        "last_seen_cycle": 157
       }
     },
     "facet_log": []
@@ -49244,35 +49297,363 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:47+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:48+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:48+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:49+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:52+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:53+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:54+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:13:55+00:00",
+      "cycle": 157,
+      "kind": "fetched",
+      "summary": "wikipedia: 4 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:14:02+00:00",
+      "cycle": 157,
+      "kind": "judged",
+      "summary": "relevant: Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detecti",
+      "refs": {
+        "source": "zenodo:20779661",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20779661"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:14:10+00:00",
+      "cycle": 157,
+      "kind": "judged",
+      "summary": "relevant: Quotient-Defect Generators for Physical Field Equations: A Reduction-Quotient Fr",
+      "refs": {
+        "source": "zenodo:20779644",
+        "topic": "forum",
+        "new_topic": null,
+        "url": "https://zenodo.org/records/20779644"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:14:35+00:00",
+      "cycle": 157,
+      "kind": "projected",
+      "summary": "Granite projected 5 claim proposal(s) from zenodo:20779661 across 1 facet(s) [ibm-granite/granite-4.1-8b-20260429] - candidates via the gate",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:14:43+00:00",
+      "cycle": 157,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: Mustatil: An Open-Source AI and GIS Framework for Archaeological Featu (from zenodo)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:14:44+00:00",
+      "cycle": 157,
+      "kind": "method",
+      "summary": "stored method candidate for Kevin: Quotient-Defect Generators for Physical Field Equations: A Reduction-Q (from zenodo)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:14:52+00:00",
+      "cycle": 157,
+      "kind": "developed",
+      "summary": "linked C-634 <-> C-691 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:14:54+00:00",
+      "cycle": 157,
+      "kind": "developed",
+      "summary": "linked C-640 <-> C-691 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:06+00:00",
+      "cycle": 157,
+      "kind": "research",
+      "summary": "Doktores reviewed 2 source(s) for self-improvement - no non-core fit this cycle",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:08+00:00",
+      "cycle": 157,
+      "kind": "emerged",
+      "summary": "new topic 'stability' precipitated from a recurrence across drift, forum, memory",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:09+00:00",
+      "cycle": 157,
+      "kind": "emerged",
+      "summary": "'academic' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:10+00:00",
+      "cycle": 157,
+      "kind": "emerged",
+      "summary": "'action' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:12+00:00",
+      "cycle": 157,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'abundance' (Layer 9 synthesis-eligible, SC-1214) from 5 claims (C-309, C-317, C-318, C-320, C-321)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:14+00:00",
+      "cycle": 157,
+      "kind": "emerged",
+      "summary": "'processing' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:17+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-969 earned support from C-634 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:19+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-969 earned support from C-640 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:21+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-969 earned support from C-655 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:21+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-969 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:25+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-789 earned support from C-640 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:27+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-789 earned support from C-655 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:29+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-789 earned support from C-663 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:29+00:00",
+      "cycle": 157,
+      "kind": "strengthen",
+      "summary": "idea C-789 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:32+00:00",
+      "cycle": 157,
+      "kind": "vitality",
+      "summary": "developing · dev 24 · degen 0 · 0 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:37+00:00",
+      "cycle": 157,
+      "kind": "tooled",
+      "summary": "DESi date_math: 2 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:37+00:00",
+      "cycle": 157,
+      "kind": "routed",
+      "summary": "DESi routes scientific_claim -> meta-llama/llama-3.1-8b-instruct (~$0.000030)",
+      "refs": {
+        "reason": "Pareto-cheapest at score >= 0.5",
+        "task_class": "scientific_claim"
+      },
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-21T02:15:37+00:00",
+      "cycle": 157,
+      "kind": "note",
+      "summary": "cycle done · 2 new · 2 method(s) · 0 trialed · 2 new link(s) · 0 hypothesis(es) · 2 emergent · developing · spend €1.5540 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 206,
-    "granite_calls": 82,
-    "deepseek_escalations": 122,
+    "llm_calls": 210,
+    "granite_calls": 84,
+    "deepseek_escalations": 124,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 206,
-    "last_call": "2026-06-21T01:41:02+00:00",
-    "est_cost_eur": 0.496,
+    "live_calls": 210,
+    "last_call": "2026-06-21T02:15:06+00:00",
+    "est_cost_eur": 0.504,
     "by_model": {
-      "ibm-granite/granite-4.1-8b-20260429": 82,
-      "deepseek-v4-pro": 124
+      "ibm-granite/granite-4.1-8b-20260429": 84,
+      "deepseek-v4-pro": 126
     },
     "empty_calls": 3,
     "empty_truncated": 3,
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 200,
+      "stop": 204,
       "length": 6
     },
     "panel_rounds": 7,
     "reserved_budget_eur": 20.0,
-    "spent_budget_eur": 1.546,
-    "accepted_claims": 341,
-    "accepted_calls": 79,
-    "accepted_call_yield": 0.383,
+    "spent_budget_eur": 1.554,
+    "accepted_claims": 346,
+    "accepted_calls": 80,
+    "accepted_call_yield": 0.381,
     "est_cost_per_accepted_eur": 0.0015
   },
   "commissions_done": [
@@ -49298,6 +49679,15 @@
       {
         "id": "C-781",
         "text": "Across my forum claims, 'museum' recurs as a through-line worth testing as a single underlying factor.",
+        "topic": "forum",
+        "supports": 4,
+        "challenged": false,
+        "coherent": null,
+        "status": "candidate"
+      },
+      {
+        "id": "C-789",
+        "text": "Across my forum claims, 'namangan' recurs as a through-line worth testing as a single underlying factor.",
         "topic": "forum",
         "supports": 4,
         "challenged": false,
@@ -49492,15 +49882,6 @@
         "challenged": false,
         "coherent": null,
         "status": "candidate"
-      },
-      {
-        "id": "C-874",
-        "text": "Across my forum claims, 'solving' recurs as a through-line worth testing as a single underlying factor.",
-        "topic": "forum",
-        "supports": 3,
-        "challenged": false,
-        "coherent": null,
-        "status": "candidate"
       }
     ],
     "invented": [
@@ -49528,5 +49909,5 @@
       "world"
     ]
   },
-  "generated": "2026-06-21T01:41:35+00:00"
+  "generated": "2026-06-21T02:15:39+00:00"
 }
