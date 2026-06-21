@@ -46,6 +46,11 @@ _ZENODO_PASSIVE_MAX = 1
 # effort: if it ever changes, that sub-query just returns [] and the rest of the scout still runs
 # (and general OpenAlex search already surfaces SSRN works anyway).
 _SSRN_OPENALEX_SOURCE = "S4210172589"
+# SSRN is sorted by discipline and is mostly social-science/economics; on Joni's ML/CS module
+# queries the open SSRN slice returned off-topic health/econ papers. So the SSRN slice is restricted
+# to OpenAlex field 17 = Computer Science (which contains the AI/ML/NLP subfields), i.e. only the
+# computer-science & AI papers on SSRN.
+_SSRN_OPENALEX_FIELD = "fields/17"
 
 # Targeted scouting: each firing, Doktores searches for literature relevant to the NEXT non-core
 # module (round-robin), so reviews are module-relevant instead of whatever the topic-fetch happened
@@ -152,8 +157,8 @@ def _arxiv_scout(queries) -> list:
 
 def _openalex_scout(queries, *, ssrn: bool = False) -> list:
     """OpenAlex, **relevance-sorted** for the module's queries. ``ssrn=True`` restricts the slice to
-    SSRN working papers via the source filter, so SSRN is scouted directly (not only whenever it
-    happens to rank in the open search). Fails quietly to []."""
+    SSRN's **computer-science & AI** working papers (source filter + the Computer Science field), so
+    SSRN is scouted directly without its social-science/econ bulk. Fails quietly to []."""
     try:
         import urllib.parse
 
@@ -162,7 +167,8 @@ def _openalex_scout(queries, *, ssrn: bool = False) -> list:
                   "sort": "relevance_score:desc",
                   "mailto": "joni-autonomy@users.noreply.github.com"}
         if ssrn:
-            params["filter"] = f"primary_location.source.id:{_SSRN_OPENALEX_SOURCE}"
+            params["filter"] = (f"primary_location.source.id:{_SSRN_OPENALEX_SOURCE},"
+                                f"primary_topic.field.id:{_SSRN_OPENALEX_FIELD}")
         url = "https://api.openalex.org/works?" + urllib.parse.urlencode(params)
         out = []
         for w in json.loads(_get(url)).get("results", []):
