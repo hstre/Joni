@@ -115,6 +115,18 @@ def record_real_trial(cs, result: dict, *, run_id: str = "kevin-real") -> dict:
     if not writer_enabled():
         out["reason"] = "writer disabled (JONI_TRIAL_WRITER=0)"
         return out
+    # Idempotent by content-addressed trial_id: a deterministic measurement is recorded once. If the
+    # trial is already on the journal, skip cleanly - do NOT rebuild and resubmit. The sealed event
+    # carries a wall-clock ``timestamp``, so a rebuild differs from the stored record only in that
+    # field and the gate would (correctly) reject it as a DIVERGENT record. The first record holds
+    # the honest measurement time; re-running the same deterministic trial is a no-op, as the
+    # "recorded exactly once, ever" contract intends.
+    existing = next((o for o in cs.core.all(l9.ObjectType.METHOD_TRIAL_EVENT)
+                     if getattr(o, "trial_id", None) == out["trial_id"]), None)
+    if existing is not None:
+        out["idempotent"] = True
+        out["reason"] = f"idempotent: trial '{out['trial_id']}' already recorded as {existing.id}"
+        return out
     try:
         event = event_from_real_trial(result, ledger_tick=cs.core.tick)
         sealed = event.to_journal()
