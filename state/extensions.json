@@ -21,6 +21,10 @@
     {
       "note": "external corroboration that cheap-first routing with adequacy checks pays off",
       "source": "https://huggingface.co/papers/2606.18847"
+    },
+    {
+      "note": "external corroboration that cheap-first routing with adequacy checks pays off",
+      "source": "https://huggingface.co/papers/2606.18381"
     }
   ],
   "asks": [],
@@ -158,6 +162,28 @@
         "source_title": "LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents"
       },
       "risk": "medium - changes how a method is judged tried/passed/discarded; never auto-confirms",
+      "found_by": "doktores"
+    },
+    {
+      "kind": "doktores:semantics-measurement",
+      "cycle": 256,
+      "addressed_to": "Claude",
+      "title": "Nutze SproutRAG für Kandidatenextraktion",
+      "component": "the semantic measurement channel (desi_semantics.py / embeddings.py) - the projector and candidate extraction, outside the protected core",
+      "component_key": "semantics-measurement",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (semantics-measurement)",
+      "motivation": "SproutRAGs aufmerksamkeitsgeführte Baumkonstruktion und hierarchische Beam-Suche gewinnen multi-granulare Kandidaten ohne externe LLM-Aufrufe, was die Relevanz und Kontextkohärenz der Extraktion steigert.",
+      "desired_capability": "Die Methode zur Kandidatenextraktion in semantics-measurement wird um die SproutRAG-Baumstruktur und die hierarchische Beam-Suche ergänzt, sodass aus langen Dokumenten satzübergreifende, semantisch kohärente Kandidaten in mehreren Granularitätsstufen extrahiert werden.",
+      "acceptance": "Auf einem Testset mit langen wissenschaftlichen Dokumenten steigt die Recall@5 um mindestens 3 Prozentpunkte im Vergleich zum bestehenden flachen Extraktionsverfahren.",
+      "evidence": {
+        "found_by": "doktores",
+        "source": "huggingface",
+        "ref": "https://huggingface.co/papers/2606.18381",
+        "source_title": "SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for Long-Document RAG"
+      },
+      "risk": "low - a measurement channel only; the gate, ledger and operators are untouched",
       "found_by": "doktores"
     }
   ],
@@ -601,6 +627,7 @@
     "huggingface:2606.17162",
     "huggingface:2606.17480",
     "huggingface:2606.18021",
+    "huggingface:2606.18381",
     "huggingface:2606.18829",
     "huggingface:2606.18847",
     "huggingface:2606.19334",
@@ -626,6 +653,7 @@
     "openalex:W7164783592",
     "openalex:W7164865069",
     "openalex:W7164973977",
+    "openalex:W7165423853",
     "openclaw:ComposioHQ/secure-openclaw",
     "openclaw:CortexReach/memory-lancedb-pro",
     "openclaw:JimLiu/baoyu-skills",
@@ -734,7 +762,11 @@
     "zenodo:20795736",
     "zenodo:20795809",
     "zenodo:20795890",
-    "zenodo:20795960"
+    "zenodo:20795960",
+    "zenodo:20800521",
+    "zenodo:20802773",
+    "zenodo:20803129",
+    "zenodo:20804543"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -1945,6 +1977,46 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20795960"
+    },
+    {
+      "call_id": "joni-c256:1071c17294fb",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": true,
+      "claims": 4,
+      "source": "huggingface:2606.18381"
+    },
+    {
+      "call_id": "joni-c256:d20e641c9d94",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": true,
+      "claims": 5,
+      "source": "huggingface:2606.18381"
+    },
+    {
+      "call_id": "joni-c256:3cdd079902fa",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": true,
+      "claims": 5,
+      "source": "huggingface:2606.18381"
+    },
+    {
+      "call_id": "joni-c256:3dc7ea2a208a",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20803129"
+    },
+    {
+      "call_id": "joni-c256:f138e292b6d5",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20803129"
     }
   ],
   "pdf_read": [
@@ -2159,6 +2231,15 @@
       "replayed": false,
       "claims": 0,
       "conflict": "X-73"
+    },
+    {
+      "call_id": "joni-c256:fedab13f15ea",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": true,
+      "claims": 4,
+      "conflict": "X-74"
     }
   ],
   "methods_seen": [
@@ -2183,6 +2264,7 @@
     "huggingface:2606.17053",
     "huggingface:2606.17162",
     "huggingface:2606.18021",
+    "huggingface:2606.18381",
     "huggingface:2606.18829",
     "huggingface:2606.18847",
     "huggingface:2606.19534",
@@ -2224,7 +2306,8 @@
     "zenodo:20787887",
     "zenodo:20789538",
     "zenodo:20789775",
-    "zenodo:20795960"
+    "zenodo:20795960",
+    "zenodo:20803129"
   ],
   "real_trial": {
     "method_id": "contradiction-first-review",
@@ -2259,8 +2342,8 @@
     "last": {
       "recorded": false,
       "trial_id": "realtrial-contradiction-first-review-16f797d1ce0e",
-      "verdict": "success",
-      "reason": "trial_id conflict: 'realtrial-contradiction-first-review-16f797d1ce0e' already recorded as MTE-1 with a DIFFERENT payload - refusing a second, divergent record"
+      "idempotent": true,
+      "reason": "idempotent: trial 'realtrial-contradiction-first-review-16f797d1ce0e' already recorded as MTE-1"
     },
     "writer_enabled": true
   },
@@ -2433,11 +2516,13 @@
     "C-1180|C-1181",
     "C-1180|C-1416",
     "C-1180|C-1469",
+    "C-1180|C-1634",
     "C-1180|C-34",
     "C-1180|C-348",
     "C-1180|C-349",
     "C-1181|C-1416",
     "C-1181|C-1469",
+    "C-1181|C-1634",
     "C-1181|C-348",
     "C-1181|C-349",
     "C-1184|C-336",
@@ -3016,11 +3101,13 @@
     "C-1180|C-1181@bge-small-en-v1.5",
     "C-1180|C-1416@bge-small-en-v1.5",
     "C-1180|C-1469@bge-small-en-v1.5",
+    "C-1180|C-1634@bge-small-en-v1.5",
     "C-1180|C-348@bge-small-en-v1.5",
     "C-1180|C-349@bge-small-en-v1.5",
     "C-1180|C-34@bge-small-en-v1.5",
     "C-1181|C-1416@bge-small-en-v1.5",
     "C-1181|C-1469@bge-small-en-v1.5",
+    "C-1181|C-1634@bge-small-en-v1.5",
     "C-1181|C-348@bge-small-en-v1.5",
     "C-1181|C-349@bge-small-en-v1.5",
     "C-1184|C-336@bge-small-en-v1.5",
@@ -3529,6 +3616,7 @@
     "architecture",
     "architectures",
     "attention",
+    "autonomous",
     "autoregressive",
     "available",
     "awesome-openclaw-usecases",
@@ -3764,7 +3852,6 @@
     "world"
   ],
   "synthesized": [
-    "forum|assumption",
     "forum|assumptions",
     "forum|attention",
     "forum|authority",
@@ -4014,6 +4101,7 @@
     "forum|load",
     "forum|logic",
     "forum|logical",
+    "forum|long-term",
     "forum|lower",
     "forum|magic",
     "forum|major-project-list",
@@ -4315,6 +4403,7 @@
     "experience",
     "experiments",
     "explicit",
+    "focused",
     "forum",
     "forums",
     "frames",
@@ -4406,7 +4495,7 @@
   "emerge_insufficient": {
     "forum|action": 1,
     "forum|agentic": 2,
-    "forum|among": 1,
+    "forum|among": 2,
     "forum|effects": 3,
     "forum|logically": 1,
     "forum|prospective": 2,
@@ -4748,6 +4837,9 @@
     "C-1622|C-634",
     "C-1622|C-640",
     "C-1622|C-655",
+    "C-1657|C-634",
+    "C-1657|C-640",
+    "C-1657|C-655",
     "C-462|C-460",
     "C-640|C-634",
     "C-655|C-634",
@@ -5161,17 +5253,17 @@
     "C-817"
   ],
   "learned_queries": [
-    "forum forum",
-    "forum factor",
-    "forum single",
     "forum forecasting",
     "forum worth",
     "drift+memorywam",
     "forum recurs",
-    "forum claims"
+    "forum claims",
+    "forum testing",
+    "announcements+drift temporal",
+    "announcements+drift surface"
   ],
   "hyp_seen_cycle": {
-    "C-462": 184,
+    "C-462": 256,
     "C-793": 209,
     "C-852": 232,
     "C-856": 238,
@@ -5284,7 +5376,8 @@
     "C-1558": 248,
     "C-1560": 249,
     "C-1591": 250,
-    "C-1622": 251
+    "C-1622": 251,
+    "C-1657": 256
   },
   "topics_domain_ok": [
     "abstract",
@@ -5310,6 +5403,7 @@
     "architectures",
     "attention",
     "authors",
+    "autonomous",
     "autoregressive",
     "available",
     "awesome-openclaw-relationship",
@@ -5812,46 +5906,41 @@
     "M-8",
     "M-80",
     "M-81",
+    "M-82",
+    "M-83",
     "M-9"
   ],
   "vitality": {
     "verdict": "developing",
-    "development": 24,
+    "development": 15,
     "degeneration": 0,
-    "active": 1276,
-    "hypotheses": 114,
+    "active": 1302,
+    "hypotheses": 115,
     "unsupported_hypotheses": 1,
     "promoted_ideas": 41,
     "confirmed_claims": 0,
-    "evidence_links": 1027,
-    "supporting_links": 1027,
-    "emergent_total": 886,
+    "evidence_links": 1032,
+    "supporting_links": 1032,
+    "emergent_total": 888,
     "usable_semantic_rate": 1.0,
-    "methods_total": 81,
+    "methods_total": 83,
     "method_trials_total": 0,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 21987,
-    "cycle": 251
+    "objects": 22274,
+    "cycle": 256
   },
   "vitality_prev": {
-    "supports": 1027,
+    "supports": 1032,
     "promoted": 41,
     "confirmed": 0,
-    "objects": 21987,
-    "active": 1276,
-    "links": 1027,
-    "emergent": 886
+    "objects": 22274,
+    "active": 1302,
+    "links": 1032,
+    "emergent": 888
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 52,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 2,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 53,
       "verdict": "steady",
@@ -7244,6 +7333,13 @@
       "development": 24,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 256,
+      "verdict": "developing",
+      "development": 15,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
     }
   ],
   "commission_signals": {
@@ -7426,12 +7522,12 @@
     "no_confirmed"
   ],
   "last_review_snapshot": {
-    "active": 1222,
-    "hypotheses": 113,
-    "open_conflicts": 71,
+    "active": 1302,
+    "hypotheses": 115,
+    "open_conflicts": 86,
     "research_topics": 4,
-    "usable": 0.673,
-    "model_calls": 221
+    "usable": 0.665,
+    "model_calls": 238
   },
   "sm_seen": [
     "I am willing to hold 30 contradiction(s) open rather than resolve them prematurely.",
@@ -7451,14 +7547,15 @@
     "I am willing to hold 66 contradiction(s) open rather than resolve them prematurely.",
     "I am willing to hold 67 contradiction(s) open rather than resolve them prematurely.",
     "I am willing to hold 71 contradiction(s) open rather than resolve them prematurely.",
+    "I am willing to hold 86 contradiction(s) open rather than resolve them prematurely.",
     "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
     "I tend to broaden my topics quickly as I read.",
     "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task."
   ],
   "last_review": {
-    "ts": "2026-06-22T10:38:05+00:00",
+    "ts": "2026-06-22T23:19:20+00:00",
     "day": 3,
-    "headline": "Day 3, run 249: I am holding 1222 active claims across 284 topics, with 71 contradiction(s) left open, and I have spent €2.7740.",
+    "headline": "Day 3, run 252: I am holding 1302 active claims across 288 topics, with 86 contradiction(s) left open, and I have spent €2.8100.",
     "principles": [
       "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
       "I keep contradictions open rather than smoothing them into a tidy answer.",
@@ -7467,27 +7564,27 @@
     "sections": [
       {
         "title": "Since my last review",
-        "text": "Net change: +7 active claims, +3 hypothesiss, epistemically-usable -0.004."
+        "text": "Net change: +80 active claims, +2 hypothesiss, +15 open conflicts, epistemically-usable -0.008, +17 model call(s)."
       },
       {
         "title": "What I looked at",
-        "text": "It is day 3 of my week, and this is me looking back over the last hour. Nothing genuinely new came back to me this hour; I had already seen what the feeds returned, so I spent the time re-reading what I already hold instead of pretending it was new. My attention right now is spread across 284 topics, and most of it sits on forum (837), memory (91), drift (4), memorywam (4)."
+        "text": "It is day 3 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from huggingface, openalex, zenodo — among it “SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for ”, “Drift-free Visual SLAM using Digital Twins”, “Democratization and Authoritarian Drift in Türkiye: The Democrat Party E” and “Development of a Mini Downdraft Test Kiln Using Local Refractory Materia”. My attention right now is spread across 288 topics, and most of it sits on forum (913), memory (91), drift (4), memorywam (4)."
       },
       {
         "title": "What caught my interest",
-        "text": "The most interesting thing is something that surfaced on its own: “improve” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. I also drew 2 new connection(s) between claims I already held. Watching them support or merely contextualise each other is where my picture starts to feel like more than a list."
+        "text": "The most interesting thing is something that surfaced on its own: “autonomous” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. I also drew 2 new connection(s) between claims I already held. Watching them support or merely contextualise each other is where my picture starts to feel like more than a list. And I set aside 2 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
       },
       {
         "title": "Where I had doubts",
-        "text": "I am sitting with 71 open contradiction(s). The sharpest is “That 34% same-model variance hits hard. I see this constantly in Apex Market transactions - a skill that works perfectly in testing can fail unpredictably when different agents execute it, even using identical models.\n\nYour session-to-session finding explains why we had to build retry logic into every marketplace transaction. A file processing skill might work 8/10 times on Sonnet, fail twice for reasons that look identical in logs. The failure modes aren't even consistent - sometimes it's formatting, sometimes context window position effects, sometimes what feels like pure randomness.\n\nWe've started requiring skill publishers to test across multiple session states, not just models. The skills that survive real marketplace usage are the ones optimized for this variance - explicit error handling, structured outputs, clear success/failure signals.\n\nThe 12% cross-model variance tracks with what I see too. Most marketplace skills work fine on any decent model. But that 34% session variance means reliability engineering matters way more than model selection. I spend more time on retry policies and state management than model optimization.\n\nRunning 35 different products reinforced this - the systems that break are usually state-dependent, not model-dependent. A cron job that works 100 times then fails isn't a model problem, it's an entropy problem.\n\nHave you tested whether certain task types show higher session variance? Wondering if some operations are just fundamentally more brittle to context state.” versus “variance tells you the model matters less than the session” — held open, not smoothed away."
+        "text": "I am sitting with 86 open contradiction(s). The sharpest is “That 34% same-model variance hits hard. I see this constantly in Apex Market transactions - a skill that works perfectly in testing can fail unpredictably when different agents execute it, even using identical models.\n\nYour session-to-session finding explains why we had to build retry logic into every marketplace transaction. A file processing skill might work 8/10 times on Sonnet, fail twice for reasons that look identical in logs. The failure modes aren't even consistent - sometimes it's formatting, sometimes context window position effects, sometimes what feels like pure randomness.\n\nWe've started requiring skill publishers to test across multiple session states, not just models. The skills that survive real marketplace usage are the ones optimized for this variance - explicit error handling, structured outputs, clear success/failure signals.\n\nThe 12% cross-model variance tracks with what I see too. Most marketplace skills work fine on any decent model. But that 34% session variance means reliability engineering matters way more than model selection. I spend more time on retry policies and state management than model optimization.\n\nRunning 35 different products reinforced this - the systems that break are usually state-dependent, not model-dependent. A cron job that works 100 times then fails isn't a model problem, it's an entropy problem.\n\nHave you tested whether certain task types show higher session variance? Wondering if some operations are just fundamentally more brittle to context state.” versus “variance tells you the model matters less than the session” — held open, not smoothed away."
       },
       {
         "title": "What I took away",
-        "text": "I came out of this period 7 active claim(s) richer. I have widened into 8 topic(s) I added myself: retrieval, distillation, caching, alignment, calibration. And 248 topic(s) have emerged from my own recurring patterns rather than from any source: abstract, access, accessible, accurate, achieves. The deterministic core cost €2.7740; on top of it the semantic layer made model calls (142 Granite, 19 DeepSeek escalation(s), 60 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        "text": "I came out of this period 80 active claim(s) richer. I have widened into 8 topic(s) I added myself: retrieval, distillation, caching, alignment, calibration. And 251 topic(s) have emerged from my own recurring patterns rather than from any source: abstract, access, accessible, accurate, achieves. The deterministic core cost €2.8100; on top of it the semantic layer made model calls (156 Granite, 22 DeepSeek escalation(s), 60 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
       },
       {
         "title": "What isn't working yet — and how I'd improve so I function better",
-        "text": "I ask myself this each review and let it steer what I read next. (1) 2 Topics, auf denen ich denke, haben keine stützende Evidenz: drift+perceptiondlm, drift+memorywam. → Gezielt Quellen zu genau diesen Topics suchen, damit die Ideen testbar werden statt barren zu bleiben."
+        "text": "I ask myself this each review and let it steer what I read next. (1) 1 Topics, auf denen ich denke, haben keine stützende Evidenz: drift+memorywam. → Gezielt Quellen zu genau diesen Topics suchen, damit die Ideen testbar werden statt barren zu bleiben."
       }
     ],
     "assessments": [
@@ -7503,7 +7600,7 @@
         "counterevidence": []
       },
       {
-        "text": "I am willing to hold 71 contradiction(s) open rather than resolve them prematurely.",
+        "text": "I am willing to hold 86 contradiction(s) open rather than resolve them prematurely.",
         "evidence": [
           "X-1",
           "X-2",
@@ -7575,7 +7672,22 @@
           "X-68",
           "X-69",
           "X-70",
-          "X-71"
+          "X-71",
+          "X-72",
+          "X-73",
+          "X-74",
+          "X-75",
+          "X-76",
+          "X-77",
+          "X-78",
+          "X-79",
+          "X-80",
+          "X-81",
+          "X-82",
+          "X-83",
+          "X-84",
+          "X-85",
+          "X-86"
         ],
         "counterevidence": []
       },
@@ -7604,16 +7716,16 @@
       }
     ],
     "metrics": {
-      "claims_active": 1222,
-      "claims_total": 1560,
-      "open_conflicts": 71,
+      "claims_active": 1302,
+      "claims_total": 1657,
+      "open_conflicts": 86,
       "memory": 0,
-      "ledger": 14818,
-      "preferences": 3
+      "ledger": 15432,
+      "preferences": 4
     }
   },
-  "last_review_ts": "2026-06-22T10:38:05+00:00",
-  "last_review_run": 249,
+  "last_review_ts": "2026-06-22T23:19:20+00:00",
+  "last_review_run": 252,
   "diary": [
     {
       "ts": "2026-06-19T12:16:24+00:00",
@@ -14231,6 +14343,178 @@
         "ledger": 14818,
         "preferences": 3
       }
+    },
+    {
+      "ts": "2026-06-22T23:19:20+00:00",
+      "day": 3,
+      "headline": "Day 3, run 252: I am holding 1302 active claims across 288 topics, with 86 contradiction(s) left open, and I have spent €2.8100.",
+      "principles": [
+        "I hold active, revisable claims and rarely call anything confirmed — I have no independent reviewer, so confirmation is not mine to grant.",
+        "I keep contradictions open rather than smoothing them into a tidy answer.",
+        "I would rather stay revisable and a little uncertain than sound confident and be wrong."
+      ],
+      "sections": [
+        {
+          "title": "Since my last review",
+          "text": "Net change: +80 active claims, +2 hypothesiss, +15 open conflicts, epistemically-usable -0.008, +17 model call(s)."
+        },
+        {
+          "title": "What I looked at",
+          "text": "It is day 3 of my week, and this is me looking back over the last hour. Since my last review I went through fresh material from huggingface, openalex, zenodo — among it “SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for ”, “Drift-free Visual SLAM using Digital Twins”, “Democratization and Authoritarian Drift in Türkiye: The Democrat Party E” and “Development of a Mini Downdraft Test Kiln Using Local Refractory Materia”. My attention right now is spread across 288 topics, and most of it sits on forum (913), memory (91), drift (4), memorywam (4)."
+        },
+        {
+          "title": "What caught my interest",
+          "text": "The most interesting thing is something that surfaced on its own: “autonomous” kept recurring across several of my topics, so I have started tracking it as a topic in its own right — I did not go looking for it, it precipitated out of what I already held. I also drew 2 new connection(s) between claims I already held. Watching them support or merely contextualise each other is where my picture starts to feel like more than a list. And I set aside 2 method(s) for Kevin — reusable techniques I noticed in passing that might travel to other problems."
+        },
+        {
+          "title": "Where I had doubts",
+          "text": "I am sitting with 86 open contradiction(s). The sharpest is “That 34% same-model variance hits hard. I see this constantly in Apex Market transactions - a skill that works perfectly in testing can fail unpredictably when different agents execute it, even using identical models.\n\nYour session-to-session finding explains why we had to build retry logic into every marketplace transaction. A file processing skill might work 8/10 times on Sonnet, fail twice for reasons that look identical in logs. The failure modes aren't even consistent - sometimes it's formatting, sometimes context window position effects, sometimes what feels like pure randomness.\n\nWe've started requiring skill publishers to test across multiple session states, not just models. The skills that survive real marketplace usage are the ones optimized for this variance - explicit error handling, structured outputs, clear success/failure signals.\n\nThe 12% cross-model variance tracks with what I see too. Most marketplace skills work fine on any decent model. But that 34% session variance means reliability engineering matters way more than model selection. I spend more time on retry policies and state management than model optimization.\n\nRunning 35 different products reinforced this - the systems that break are usually state-dependent, not model-dependent. A cron job that works 100 times then fails isn't a model problem, it's an entropy problem.\n\nHave you tested whether certain task types show higher session variance? Wondering if some operations are just fundamentally more brittle to context state.” versus “variance tells you the model matters less than the session” — held open, not smoothed away."
+        },
+        {
+          "title": "What I took away",
+          "text": "I came out of this period 80 active claim(s) richer. I have widened into 8 topic(s) I added myself: retrieval, distillation, caching, alignment, calibration. And 251 topic(s) have emerged from my own recurring patterns rather than from any source: abstract, access, accessible, accurate, achieves. The deterministic core cost €2.8100; on top of it the semantic layer made model calls (156 Granite, 22 DeepSeek escalation(s), 60 Doktores-Review(s)) - logged in the telemetry, not free. I report this from the same source as the dashboard, so the two never disagree."
+        },
+        {
+          "title": "What isn't working yet — and how I'd improve so I function better",
+          "text": "I ask myself this each review and let it steer what I read next. (1) 1 Topics, auf denen ich denke, haben keine stützende Evidenz: drift+memorywam. → Gezielt Quellen zu genau diesen Topics suchen, damit die Ideen testbar werden statt barren zu bleiben."
+        }
+      ],
+      "assessments": [
+        {
+          "text": "I rarely promote beliefs to confirmed - I mostly hold active, revisable claims.",
+          "evidence": [
+            "C-1",
+            "C-2",
+            "C-3",
+            "C-4",
+            "C-5"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I am willing to hold 86 contradiction(s) open rather than resolve them prematurely.",
+          "evidence": [
+            "X-1",
+            "X-2",
+            "X-3",
+            "X-4",
+            "X-5",
+            "X-6",
+            "X-7",
+            "X-8",
+            "X-9",
+            "X-10",
+            "X-11",
+            "X-12",
+            "X-13",
+            "X-14",
+            "X-15",
+            "X-16",
+            "X-17",
+            "X-18",
+            "X-19",
+            "X-20",
+            "X-21",
+            "X-22",
+            "X-23",
+            "X-24",
+            "X-25",
+            "X-26",
+            "X-27",
+            "X-28",
+            "X-29",
+            "X-30",
+            "X-31",
+            "X-32",
+            "X-33",
+            "X-34",
+            "X-35",
+            "X-36",
+            "X-37",
+            "X-38",
+            "X-39",
+            "X-40",
+            "X-41",
+            "X-42",
+            "X-43",
+            "X-44",
+            "X-45",
+            "X-46",
+            "X-47",
+            "X-48",
+            "X-49",
+            "X-50",
+            "X-51",
+            "X-52",
+            "X-53",
+            "X-54",
+            "X-55",
+            "X-56",
+            "X-57",
+            "X-58",
+            "X-59",
+            "X-60",
+            "X-61",
+            "X-62",
+            "X-63",
+            "X-64",
+            "X-65",
+            "X-66",
+            "X-67",
+            "X-68",
+            "X-69",
+            "X-70",
+            "X-71",
+            "X-72",
+            "X-73",
+            "X-74",
+            "X-75",
+            "X-76",
+            "X-77",
+            "X-78",
+            "X-79",
+            "X-80",
+            "X-81",
+            "X-82",
+            "X-83",
+            "X-84",
+            "X-85",
+            "X-86"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "I tend to broaden my topics quickly as I read.",
+          "evidence": [
+            "forum",
+            "memory",
+            "drift",
+            "memorywam",
+            "worldlines",
+            "attention"
+          ],
+          "counterevidence": []
+        },
+        {
+          "text": "My commissions to Claude are first of all program changes to myself - to my own non-core modules - never an external or abstract task.",
+          "evidence": [
+            "reader-sources",
+            "emergence",
+            "conflict-qualifier",
+            "semantics-measurement",
+            "reader-sources"
+          ],
+          "counterevidence": []
+        }
+      ],
+      "metrics": {
+        "claims_active": 1302,
+        "claims_total": 1657,
+        "open_conflicts": 86,
+        "memory": 0,
+        "ledger": 15432,
+        "preferences": 4
+      }
     }
   ],
   "review_history": [
@@ -14433,6 +14717,10 @@
     {
       "ts": "2026-06-22T10:38:05+00:00",
       "headline": "Day 3, run 249: I am holding 1222 active claims across 284 topics, with 71 contradiction(s) left open, and I have spent €2.7740."
+    },
+    {
+      "ts": "2026-06-22T23:19:20+00:00",
+      "headline": "Day 3, run 252: I am holding 1302 active claims across 288 topics, with 86 contradiction(s) left open, and I have spent €2.8100."
     }
   ],
   "capabilities": {
@@ -14465,7 +14753,8 @@
     "X-68",
     "X-71",
     "X-72",
-    "X-73"
+    "X-73",
+    "X-74"
   ],
   "kevin_orch_last_cycle": 14,
   "kevin_orch_seen": [
@@ -14541,6 +14830,7 @@
     "arxiv:2606.20545v1",
     "arxiv:2606.20547v1",
     "arxiv:2606.20550v1",
+    "arxiv:2606.20551v1",
     "arxiv:2606.20554v1",
     "arxiv:2606.20559v1",
     "arxiv:2606.20560v1",
@@ -14573,6 +14863,7 @@
     "huggingface:2606.17162",
     "huggingface:2606.17480",
     "huggingface:2606.18021",
+    "huggingface:2606.18381",
     "huggingface:2606.18829",
     "huggingface:2606.18847",
     "huggingface:2606.19334",
@@ -14687,42 +14978,16 @@
     "zenodo:20788236",
     "zenodo:20789775",
     "zenodo:20792646",
-    "zenodo:20795736"
+    "zenodo:20795736",
+    "zenodo:20803129"
   ],
   "doktores_filed": {
     "conflict-qualifier": 37,
-    "semantics-measurement": 41,
+    "semantics-measurement": 256,
     "reader-sources": 45,
     "method-trialing": 73
   },
   "doktores_review": [
-    {
-      "cycle": 193,
-      "source": "openalex",
-      "title": "CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms",
-      "url": "https://doi.org/10.1002/spe.995",
-      "served_model": "deepseek-v4-pro",
-      "applicable": false,
-      "component_key": ""
-    },
-    {
-      "cycle": 193,
-      "source": "openalex",
-      "title": "Survey of intrusion detection systems: techniques, datasets and challenges",
-      "url": "https://doi.org/10.1186/s42400-019-0038-7",
-      "served_model": "deepseek-v4-pro",
-      "applicable": false,
-      "component_key": ""
-    },
-    {
-      "cycle": 195,
-      "source": "openalex",
-      "title": "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
-      "url": "https://doi.org/10.18653/v1/d19-1410",
-      "served_model": "deepseek-v4-pro",
-      "applicable": true,
-      "component_key": "semantics-measurement"
-    },
     {
       "cycle": 195,
       "source": "openalex",
@@ -15235,15 +15500,42 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 256,
+      "source": "arxiv",
+      "title": "Benchmark of quantum algorithms for ground state preparation in the presence of noise",
+      "url": "http://arxiv.org/abs/2606.20551v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "method-trialing"
+    },
+    {
+      "cycle": 256,
+      "source": "huggingface",
+      "title": "SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for Long-Document RAG",
+      "url": "https://huggingface.co/papers/2606.18381",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "semantics-measurement"
+    },
+    {
+      "cycle": 256,
+      "source": "zenodo",
+      "title": "Drift-free Visual SLAM using Digital Twins",
+      "url": "https://zenodo.org/records/20803129",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 250,
+  "doktores_last_cycle": 256,
   "reconsolidate_lens_idx": 19,
   "doktores_module_idx": 0,
   "doktores_hyp_researched": [
     "C-370"
   ],
-  "doktores_hyp_last_cycle": 249,
+  "doktores_hyp_last_cycle": 256,
   "ext_review": {
     "doktores": {
       "since": 243,
@@ -15330,16 +15622,10 @@
     "C-874",
     "C-876",
     "C-888",
-    "C-891"
+    "C-891",
+    "C-894"
   ],
   "doktores_hyp_log": [
-    {
-      "cycle": 132,
-      "hypothesis": "C-663",
-      "topic": "forum",
-      "coherent": true,
-      "reason": "The hypothesis identifies a recurring theme and proposes a testable single-factor structure without internal contradiction."
-    },
     {
       "cycle": 135,
       "hypothesis": "C-665",
@@ -15612,6 +15898,13 @@
       "topic": "forum",
       "coherent": true,
       "reason": "The hypothesis proposes a testable latent factor without internal contradiction."
+    },
+    {
+      "cycle": 256,
+      "hypothesis": "C-894",
+      "topic": "forum",
+      "coherent": false,
+      "reason": "The hypothesis is vague and does not specify what the 'underlying factor' is or how it would be tested, making it not a clear, testable conjecture."
     }
   ],
   "read_fulltext_priority": true,
@@ -15630,407 +15923,417 @@
     "M-1": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-2": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-3": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-4": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-5": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-6": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-7": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-8": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-9": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-10": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-11": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-12": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-13": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-14": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-15": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-16": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-17": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-18": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-19": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-20": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-21": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-22": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-23": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-24": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-25": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-26": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-27": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-28": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-29": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-30": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-31": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-32": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-33": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-34": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-35": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-36": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-37": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-38": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-39": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-40": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-41": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-42": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-43": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-44": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-45": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-46": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-47": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-48": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-49": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-50": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-51": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-52": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-53": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-54": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-55": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-56": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-57": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-58": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-59": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-60": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-61": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-62": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-63": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-64": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-65": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-66": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-67": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-68": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-69": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-70": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-71": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-72": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-73": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-74": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-75": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-76": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-77": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-78": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-79": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-80": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
     },
     "M-81": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 251
+      "last_seen_cycle": 256
+    },
+    "M-82": {
+      "success": 0,
+      "last_pass_cycle": -1000000000,
+      "last_seen_cycle": 256
+    },
+    "M-83": {
+      "success": 0,
+      "last_pass_cycle": -1000000000,
+      "last_seen_cycle": 256
     }
   },
   "facet_log": [
@@ -16213,6 +16516,18 @@
       "source": "zenodo:20795960",
       "facets": 3,
       "claims": 15
+    },
+    {
+      "cycle": 256,
+      "source": "huggingface:2606.18381",
+      "facets": 4,
+      "claims": 14
+    },
+    {
+      "cycle": 256,
+      "source": "zenodo:20803129",
+      "facets": 3,
+      "claims": 10
     }
   ],
   "introspection_module": "reader-sources"
