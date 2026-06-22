@@ -1,0 +1,8 @@
+{
+  "applicable": true,
+  "component_key": "method-trialing",
+  "title": "Stabilitätsschranke als Ruhestandskriterium aktivieren",
+  "motivation": "Das Papier weist nach, dass lernende Systeme nur stabil bleiben, wenn die Informationsgewinnungsrate ΔI die Entropieproduktionsrate ΔS übertrifft (Informations–Stabilitäts-Schranke). Ein Verfahren, das diese Bedingung dauerhaft verletzt, verliert seine Lernfähigkeit und sollte ausgemustert werden.",
+  "desired": "Ergänze im Trial-Runner (trials.py) eine Überwachungsfunktion, die für jede aktive Methode gleitend ΔI (z.B. Verbesserung der Erfolgsquote) und ΔS (z.B. Parameterdrift oder Vorhersagefehlerstreuung) schätzt. Methoden, bei denen ΔI ≤ ΔS über ein festgelegtes Zeitfenster gilt, werden automatisch in den Ruhestand versetzt und aus dem aktiven Pool entfernt.",
+  "acceptance": "Mindestens eine vormals aktive Methode wird innerhalb eines simulierten Betriebszyklus vom erweiterten Trial-Runner wegen Verletzung von ΔI > ΔS automatisch pensioniert."
+}
