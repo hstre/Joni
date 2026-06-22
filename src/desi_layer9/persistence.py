@@ -125,6 +125,45 @@ def load(path: str | Path, *, verify: bool = True) -> Layer9 | None:
     return from_doc(json.loads(path.read_text(encoding="utf-8")), verify=verify, sidecar=sidecar)
 
 
+# Journal payload fields that are DERIVED detail - stored for audit but never read by any state
+# logic - and that grew without bound (the semantic per-pair log is O(members²) and reached tens of
+# MB across the run). Compaction drops them: the decision/state/rationale already carry the verdict,
+# so the reconstructed claim graph is unchanged; only the dead weight goes.
+_COMPACTABLE_MEASUREMENT_KEYS = ("pairs",)
+
+
+def compact(path: str | Path, *, out: str | Path | None = None) -> dict:
+    """One-time maintenance: slim the journal by dropping dead, derived measurement blobs, then
+    re-derive the state and RE-SEAL it (fresh snapshot_hash + ledger chain).
+
+    The append-only journal had bloated to tens of MB (90% of it the O(n²) ``measurement.pairs``
+    log written by the semantic adapter - stored but never read), so a fresh job's full replay no
+    longer finished inside a cycle. Stripping that field changes no decision (no logic consults it),
+    so the rebuilt claim graph is identical bar the removed dead detail; the result is a small,
+    fully-replayable, chain-valid file. The audit history (every entry, its decision and members)
+    is preserved. Returns a small summary; raises if the slimmed journal does not load cleanly."""
+    path = Path(path)
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    before_entries = len(doc.get("journal", []))
+    stripped = 0
+    for e in doc.get("journal", []):
+        m = (e.get("payload") or {}).get("measurement")
+        if isinstance(m, dict):
+            for k in _COMPACTABLE_MEASUREMENT_KEYS:
+                if k in m:
+                    m.pop(k, None)
+                    stripped += 1
+    journal = [JournalEntry.from_dict(e) for e in doc.get("journal", [])]
+    state = replay(journal, tick=int(doc.get("tick", 0)))     # rebuild from the slimmed journal
+    out_path = Path(out) if out else path
+    save(state, out_path)                                     # journal-only doc + fresh hash
+    reloaded = load(out_path, verify=True)                    # must load + verify_chain cleanly
+    if reloaded is None or snapshot_hash(reloaded) != snapshot_hash(state):
+        raise ValueError("compaction produced a file that does not reload to the same state")
+    return {"entries": before_entries, "fields_stripped": stripped,
+            "snapshot_hash": snapshot_hash(state)}
+
+
 def repair(path: str | Path) -> bool:
     """Re-seal a state whose recorded SNAPSHOT hash drifted while the ledger chain is still intact.
 
