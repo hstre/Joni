@@ -1983,6 +1983,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-65"
+    },
+    {
+      "call_id": "joni-c233:6e7b00beb649",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-66"
     }
   ],
   "methods_seen": [
@@ -2395,7 +2404,9 @@
     "C-1439|C-1458",
     "C-1446|C-1447",
     "C-1446|C-1448",
+    "C-1446|C-1454",
     "C-1447|C-1448",
+    "C-1447|C-1454",
     "C-144|C-150",
     "C-145|C-151",
     "C-147|C-152",
@@ -2915,7 +2926,9 @@
     "C-1439|C-1458@bge-small-en-v1.5",
     "C-1446|C-1447@bge-small-en-v1.5",
     "C-1446|C-1448@bge-small-en-v1.5",
+    "C-1446|C-1454@bge-small-en-v1.5",
     "C-1447|C-1448@bge-small-en-v1.5",
+    "C-1447|C-1454@bge-small-en-v1.5",
     "C-144|C-150@bge-small-en-v1.5",
     "C-145|C-151@bge-small-en-v1.5",
     "C-147|C-152@bge-small-en-v1.5",
@@ -3230,6 +3243,7 @@
     "batch",
     "become",
     "behavior",
+    "benchmark",
     "bias",
     "broader",
     "calls",
@@ -4046,6 +4060,7 @@
     "session",
     "settings",
     "short-term",
+    "site",
     "skills",
     "software",
     "spatial",
@@ -4072,14 +4087,13 @@
   "emerge_insufficient": {
     "forum|action": 1,
     "forum|agentic": 2,
-    "forum|among": 2,
+    "forum|among": 3,
     "forum|effects": 3,
     "forum|logically": 1,
     "forum|prospective": 2,
     "forum|training": 3,
     "forum|typed": 1,
-    "meth:image": 2,
-    "meth:site": 3
+    "meth:image": 2
   },
   "hyp_tested": [
     "C-1011|C-634",
@@ -4139,6 +4153,9 @@
     "C-1104|C-634",
     "C-1104|C-640",
     "C-1104|C-655",
+    "C-1104|C-663",
+    "C-1104|C-665",
+    "C-1104|C-667",
     "C-1128|C-634",
     "C-1128|C-640",
     "C-1128|C-655",
@@ -4323,6 +4340,9 @@
     "C-1488|C-634",
     "C-1488|C-640",
     "C-1488|C-655",
+    "C-1494|C-634",
+    "C-1494|C-640",
+    "C-1494|C-655",
     "C-462|C-460",
     "C-640|C-634",
     "C-655|C-634",
@@ -4715,14 +4735,14 @@
     "C-817"
   ],
   "learned_queries": [
-    "memory+memorywam apply",
-    "memory+memorywam memory",
     "forum archaeological",
     "drift+perceptiondlm drift+memorywam",
     "forum forum",
     "forum magic",
     "forum claims",
-    "forum through-line"
+    "forum through-line",
+    "forum recurs",
+    "forum factor"
   ],
   "hyp_seen_cycle": {
     "C-462": 184,
@@ -4763,7 +4783,7 @@
     "C-1062": 225,
     "C-1067": 226,
     "C-1085": 231,
-    "C-1104": 172,
+    "C-1104": 233,
     "C-1128": 173,
     "C-1147": 174,
     "C-1149": 175,
@@ -4826,7 +4846,8 @@
     "C-1462": 230,
     "C-1464": 230,
     "C-1482": 231,
-    "C-1488": 232
+    "C-1488": 232,
+    "C-1494": 233
   },
   "topics_domain_ok": [
     "access",
@@ -4861,6 +4882,7 @@
     "batch",
     "become",
     "behavior",
+    "benchmark",
     "benchmarking",
     "bias",
     "broader",
@@ -5336,40 +5358,33 @@
     "verdict": "developing",
     "development": 24,
     "degeneration": 0,
-    "active": 1168,
-    "hypotheses": 102,
+    "active": 1173,
+    "hypotheses": 103,
     "unsupported_hypotheses": 2,
     "promoted_ideas": 35,
     "confirmed_claims": 0,
-    "evidence_links": 876,
-    "supporting_links": 876,
-    "emergent_total": 858,
+    "evidence_links": 884,
+    "supporting_links": 884,
+    "emergent_total": 860,
     "usable_semantic_rate": 1.0,
     "methods_total": 76,
     "method_trials_total": 0,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 19630,
-    "cycle": 232
+    "objects": 19737,
+    "cycle": 233
   },
   "vitality_prev": {
-    "supports": 876,
+    "supports": 884,
     "promoted": 35,
     "confirmed": 0,
-    "objects": 19630,
-    "active": 1168,
-    "links": 876,
-    "emergent": 858
+    "objects": 19737,
+    "active": 1173,
+    "links": 884,
+    "emergent": 860
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 33,
-      "verdict": "steady",
-      "development": 6,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 34,
       "verdict": "steady",
@@ -6758,6 +6773,13 @@
     },
     {
       "cycle": 232,
+      "verdict": "developing",
+      "development": 24,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 233,
       "verdict": "developing",
       "development": 24,
       "degeneration": 0,
@@ -13329,7 +13351,8 @@
     "X-62",
     "X-63",
     "X-64",
-    "X-65"
+    "X-65",
+    "X-66"
   ],
   "kevin_orch_last_cycle": 14,
   "kevin_orch_seen": [
@@ -13463,9 +13486,11 @@
     "openalex:W7155587480",
     "openclaw:ComposioHQ/secure-openclaw",
     "openclaw:CortexReach/memory-lancedb-pro",
+    "openclaw:JimLiu/baoyu-skills",
     "openclaw:NevaMind-AI/memU",
     "openclaw:TencentCloud/TencentDB-Agent-Memory",
     "openclaw:VoltAgent/awesome-openclaw-skills",
+    "openclaw:alirezarezvani/claude-skills",
     "openclaw:hesamsheikh/awesome-openclaw-usecases",
     "ssrn:W1519982170",
     "ssrn:W1550363875",
@@ -13488,6 +13513,7 @@
     "zenodo:20042069",
     "zenodo:20097684",
     "zenodo:20128817",
+    "zenodo:20537457",
     "zenodo:20586359",
     "zenodo:20691046",
     "zenodo:20721436",
@@ -13553,33 +13579,6 @@
     "method-trialing": 73
   },
   "doktores_review": [
-    {
-      "cycle": 189,
-      "source": "openalex",
-      "title": "The FAIR Guiding Principles for scientific data management and stewardship",
-      "url": "https://doi.org/10.1038/sdata.2016.18",
-      "served_model": "deepseek-v4-pro",
-      "applicable": false,
-      "component_key": ""
-    },
-    {
-      "cycle": 189,
-      "source": "openalex",
-      "title": "Research-paper recommender systems: a literature survey",
-      "url": "https://doi.org/10.1007/s00799-015-0156-0",
-      "served_model": "deepseek-v4-pro",
-      "applicable": false,
-      "component_key": ""
-    },
-    {
-      "cycle": 189,
-      "source": "openalex",
-      "title": "Standing on the Shoulders of Giants: Challenges and Recommendations of Literature Search in Information Systems Research",
-      "url": "https://doi.org/10.17705/1cais.03709",
-      "served_model": "deepseek-v4-pro",
-      "applicable": false,
-      "component_key": ""
-    },
     {
       "cycle": 191,
       "source": "openalex",
@@ -14092,9 +14091,36 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 233,
+      "source": "zenodo",
+      "title": "Reverting homogenous forest landscapes in a Mediterranean site. Transitioning to mixed oak forests",
+      "url": "https://zenodo.org/records/20537457",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 233,
+      "source": "openclaw",
+      "title": "baoyu-skills",
+      "url": "https://github.com/JimLiu/baoyu-skills",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 233,
+      "source": "openclaw",
+      "title": "claude-skills",
+      "url": "https://github.com/alirezarezvani/claude-skills",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
     }
   ],
-  "doktores_last_cycle": 231,
+  "doktores_last_cycle": 233,
   "reconsolidate_lens_idx": 18,
   "doktores_module_idx": 0,
   "doktores_hyp_researched": [
@@ -14481,382 +14507,382 @@
     "M-1": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-2": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-3": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-4": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-5": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-6": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-7": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-8": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-9": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-10": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-11": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-12": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-13": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-14": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-15": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-16": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-17": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-18": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-19": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-20": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-21": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-22": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-23": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-24": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-25": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-26": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-27": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-28": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-29": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-30": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-31": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-32": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-33": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-34": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-35": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-36": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-37": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-38": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-39": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-40": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-41": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-42": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-43": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-44": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-45": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-46": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-47": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-48": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-49": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-50": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-51": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-52": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-53": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-54": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-55": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-56": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-57": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-58": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-59": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-60": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-61": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-62": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-63": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-64": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-65": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-66": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-67": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-68": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-69": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-70": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-71": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-72": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-73": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-74": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-75": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     },
     "M-76": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 232
+      "last_seen_cycle": 233
     }
   },
   "facet_log": [
