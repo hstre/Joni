@@ -115,6 +115,25 @@ def test_real_method_trial_is_recorded_as_a_sealed_event_and_projected():
     assert bridge.trial_event_count(cs) == 1
 
 
+def test_real_trial_re_record_is_idempotent_not_a_divergent_rejection():
+    """In production each cycle re-runs the same deterministic trial in a FRESH process, so the
+    sealed event's wall-clock timestamp differs between runs. The recorder must then treat the
+    re-run as a clean idempotent no-op (content-addressed trial_id) - never a 'divergent record'
+    rejection (which is what froze recording at one event and surfaced recorded:false every cycle)."""
+    from joni.autonomy import kevin_trial_bridge as bridge
+    ext: dict = {}
+    cs = CoreState(l9.Layer9())
+    out = trials.run_real_method_trial(cs, ext, _Proto(), 1)
+    if not out.get("ran"):
+        return                                      # kevin not installed -> clean no-op
+    # re-record the SAME measured result through the bridge (as a later cycle would): the short
+    # circuit fires on the content-addressed trial_id before any new timestamp is even built.
+    rec2 = bridge.record_real_trial(cs, ext["real_trial"], run_id="joni-c2")
+    assert rec2["recorded"] is False and rec2.get("idempotent") is True
+    assert "divergent" not in rec2["reason"].lower()
+    assert bridge.trial_event_count(cs) == 1
+
+
 def test_the_writer_is_switchable(monkeypatch):
     """The trial-event writer crosses the irreversible journal boundary, so it is switchable
     (JONI_TRIAL_WRITER=0) without a code change - then nothing is recorded."""
