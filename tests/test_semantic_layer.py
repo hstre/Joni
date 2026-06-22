@@ -132,3 +132,25 @@ def test_semantic_layer_version_change_is_recorded_not_rewritten():
     assert sc1.id != sc2.id
     assert sc1.semantic_layer_version == "1" and sc2.semantic_layer_version == "2"
     assert len(core.all(l9.ObjectType.SEMANTIC_CLUSTER)) == 2
+
+
+def test_cluster_annotation_stores_a_compact_summary_not_the_pairwise_blob():
+    # analyse_cluster must NOT persist the O(n²) per-pair log (it ballooned the journal to tens of
+    # MB and stalled the fresh-job replay); it keeps a compact, auditable summary instead - the
+    # aggregate decision already carries the verdict and no logic reads the per-pair detail back.
+    from desi_layer9 import Operator, ProposalType, make_proposal
+    from desi_layer9.provenance import Provenance
+    core = l9.Layer9()
+    claims = []
+    for i in range(5):
+        core.submit(make_proposal(
+            ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
+            payload={"text": f"local routing fact {i}", "topic": "t"}, proposer="source",
+            provenance=Provenance.from_source(f"s{i}")), actor="joni")
+        claims.append(core.all(l9.ObjectType.CLAIM)[-1])
+    sc = adapter.analyse_cluster(core, claims, layer=StubSemanticLayer())
+    m = sc.measurement
+    assert "pairs" not in m                                   # the quadratic blob is gone
+    assert m["pair_count"] == 10 and m["members"] == 5        # 5 choose 2 pairs
+    assert isinstance(m["decision_counts"], dict) and m["decision_counts"]
+    assert 0.0 <= m["max_lexical_trigger"] <= 1.0

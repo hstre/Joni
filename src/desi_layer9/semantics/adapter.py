@@ -16,6 +16,8 @@ operator (no model taint). If a model-backed layer is ever injected, pass model 
 
 from __future__ import annotations
 
+from collections import Counter
+
 from ..core import make_proposal
 from ..enums import ObjectType, Operator, ProposalType, SemanticDecision, SemanticState
 from ..provenance import Provenance
@@ -118,9 +120,20 @@ def analyse_cluster(core, claims, *, layer: SemanticLayerPort | None = None,
     decision, state, rationale = _aggregate(pair_decisions)
     layer_name = getattr(layer, "name", "absent")
     layer_version = str(getattr(layer, "version", "0"))
+    # A COMPACT measurement summary, NOT the full O(n²) pairwise log. The per-pair detail (one dict
+    # per member pair) ballooned to ~45 KB on large clusters and was stored on every annotation - in
+    # both the journal and the object - yet no logic ever reads it back: the aggregate decision /
+    # state / rationale already carry the verdict. Keep an auditable summary, drop the quadratic
+    # blob (this is what let the journal grow to tens of MB and stall the fresh-job replay).
+    summary = {
+        "pair_count": len(pair_log),
+        "members": len(members),
+        "decision_counts": dict(Counter(d.value for d, _ in pair_decisions)),
+        "max_lexical_trigger": max((p["lexical_trigger"] for p in pair_log), default=0.0),
+    }
     return _submit(core, members=tuple(c.id for c in members),
                    surface_terms=(surface_term,) if surface_term else (),
-                   lexical_trigger=max((p["lexical_trigger"] for p in pair_log), default=0.0),
-                   measurement={"pairs": pair_log}, decision=decision, state=state,
+                   lexical_trigger=summary["max_lexical_trigger"],
+                   measurement=summary, decision=decision, state=state,
                    rationale=rationale, layer_name=layer_name, layer_version=layer_version,
                    proposer=proposer, run_id=run_id, actor=actor)
