@@ -199,6 +199,7 @@
       "reads",
       "real",
       "reasoning",
+      "redesign",
       "reduced",
       "reduces",
       "reducing",
@@ -259,48 +260,43 @@
       "working",
       "world"
     ],
-    "claims_total": 1401,
-    "claims_active": 1100,
+    "claims_total": 1403,
+    "claims_active": 1101,
     "memory": 0,
-    "ledger": 12796,
+    "ledger": 12852,
     "open_conflicts": 62,
     "methods": 73,
     "method_trials": 0,
     "methods_ready": 0,
     "preferences": 2,
-    "evidence_links": 816,
+    "evidence_links": 824,
     "self_model": 18,
-    "hypotheses": 93,
+    "hypotheses": 94,
     "research_topics": 3,
     "epistemically_usable": {
-      "rate": 0.68,
-      "n": 1100,
+      "rate": 0.679,
+      "n": 1101,
       "flags": {
-        "correctly_typed": 1100,
+        "correctly_typed": 1101,
         "source_anchored": 867,
-        "non_duplicate": 1014,
-        "topic_valid": 1100,
-        "scope_valid": 1100,
+        "non_duplicate": 1015,
+        "topic_valid": 1101,
+        "scope_valid": 1101,
         "provenance_complete": 834
       }
     },
     "routing_engine": "DESi",
     "days_running": 3,
-    "last_route": {
-      "model": "meta-llama/llama-3.1-8b-instruct",
-      "cost_usd": 3e-05,
-      "reason": "Pareto-cheapest at score >= 0.5",
-      "task_class": "scientific_claim"
-    }
+    "last_route": null
   },
   "budget": {
-    "spent_eur": 2.46,
+    "spent_eur": 2.476,
     "cap_eur": 20.0,
-    "runs": 224
+    "runs": 225
   },
   "window": {
     "start": "2026-06-19T12:11:18+00:00",
-    "runs": 224,
+    "runs": 225,
     "retired": false
   },
   "extensions": {
@@ -2496,11 +2492,14 @@
       "C-1332|C-1339",
       "C-1332|C-1342",
       "C-1332|C-1343",
+      "C-1332|C-1344",
       "C-1337|C-923",
       "C-1338|C-1344",
       "C-1339|C-1343",
       "C-1339|C-1345",
       "C-1339|C-907",
+      "C-1340|C-360",
+      "C-1340|C-361",
       "C-139|C-149",
       "C-139|C-377",
       "C-139|C-378",
@@ -2955,11 +2954,14 @@
       "C-1332|C-1339@bge-small-en-v1.5",
       "C-1332|C-1342@bge-small-en-v1.5",
       "C-1332|C-1343@bge-small-en-v1.5",
+      "C-1332|C-1344@bge-small-en-v1.5",
       "C-1337|C-923@bge-small-en-v1.5",
       "C-1338|C-1344@bge-small-en-v1.5",
       "C-1339|C-1343@bge-small-en-v1.5",
       "C-1339|C-1345@bge-small-en-v1.5",
       "C-1339|C-907@bge-small-en-v1.5",
+      "C-1340|C-360@bge-small-en-v1.5",
+      "C-1340|C-361@bge-small-en-v1.5",
       "C-139|C-149@bge-small-en-v1.5",
       "C-139|C-377@bge-small-en-v1.5",
       "C-139|C-378@bge-small-en-v1.5",
@@ -3417,6 +3419,7 @@
       "reads",
       "real",
       "reasoning",
+      "redesign",
       "reduced",
       "reduces",
       "reducing",
@@ -3981,6 +3984,7 @@
       "action",
       "actions",
       "agents",
+      "aims",
       "attention",
       "autoregressive",
       "available",
@@ -4106,14 +4110,13 @@
     "emerge_insufficient": {
       "forum|action": 1,
       "forum|agentic": 2,
-      "forum|among": 2,
+      "forum|among": 3,
       "forum|effects": 3,
       "forum|logically": 1,
       "forum|prospective": 2,
       "forum|training": 3,
       "forum|typed": 1,
-      "forum|world": 3,
-      "meth:aims": 3
+      "forum|world": 3
     },
     "hyp_tested": [
       "C-1011|C-634",
@@ -4155,6 +4158,9 @@
       "C-1062|C-634",
       "C-1062|C-640",
       "C-1062|C-655",
+      "C-1062|C-663",
+      "C-1062|C-665",
+      "C-1062|C-667",
       "C-1067|C-634",
       "C-1067|C-640",
       "C-1067|C-655",
@@ -4320,6 +4326,9 @@
       "C-1401|C-634",
       "C-1401|C-640",
       "C-1401|C-655",
+      "C-1403|C-634",
+      "C-1403|C-640",
+      "C-1403|C-655",
       "C-462|C-460",
       "C-640|C-634",
       "C-655|C-634",
@@ -4706,14 +4715,14 @@
       "C-817"
     ],
     "learned_queries": [
-      "forum forum",
       "forum propaganda",
       "forum archaeological",
       "drift+perceptiondlm totally",
       "drift+perceptiondlm prompt",
       "forum recurs",
       "drift+perceptiondlm",
-      "forum worth"
+      "forum worth",
+      "forum single"
     ],
     "hyp_seen_cycle": {
       "C-462": 184,
@@ -4752,7 +4761,7 @@
       "C-1045": 220,
       "C-1047": 221,
       "C-1049": 224,
-      "C-1062": 169,
+      "C-1062": 225,
       "C-1067": 170,
       "C-1085": 171,
       "C-1104": 172,
@@ -4808,7 +4817,8 @@
       "C-1360": 222,
       "C-1377": 223,
       "C-1379": 223,
-      "C-1401": 224
+      "C-1401": 224,
+      "C-1403": 225
     },
     "topics_domain_ok": [
       "access",
@@ -5006,6 +5016,7 @@
       "reads",
       "real",
       "reasoning",
+      "redesign",
       "reduced",
       "reduces",
       "reducing",
@@ -5298,40 +5309,33 @@
       "verdict": "developing",
       "development": 24,
       "degeneration": 0,
-      "active": 1100,
-      "hypotheses": 93,
+      "active": 1101,
+      "hypotheses": 94,
       "unsupported_hypotheses": 1,
       "promoted_ideas": 33,
       "confirmed_claims": 0,
-      "evidence_links": 816,
-      "supporting_links": 816,
-      "emergent_total": 847,
+      "evidence_links": 824,
+      "supporting_links": 824,
+      "emergent_total": 849,
       "usable_semantic_rate": 1.0,
       "methods_total": 73,
       "method_trials_total": 0,
       "methods_ready_total": 0,
       "stagnation_cycles": 0,
-      "objects": 18391,
-      "cycle": 224
+      "objects": 18481,
+      "cycle": 225
     },
     "vitality_prev": {
-      "supports": 816,
+      "supports": 824,
       "promoted": 33,
       "confirmed": 0,
-      "objects": 18391,
-      "active": 1100,
-      "links": 816,
-      "emergent": 847
+      "objects": 18481,
+      "active": 1101,
+      "links": 824,
+      "emergent": 849
     },
     "stagnation": 0,
     "vitality_history": [
-      {
-        "cycle": 25,
-        "verdict": "degenerating",
-        "development": 0,
-        "degeneration": 3,
-        "usable_semantic_rate": 1.0
-      },
       {
         "cycle": 26,
         "verdict": "steady",
@@ -6720,6 +6724,13 @@
       },
       {
         "cycle": 224,
+        "verdict": "developing",
+        "development": 24,
+        "degeneration": 0,
+        "usable_semantic_rate": 1.0
+      },
+      {
+        "cycle": 225,
         "verdict": "developing",
         "development": 24,
         "degeneration": 0,
@@ -13055,6 +13066,7 @@
       "huggingface:2606.16429",
       "huggingface:2606.18021",
       "huggingface:2606.19334",
+      "huggingface:2606.19534",
       "huggingface:2606.19602",
       "huggingface:2606.20381",
       "huggingface:2606.20529",
@@ -13083,6 +13095,7 @@
       "openclaw:TencentCloud/TencentDB-Agent-Memory",
       "ssrn:W1519982170",
       "ssrn:W1550363875",
+      "ssrn:W1777702858",
       "ssrn:W1853398666",
       "ssrn:W2038731314",
       "ssrn:W2153100233",
@@ -13091,6 +13104,7 @@
       "ssrn:W3186958186",
       "ssrn:W3197994823",
       "ssrn:W4206648419",
+      "ssrn:W4318566811",
       "ssrn:W4362499702",
       "ssrn:W4386273179",
       "ssrn:W4388739893",
@@ -13163,33 +13177,6 @@
       "method-trialing": 73
     },
     "doktores_review": [
-      {
-        "cycle": 165,
-        "source": "zenodo",
-        "title": "Zemi",
-        "url": "https://zenodo.org/records/20782134",
-        "served_model": "deepseek-v4-pro",
-        "applicable": false,
-        "component_key": ""
-      },
-      {
-        "cycle": 169,
-        "source": "zenodo",
-        "title": "Reproduction Package for the CAV 2026 submission: \"SvLibChecker: A Light-Weight Tool for Software Model Checking\"",
-        "url": "https://zenodo.org/records/20782900",
-        "served_model": "deepseek-v4-pro",
-        "applicable": false,
-        "component_key": ""
-      },
-      {
-        "cycle": 171,
-        "source": "zenodo",
-        "title": "Magic Realism and the Representation of Trauma and Identity in Selected Novels of Monique Roffey",
-        "url": "https://zenodo.org/records/20783708",
-        "served_model": "deepseek-v4-pro",
-        "applicable": false,
-        "component_key": ""
-      },
       {
         "cycle": 173,
         "source": "zenodo",
@@ -13702,15 +13689,42 @@
         "served_model": "deepseek-v4-pro",
         "applicable": false,
         "component_key": ""
+      },
+      {
+        "cycle": 225,
+        "source": "ssrn",
+        "title": "Metadata Realities for Cyberinfrastructure: Data Authors as Metadata Creators",
+        "url": "https://doi.org/10.2139/ssrn.2042653",
+        "served_model": "deepseek-v4-pro",
+        "applicable": false,
+        "component_key": ""
+      },
+      {
+        "cycle": 225,
+        "source": "ssrn",
+        "title": "Is ChatGPT Leading Generative AI? What is Beyond Expectations?",
+        "url": "https://doi.org/10.2139/ssrn.4341500",
+        "served_model": "deepseek-v4-pro",
+        "applicable": false,
+        "component_key": ""
+      },
+      {
+        "cycle": 225,
+        "source": "huggingface",
+        "title": "PerceptionDLM: Parallel Region Perception with Multimodal Diffusion Language Models",
+        "url": "https://huggingface.co/papers/2606.19534",
+        "served_model": "deepseek-v4-pro",
+        "applicable": false,
+        "component_key": ""
       }
     ],
-    "doktores_last_cycle": 223,
+    "doktores_last_cycle": 225,
     "reconsolidate_lens_idx": 17,
     "doktores_module_idx": 0,
     "doktores_hyp_researched": [
       "C-370"
     ],
-    "doktores_hyp_last_cycle": 222,
+    "doktores_hyp_last_cycle": 225,
     "ext_review": {
       "doktores": {
         "since": 183,
@@ -13788,16 +13802,10 @@
       "C-817",
       "C-823",
       "C-826",
-      "C-844"
+      "C-844",
+      "C-852"
     ],
     "doktores_hyp_log": [
-      {
-        "cycle": 94,
-        "hypothesis": "C-542",
-        "topic": "forum",
-        "coherent": true,
-        "reason": "The hypothesis is internally consistent, clearly states a testable pattern, and proposes a single factor that can be examined empirically in the forum claims."
-      },
       {
         "cycle": 99,
         "hypothesis": "C-552",
@@ -14070,6 +14078,13 @@
         "topic": "forum",
         "coherent": true,
         "reason": "The hypothesis proposes a testable latent factor without internal contradiction."
+      },
+      {
+        "cycle": 225,
+        "hypothesis": "C-852",
+        "topic": "forum",
+        "coherent": false,
+        "reason": "The statement is a meta-commentary about worthiness of testing, not a falsifiable conjecture about the recurrence itself."
       }
     ],
     "read_fulltext_priority": true,
@@ -14088,367 +14103,367 @@
       "M-1": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-2": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-3": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-4": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-5": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-6": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-7": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-8": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-9": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-10": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-11": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-12": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-13": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-14": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-15": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-16": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-17": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-18": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-19": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-20": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-21": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-22": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-23": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-24": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-25": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-26": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-27": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-28": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-29": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-30": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-31": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-32": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-33": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-34": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-35": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-36": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-37": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-38": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-39": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-40": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-41": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-42": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-43": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-44": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-45": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-46": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-47": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-48": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-49": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-50": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-51": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-52": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-53": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-54": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-55": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-56": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-57": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-58": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-59": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-60": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-61": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-62": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-63": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-64": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-65": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-66": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-67": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-68": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-69": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-70": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-71": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-72": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       },
       "M-73": {
         "success": 0,
         "last_pass_cycle": -1000000000,
-        "last_seen_cycle": 224
+        "last_seen_cycle": 225
       }
     },
     "facet_log": [
@@ -76494,36 +76509,351 @@
       "refs": {},
       "model": "deterministic",
       "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:04+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "arxiv: 4 item(s)",
+      "refs": {
+        "source": "arxiv"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:05+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "hackernews: 4 item(s)",
+      "refs": {
+        "source": "hackernews"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:05+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "huggingface: 4 item(s)",
+      "refs": {
+        "source": "huggingface"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:07+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "github: 4 item(s)",
+      "refs": {
+        "source": "github"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:11+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "zenodo: 4 item(s)",
+      "refs": {
+        "source": "zenodo"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:11+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "openalex: 4 item(s)",
+      "refs": {
+        "source": "openalex"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:13+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "openclaw: 4 item(s)",
+      "refs": {
+        "source": "openclaw"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:14+00:00",
+      "cycle": 225,
+      "kind": "fetched",
+      "summary": "wikipedia: 3 item(s)",
+      "refs": {
+        "source": "wikipedia"
+      },
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:35+00:00",
+      "cycle": 225,
+      "kind": "developed",
+      "summary": "linked C-1332 <-> C-1344 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:37+00:00",
+      "cycle": 225,
+      "kind": "developed",
+      "summary": "C-1340/C-360: duplicate - no link (DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:52:42+00:00",
+      "cycle": 225,
+      "kind": "developed",
+      "summary": "linked C-1340 <-> C-361 (complementary · DESi desi-semantic-layer@0.1.0)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:06+00:00",
+      "cycle": 225,
+      "kind": "research",
+      "summary": "Doktores reviewed 3 source(s) for self-improvement - no non-core fit this cycle",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:17+00:00",
+      "cycle": 225,
+      "kind": "research",
+      "summary": "Doktores assessed idea C-852 on 'forum': INCOHERENT - The statement is a meta-commentary about worthiness of testing, not a falsifiable conjecture about the recurrence itself.",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:22+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "new topic 'redesign' precipitated from a recurrence across accessibility, appearance, forum, navigability, preservation",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:26+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "'admissible' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:29+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "'admissibility' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:32+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "'academic' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:35+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "'assessment' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:37+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "'agents' cluster not synthesised: Layer 9 says contradictory (synthesis-rejected)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:40+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "'among' cluster not synthesised: Layer 9 says insufficient-semantic-evidence (human-review-required)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:45+00:00",
+      "cycle": 225,
+      "kind": "emerged",
+      "summary": "synthesis on forum: 'archaeological' (Layer 9 synthesis-eligible, SC-2402) from 12 claims (C-1250, C-1264, C-1265, C-1271, C-384)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:51+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1403 earned support from C-634 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:53:56+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1403 earned support from C-640 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:01+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1403 earned support from C-655 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:01+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1403 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:07+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1062 earned support from C-663 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:11+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1062 earned support from C-665 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:16+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1062 earned support from C-667 (complementary)",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:16+00:00",
+      "cycle": 225,
+      "kind": "strengthen",
+      "summary": "idea C-1062 survived 3 challenge(s) - no contradiction found",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:30+00:00",
+      "cycle": 225,
+      "kind": "vitality",
+      "summary": "developing · dev 24 · degen 0 · 1 unsupported idea(s) · semantic-cluster-decidable 100%",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:34+00:00",
+      "cycle": 225,
+      "kind": "note",
+      "summary": "self-diagnostic: 1 thing(s) to improve · top: 1 Topics, auf denen ich denke, haben keine stützende Evidenz: drift+perceptiondl -> searching 'drift+perceptiondlm', steer Doktores at reader-sources",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:52+00:00",
+      "cycle": 225,
+      "kind": "tooled",
+      "summary": "DESi date_math: 3 day(s) running",
+      "refs": {
+        "task_class": "date_math"
+      },
+      "model": "desi:date_math",
+      "cost_eur": 0.0
+    },
+    {
+      "ts": "2026-06-22T02:54:52+00:00",
+      "cycle": 225,
+      "kind": "note",
+      "summary": "cycle done · 0 new · 0 method(s) · 0 trialed · 2 new link(s) · 0 hypothesis(es) · 2 emergent · developing · spend €2.4760 · routing via DESi",
+      "refs": {},
+      "model": "deterministic",
+      "cost_eur": 0.0
     }
   ],
   "telemetry": {
-    "llm_calls": 395,
+    "llm_calls": 399,
     "granite_calls": 155,
-    "deepseek_escalations": 238,
+    "deepseek_escalations": 242,
     "kevin_calls": 2,
     "cached_calls": 0,
-    "live_calls": 395,
-    "last_call": "2026-06-22T02:39:34+00:00",
-    "est_cost_eur": 0.96,
+    "live_calls": 399,
+    "last_call": "2026-06-22T02:53:17+00:00",
+    "est_cost_eur": 0.976,
     "by_model": {
       "ibm-granite/granite-4.1-8b-20260429": 155,
-      "deepseek-v4-pro": 240
+      "deepseek-v4-pro": 244
     },
     "empty_calls": 7,
     "empty_truncated": 7,
     "empty_with_reasoning": 0,
     "empty_silent": 0,
     "by_finish_reason": {
-      "stop": 383,
+      "stop": 387,
       "length": 12
     },
     "panel_rounds": 10,
     "reserved_budget_eur": 20.0,
-    "spent_budget_eur": 2.46,
+    "spent_budget_eur": 2.476,
     "accepted_claims": 585,
     "accepted_calls": 135,
-    "accepted_call_yield": 0.342,
-    "est_cost_per_accepted_eur": 0.0016
+    "accepted_call_yield": 0.338,
+    "est_cost_per_accepted_eur": 0.0017
   },
   "commissions_done": [
     {
@@ -76551,7 +76881,7 @@
         "topic": "forum",
         "supports": 6,
         "challenged": false,
-        "coherent": null,
+        "coherent": false,
         "status": "candidate"
       },
       {
@@ -76779,5 +77109,5 @@
       "world"
     ]
   },
-  "generated": "2026-06-22T02:42:21+00:00"
+  "generated": "2026-06-22T02:54:59+00:00"
 }
