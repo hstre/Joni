@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 
-from . import documents, pdf
+from . import documents, ocr, pdf
 
 
 def starved_topics(cs, *, min_hyps: int = 1) -> list[str]:
@@ -59,6 +59,7 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
     inbox_seen = set(extensions.get("pdf_inbox_seen", []))
     md_seen = set(extensions.get("md_inbox_seen", []))
     tex_seen = set(extensions.get("tex_inbox_seen", []))
+    ocr_seen = set(extensions.get("ocr_inbox_seen", []))
     papers = claims = 0
 
     def ingest(doc, topic: str, label: str) -> None:
@@ -110,9 +111,15 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
     for doc in documents.read_latex_inbox(paths.pdf_inbox, tex_seen, limit=max_urls):
         ingest(doc, (cs.topics() or ["unsorted"])[0], doc.title[:60])
 
+    # 6. local image/scanned inbox via OCR (Auftrag #161). Optional, fail-closed: with no OCR
+    # backend installed this reads nothing and the cycle is unchanged.
+    for doc in ocr.read_inbox(paths.pdf_inbox, ocr_seen, limit=max_urls):
+        ingest(doc, (cs.topics() or ["unsorted"])[0], doc.title[:60])
+
     extensions["pdf_read"] = sorted(read_keys)[-2000:]
     extensions["pdf_urls_seen"] = sorted(url_seen)[-2000:]
     extensions["pdf_inbox_seen"] = sorted(inbox_seen)[-2000:]
     extensions["md_inbox_seen"] = sorted(md_seen)[-2000:]
     extensions["tex_inbox_seen"] = sorted(tex_seen)[-2000:]
-    return {"papers": papers, "claims": claims, "available": pdf_ok}
+    extensions["ocr_inbox_seen"] = sorted(ocr_seen)[-2000:]
+    return {"papers": papers, "claims": claims, "available": pdf_ok, "ocr": ocr.available()}
