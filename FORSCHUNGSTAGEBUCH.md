@@ -1072,3 +1072,85 @@ Protokoll-Note aus dem Lauf); Stufe 3 erfordert die Modell-bearbeitet-Regel-ents
 Task-Sets; Stufe 4 erfordert Replikation und gezeigte Generalisierung. Erst dann — und mit Beleg —
 ist von „belegt" oder gar „geschlossen" zu sprechen.
 
+### Eintrag 2026-06-23 ~06:30 UTC — Der Loop stand ~10 h: O(n²)-Ballast unter grüner Telemetrie (und ein eigener Rückbau-Fehler)
+
+**[Beobachtung]** Der autonome Loop hatte seit ~11:25 UTC keinen Zyklus mehr committet — rund zehn
+Stunden Stillstand. Oberflächlich sah alles *lebendig* aus: der stündliche Relauncher feuerte, Jobs
+standen auf „in_progress", kein Fehler, kein Crash. Genau die Signatur, die dieses Tagebuch
+durchzieht: **operative Kontinuität ohne funktionale Wirkung.** Der Mechanismus: der erste Zyklus
+eines frischen Jobs hat keinen Fast-Load-Sidecar und muss das Journal voll **replayen**; das Journal
+war still auf **25,6 MB / 7.608 Einträge** gewachsen, und dieser Kaltstart-Replay thrashte den
+Speicher und kam nie durch. Kein committeter Zyklus — aber eben auch kein sichtbarer Fehler.
+
+**[Schluss → Ursache]** 90 % des Journals waren toter Ballast. Der semantische Adapter
+(`analyse_cluster`) speicherte in **jeder** Cluster-Annotation das vollständige O(n²)-Paarvergleichs-
+Protokoll (`measurement.pairs`, ~45 KB bei großen Clustern) — im Journal **und** auf dem Objekt —,
+das **nie zurückgelesen** wird: ein write-only-Feld, das quadratisch mit der Clustergröße wächst. Die
+Aggregat-Entscheidung trug das Urteil längst; das Paar-Detail war reine Last. Die strukturell
+wichtigere Diagnose: der manipulationssichere Ledger berechnet **pro Emit einen snapshot_hash über
+*alle* Objekte**, der Replay ist also *inhärent* O(n²) — der Ballast blähte nicht nur die Datei, er
+verstärkte einen ohnehin quadratischen Kaltstart, bis er die Zeitbudget-Grenze des Jobs überschritt.
+Das ist die eigentliche Lehre: nicht „eine Datei wurde zu groß", sondern **ein quadratischer
+Wiederaufbau, der lange unter der Telemetrie-Schwelle blieb und dann hart umkippte.**
+
+**[Eingriff]** Drei Schichten, von Symptom zu Struktur:
+1. **Producer-Fix** (`semantics/adapter.py`): `analyse_cluster` speichert nur noch eine kompakte
+   Zusammenfassung (`pair_count`, `decision_counts`, `max_lexical_trigger`) statt des Blobs — stoppt
+   das Wachstum an der Quelle. Keine Entscheidung ändert sich (das Feld wird nirgends gelesen).
+2. **Kompaktierung** (`persistence.compact`): strippt das tote Feld aus dem bestehenden Journal,
+   re-derived den Zustand und re-sealt ihn (frischer snapshot_hash + Chain). 25,6 → 9,3 MB, der
+   Claim-Graph bleibt identisch.
+3. **Cross-Job-Checkpoint** (Workflow): der Fast-Load-Snapshot wird über den GitHub-Actions-Cache von
+   Job zu Job getragen — ein frischer Job lädt in **~4 s** statt **~108 min** zu replayen. Bewusst
+   *kein* Persistenz-Kern-Eingriff: Fast-Load bleibt ein **verifizierter** Cache (Mismatch →
+   normaler Replay), und der 44,9-MB-Snapshot bleibt **aus Git** — sonst kehrte exakt das
+   100-MB-Push-Problem aus #120 zurück.
+
+**[Schluss → eigener Fehler, ungeschönt]** Beim Kompaktieren habe ich einen Fehler gemacht, der genau
+hierher gehört. Der ~108-min-Lauf rechnete auf dem **11:25-Stand** — während der Loop in der
+Zwischenzeit (langsam, aber doch) **vier weitere Zyklen** committete (bis 21:20). Mein schlankes
+`layer9.json` (Stand 11:25) habe ich dann über einen bereits fortgeschrittenen `main` gemergt und den
+Rebase-Konflikt *zu meinen Gunsten* aufgelöst → `main` war **inkonsistent**: der Claim-Graph auf
+11:25, die Metadaten (`runs`/`extensions`/`budget`) auf 21:20. Korrektur: den gesamten Zustand sauber
+auf die **11:25-Baseline** zurückgerollt (konsistent, schlank) — Preis: vier Zyklen der Stau-Phase
+verworfen, Joni liest die betroffenen Quellen neu. Die Lehre ist nicht neu, sie *wiederholt* sich nur:
+**Ein Langzeit-Replay über einen lebenden, schreibenden Zustand ist selbst eine Race Condition;** ein
+Snapshot ist nur so gültig wie der Augenblick, in dem er genommen wurde. Und — wichtiger fürs
+Tagebuch — die Sorglosigkeit, die dieses Dokument am beobachteten System protokolliert, betrifft
+**genauso den, der daran arbeitet.** Das gehört notiert, nicht geglättet.
+
+**[Reifegrad]** Nach der Konvention vom 2026-06-16, keine Stufe übersprungen:
+
+| Fix | Stufe | Beleg |
+|---|---|---|
+| Producer-Fix + Kompaktierung | **2 · im Runtime-Pfad** | Zyklen committen wieder; Journal bleibt schlank — aktuell **10,5 MB / 8.608 Einträge, 0** `pairs`-Blobs |
+| Cross-Job-Cache-Checkpoint | **1 · gebaut** | Test-äquivalent grün; lokal gemessen ~108 min Replay vs. **4,1 s** Fast-Load. *Stufe 2 ausstehend* — greift erst beim nächsten Job-Handoff (erster neuer Job speichert den Cache, der übernächste profitiert); live noch **nicht** beobachtet. |
+
+**[Eingriff → Auftrag #160]** Parallel hatte Joni über seinen `doktores`-Arm zwei **reale** Paper
+gefunden (verifiziert: *Unlimited OCR* 2606.23050, *SproutRAG* 2606.18381) und daraus zwei Aufträge an
+Claude geschrieben. #160 umgesetzt: ein non-core `sprout.py` baut über die Satz-Embeddings einen
+Hierarchie-Baum (benachbarte Merges = kohärente Spans) und liefert multi-granulare, kohärente
+Passagen aus langen Quellen — die *faithful-fitting* Adaption (Cosinus-Ähnlichkeit statt gelernter
+Attention-Köpfe, genau die Selbstbeschränkung, die schon `facets.py` bei FaBle wählte, weil Jonis
+Runtime kein Modell trainieren kann).
+
+**[Schluss → Ehrlichkeit/Reifegrad]** Bewusst **nicht** als „wirksam" verbucht. Geliefert ist
+**Stufe 1 · gebaut** (677 Tests grün, ruff, verify). Das im Auftrag genannte *+3 pp Recall@5* ist
+**Stufe 3** und bleibt **unbelegt**, weil das gelabelte Long-Document-Benchmark fehlt; geliefert sind
+Mechanismus + ein Recall-*Proxy* (eine geplante kohärente Passage wird als *ein* Span recalled statt
+fragmentiert). Genau die Stufenverwechslung — „umgesetzt" als „die Fähigkeit wirkt" zu lesen —, vor
+der der 2026-06-16-Eintrag warnt, wird hier ausdrücklich vermieden. Die PR (#163) bleibt am
+**menschlichen Merge-Gate** stehen; Joni implementiert seine Aufträge nie selbst.
+
+**[Offen]**
+- *Cross-Job-Checkpoint auf Stufe 2 heben:* beim nächsten Job-Handoff prüfen, ob der frische Job
+  tatsächlich aus dem Cache fast-loadet (Capture/Lognote aus dem Lauf) — erst dann ist die Linderung
+  *belegt*, nicht nur *gebaut*.
+- *Die tiefere, weiterhin offene Frage:* der O(n²)-Kaltstart ist **kaschiert (Cache), nicht
+  beseitigt.** Das append-only-Journal wächst weiter; ein **echter Checkpoint**, der die Replay-Länge
+  beschränkt (Snapshot-Baseline + inkrementelles Journal), bleibt der eigentliche Architektur-Fix.
+  Der Cache ist Stufe-1-Linderung, nicht Stufe-3-Heilung — und benannt zu lassen, was nur kaschiert
+  ist, ist der ganze Sinn dieser Spalte.
+- *Auftrag #161 (Unlimited OCR):* offen gelassen — das Akzeptanzkriterium (<120 s / 50 Seiten) ist auf
+  Jonis CPU-CI nicht *ehrlich* erfüllbar ohne das echte Vision-Modell; Entscheidung mit dem Betreiber.
+
