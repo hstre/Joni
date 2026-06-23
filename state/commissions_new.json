@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "kind": "doktores:reader-sources",
+    "cycle": 270,
+    "addressed_to": "Claude",
+    "title": "Füge Unlimited OCR als neue Quelle hinzu",
+    "component": "the reading layer (sources.py / reader.py) - which feeds Joni can draw on, outside the protected core",
+    "component_key": "reader-sources",
+    "touches_core": false,
+    "request_type": "extension-request",
+    "change_target": "joni-self · own non-core module (reader-sources)",
+    "motivation": "Unlimited OCR kann Dutzende von Seiten in einem einzigen Vorwärtsdurchlauf transkribieren und ermöglicht die effiziente Textextraktion aus Dokumenten, wodurch Joni bildbasierte Informationen als Input nutzen kann.",
+    "desired_capability": "Implementiere in reader.py eine Reader-Klasse, die das Unlimited-OCR-Modell einbindet, Bilddateien entgegennimmt und den extrahierten Text als standardisierten Feed für die nachgelagerte Verarbeitung bereitstellt.",
+    "acceptance": "Ein IntegrationsTest mit einem 50-seitigen gescannten Dokument zeigt eine vollständige, korrekte Transkription innerhalb von 120 Sekunden und ohne linearen Anstieg der Laufzeit pro Seite.",
+    "evidence": {
+      "found_by": "doktores",
+      "source": "huggingface",
+      "ref": "https://huggingface.co/papers/2606.23050",
+      "source_title": "Unlimited OCR Works"
+    },
+    "risk": "low - adds an input source; no state-logic changes",
+    "found_by": "doktores"
+  }
+]

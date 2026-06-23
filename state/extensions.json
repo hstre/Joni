@@ -193,6 +193,28 @@
       },
       "risk": "low - a measurement channel only; the gate, ledger and operators are untouched",
       "found_by": "doktores"
+    },
+    {
+      "kind": "doktores:reader-sources",
+      "cycle": 270,
+      "addressed_to": "Claude",
+      "title": "Füge Unlimited OCR als neue Quelle hinzu",
+      "component": "the reading layer (sources.py / reader.py) - which feeds Joni can draw on, outside the protected core",
+      "component_key": "reader-sources",
+      "touches_core": false,
+      "request_type": "extension-request",
+      "change_target": "joni-self · own non-core module (reader-sources)",
+      "motivation": "Unlimited OCR kann Dutzende von Seiten in einem einzigen Vorwärtsdurchlauf transkribieren und ermöglicht die effiziente Textextraktion aus Dokumenten, wodurch Joni bildbasierte Informationen als Input nutzen kann.",
+      "desired_capability": "Implementiere in reader.py eine Reader-Klasse, die das Unlimited-OCR-Modell einbindet, Bilddateien entgegennimmt und den extrahierten Text als standardisierten Feed für die nachgelagerte Verarbeitung bereitstellt.",
+      "acceptance": "Ein IntegrationsTest mit einem 50-seitigen gescannten Dokument zeigt eine vollständige, korrekte Transkription innerhalb von 120 Sekunden und ohne linearen Anstieg der Laufzeit pro Seite.",
+      "evidence": {
+        "found_by": "doktores",
+        "source": "huggingface",
+        "ref": "https://huggingface.co/papers/2606.23050",
+        "source_title": "Unlimited OCR Works"
+      },
+      "risk": "low - adds an input source; no state-logic changes",
+      "found_by": "doktores"
     }
   ],
   "forum_heard": [
@@ -800,7 +822,8 @@
     "zenodo:20805718",
     "zenodo:20806790",
     "zenodo:20806793",
-    "zenodo:20807363"
+    "zenodo:20807363",
+    "zenodo:20807472"
   ],
   "fetch_errors": [],
   "semantic_calls": [
@@ -2219,6 +2242,22 @@
       "replayed": false,
       "claims": 5,
       "source": "zenodo:20807363"
+    },
+    {
+      "call_id": "joni-c270:fe5cfbf0bc28",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20807472"
+    },
+    {
+      "call_id": "joni-c270:3816271ad076",
+      "served_model": "ibm-granite/granite-4.1-8b-20260429",
+      "state_k": 5,
+      "replayed": false,
+      "claims": 5,
+      "source": "zenodo:20807472"
     }
   ],
   "pdf_read": [
@@ -2592,7 +2631,8 @@
     "zenodo:20789775",
     "zenodo:20795960",
     "zenodo:20802668",
-    "zenodo:20803129"
+    "zenodo:20803129",
+    "zenodo:20807472"
   ],
   "real_trial": {
     "method_id": "contradiction-first-review",
@@ -3059,9 +3099,11 @@
     "C-1629|C-1630",
     "C-1629|C-1633",
     "C-1629|C-1635",
+    "C-1629|C-1638",
     "C-1629|C-32",
     "C-1629|C-343",
     "C-1630|C-1634",
+    "C-1630|C-1641",
     "C-1630|C-32",
     "C-1630|C-43",
     "C-166|C-177",
@@ -3718,9 +3760,11 @@
     "C-1629|C-1630@bge-small-en-v1.5",
     "C-1629|C-1633@bge-small-en-v1.5",
     "C-1629|C-1635@bge-small-en-v1.5",
+    "C-1629|C-1638@bge-small-en-v1.5",
     "C-1629|C-32@bge-small-en-v1.5",
     "C-1629|C-343@bge-small-en-v1.5",
     "C-1630|C-1634@bge-small-en-v1.5",
+    "C-1630|C-1641@bge-small-en-v1.5",
     "C-1630|C-32@bge-small-en-v1.5",
     "C-1630|C-43@bge-small-en-v1.5",
     "C-166|C-177@bge-small-en-v1.5",
@@ -4101,6 +4145,7 @@
     "discusses",
     "disorder",
     "distributed",
+    "distribution",
     "domains",
     "dominant",
     "early",
@@ -4298,7 +4343,6 @@
     "world"
   ],
   "synthesized": [
-    "forum|beide",
     "forum|belfast",
     "forum|benchmark",
     "forum|benchmarks",
@@ -4506,6 +4550,7 @@
     "forum|incomplete",
     "forum|independence",
     "forum|indicating",
+    "forum|industrial",
     "forum|inference",
     "forum|information",
     "forum|injection",
@@ -4926,6 +4971,7 @@
     "target",
     "temporal",
     "temporally",
+    "term",
     "text",
     "theory",
     "time",
@@ -4949,8 +4995,7 @@
     "forum|prospective": 2,
     "forum|typed": 1,
     "meth:introduced": 1,
-    "meth:repository": 3,
-    "meth:term": 3
+    "meth:repository": 3
   },
   "hyp_tested": [
     "C-1011|C-634",
@@ -5130,6 +5175,9 @@
     "C-1200|C-634",
     "C-1200|C-640",
     "C-1200|C-655",
+    "C-1200|C-663",
+    "C-1200|C-665",
+    "C-1200|C-667",
     "C-1202|C-634",
     "C-1202|C-640",
     "C-1202|C-655",
@@ -5353,6 +5401,9 @@
     "C-1865|C-634",
     "C-1865|C-640",
     "C-1865|C-655",
+    "C-1878|C-634",
+    "C-1878|C-640",
+    "C-1878|C-655",
     "C-462|C-460",
     "C-640|C-634",
     "C-655|C-634",
@@ -5781,14 +5832,14 @@
     "C-817"
   ],
   "learned_queries": [
-    "forum factor",
     "forum worth",
     "forum through-line",
     "forum single",
     "forum recurs",
     "forum claims",
     "forum forum",
-    "forum underlying"
+    "forum underlying",
+    "forum testing"
   ],
   "hyp_seen_cycle": {
     "C-462": 256,
@@ -5839,7 +5890,7 @@
     "C-1194": 266,
     "C-1196": 267,
     "C-1198": 269,
-    "C-1200": 192,
+    "C-1200": 270,
     "C-1202": 193,
     "C-1228": 194,
     "C-1230": 195,
@@ -5913,7 +5964,8 @@
     "C-1785": 266,
     "C-1811": 267,
     "C-1848": 268,
-    "C-1865": 269
+    "C-1865": 269,
+    "C-1878": 270
   },
   "topics_domain_ok": [
     "abstract",
@@ -6000,6 +6052,7 @@
     "disorder",
     "distillation",
     "distributed",
+    "distribution",
     "domains",
     "dominant",
     "drift",
@@ -6468,46 +6521,40 @@
     "M-9",
     "M-90",
     "M-91",
-    "M-92"
+    "M-92",
+    "M-93"
   ],
   "vitality": {
     "verdict": "developing",
     "development": 24,
     "degeneration": 0,
-    "active": 1490,
-    "hypotheses": 123,
+    "active": 1502,
+    "hypotheses": 124,
     "unsupported_hypotheses": 0,
     "promoted_ideas": 45,
     "confirmed_claims": 0,
-    "evidence_links": 1135,
-    "supporting_links": 1135,
-    "emergent_total": 904,
+    "evidence_links": 1143,
+    "supporting_links": 1143,
+    "emergent_total": 906,
     "usable_semantic_rate": 1.0,
-    "methods_total": 92,
+    "methods_total": 93,
     "method_trials_total": 0,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 24707,
-    "cycle": 269
+    "objects": 24841,
+    "cycle": 270
   },
   "vitality_prev": {
-    "supports": 1135,
+    "supports": 1143,
     "promoted": 45,
     "confirmed": 0,
-    "objects": 24707,
-    "active": 1490,
-    "links": 1135,
-    "emergent": 904
+    "objects": 24841,
+    "active": 1502,
+    "links": 1143,
+    "emergent": 906
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 66,
-      "verdict": "degenerating",
-      "development": 0,
-      "degeneration": 1,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 67,
       "verdict": "degenerating",
@@ -7896,6 +7943,13 @@
     },
     {
       "cycle": 269,
+      "verdict": "developing",
+      "development": 24,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 270,
       "verdict": "developing",
       "development": 24,
       "degeneration": 0,
@@ -15931,6 +15985,7 @@
     "arxiv:2606.21568v1",
     "arxiv:2606.21570v1",
     "arxiv:2606.21579v1",
+    "arxiv:2606.23676v1",
     "arxiv:2606.23678v1",
     "arxiv:2606.23686v1",
     "arxiv:2606.23687v1",
@@ -15969,6 +16024,8 @@
     "huggingface:2606.19602",
     "huggingface:2606.20381",
     "huggingface:2606.20529",
+    "huggingface:2606.23050",
+    "huggingface:2606.23670",
     "openalex:W1015675232",
     "openalex:W1188413835",
     "openalex:W1854884267",
@@ -16089,37 +16146,10 @@
   "doktores_filed": {
     "conflict-qualifier": 37,
     "semantics-measurement": 256,
-    "reader-sources": 45,
+    "reader-sources": 270,
     "method-trialing": 73
   },
   "doktores_review": [
-    {
-      "cycle": 205,
-      "source": "ssrn",
-      "title": "Using Domain-Specific Word Embeddings to Examine the Demand for Skills",
-      "url": "https://doi.org/10.2139/ssrn.4634499",
-      "served_model": "deepseek-v4-pro",
-      "applicable": true,
-      "component_key": "semantics-measurement"
-    },
-    {
-      "cycle": 205,
-      "source": "ssrn",
-      "title": "Petro Kgraph: A Methodology for Extracting Knowledge Graph from Technical Documents - an Application in the Oil and Gas Industry",
-      "url": "https://doi.org/10.2139/ssrn.4776804",
-      "served_model": "deepseek-v4-pro",
-      "applicable": true,
-      "component_key": "reader-sources"
-    },
-    {
-      "cycle": 207,
-      "source": "ssrn",
-      "title": "Understanding Earnings Quality: A Review of the Proxies, Their Determinants and Their Consequences",
-      "url": "https://doi.org/10.2139/ssrn.1485858",
-      "served_model": "deepseek-v4-pro",
-      "applicable": false,
-      "component_key": ""
-    },
     {
       "cycle": 207,
       "source": "ssrn",
@@ -16632,11 +16662,38 @@
       "served_model": "deepseek-v4-pro",
       "applicable": false,
       "component_key": ""
+    },
+    {
+      "cycle": 270,
+      "source": "arxiv",
+      "title": "Open Problem: Is AdamW Effective Under Heavy-Tailed Noise?",
+      "url": "http://arxiv.org/abs/2606.23676v1",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 270,
+      "source": "huggingface",
+      "title": "Tapered Language Models",
+      "url": "https://huggingface.co/papers/2606.23670",
+      "served_model": "deepseek-v4-pro",
+      "applicable": false,
+      "component_key": ""
+    },
+    {
+      "cycle": 270,
+      "source": "huggingface",
+      "title": "Unlimited OCR Works",
+      "url": "https://huggingface.co/papers/2606.23050",
+      "served_model": "deepseek-v4-pro",
+      "applicable": true,
+      "component_key": "reader-sources"
     }
   ],
-  "doktores_last_cycle": 268,
+  "doktores_last_cycle": 270,
   "reconsolidate_lens_idx": 20,
-  "doktores_module_idx": 0,
+  "doktores_module_idx": 1,
   "doktores_hyp_researched": [
     "C-370"
   ],
@@ -17025,462 +17082,467 @@
     "M-1": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-2": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-3": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-4": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-5": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-6": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-7": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-8": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-9": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-10": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-11": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-12": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-13": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-14": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-15": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-16": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-17": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-18": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-19": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-20": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-21": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-22": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-23": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-24": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-25": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-26": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-27": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-28": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-29": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-30": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-31": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-32": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-33": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-34": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-35": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-36": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-37": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-38": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-39": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-40": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-41": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-42": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-43": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-44": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-45": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-46": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-47": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-48": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-49": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-50": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-51": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-52": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-53": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-54": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-55": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-56": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-57": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-58": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-59": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-60": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-61": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-62": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-63": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-64": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-65": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-66": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-67": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-68": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-69": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-70": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-71": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-72": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-73": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-74": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-75": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-76": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-77": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-78": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-79": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-80": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-81": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-82": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-83": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-84": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-85": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-86": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-87": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-88": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-89": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-90": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-91": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
     },
     "M-92": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 269
+      "last_seen_cycle": 270
+    },
+    "M-93": {
+      "success": 0,
+      "last_pass_cycle": -1000000000,
+      "last_seen_cycle": 270
     }
   },
   "facet_log": [
@@ -17727,6 +17789,12 @@
     {
       "cycle": 269,
       "source": "zenodo:20807363",
+      "facets": 2,
+      "claims": 10
+    },
+    {
+      "cycle": 270,
+      "source": "zenodo:20807472",
       "facets": 2,
       "claims": 10
     }
