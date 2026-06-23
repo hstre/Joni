@@ -1154,3 +1154,15 @@ der der 2026-06-16-Eintrag warnt, wird hier ausdrücklich vermieden. Die PR (#16
 - *Auftrag #161 (Unlimited OCR):* offen gelassen — das Akzeptanzkriterium (<120 s / 50 Seiten) ist auf
   Jonis CPU-CI nicht *ehrlich* erfüllbar ohne das echte Vision-Modell; Entscheidung mit dem Betreiber.
 
+**[Nachtrag ~08:10 UTC — #161 doch umgesetzt, aber als das, was es ist]** Der Betreiber entschied: #161
+angehen. Umgesetzt als non-core `ocr.py` — ein Bild-/Scan-Inbox-Port, der Text in *dieselbe* governte
+Lese-Pipeline speist (Kandidat-Claims durchs Gate, Semantic Layer entscheidet weiter), als Schritt 6
+in `read_papers` verdrahtet. Das im Auftrag zitierte schwere Modell ist **nicht** hart eingebaut,
+sondern als **pluggable, fail-closed Backend** (`set_backend`) eingehängt — exakt die Selbst-
+beschränkung von `embeddings.py` und `facets.py`: Engine da → echte Transkription; keine → Port
+schläft, Zyklus unverändert. **Reifegrad: Stufe 1 · gebaut** (Reader + Backend-Seam + Mechanismus-
+Test). Die `<120 s/50-Seiten`-Zahl ist **Stufe 3** und bleibt dem realen Modell auf realer Hardware
+überlassen — bewusst nicht behauptet. Zweimal hintereinander (#160, #161) dieselbe ehrliche Grenze:
+**ein Auftrag „umgesetzt" heißt, die *Apparatur* steht — nicht, dass die im Auftrag versprochene Zahl
+erreicht ist.** Genau diese Trennung sauber zu halten, ist der Daseinszweck der Reifegrad-Spalte.
+
