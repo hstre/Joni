@@ -29,6 +29,7 @@ _REGISTRY: dict[str, tuple[str, bool, tuple[str, ...], int]] = {
     "doktores": ("JONI_DOKTORES", True, ("doktores_review", "doktores_hyp_log"), 60),
     "literature_synthesis": ("JONI_LITERATURE_SYNTHESIS", False, ("synthesis_log",), 60),
     "facet_decomp": ("JONI_FACET_DECOMP", False, ("facet_log",), 60),
+    "sproutrag": ("JONI_SPROUTRAG", False, ("sprout_log",), 60),
 }
 
 

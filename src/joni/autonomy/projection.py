@@ -107,21 +107,31 @@ def project_and_learn(cs, judged, extensions: dict, proto, cycle: int, *,
     out = {"projected": 0, "claims": 0}
     if not enabled():
         return out
-    from . import facets
+    from . import facets, sprout
     store_dir = paths().model_calls
     run_id = f"joni-c{cycle}"
     log = extensions.setdefault("semantic_calls", [])
     facet_log = extensions.setdefault("facet_log", [])
+    sprout_log = extensions.setdefault("sprout_log", [])
     for item, rel in judged:
         if out["projected"] >= max_items:
             break
         text = f"{getattr(item, 'title', '')}. {getattr(item, 'summary', '')}".strip()
         topic_hint = getattr(rel, "topic", None) or "unsorted"
-        # FaBle (#136): project each FACET of the source on its own, so a faceted source yields
-        # faceted candidates instead of one blurred whole. Disabled -> one unit (the whole text),
-        # i.e. exactly the original behaviour.
-        units = facets.decompose(text, budget=budget, runs_per_week=runs_per_week,
-                                 cycle=cycle, store_dir=store_dir) or [text]
+        # SproutRAG (#160): for a LONG source, expand into multi-granular, coherent passages with
+        # the embedding tree (no LLM call). Only fires on a multi-sentence source; a short
+        # title+summary trees to nothing and falls through unchanged.
+        sprout_units = sprout.extract(text)
+        if sprout_units:
+            units = sprout_units
+            sprout_log.append({"cycle": cycle, "source": getattr(item, "key", ""),
+                               "candidates": len(sprout_units)})
+        else:
+            # FaBle (#136): project each FACET of the source on its own, so a faceted source yields
+            # faceted candidates instead of one blurred whole. Disabled -> one unit (the whole
+            # text), i.e. exactly the original behaviour.
+            units = facets.decompose(text, budget=budget, runs_per_week=runs_per_week,
+                                     cycle=cycle, store_dir=store_dir) or [text]
         item_claims = 0
         last_cap = None
         for unit in units[:3]:
@@ -149,5 +159,6 @@ def project_and_learn(cs, judged, extensions: dict, proto, cycle: int, *,
                      f"{getattr(item, 'key', '?')} across {len(units)} facet(s) "
                      f"[{getattr(last_cap, 'served_model', '?')}] - candidates via the gate")
     extensions["facet_log"] = facet_log[-200:]
+    extensions["sprout_log"] = sprout_log[-200:]
     extensions["semantic_calls"] = log[-200:]
     return out
