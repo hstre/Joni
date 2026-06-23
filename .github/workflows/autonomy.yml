@@ -63,6 +63,21 @@ jobs:
       - name: Verify protected core (fail-safe)
         run: python -m joni.autonomy verify
 
+      # Cross-job fast-load: the sidecar snapshot (state/layer9.snapshot.json) makes a load skip the
+      # O(n²) journal replay (~108min cold -> ~4s). It is git-ignored (never bloats the repo), so it
+      # only survived WITHIN a job - a fresh job had to pay the full cold replay on its first cycle.
+      # The Actions cache carries it BETWEEN jobs (cache infra, not git). The fast-load is a verified
+      # cache: if the restored sidecar does not match the checked-out journal's snapshot_hash it just
+      # falls back to a full replay, so a stale/absent cache can only cost time, never correctness.
+      - name: Restore fast-load snapshot from cache (lets a fresh job skip the cold replay)
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: state/layer9.snapshot.json
+          key: joni-sidecar-${{ github.run_id }}
+          restore-keys: |
+            joni-sidecar-
+
       - name: Run Joni continuously (loop until the job's time budget)
         env:
           JONI_ONLINE: "1"
@@ -236,3 +251,15 @@ jobs:
             sleep "$JONI_LOOP_PAUSE_SECONDS"
           done
           echo "loop ended after $n cycle(s)"
+
+      # Hand the latest fast-load snapshot to the next job (run_id key is always unique -> always
+      # saves; the next job picks it up via the joni-sidecar- restore-keys prefix). always() so it is
+      # stored even if the loop hit its time budget. The snapshot matches this job's last pushed
+      # journal, so the next job's first cycle fast-loads instead of replaying.
+      - name: Save fast-load snapshot to cache for the next job
+        if: always()
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: state/layer9.snapshot.json
+          key: joni-sidecar-${{ github.run_id }}
