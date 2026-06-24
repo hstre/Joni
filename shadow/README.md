@@ -48,9 +48,36 @@ record to `shadow/shadow_log.jsonl` (git-ignored).
 - Hotspots (most rejected/contested or conflicted) — e.g. `forum` (192 rejected/contested), `memory`
   (11) — are exactly where it would be guarded.
 
+## Per-commit ledger shadow (`ledger_shadow.py`) — the sharp metric
+
+Finer than topic posture: it walks Joni's Layer-9 **ledger** and, for every canonical state-mutating
+commit (`claim_create` / `claim_revise` / `claim_reject` / `conflict_open` / `conflict_review`), asks
+the real router whether it would have **gated** that update. Layer-9 ticks only span 0..3 while the
+ledger holds 15k events, so the unit is the commit, not the tick.
+
+```bash
+python shadow/ledger_shadow.py
+```
+
+Latest reading (snapshot `7d561beb`, **3314 canonical commits**, read-only):
+
+| | result |
+|---|---|
+| would gate a state update | **648 / 3314 (20%)** |
+| risky commits (touch rejected/contested or an open conflict) | 648 — **gated 648/648 (100%)** |
+| clean commits | 2666 — **gated 0 (no over-block)** |
+
+By operator: `claim_reject` 142/142 and `conflict_open`/`conflict_review` 78/78 (100% — inherently
+risky); `claim_create` 232/1622 (14%) and `claim_revise` 118/1394 (8%) — only the commits whose target
+is rejected/contested or in an open conflict. **The router gates every risky commit and waves through
+every clean one: 100% recall on risky, 0% over-block on clean.** That is the selectivity claim,
+measured on Joni's real ledger — not a baseline that blocks everything.
+
 ## Not yet (next increments)
 
-- **Per-cycle** shadow: walk the ledger per tick and ask whether each cycle's *commit* (a decision
-  accepting a proposal whose target is contested/rejected) would have been gated — the direct
-  "would the router have blocked this state update?" metric.
-- Wire it as a post-cycle hook (still observation-only) so the log accumulates automatically.
+- Wire either observer as a **post-cycle hook** (still observation-only) so the log accumulates
+  automatically each cycle, rather than on demand.
+- A **time-series** view: re-run per snapshot over successive cycles to watch the gate rate move as
+  Joni's state evolves (needs the loop to advance the Layer-9 tick).
+- Only after the shadow log shows stable, sensible gating over many cycles: consider switching one
+  low-risk gate live (e.g. `claim_reject` confirmation), never a blanket enable.
