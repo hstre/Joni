@@ -32,20 +32,16 @@ _SNAPSHOT = _REPO / "state" / "layer9.snapshot.json"
 _LOG = _HERE / "shadow_log.jsonl"
 
 sys.path.insert(0, os.environ.get("DESI_REPO", "/home/user/DESi"))
-try:
+try:  # import-safe; main() checks the import at run time
     from desi_router.governance import report_from_snapshot, select_mode
-except Exception as e:  # noqa: BLE001 — explicit, never silently fake
-    raise SystemExit(f"cannot import the real DESi router (set DESI_REPO): {e}") from e
+except Exception:  # noqa: BLE001 — decoupled from DESi; never silently faked, main() exits loudly
+    report_from_snapshot = select_mode = None
 
 _OPEN_CONFLICT = {"active", "open", "unresolved", "contested", None, ""}
 
 
 def _ev(x):
     return x.get("v") if isinstance(x, dict) else x
-
-
-def _field(obj, name):
-    return obj.get("f", {}).get(name)
 
 
 class _Conf:
@@ -127,6 +123,8 @@ def main() -> None:
     ap.add_argument("--min-claims", type=int, default=1, help="skip topics with fewer claims")
     args = ap.parse_args()
 
+    if select_mode is None:
+        raise SystemExit("cannot import the real DESi router (set DESI_REPO=/path/to/DESi)")
     if not _SNAPSHOT.exists():
         raise SystemExit(f"no snapshot at {_SNAPSHOT}")
     h, by_topic, claim_topic, conflicts = load_topics(_SNAPSHOT)

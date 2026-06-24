@@ -27,10 +27,10 @@ _SNAPSHOT = _REPO / "state" / "layer9.snapshot.json"
 _LOG = _HERE / "shadow_log.jsonl"
 
 sys.path.insert(0, os.environ.get("DESI_REPO", "/home/user/DESi"))
-try:
+try:  # import-safe; main() checks the import at run time
     from desi_router.governance import report_from_snapshot, select_mode
-except Exception as e:  # noqa: BLE001 — explicit, never silently fake
-    raise SystemExit(f"cannot import the real DESi router (set DESI_REPO): {e}") from e
+except Exception:  # noqa: BLE001 — decoupled from DESi; never silently faked, main() exits loudly
+    report_from_snapshot = select_mode = None
 
 # canonical state-mutating commits (proposals/clustering/evidence are not canonical claim commits)
 _COMMIT_OPS = {"claim_create", "claim_revise", "claim_reject", "conflict_open", "conflict_review"}
@@ -106,6 +106,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0, help="cap commits processed (0 = all)")
     args = ap.parse_args()
+    if select_mode is None:
+        raise SystemExit("cannot import the real DESi router (set DESI_REPO=/path/to/DESi)")
     if not _SNAPSHOT.exists():
         raise SystemExit(f"no snapshot at {_SNAPSHOT}")
     h, claim, claim_open_conflicts, ledger = _index(_SNAPSHOT)
