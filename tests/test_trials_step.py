@@ -119,7 +119,8 @@ def test_real_trial_re_record_is_idempotent_not_a_divergent_rejection():
     """In production each cycle re-runs the same deterministic trial in a FRESH process, so the
     sealed event's wall-clock timestamp differs between runs. The recorder must then treat the
     re-run as a clean idempotent no-op (content-addressed trial_id) - never a 'divergent record'
-    rejection (which is what froze recording at one event and surfaced recorded:false every cycle)."""
+    rejection (which is what froze recording at one event and surfaced recorded:false every
+    cycle)."""
     from joni.autonomy import kevin_trial_bridge as bridge
     ext: dict = {}
     cs = CoreState(l9.Layer9())
