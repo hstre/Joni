@@ -54,7 +54,7 @@ def test_reader_is_a_noop_without_pypdf(monkeypatch, tmp_path):
     monkeypatch.setattr(pdf, "available", lambda: False)
     cs = CoreState(seed_core())
     out = reader.read_papers(cs, [], {}, _Proto(), 0, _Paths(tmp_path), online=True)
-    assert out == {"papers": 0, "claims": 0, "available": False}
+    assert out == {"papers": 0, "claims": 0, "available": False, "ocr": False}
 
 
 def test_reader_ingests_arxiv_full_text_as_source_anchored_claims(monkeypatch, tmp_path):
