@@ -102,15 +102,12 @@ def _gated_for_commit(target_id, claim, claim_open_conflicts, h):
     return dec.chosen_mode, (not dec.persistent_state_update_allowed), risky
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--limit", type=int, default=0, help="cap commits processed (0 = all)")
-    args = ap.parse_args()
+def compute_record(snapshot_path, *, limit: int = 0):
+    """Aggregate the per-commit shadow over a snapshot into a record dict. Returns None if the real
+    router is unavailable or there are no canonical commits (None = a clean no-op for callers)."""
     if select_mode is None:
-        raise SystemExit("cannot import the real DESi router (set DESI_REPO=/path/to/DESi)")
-    if not _SNAPSHOT.exists():
-        raise SystemExit(f"no snapshot at {_SNAPSHOT}")
-    h, claim, claim_open_conflicts, ledger = _index(_SNAPSHOT)
+        return None
+    h, claim, claim_open_conflicts, ledger = _index(snapshot_path)
 
     rows = []
     for e in ledger:
@@ -121,47 +118,59 @@ def main() -> None:
         targets = _refs(f.get("output_refs")) or _refs(f.get("input_refs"))
         target = targets[0] if targets else None
         if op in ("conflict_open", "conflict_review"):
-            # a conflict op is inherently conflict-touching
-            mode, gated, risky = "guarded_mode", True, True
+            mode, gated, risky = "guarded_mode", True, True   # inherently conflict-touching
         elif target is None:
             continue
         else:
             mode, gated, risky = _gated_for_commit(target, claim, claim_open_conflicts, h)
-        rows.append({"op": op, "target": target, "mode": mode, "gated": gated, "risky": risky})
-        if args.limit and len(rows) >= args.limit:
+        rows.append({"op": op, "mode": mode, "gated": gated, "risky": risky})
+        if limit and len(rows) >= limit:
             break
 
-    n = len(rows)
-    gated = sum(r["gated"] for r in rows)
-    risky = sum(r["risky"] for r in rows)
-    # selectivity: gate the risky, wave through the clean
+    if not rows:
+        return None
     clean = [r for r in rows if not r["risky"]]
-    clean_gated = sum(r["gated"] for r in clean)
-    risky_gated = sum(r["gated"] for r in rows if r["risky"])
     by_op = defaultdict(lambda: [0, 0])
     for r in rows:
         by_op[r["op"]][1] += 1
         by_op[r["op"]][0] += r["gated"]
+    return {"kind": "ledger_per_commit", "snapshot_hash": h, "commits": len(rows),
+            "would_gate": sum(r["gated"] for r in rows),
+            "risky_commits": len(rows) - len(clean),
+            "risky_gated": sum(r["gated"] for r in rows if r["risky"]),
+            "clean_commits": len(clean), "clean_gated_overblock": sum(r["gated"] for r in clean),
+            "modal_mode": Counter(r["mode"] for r in rows).most_common(1)[0][0],
+            "by_operator": {k: {"gated": v[0], "total": v[1]} for k, v in by_op.items()}}
 
-    record = {"kind": "ledger_per_commit", "snapshot_hash": h, "commits": n,
-              "would_gate": gated, "risky_commits": risky, "risky_gated": risky_gated,
-              "clean_commits": len(clean), "clean_gated_overblock": clean_gated,
-              "by_operator": {k: {"gated": v[0], "total": v[1]} for k, v in by_op.items()}}
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit", type=int, default=0, help="cap commits processed (0 = all)")
+    args = ap.parse_args()
+    if select_mode is None:
+        raise SystemExit("cannot import the real DESi router (set DESI_REPO=/path/to/DESi)")
+    if not _SNAPSHOT.exists():
+        raise SystemExit(f"no snapshot at {_SNAPSHOT}")
+    rec = compute_record(_SNAPSHOT, limit=args.limit)
+    if rec is None:
+        raise SystemExit("no canonical commits in the ledger")
     with _LOG.open("a") as fh:
-        fh.write(json.dumps(record) + "\n")
+        fh.write(json.dumps(rec) + "\n")
 
-    print(f"Per-commit ledger shadow · snapshot {h[:12]} · {n} canonical commits (READ-ONLY)\n")
-    print(f"  would gate a state update : {gated}/{n} ({gated / n:.0%})")
-    print(f"  risky commits             : {risky}  (gated {risky_gated}/{risky} "
-          f"= {risky_gated / risky:.0%})" if risky else "  risky commits: 0")
-    print(f"  clean commits             : {len(clean)}  (gated {clean_gated} "
-          f"-> {'CLEAN' if clean_gated == 0 else 'CHECK over-block'})")
+    n, g, rk, rg = rec["commits"], rec["would_gate"], rec["risky_commits"], rec["risky_gated"]
+    print(f"Per-commit ledger shadow · {rec['snapshot_hash'][:12]} · {n} commits (READ-ONLY)\n")
+    print(f"  would gate a state update : {g}/{n} ({g / n:.0%})")
+    print(f"  risky commits             : {rk}  (gated {rg}/{rk} = {rg / rk:.0%})"
+          if rk else "  risky commits: 0")
+    print(f"  clean commits             : {rec['clean_commits']}  (gated "
+          f"{rec['clean_gated_overblock']} -> "
+          f"{'CLEAN' if rec['clean_gated_overblock'] == 0 else 'CHECK over-block'})")
     print("\n  by operator (gated / total):")
-    for op, (g, t) in sorted(by_op.items(), key=lambda kv: -kv[1][1]):
-        print(f"    {op:<18} {g:>5} / {t:<5} ({g / t:.0%})")
-    print(f"\n  -> the router gates the risky commits and waves through the clean ones "
-          f"({Counter(r['mode'] for r in rows).most_common(1)[0][0]} is the modal posture). "
-          "Observation only; loop untouched.")
+    for op, v in sorted(rec["by_operator"].items(), key=lambda kv: -kv[1]["total"]):
+        gg, tt = v["gated"], v["total"]
+        print(f"    {op:<18} {gg:>5} / {tt:<5} ({gg / tt:.0%})")
+    print(f"\n  -> gates the risky commits and waves through the clean ones "
+          f"({rec['modal_mode']} is the modal posture). Observation only; loop untouched.")
 
 
 if __name__ == "__main__":

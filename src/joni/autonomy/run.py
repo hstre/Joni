@@ -420,6 +420,7 @@ def one_cycle() -> dict:
     _save_json(p.asks_new, asks_new)
     _save_json(p.commissions_new, commissions_new)
     _finish(p, cs, budget, window, extensions, proto, reflect)
+    _maybe_router_shadow(p, cycle)
     return {"cycle": cycle, "new_items": len(new_items), "asks": len(asks_new),
             "commissions": len(commissions_new),
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
@@ -512,6 +513,21 @@ def _ideas(cs, extensions: dict, *, limit: int = 24) -> dict:
             "invented": [i for i in (extensions.get("invented") or []) if isinstance(i, str)][-16:],
             "emerged_topics": [t for t in (extensions.get("emerged_topics") or [])
                                if isinstance(t, str)][-16:]}
+
+
+def _maybe_router_shadow(p, cycle: int) -> None:
+    """Opt-in (JONI_ROUTER_SHADOW=1), fail-safe post-cycle router shadow-observer. Observation-only:
+    it reads the just-written Layer-9 snapshot and logs what the external DESi router WOULD have
+    done, without touching the cycle. Off by default, so a normal run is completely unaffected; and
+    any error or a missing DESi router (the production default) is a clean no-op."""
+    import os
+    if os.getenv("JONI_ROUTER_SHADOW") != "1":
+        return
+    try:
+        from shadow.hook import run_after_cycle
+        run_after_cycle(p.root, cycle)
+    except Exception:
+        pass
 
 
 def _finish(p, cs: core_state.CoreState, budget, window, extensions,

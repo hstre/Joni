@@ -73,10 +73,24 @@ is rejected/contested or in an open conflict. **The router gates every risky com
 every clean one: 100% recall on risky, 0% over-block on clean.** That is the selectivity claim,
 measured on Joni's real ledger — not a baseline that blocks everything.
 
+## Post-cycle hook (`hook.py`) — automatic per-cycle logging
+
+`run.py` calls `_maybe_router_shadow(p, cycle)` at the end of each cycle. It is **opt-in and
+fail-safe**:
+
+- **Off by default.** It does nothing unless `JONI_ROUTER_SHADOW=1` is set, so a normal production
+  run is completely unaffected.
+- **Observation-only.** When enabled it runs `hook.run_after_cycle`, which computes the per-commit
+  ledger shadow over the just-written snapshot and appends one record (with `cycle` + `ts`) to
+  `shadow/shadow_log.jsonl`. It never writes Joni state.
+- **Never breaks a cycle.** Any error, or a missing DESi router (the production default, where
+  `DESI_REPO` is absent), is a clean no-op — guarded by `try/except` at two levels.
+
+To run Joni in shadow mode: set `JONI_ROUTER_SHADOW=1` and `DESI_REPO=/path/to/DESi`; the log then
+accumulates one per-cycle record automatically. With the flag unset, the hook is inert.
+
 ## Not yet (next increments)
 
-- Wire either observer as a **post-cycle hook** (still observation-only) so the log accumulates
-  automatically each cycle, rather than on demand.
 - A **time-series** view: re-run per snapshot over successive cycles to watch the gate rate move as
   Joni's state evolves (needs the loop to advance the Layer-9 tick).
 - Only after the shadow log shows stable, sensible gating over many cycles: consider switching one
