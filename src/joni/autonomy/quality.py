@@ -83,6 +83,18 @@ STOPWORDS = frozenset({
     "report", "preprint", "arxiv", "github", "source", "open",
     "hypothesis", "claim", "claims", "topic", "pattern", "behind", "recurs", "recurring",
     "line", "factor", "tracking", "track", "tracked", "worth", "apply", "applies",
+    # generic content words that READ like a concept but are not a research subject - they were
+    # leaking through as single-word topics ("user", "outputs", "complexity"), which is the junk a
+    # tracked-topic list must not collect. (Domain terms like inference / attention / retrieval /
+    # context / variance are deliberately NOT here.)
+    "existing", "additional", "available", "possible", "potential", "important", "significant",
+    "effective", "relevant", "particular", "actual", "typical", "standard", "default", "generic",
+    "session", "sessions", "user", "users", "output", "outputs", "input", "inputs", "value",
+    "values", "content", "contents", "information", "execution", "measure", "measures",
+    "complexity", "computation", "computational", "deterministic", "language", "item", "items",
+    "number", "numbers", "example", "examples", "case", "cases", "level", "levels", "step",
+    "steps", "type", "types", "form", "forms", "field", "fields", "point", "points", "term",
+    "terms", "aspect", "aspects", "range", "scope", "amount", "ability", "capacity",
 })
 
 _VOWEL = re.compile(r"[aeiou]")

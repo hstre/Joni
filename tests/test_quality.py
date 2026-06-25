@@ -21,6 +21,17 @@ def test_artifact_tokens_are_rejected():
         assert not quality.is_meaningful_term(t), t
 
 
+def test_generic_content_words_are_not_topics():
+    # words that READ like a concept but are not a research subject - the topic-list junk
+    for t in ("existing", "session", "user", "outputs", "complexity", "computational",
+              "measure", "information", "language", "execution", "deterministic", "value",
+              "content", "example", "level"):
+        assert not quality.is_good_topic(t), t
+    # but genuine domain terms must still pass (no over-reach)
+    for t in ("inference", "attention", "retrieval", "context", "variance", "calibration"):
+        assert quality.is_good_topic(t), t
+
+
 def test_substantive_hypothesis_gate():
     junk = "Across my routing claims, 'cotton' is a through-line - but 'about' recurs too."
     # 'about' is a stopword subject -> the whole thing is held back from external comms
