@@ -78,20 +78,24 @@ measured on Joni's real ledger — not a baseline that blocks everything.
 `run.py` calls `_maybe_router_shadow(p, cycle)` at the end of each cycle. It is **opt-in and
 fail-safe**:
 
-- **Off by default.** It does nothing unless `JONI_ROUTER_SHADOW=1` is set, so a normal production
-  run is completely unaffected.
-- **Observation-only.** When enabled it runs `hook.run_after_cycle`, which computes the per-commit
-  ledger shadow over the just-written snapshot and appends one record (with `cycle` + `ts`) to
-  `shadow/shadow_log.jsonl`. It never writes Joni state.
-- **Never breaks a cycle.** Any error, or a missing DESi router (the production default, where
-  `DESI_REPO` is absent), is a clean no-op — guarded by `try/except` at two levels.
+- **Enabled in production** via `JONI_ROUTER_SHADOW=1` in the autonomy workflow. With the flag unset
+  the hook is completely inert, so it can be turned off without a code change.
+- **Persistent, capped log.** When enabled it runs `hook.run_after_cycle`, which computes the
+  per-commit ledger shadow over the just-written snapshot and appends one record (with `cycle` + `ts`)
+  to **`state/router_shadow.jsonl`** — a *tracked* file under `state/`, which the loop commits each
+  cycle (`git add state`), so the log persists across jobs. It is capped to the last 500 records, so
+  it can never bloat the repo. It never writes Joni's Layer-9 state.
+- **Decoupled.** The router is imported from `DESI_REPO`, else the workflow's `DESI_ROOT` (the `_desi`
+  checkout), else a local default. A missing router is a clean no-op.
+- **Never breaks a cycle.** Any error is swallowed — `try/except` guards both the call site in
+  `run.py` and the body of `run_after_cycle`.
 
-To run Joni in shadow mode: set `JONI_ROUTER_SHADOW=1` and `DESI_REPO=/path/to/DESi`; the log then
-accumulates one per-cycle record automatically. With the flag unset, the hook is inert.
+So in production the log now accumulates one router-shadow record per cycle, committed with the
+cycle's state — the per-cycle gate selectivity is observable over time without any effect on the loop.
 
 ## Not yet (next increments)
 
-- A **time-series** view: re-run per snapshot over successive cycles to watch the gate rate move as
-  Joni's state evolves (needs the loop to advance the Layer-9 tick).
+- A **time-series** view over the accumulated `state/router_shadow.jsonl`: watch the gate rate move
+  as Joni's state evolves over the run.
 - Only after the shadow log shows stable, sensible gating over many cycles: consider switching one
   low-risk gate live (e.g. `claim_reject` confirmation), never a blanket enable.

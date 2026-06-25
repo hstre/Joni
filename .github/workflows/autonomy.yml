@@ -89,6 +89,11 @@ jobs:
           JONI_RUNTIME_DAYS: "7"      # extended to a one-week run (start 2026-06-19), retiring ~2026-06-26
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
+          # Router shadow (observation-only): after each cycle, run the external DESi router over the
+          # just-written Layer-9 snapshot and log what it WOULD have gated to state/router_shadow.jsonl
+          # (tracked, capped). Fail-safe: any error or a missing router is a clean no-op. Uses the
+          # _desi checkout via DESI_ROOT. Never affects the cycle or Joni's state.
+          JONI_ROUTER_SHADOW: "1"
           KEVIN_USE_REAL_LLM: "1"     # Kevin's trial runner + the strengthen vetting use the real client
           # Doktores replaces Kevin's creative/orchestrator arm: it reviews the fetched papers and
           # OpenClaw extensions for a NON-CORE self-improvement and files an Auftrag an Claude.

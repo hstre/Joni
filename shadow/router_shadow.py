@@ -31,7 +31,8 @@ _REPO = _HERE.parent
 _SNAPSHOT = _REPO / "state" / "layer9.snapshot.json"
 _LOG = _HERE / "shadow_log.jsonl"
 
-sys.path.insert(0, os.environ.get("DESI_REPO", "/home/user/DESi"))
+# DESI_REPO, else the workflow's DESI_ROOT (the _desi checkout), else a local default
+sys.path.insert(0, os.environ.get("DESI_REPO") or os.environ.get("DESI_ROOT") or "/home/user/DESi")
 try:  # import-safe; main() checks the import at run time
     from desi_router.governance import report_from_snapshot, select_mode
 except Exception:  # noqa: BLE001 — decoupled from DESi; never silently faked, main() exits loudly

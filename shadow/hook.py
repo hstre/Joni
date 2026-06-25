@@ -2,9 +2,10 @@
 
 Called by ``run.py`` at the very end of a cycle, and ONLY when ``JONI_ROUTER_SHADOW=1``. It runs the
 read-only per-commit ledger shadow over the just-written Layer-9 snapshot and appends one per-cycle
-record to ``shadow/shadow_log.jsonl`` so the log accumulates automatically. It is observation-only
-and fully guarded: any error, or a missing DESi router (the production default, where DESI_REPO is
-absent), is a clean no-op that never affects the cycle.
+record to ``state/router_shadow.jsonl`` — a TRACKED file the loop commits each cycle, so the log
+persists across jobs (capped, so it never bloats the repo). Observation-only and fully guarded: any
+error, or a missing DESi router (the default with no DESi checkout on the path), is a clean no-op
+that never affects the cycle.
 """
 from __future__ import annotations
 
@@ -13,8 +14,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 
-def run_after_cycle(repo_root, cycle) -> dict | None:
-    """Append a per-cycle router-shadow record; return it, or None on any no-op. Never raises."""
+def run_after_cycle(repo_root, cycle, *, keep: int = 500) -> dict | None:
+    """Append a per-cycle router-shadow record to state/router_shadow.jsonl (tracked, so the loop's
+    `git add state` persists it; capped to the last ``keep`` records). Returns it, or None on any
+    no-op. Never raises — observation must not break a cycle."""
     try:
         root = Path(repo_root)
         snapshot = root / "state" / "layer9.snapshot.json"
@@ -26,10 +29,10 @@ def run_after_cycle(repo_root, cycle) -> dict | None:
         if rec is None:                       # router unavailable or no commits -> no-op
             return None
         rec = {"cycle": cycle, "ts": datetime.now(UTC).isoformat(timespec="seconds"), **rec}
-        log = root / "shadow" / "shadow_log.jsonl"
-        log.parent.mkdir(parents=True, exist_ok=True)
-        with log.open("a") as fh:
-            fh.write(json.dumps(rec) + "\n")
+        log = root / "state" / "router_shadow.jsonl"
+        lines = log.read_text().splitlines() if log.exists() else []
+        lines.append(json.dumps(rec))
+        log.write_text("\n".join(lines[-keep:]) + "\n")
         return rec
     except Exception:                         # noqa: BLE001 — must never break a cycle
         return None
