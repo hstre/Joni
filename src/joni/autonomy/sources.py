@@ -286,7 +286,12 @@ def _openalex_abstract(inv: dict | None) -> str:
 class OpenAlexFetcher:
     """OpenAlex - a large open scholarly index (a CrossRef/MAG successor). No key. It indexes
     many venues arXiv misses, **including SSRN working papers**, so it is how Joni keeps SSRN
-    in view without a fragile scraper. A ``mailto`` is sent to use the polite pool."""
+    in view without a fragile scraper. A ``mailto`` is sent to use the polite pool.
+
+    Tuned as a SEARCH engine, not a recency feed: it ranks by ``relevance_score`` and restricts to
+    real articles that have an abstract. Sorting by newest (the old default) surfaced brand-new
+    0-citation junk - software-repo-as-DOI deposits and off-domain datasets; relevance +
+    ``type:article`` + ``has_abstract`` returns the influential papers that match Joni's topic."""
 
     name = "openalex"
 
@@ -297,7 +302,8 @@ class OpenAlexFetcher:
         for term in terms:
             url = "https://api.openalex.org/works?" + urllib.parse.urlencode(
                 {"search": term, "per_page": max(2, limit // 2),
-                 "sort": "publication_date:desc", "mailto": mailto})
+                 "filter": "type:article,has_abstract:true",
+                 "sort": "relevance_score:desc", "mailto": mailto})
             try:
                 results = json.loads(_get(url)).get("results", [])
             except Exception:  # noqa: BLE001
