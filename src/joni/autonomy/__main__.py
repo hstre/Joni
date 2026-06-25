@@ -2,6 +2,8 @@
 
     run      run one autonomous cycle (research -> learn -> improve -> publish)
     verify   check the protected core against the lock (fail-safe gate)
+    compact  slim + re-seal the state journal (drop dead measurement blobs) so a fresh
+             job's full replay finishes inside a cycle - one-time maintenance, data only
     lock     (re)freeze the protected core into joni_core.lock - a HUMAN action
     approve  approve one drafted forum question for posting - a HUMAN action
              (the relay only ever posts approved drafts): approve <draft-id>
@@ -24,7 +26,7 @@ RETIRED_EXIT = 42
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="joni.autonomy")
-    parser.add_argument("command", choices=["run", "verify", "lock", "approve"])
+    parser.add_argument("command", choices=["run", "verify", "compact", "lock", "approve"])
     parser.add_argument("ref", nargs="?", help="draft id for 'approve'")
     args = parser.parse_args(argv)
     root = paths().root
@@ -49,6 +51,19 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         print("CORE CHANGED without approval:", ", ".join(changed), file=sys.stderr)
         return 1
+
+    if args.command == "compact":
+        # Data-only maintenance: slim the bloated append-only journal (drop the dead
+        # measurement.pairs blobs) and re-seal it, so a fresh job's full replay finishes inside a
+        # cycle again. The protected core code is untouched; verify it first as a fail-safe.
+        ok, changed = governance.verify_core(root)
+        if not ok:
+            print("CORE CHANGED without approval:", ", ".join(changed), file=sys.stderr)
+            return 1
+        from desi_layer9 import persistence
+        summary = persistence.compact(paths().core)
+        print(f"compacted {paths().core} -> {summary}")
+        return 0
 
     summary = one_cycle()
     print("cycle:", summary)

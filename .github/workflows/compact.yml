@@ -1,0 +1,44 @@
+name: joni-compact
+
+# One-off, data-only maintenance: slim + re-seal the append-only state journal so a fresh job's
+# full replay finishes inside a cycle again (the journal had bloated with dead measurement.pairs
+# blobs, making the cold O(n^2) replay hang and the loop stop committing). Manual only - it rewrites
+# state/layer9.json and pushes it to main, then the normal autonomy loop loads the small journal fast.
+# This is the BAND-AID; the durable fix is the SQLite persistence migration (see docs/sqlite_migration.md).
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: joni-autonomy      # share the loop's group so a cycle and a compaction never run together
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  compact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300     # the slimmed replay is still O(n^2) in pure Python - give it room
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install -e ".[llm,pdf]"
+      - name: Verify protected core (fail-safe)
+        run: python -m joni.autonomy verify
+      - name: Compact the journal (slim + re-seal; verifies it reloads to the same state)
+        run: python -m joni.autonomy compact
+      - name: Commit the slimmed journal back to main
+        run: |
+          git config user.name "joni-bot"
+          git config user.email "actions@github.com"
+          git fetch origin main && git reset --soft origin/main || true
+          git add state/layer9.json
+          if git diff --cached --quiet; then
+            echo "no change - journal already compact"
+          else
+            git commit -m "joni: compact the state journal (drop dead measurement blobs)"
+            git push origin HEAD:main
+          fi
