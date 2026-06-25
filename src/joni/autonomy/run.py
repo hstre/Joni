@@ -77,7 +77,12 @@ def _load_json(path: Path, default):
     if path.exists():
         try:
             return json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            # Fail-safe (return the default) but DO NOT hide it: a corrupt state file silently
+            # resetting to its default could mask real data loss. Surface it on stderr (the cycle
+            # log) without crashing the loop. (From Joni's own code review.)
+            import sys
+            print(f"[joni] WARNING: corrupt JSON at {path} ({e}); using default", file=sys.stderr)
             return default
     return default
 
