@@ -195,8 +195,16 @@ def is_good_topic(topic: str) -> bool:
     **lexical only** (no embedding) - it runs over every claim/topic each cycle (the retire pass
     and the site), so it must be cheap; the embedding on-domain check is reserved for the few
     emergence *selection* points, not these hot paths."""
-    t = (topic or "").strip()
-    return bool(t) and "+" not in t and is_meaningful_term(t)
+    t = (topic or "").strip().lower()
+    if not t or "+" in t:
+        return False
+    # Repo/ecosystem slugs leak in via the GitHub/OpenClaw fetchers (a repo NAME is an identifier,
+    # not a research concept). Drop the unambiguous ones: an 'openclaw' / 'awesome-...' slug, or a
+    # 4+-part hyphen compound ('helpfulness-variance-privacy-leakage'). Arbitrary single-token repo
+    # names ('shadow-frog') are left - they can't be told from real terms lexically and are rare.
+    if "openclaw" in t or t.startswith("awesome-") or t.count("-") >= 3:
+        return False
+    return is_meaningful_term(t)
 
 
 def hypothesis_admissible(text: str) -> bool:

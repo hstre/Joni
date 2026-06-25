@@ -32,6 +32,16 @@ def test_generic_content_words_are_not_topics():
         assert quality.is_good_topic(t), t
 
 
+def test_repo_slugs_are_not_topics():
+    # repo names leak via the GitHub/OpenClaw fetchers; the unambiguous slugs are dropped
+    for t in ("secure-openclaw", "awesome-openclaw-usecases", "awesome-openclaw-skills",
+              "helpfulness-variance-privacy-leakage"):
+        assert not quality.is_good_topic(t), t
+    # legit hyphenated concepts (1-2 hyphens, no slug marker) still pass
+    for t in ("local-first", "contamination-driven-extraction"):
+        assert quality.is_good_topic(t), t
+
+
 def test_substantive_hypothesis_gate():
     junk = "Across my routing claims, 'cotton' is a through-line - but 'about' recurs too."
     # 'about' is a stopword subject -> the whole thing is held back from external comms
