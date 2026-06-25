@@ -19,11 +19,11 @@ on:
   # ~2026-06-21. The 20 EUR/week budget stays the hard ceiling. To stop early: re-comment the
   # schedule (or cancel the in-flight run).
   #
-  # STOPPED 2026-06-25 (operator request): schedule commented out so no new job relaunches; the
-  # run window is also back-dated to expired so any job that does start retires immediately. To
-  # resume: un-comment the schedule below and reset state/run_window.json "start" to now.
-  # schedule:
-  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  # STOPPED 2026-06-25 then RESUMED 2026-06-25 (operator request): schedule re-enabled and the run
+  # window reset to now (state/run_window.json), so the continuous loop runs again. To stop early:
+  # re-comment the schedule below and back-date / retire state/run_window.json.
+  schedule:
+    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
