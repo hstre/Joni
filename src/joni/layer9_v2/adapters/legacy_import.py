@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..journal import events
-from ..storage.sqlite import canonical_json, content_hash, now_iso
+from ..storage.sqlite import canonical_json, content_hash, new_id, now_iso
 
 # object_type → space. Unlisted types → Content Space, status needs_review, type unknown_legacy.
 SPACE_MAP: dict[str, str] = {
@@ -80,18 +80,37 @@ class ImportReport:
     by_type: dict = field(default_factory=dict)
     needs_review: int = 0
     unknown_types: dict = field(default_factory=dict)
+    links: int = 0
+    by_relation: dict = field(default_factory=dict)
+    dangling_link_targets: int = 0
+    unmapped_relations: dict = field(default_factory=dict)
     errors: list = field(default_factory=list)
 
     def as_dict(self) -> dict:
         return {
             "total": self.total, "imported": self.imported, "skipped": self.skipped,
             "by_space": self.by_space, "by_type": self.by_type, "needs_review": self.needs_review,
-            "unknown_types": self.unknown_types, "errors": self.errors[:50],
+            "links": self.links, "by_relation": self.by_relation,
+            "dangling_link_targets": self.dangling_link_targets,
+            "unmapped_relations": self.unmapped_relations, "errors": self.errors[:50],
         }
 
 
 def _bump(d: dict, key) -> None:
     d[key] = d.get(key, 0) + 1
+
+
+def _evidence_relation(rel: str | None) -> str | None:
+    """Map a legacy ``evidence_link.relation`` onto the closed v2 vocabulary, or None if it doesn't
+    cleanly map (e.g. 'contextualizes'). We never fabricate support/contradiction semantics — an
+    unmapped relation is counted and left as the imported ``evidence_link`` object + its provenance
+    edges, not invented into a typed edge."""
+    r = (rel or "").lower()
+    if any(x in r for x in ("contradict", "refut", "conflict", "against", "tension", "disagree")):
+        return "contradicts"
+    if any(x in r for x in ("support", "confirm", "corrobor", "strengthen", "evidence_for")):
+        return "supports"
+    return None
 
 
 def import_snapshot(conn: sqlite3.Connection, snapshot_path: str | Path,
@@ -107,8 +126,9 @@ def import_snapshot(conn: sqlite3.Connection, snapshot_path: str | Path,
     rep = ImportReport(total=len(objects))
     ts = now_iso()
     digest = hashlib.sha256()
+    decoded: dict[str, dict] = {}  # id -> decoded fields, reused for the link pass
 
-    with conn:  # atomic: all-or-nothing
+    with conn:  # atomic: all-or-nothing (objects AND links commit/roll back together)
         for legacy_id, wrapper in objects.items():
             try:
                 fields = decode(wrapper)
@@ -133,6 +153,7 @@ def import_snapshot(conn: sqlite3.Connection, snapshot_path: str | Path,
                      status, ts, ts, chash),
                 )
                 rep.imported += 1
+                decoded[str(legacy_id)] = fields
                 _bump(rep.by_space, space)
                 _bump(rep.by_type, store_type)
                 digest.update(chash.encode("utf-8"))
@@ -140,20 +161,84 @@ def import_snapshot(conn: sqlite3.Connection, snapshot_path: str | Path,
                 rep.skipped += 1
                 rep.errors.append({"id": str(legacy_id), "error": repr(exc)})
 
+        _reconstruct_links(conn, decoded, rep, ts)
+
         events.append_event(
             conn, "legacy_import", actor=actor, object_id=None,
             payload={"source": str(snapshot_path), "total": rep.total, "imported": rep.imported,
                      "skipped": rep.skipped, "needs_review": rep.needs_review,
-                     "by_space": rep.by_space, "digest": digest.hexdigest()},
+                     "links": rep.links, "by_space": rep.by_space, "by_relation": rep.by_relation,
+                     "digest": digest.hexdigest()},
         )
     return rep
+
+
+def _reconstruct_links(conn: sqlite3.Connection, decoded: dict[str, dict],
+                       rep: ImportReport, ts: str) -> None:
+    """Rebuild the typed graph from the legacy reference fields, bulk-inserted (no per-link journal
+    event — they fold into the single import event). Edges are only created when BOTH endpoints were
+    imported; references to missing objects are counted as ``dangling_link_targets``, never forced.
+
+    Legacy field  →  v2 relation
+      derived_from[]            → derives_from   (the explicit provenance the old store recorded)
+      decision.proposal_id      → derives_from   (a decision derives from its proposal)
+      evidence_link.relation    → supports / contradicts  (mapped; unmapped relations counted)
+      conflict.claim_ids[]      → contradicts    (pairwise, so conflicts surface as contested)
+    """
+    present = set(decoded)
+
+    def edge(src: str, rel: str, dst: str, prov: dict) -> None:
+        if src not in present or dst not in present or src == dst:
+            if dst not in present or src not in present:
+                rep.dangling_link_targets += 1
+            return
+        cur = conn.execute(
+            "INSERT INTO links (id, from_object_id, to_object_id, relation_type, status, weight, "
+            "provenance_json, created_at) VALUES (?, ?, ?, ?, 'active', ?, ?, ?) "
+            "ON CONFLICT(from_object_id, to_object_id, relation_type) DO NOTHING",
+            (new_id("lnk"), src, dst, rel, float(prov.get("strength", 1.0)),
+             json.dumps(prov, ensure_ascii=False, separators=(",", ":")), ts),
+        )
+        if cur.rowcount:
+            rep.links += 1
+            _bump(rep.by_relation, rel)
+
+    for oid, f in decoded.items():
+        otype = f.get("object_type")
+        for ref in f.get("derived_from") or []:
+            edge(oid, "derives_from", str(ref), {"via": "derived_from"})
+
+        if otype == "decision" and f.get("proposal_id"):
+            edge(oid, "derives_from", str(f["proposal_id"]), {"via": "decision.proposal_id"})
+
+        elif otype == "evidence_link":
+            rel = _evidence_relation(f.get("relation"))
+            ev, claim = f.get("evidence_id"), f.get("claim_id")
+            if ev and claim:
+                if rel is None:
+                    _bump(rep.unmapped_relations, str(f.get("relation") or "?"))
+                else:
+                    edge(str(ev), rel, str(claim),
+                         {"via": "evidence_link", "legacy_relation": f.get("relation"),
+                          "strength": f.get("strength", 1.0)})
+
+        elif otype == "conflict":
+            claim_ids = [str(c) for c in (f.get("claim_ids") or [])]
+            for a, b in zip(claim_ids, claim_ids[1:], strict=False):  # pairwise: c0↔c1, c1↔c2, …
+                edge(a, "contradicts", b, {"via": "conflict", "conflict_id": oid,
+                                           "conflict_kind": f.get("conflict_kind")})
 
 
 def import_report_text(rep: ImportReport) -> str:
     """A short human-readable summary for the import doc / CLI output."""
     lines = [f"Legacy import: {rep.imported}/{rep.total} objects imported "
              f"({rep.skipped} skipped, {rep.needs_review} need review).",
-             f"  by space: {canonical_json(rep.by_space)}"]
+             f"  by space: {canonical_json(rep.by_space)}",
+             f"  links rebuilt: {rep.links}  by relation: {canonical_json(rep.by_relation)}"]
+    if rep.dangling_link_targets:
+        lines.append(f"  dangling link refs skipped: {rep.dangling_link_targets}")
+    if rep.unmapped_relations:
+        lines.append(f"  unmapped evidence relations: {canonical_json(rep.unmapped_relations)}")
     if rep.unknown_types:
         lines.append(f"  unknown legacy types: {canonical_json(rep.unknown_types)}")
     if rep.errors:

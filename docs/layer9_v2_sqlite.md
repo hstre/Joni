@@ -135,6 +135,35 @@ with counts + a content digest. Unknown legacy types are never guessed into the 
 land in Content with `type=unknown_legacy`, `status=needs_review`. Legacy data has no Question-Space
 objects, so Question Space is intentionally left sparse rather than fabricated.
 
+### Converter CLI and link reconstruction
+
+`python -m joni.layer9_v2.convert` (also installed as `joni-layer9-convert`) is the runnable
+front door: it reads the materialised snapshot — **not** the live journal, so no replay — opens/
+creates `state/layer9_v2.sqlite`, migrates, imports, and prints the report. `--reset` rebuilds from
+scratch; `--verify` re-checks an existing db's hash chain. Re-running is idempotent (objects and
+links upsert), and the generated `.sqlite` is a git-ignored cache, never the source of truth.
+
+The importer does not just load nodes — it **rebuilds the typed graph** from the legacy reference
+fields, in the same transaction, bulk-inserted (folded into the one import event):
+
+| Legacy field | v2 relation |
+|---|---|
+| `derived_from[]` | `derives_from` (the explicit provenance the old store recorded) |
+| `decision.proposal_id` | `derives_from` |
+| `evidence_link.relation` | `supports` / `contradicts` (mapped; unmappable relations like *contextualizes* are **counted, never invented**) |
+| `conflict.claim_ids[]` | `contradicts` (pairwise, so conflicts surface as contested claims) |
+
+Edges are created only when **both endpoints were imported**; references to missing objects are
+counted as `dangling_link_targets`, never forced (which would also violate the FK). On the real
+snapshot this rebuilds **26 031 links** (25 214 `derives_from`, 739 `supports`, 78 `contradicts`),
+with 288 `contextualizes` relations honestly left unmapped.
+
+One thing the real data surfaced: legacy conflict resolution marks the involved claims
+**`contested`**, not `active`. The DESi/router read slices therefore treat a claim as *live* when its
+status is `active` **or** `contested` — otherwise 78 real conflicts would sit invisible and the
+router would report `idle`. After the fix the router surfaces 48 contested claims and hints
+`resolve_conflict`.
+
 ## 7. Limits and what stays legacy
 
 - **The live Joni loop still runs on legacy Layer-9.** v2 is built *next to* it and is read-only with

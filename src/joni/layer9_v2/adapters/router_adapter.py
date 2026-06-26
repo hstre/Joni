@@ -19,12 +19,14 @@ def open_questions(conn: sqlite3.Connection, *, limit: int | None = None) -> lis
 
 
 def contested_claims(conn: sqlite3.Connection, *, limit: int | None = None) -> list[dict]:
-    """Claims with at least one active incoming contradiction — the router's hotspots."""
+    """Claims with at least one active incoming contradiction — the router's hotspots. A contested
+    claim is precisely one to surface, so accept active OR contested status."""
     rows = conn.execute(
         "SELECT o.id, o.title FROM objects o "
         "JOIN links l ON l.to_object_id = o.id AND l.relation_type = 'contradicts' "
         "AND l.status = 'active' "
-        "WHERE o.space = 'content' AND o.type = 'claim' AND o.status = 'active' "
+        "WHERE o.space = 'content' AND o.type = 'claim' "
+        "AND o.status IN ('active', 'contested') "
         "GROUP BY o.id, o.title ORDER BY COUNT(l.id) DESC"
         + (f" LIMIT {int(limit)}" if limit else ""),
     ).fetchall()

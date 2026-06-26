@@ -20,5 +20,11 @@ _desi/
 # truth). Survives `git reset --hard` as an untracked file so cycles after the first skip replay.
 state/*.snapshot.json
 
+# Layer 9 v2 store + SQLite sidecars — a generated, rebuildable cache (joni-layer9-convert), not
+# the source of truth. Never committed.
+state/*.sqlite
+state/*.sqlite-wal
+state/*.sqlite-shm
+
 # generated, rendered on demand from FORSCHUNGSTAGEBUCH.md
 FORSCHUNGSTAGEBUCH.pdf

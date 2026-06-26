@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from joni.layer9_v2.adapters import desi_adapter, router_adapter
 from joni.layer9_v2.graph import links
-from joni.layer9_v2.spaces import contents, overlays, questions
+from joni.layer9_v2.spaces import _base, contents, overlays, questions
 from joni.layer9_v2.storage import sqlite as S
 
 
@@ -36,6 +36,25 @@ def test_router_slice_flags_contested_and_open_questions(tmp_path):
     assert claim["id"] in [c["id"] for c in sl["contested_claims"]]
     assert q["id"] in [x["id"] for x in sl["open_questions"]]
     assert sl["next_action_hint"] == "resolve_conflict"
+
+
+def test_contested_status_claims_still_surface(tmp_path):
+    """A claim that conflict-resolution moved to status 'contested' is exactly what the router and
+    DESi must surface — they must not be filtered out by an 'active'-only status check. (This is the
+    real-data case: legacy conflicts mark their claims 'contested', not 'active'.)"""
+    conn = S.open_db(tmp_path / "t.sqlite")
+    with conn:
+        a = contents.put_content(conn, type="claim", title="contested A")
+        b = contents.put_content(conn, type="claim", title="contested B")
+        links.add_link(conn, a["id"], "contradicts", b["id"])
+        _base.set_status(conn, b["id"], "contested", reason="in conflict")
+    sl = router_adapter.routing_slice(conn)
+    assert b["id"] in [c["id"] for c in sl["contested_claims"]]
+    assert sl["next_action_hint"] == "resolve_conflict"
+    # DESi's claim slice includes the contested claim with its contradiction pressure counted
+    rep = desi_adapter.desi_report(conn)
+    row = next(c for c in rep["claims"] if c["id"] == b["id"])
+    assert row["contradiction_count"] == 1
 
 
 def test_router_slice_respects_project_overlay(tmp_path):

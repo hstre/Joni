@@ -15,13 +15,17 @@ import sqlite3
 from ..graph import traversal
 from ..spaces import _base
 
+# A claim that is contested is still a LIVE claim — both statuses count as "in play" for reasoning.
+LIVE_CLAIM_STATUSES = ("active", "contested")
+
 
 def claim_slice(conn: sqlite3.Connection, *, limit: int | None = None) -> list[dict]:
-    """Every active claim with its support/contradiction counts and the methods that produced it.
-    This is the unit DESi reasons over: a claim plus the evidence pressure around it."""
+    """Every live (active or contested) claim with its support/contradiction counts and the methods
+    that produced it. The unit DESi reasons over: a claim plus the evidence pressure on it."""
     out = []
-    for claim in _base.list_objects(conn, space="content", type="claim",
-                                    status="active", limit=limit):
+    claims = [c for c in _base.list_objects(conn, space="content", type="claim", limit=limit)
+              if c["status"] in LIVE_CLAIM_STATUSES]
+    for claim in claims:
         cid = claim["id"]
         supports = traversal.supporting_evidence(conn, cid)
         against = traversal.contradicting(conn, cid)
