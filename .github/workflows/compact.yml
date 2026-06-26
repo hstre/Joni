@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: joni-autonomy      # share the loop's group so a cycle and a compaction never run together
+  group: joni-compact       # OWN group: the hourly loop schedule must not be able to evict this run
   cancel-in-progress: false
 
 permissions:
