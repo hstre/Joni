@@ -29,6 +29,10 @@ class Paths:
         return self.root / "state" / "layer9.json"          # the authoritative core
 
     @property
+    def core_sqlite(self) -> Path:
+        return self.root / "state" / "layer9.sqlite"        # materialised runtime store (opt-in)
+
+    @property
     def budget(self) -> Path:
         return self.root / "state" / "budget.json"
 

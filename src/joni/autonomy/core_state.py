@@ -587,6 +587,14 @@ def seed_core() -> l9.Layer9:
     return cs.core
 
 
+def _use_sqlite() -> bool:
+    """Persistence backend select. Default 'json' = the committed journal (unchanged behaviour).
+    'sqlite' = the materialised runtime store (layer9_v2.runtime.desi_store): load is a SELECT, not
+    a full journal replay. Reversible via the env var; no kernel change either way."""
+    import os
+    return os.getenv("JONI_PERSISTENCE", "json").lower() == "sqlite"
+
+
 def load_or_migrate(paths: Paths) -> CoreState:
     """Resume the core; else migrate the legacy Joni state; else seed fresh.
 
@@ -594,13 +602,22 @@ def load_or_migrate(paths: Paths) -> CoreState:
     fails its hash check (a tick change made the recorded hash unreproducible), repair it
     in place and load again, rather than crashing the cycle.
     """
-    try:
-        core = persistence.load(paths.core)
-    except ValueError:
-        persistence.repair(paths.core)
-        core = persistence.load(paths.core)
-    if core is not None:
-        return CoreState(core)
+    if _use_sqlite():
+        from ..layer9_v2.runtime import desi_store
+        core = desi_store.load(paths.core_sqlite)
+        if core is None and paths.core.exists():
+            core = persistence.load(paths.core)    # one-time adopt: first run after the flag flips
+        if core is not None:
+            return CoreState(core)
+        # no sqlite store and no JSON core yet -> fall through to legacy migrate / seed
+    else:
+        try:
+            core = persistence.load(paths.core)
+        except ValueError:
+            persistence.repair(paths.core)
+            core = persistence.load(paths.core)
+        if core is not None:
+            return CoreState(core)
     legacy = _read_json(paths.state)           # old joni_state.json, if any
     if legacy:
         core, _report = migration.migrate(joni_state=legacy)
@@ -609,7 +626,11 @@ def load_or_migrate(paths: Paths) -> CoreState:
 
 
 def save(cs: CoreState, paths: Paths) -> None:
-    persistence.save(cs.core, paths.core)
+    if _use_sqlite():
+        from ..layer9_v2.runtime import desi_store
+        desi_store.save(cs.core, paths.core_sqlite)
+    else:
+        persistence.save(cs.core, paths.core)
 
 
 def _read_json(path: Path):

@@ -166,8 +166,9 @@ router would report `idle`. After the fix the router surfaces 48 contested claim
 
 ## 7. Limits and what stays legacy
 
-- **The live Joni loop still runs on legacy Layer-9.** v2 is built *next to* it and is read-only with
-  respect to the running system. Promotion to source-of-truth is a deliberate, separate step (see §8).
+- **The three-space store is read-only w.r.t. the running system.** Promotion of *that* model to the
+  runtime is a deliberate, separate step (see §8). A bounded SQLite *persistence backend* for the
+  loop's existing model is available behind a flag (see §9).
 - **No production UI, no Neo4j, no new router, no DESi rewrite.** Out of scope by design.
 - **Embeddings table is present but unused** — a forward hook, not a feature yet.
 - **Question Space is sparse** until questions are authored or derived; the legacy data didn't model
@@ -188,4 +189,45 @@ flipping the authority:
    state on every build.
 5. **Backfill Question Space** intentionally if the router is to consume open questions in anger.
 
-Until those are done, treat v2 as a verified parallel store, not the authority.
+Until those are done, treat the three-space store as a verified parallel projection, not the authority.
+
+## 9. Runtime backend: SQLite as the loop's source of truth (opt-in)
+
+There are **two distinct "layer9" stores**, and it matters which one the loop runs on:
+
+- The **three-space store** (everything above) — a re-grounded projection for analytics, fed by the
+  converter. Making *it* the literal runtime model would mean rewriting the `desi_layer9` kernel
+  (operators, replay, hashing) — a large refactor of a vendored engine. That is deliberately **not**
+  done.
+- The **autonomy loop** actually runs on `desi_layer9.Layer9`, whose state is derived by **replaying
+  the journal** (`state = replay(journal)`). On the real state that replay re-emits **13 651**
+  journal entries, each re-computing a snapshot hash — minutes-to-hours of work, the cold-start
+  *hang* that parked the loop.
+
+`src/joni/layer9_v2/runtime/desi_store.py` is the bounded fix for **that** store: a SQLite
+persistence backend for the **existing** `desi_layer9` model. It reuses the kernel's own
+`snapshot.capture`/`restore` and `snapshot_hash`/`verify_chain` verbatim — **no kernel change** — and
+only swaps the storage medium. `load` is a SELECT of the materialised objects + `restore`, **not a
+replay**:
+
+| Operation | JSON journal (current) | SQLite backend |
+|---|---|---|
+| **load** (real 21 987-object state) | replay 13 651 entries → **>200 s (the hang)** | **~4.5 s** |
+| save | small journal doc | ~6.6 s (materialise 22 k rows) |
+| equivalence | — | **identical `snapshot_hash`, chain verified** |
+
+It is wired at the **unlocked** seam `autonomy/core_state.py` (not a `joni_core.lock` file) and is
+**off by default**:
+
+```bash
+JONI_PERSISTENCE=sqlite   # load/save via state/layer9.sqlite; default 'json' is unchanged
+```
+
+The first run with the flag on **adopts the existing `state/layer9.json`** (no reseed, nothing
+lost); thereafter it reads/writes the SQLite store. The committed JSON journal stays the portable,
+verifiable source of truth; the SQLite file is a git-ignored runtime store. Reversible by unsetting
+the flag.
+
+What this does **not** do: the per-emit O(n²) snapshot hashing *inside a running cycle* is a kernel
+concern (`desi_layer9.hashing` / the submit path) and is out of scope here — this backend fixes the
+load/replay hang and the multi-MB JSON rewrite, not the kernel's in-cycle hashing.
