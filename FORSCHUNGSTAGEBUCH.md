@@ -62,14 +62,19 @@ Block wird bei jeder Aktualisierung mitgeführt; Details stehen in den datierten
 
 - **Aktuelle Architektur:** Joni v1 (Quelle → Granite-Proposal → ggf. DeepSeek/Kevin → 3-stufiger
   Einlass-Gate → Layer-9-Gate → autoritativer Zustand → Renderer).
-- **Versuchsphase:** A/B-Lauf, **Tag 1 von 2** (LLM-Version aus dem Nullzustand; gesicherte
-  deterministische Baseline als Vergleich).
+- **Loop-Status:** **geparkt seit 2026-06-26** (`39856fd`) bis zum SQLite-Re-Grounding — bewusst, statt
+  den ~5-h-Kaltstart-Replay weiter mit der Cache-Band-Aid zu kaschieren. Resume über `workflow_dispatch`.
+- **Persistenz:** SQLite-Re-Grounding **gebaut, additiv** — dreiräumiger Store + Converter
+  (`joni-layer9-convert`, 21.987 Objekte / 26.031 Kanten) + opt-in Persistenz-Backend
+  (`JONI_PERSISTENCE=sqlite`): load **>200 s → ~4,5 s**, Äquivalenz auf Echtdaten gemessen. **Loop-Resume
+  darauf noch nicht live** (Stufe 1). Umbau-Plan als gated core-ask: `docs/CORE_REBUILD_PLAN.md` (A–D).
 - **Primäre Modelle:** Granite 4.1 8B (strukturiert) · DeepSeek Pro v4 (schwierig/Eskalation) ·
   Kevin auf DeepSeek Pro v4 (Fernanalogie).
 - **Governance:** Layer 9, deterministisch (geschützter Core, jedes `verify` grün).
-- **Aktuelle Hauptrisiken:** Topic-Gate (Stufe 3 LLM) noch *in Beobachtung* · Konfliktwachstum ·
-  Qualität der Kevin-Vorschläge · Claim-Akzeptanz pro Live-Call (`accepted/live`).
-- **Nächste Auswertung:** Alt-vs-neu, pro 100 Runs normiert (nach den zwei Tagen).
+- **Aktuelle Hauptrisiken:** **per-Emit-O(n²)-Hashing im Kernel** (In-Cycle, noch *offen* — das Backend
+  heilt nur das Laden) · Topic-Gate (Stufe 3 LLM) *in Beobachtung* · Konfliktwachstum · Qualität der
+  Kevin-Vorschläge · drei parallele Zustandsmodelle (Konvergenz steht aus).
+- **Nächste Auswertung:** Loop-Resume auf SQLite live belegen (Stufe 2), dann alt-vs-neu pro 100 Runs.
 
 ---
 
@@ -1165,4 +1170,93 @@ Test). Die `<120 s/50-Seiten`-Zahl ist **Stufe 3** und bleibt dem realen Modell 
 überlassen — bewusst nicht behauptet. Zweimal hintereinander (#160, #161) dieselbe ehrliche Grenze:
 **ein Auftrag „umgesetzt" heißt, die *Apparatur* steht — nicht, dass die im Auftrag versprochene Zahl
 erreicht ist.** Genau diese Trennung sauber zu halten, ist der Daseinszweck der Reifegrad-Spalte.
+
+### Eintrag 2026-06-26 — Loop bewusst geparkt; Layer 9 v2 als SQLite-Re-Grounding (Staging, nicht Umbau) — und der Kaltstart-Hang an der Wurzel gemessen
+
+**[Entscheidung]** Der Betreiber hat den autonomen Loop am **2026-06-26 ~05:57 UTC** *sauber
+geparkt* (`39856fd`: stündlicher Schedule auskommentiert, `run_window.json` zurückdatiert/retired,
+`workflow_dispatch` für den Resume erhalten) — statt das O(n²)-Symptom weiter mit der Kompaktierungs-
+Band-Aid (Eintrag 06-23) zu kaschieren. Begründung exakt aus dem `[Offen]` des letzten Eintrags: der
+Cross-Job-Cache *kaschiert* den quadratischen Kaltstart, beseitigt ihn nicht; der **echte Checkpoint**
+(materialisierter Zustand, keine Replay-Länge) ist der eigentliche Fix. Also wird er gebaut, statt den
+Loop in seinen ~5-h-Replay laufen zu lassen.
+
+**[Eingriff] Layer 9 v2 — additiv, *neben* dem laufenden System.** Bewusst kein Big-Bang, kein
+Anfassen des gesperrten/vendored Kerns. Drei Bausteine:
+1. **Dreiräumiger SQLite-Store** (`src/joni/layer9_v2/`): ein indizierter Store mit getrennten
+   epistemischen Räumen — **Method** (wie: Operatoren, Router-Policies, Verifier), **Content** (was:
+   Claims, Evidenz, Konflikte, Entscheidungen, Cluster), **Question** (warum: Forschungsfragen, offene
+   Probleme). Verbunden *nur* über getypte Links + Nutzer/Projekt-Overlays. Materialisierter Zustand +
+   append-only, hash-verkettetes Journal; **kein Replay beim Start**; WAL + Foreign Keys +
+   deterministische Migrationen. Bewusst **nicht** Mongo (wieder „Dokumente", das gerade gescheiterte
+   Muster), bewusst **nicht** Neo4j als Primär (Server-Abhängigkeit) — nur als spätere Projektion offen.
+2. **Converter** (`joni-layer9-convert`): bringt Jonis echte Daten in den Store. Liest den
+   materialisierten Snapshot (kein Replay), mappt **21.987 Objekte** in ihre Räume und rekonstruiert
+   **26.031 getypte Kanten** (25.214 `derives_from`, 739 `supports`, 78 `contradicts`). 288
+   `contextualizes`-Relationen werden **ehrlich als *unmapped* gezählt, nicht erfunden** — die
+   geschlossene Vokabular-Disziplin gilt auch beim Import; unbekannte Objekttypen landen in Content mit
+   `needs_review`, nie in den falschen Raum geraten.
+3. **SQLite-Persistenz-Backend für den *bestehenden* Loop-Kern** (`layer9_v2/runtime/desi_store.py`).
+   Das ist der Teil, der den Hang adressiert.
+
+**[Messergebnis — der Kern]** Der Loop läuft auf `desi_layer9`, dessen Zustand durch
+**Journal-Replay** abgeleitet wird (`state = replay(journal)`). Am echten Stand re-emittiert dieser
+Replay **13.651** Einträge, jeder mit einem `snapshot_hash` über *alle* Objekte. Isoliert gemessen:
+
+| Operation (echter 21.987-Objekt-Stand) | JSON-Replay (bisher) | SQLite-Backend |
+|---|---|---|
+| **load** | **>200 s (Timeout/Hang)** | **~4,5 s** (`snapshot.restore` aus Zeilen, kein Replay) |
+| save | kleines Journal-Doc | ~6,6 s (22 k Objektzeilen materialisieren) |
+| Äquivalenz | — | **identischer `snapshot_hash`, Chain verifiziert** |
+
+Das Backend nutzt **die kernel-eigenen** `snapshot.capture`/`restore` und `snapshot_hash`/`verify_chain`
+**verbatim** — nur das Speichermedium wird getauscht, **kein Kernel-Code geändert**. Verdrahtet an der
+**ungesperrten** Naht `autonomy/core_state.py` (keine `joni_core.lock`-Datei berührt), **per Default
+aus**; `JONI_PERSISTENCE=sqlite` schaltet um, der erste Lauf *übernimmt* die bestehende `layer9.json`
+(kein Reseed, nichts verloren), reversibel per Flag.
+
+**[Reifegrad] — ungeschönt, keine Stufe übersprungen:**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| Dreiräumiger Store + Converter | **1 · gebaut** | 21.987 Objekte / 26.031 Kanten importiert, Chain grün; 35 Tests |
+| SQLite-Persistenz-Backend | **1 · gebaut, Äquivalenz auf Echtdaten gemessen** | load >200 s → 4,5 s, identischer Hash; 6 Tests. **Aber:** der Loop ist darauf **noch nicht live wieder angelaufen** — Stufe 2 (im Runtime-Pfad belegt) steht aus, bis ein realer Zyklus mit dem Flag committet. |
+
+**[Schluss — die ehrliche Grenze, doppelt]** Erstens: das ist **Staging, nicht der Umbau.** Der
+dreiräumige Store ist eine *Projektion*, **nicht** das Laufzeitmodell; ihn dazu zu machen hieße den
+vendored `desi_layer9`-Kernel (Operatoren/Replay/Hashing) umzuschreiben — ein **großer Refactor**, vor
+dem mein Auftrag mich ausdrücklich stoppen lässt. Genau das wurde **nicht** still getan, sondern
+gemeldet. Zweitens, und wichtiger: das Backend behebt den **Lade-/Replay-Hang**, **nicht** das
+**per-Emit-O(n²)-Hashing *innerhalb* eines laufenden Zyklus** — das sitzt im Kernel (`hashing.py` +
+`submit`) und bleibt offen. Den Unterschied zu verwischen wäre genau die Reifegrad-Verwechslung, vor
+der dieses Tagebuch warnt: der Kaltstart ist jetzt *messbar* geheilt, der In-Cycle-Quadrat *nicht*.
+
+**[Eingriff → core-ask] Der Umbau-Plan, benannt statt aufgeschoben.** Auf die (berechtigte) Bemerkung
+des Betreibers, dass Joni *irgendwann* umgebaut werden muss: `docs/CORE_REBUILD_PLAN.md` als gated
+core-ask geschrieben — vier Phasen, ehrlich sequenziert. **A:** inkrementelles Hashing (tötet das
+In-Cycle-O(n²) — kleinster Eingriff, größte Wirkung). **B:** materialisierter Zustand wird im Kernel
+autoritativ, Replay nur noch Audit/Recovery. **C:** Modell-Konvergenz (dreiräumig als Laufzeit *oder*
+bewusst Projektion — die große, noch offene Entscheidung). **D:** `desi_layer9` ent-vendoren. Jede
+Phase: human-gated, mit Äquivalenzbeweis gegen das Staging, danach Re-`lock`. Notiert ist auch, dass
+der Lock heute nur `src/joni/*.py` deckt, **nicht** den `desi_layer9`-Kernel, den er zu schützen
+vorgibt — der Umbau muss das schließen.
+
+**[Schluss → eigener Fehler, ungeschönt]** In der Spiegel-Logik des 06-23-Eintrags: die Container-
+Umgebung hat den Working-Tree dieser Session **mehrfach** auf einen alten Stand zurückgespult; einmal
+habe ich daraufhin `git push origin main` ausgeführt und es als Fehlschlag des Proxys fehlgedeutet —
+tatsächlich schob ich eine *veraltete lokale `main`-Ref* statt meines tatsächlichen Branch-HEAD. Erst
+der Abgleich mit der echten GitHub-Spitze zeigte: meine Arbeit war längst auf `origin`, nur die lokale
+Ref divergierte. Kein Datenverlust, aber dieselbe Lehre wie am beobachteten System: **operative
+Geschäftigkeit (fünf rote Push-Versuche) ist nicht dasselbe wie zu prüfen, *was* man eigentlich
+schiebt.** Gehört notiert, nicht geglättet.
+
+**[Offen]**
+- *Loop-Resume auf SQLite live belegen* (Stufe 2): einen Zyklus mit `JONI_PERSISTENCE=sqlite` fahren
+  und bestätigen, dass er aus dem materialisierten Store lädt **und** committet — erst dann ist der
+  Hang *im Betrieb* geheilt, nicht nur *gemessen*.
+- *Das per-Emit-O(n²) (Phase A)* bleibt der eigentliche In-Cycle-Fix und ist **nicht** Teil dieses
+  Staging — Kernel-Eingriff, human-gated.
+- *Modell-Konvergenz (Phase C)* — drei parallele Repräsentationen desselben Wissens
+  (`joni.state.Layer9` / `desi_layer9.Layer9` / dreiräumig) müssen irgendwann zu einer werden; die
+  Entscheidung steht aus.
 
