@@ -19,12 +19,13 @@ on:
   # ~2026-06-21. The 20 EUR/week budget stays the hard ceiling. To stop early: re-comment the
   # schedule (or cancel the in-flight run).
   #
-  # PARKED 2026-06-26 (operator request): the JSON-journal replay incident is being fixed for good by
-  # the SQLite migration (core-ask #167), not the compaction band-aid. Until that lands, the loop is
-  # parked - schedule commented so no job launches and hangs ~5h on the bloated cold replay, wasting
-  # CI. To resume (after SQLite): un-comment the schedule and reset state/run_window.json "start" to now.
-  # schedule:
-  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  # PARKED 2026-06-26, RESUMED 2026-06-29 (operator request): the parked O(n²) replay incident is
+  # fixed at the ROOT by Phase A (incremental snapshot hashing, a62a9e0) - a full real-journal replay
+  # is now ~8s instead of >2h and the per-emit O(n) cost is gone, so neither a running cycle nor a
+  # fresh cold start hangs. The loop runs on the (now-fast) JSON journal; SQLite stays off. To re-park:
+  # re-comment the schedule below and the next job will not launch.
+  schedule:
+    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
