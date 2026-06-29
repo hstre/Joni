@@ -93,6 +93,42 @@ fail-safe**:
 So in production the log now accumulates one router-shadow record per cycle, committed with the
 cycle's state — the per-cycle gate selectivity is observable over time without any effect on the loop.
 
+## Slice-quality shadow (`slice_quality_shadow.py`) — the plausible-wrong-slice checks on real data
+
+Runs the five DESi plausible-wrong-slice vectors (missing-opposition / same-scope-newer /
+thin-provenance / scope-mismatch / k-unstable) over Joni's real v2 graph and aggregates the per-vector
+fire-rate. This is what turned three fixtures-passing checks into an evidence-based adoption: per-claim
+on 1 366 live claims, `missing_opposition` 6.6 % and `thin_provenance` 3.0 % fire selectively (adopt),
+`same_scope_newer` over-fired at 64.8 % with topic-scope (held back until a real subject key), `scope`
+is dead without scope tags (0 %), `k_unstable` marginal (0.4 %).
+
+```bash
+DESI_REPO=/home/user/DESi python shadow/slice_quality_shadow.py --granularity claim
+```
+
+## Ontology-coverage shadow (`ontology_coverage_shadow.py`) — does the ontology probe have purchase?
+
+Same evidence-first discipline, applied **before** wiring DESi's new Ontology Probe into anything. The
+probe's promise is to soften the `same_scope` over-fire above: when a subject token is ambiguous across
+kinds (`operator` = math object vs. person) the probe marks the scope uncertain and a supersession flag
+is withheld (separate-only — it can never assert sameness). Whether that is real depends entirely on
+**coverage**, so this measures it on Joni's terms first:
+
+- **addressable pool** — same-subject-key collision groups (the #5 over-fire pool) + claims in them.
+- **coverage** — of the salient subject tokens, how many the ontology actually knows. With no corpus
+  installed this is **0**, reported honestly (the probe then stays a silent no-op).
+- **addressable groups** — collision groups carrying an across-kind-ambiguous token: what the
+  separate-only rule could legitimately soften.
+
+```bash
+DESI_REPO=/home/user/DESi python shadow/ontology_coverage_shadow.py            # real WordNet (fail-open)
+DESI_REPO=/home/user/DESi python shadow/ontology_coverage_shadow.py --seed-demo # labelled demo ontology
+```
+
+The default WordNet adapter is fail-open (0 coverage when the corpus is absent); `--seed-demo` makes the
+mechanism visible via a small, explicitly-labelled in-memory ontology. Adoption stays gated on a
+non-zero coverage reading — not on the fixtures.
+
 ## Not yet (next increments)
 
 - A **time-series** view over the accumulated `state/router_shadow.jsonl`: watch the gate rate move

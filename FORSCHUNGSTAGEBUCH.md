@@ -1635,3 +1635,68 @@ die bestehende Governance, nicht daran vorbei.
 - *H1-Probe* (ändert Rollen-Sprache den Review-Pfad des LLM?) — die Prämissen-Validierung für EIR;
   ebenfalls LLM-/budget-gated, noch offen.
 
+### Eintrag 2026-06-29 (VII) — Den Router härten: Property-Invarianten, ein Unicode-Determinismus-Loch, und eine Ontologie als reiner Mess-Kanal
+
+**[Kontext]** Auf die Frage „welche Librarys noch in den Router?" war die ehrliche Antwort zuerst ein
+**Negativbefund**: der Live-Router ist bereits zu 100 % Standardlib (nachgemessen — kein numpy,
+networkx, LLM, kein Netz). ChatGPTs ganze „nicht einbauen"-Liste war schon eingehalten; es gab nichts
+zu entfernen. An zwei Stellen habe ich *widersprochen* (kein `enum` — String-Konstanten sind
+replay-/JSON-stabiler; kein `statistics`/`lru_cache` ohne gemessenen Bedarf — `provenance` rechnet
+count-basiert, nicht entropisch). Zwei Vorschläge trafen aber etwas Echtes.
+
+**[Eingriff → das Unicode-Determinismus-Loch]** Der Subject-Key (`subject.py`) tokenisierte mit einem
+ASCII-Regex und `.lower()` — **ohne** Unicode-Normalisierung. Folge: zwei *kanonisch gleiche* Strings
+ergaben je nach Form verschiedene Keys — „café" als NFC (`é`=U+00E9) → Token `caf`, als NFD
+(`e`+kombinierender Akzent) → Token `cafe`. Quelltext kommt in beiden Formen (NFD von macOS, NFC sonst),
+also bekamen byte-verschiedene-aber-identische Eingaben verschiedene Subject-Keys — genau die stille
+Nicht-Determinismus, die der Key *beseitigen* soll. `_fold()` (NFKD → kombinierende Marks weg →
+lowercase) schließt das **und** lässt akzentuierte Latein-Wörter über ihre Basisbuchstaben mitspielen
+statt am Umlaut abzubrechen (ein Gewinn auf genau den mehrsprachigen Daten, die CLSP einspeist). +2
+Regressionstests. Ein kleiner Fix, aber an einer load-bearing Stelle: der Subject-Key ist die Scope-
+Identität, an der #5/#6 hängen.
+
+**[Eingriff → Property-Tests]** Beispiel-Tests pinnen Fälle; **Hypothesis** pinnt die *Gesetze*, an
+denen der Router hängt — test-only, der Live-Router bleibt stdlib-only. Sieben Invarianten gegen die
+echten APIs: CLSP-Leitsprach-Regel (un-verankert/over-amplified nie promotbar), keine autoritative
+Drift (promoted ⇒ lead-anchored), Determinismus (gleicher Report ⇒ gleiche Entscheidung + Audit-Hash),
+Sortier-Invarianz, monotone Vorsicht / k-Stabilität (Opposition hinzufügen de-eskaliert nie, gewährt
+nie ein zurückgehaltenes Update) und „kein Free Update" (`may_update` nie neben einem ausstehenden
+Verifier; ein fehlschlagender Verifier blockt den Vorschlag). Das sind genau die Regeln, die ein
+einzelner Beispiel-Test unterabdeckt.
+
+**[Eingriff → Ontology Probe, evidence-first] Eine Ontologie als Kanal, nicht als Autorität.** Auf den
+Vorschlag (OpenCyc & Co.) gebaut — aber an der Architektur-Grenze entlang, exakt die CLSP-Form: ein
+pluggable, **fail-open** Adapter *erzeugt* Typ-/Sinn-Hinweise; ein deterministischer Kern klassifiziert;
+der Router konsumiert nur fertige Felder. Drei strukturell erzwungene Invarianten: (1) **`may_gate` ist
+eine konstante Property, kein Feld** — ein Hint kann nie autorisieren; (2) **trennt-nur/asymmetrisch:**
+`scope_uncertain` darf einen `same_scope`/Supersession-Flag nur *zurückhalten* (Over-Fire senken — das
+#5-Leck), nie Gleichheit oder Konflikt *behaupten*; Wissens-Abwesenheit behauptet nichts; (3)
+**fail-open & offline:** fehlender Korpus → `unavailable`-Hint, nie eine Exception in der Gate. WordNet
+als Referenz-Offline-Adapter (klein, kein Netz), OpenCyc als *späterer* optionaler Kanal — nicht der
+Default, weil eine 2012er Upper-Ontology gerade Jonis Forschungsvokabular (`mllm`, `mid-ir`) am
+schlechtesten abdeckt.
+
+**[Schluss → die Disziplin, wörtlich wiederholt]** Bewusst **nicht** in die Live-Gate verdrahtet. Wie
+bei #5: erst der **Coverage-Shadow** (`shadow/ontology_coverage_shadow.py`) misst auf Jonis echtem
+Graphen, ob die Probe überhaupt greift — Addressable Pool (Same-Subject-Kollisionsgruppen),
+Ontologie-Abdeckung der realen Token, softbar-machbare Gruppen. Ohne Korpus ist die Abdeckung **0**,
+und genau das berichtet der Shadow ehrlich, statt sie zu fingieren. „An Fixtures bewiesen ≠ in
+Produktion übernehmbar" — dieselbe Trennung, die diesen Bericht durchzieht.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| Subject-Key NFC-Fold | **2 · belegt** | composed/decomposed teilen den Key; +2 Tests, ruff sauber |
+| Property-Invarianten (Hypothesis) | **2 · belegt** | 7 Properties grün; 117 Router-Tests; Hypothesis nur in Tests, Runtime stdlib-only |
+| Ontology Probe (Kern + Regeln) | **2 · im Benchmark belegt** | 13 Tests (may_gate-Invariante, fail-open, trennt-nur + Symmetrie/Monotonie) |
+| Ontology Probe auf Echtdaten | **0 · Coverage-gated** | Shadow gebaut; ohne Korpus 0 Abdeckung — Adoption an die Realmessung gebunden, nicht an Fixtures |
+
+**[Offen]**
+- *Coverage-Shadow auf dem echten v2-Graphen laufen lassen* (sobald ein `state/layer9_v2.sqlite`
+  vorliegt) — die Zahl, die entscheidet, ob die Ontology Probe mehr als eine saubere Idee ist.
+- *WordNet/OpenCyc-Korpus bereitstellen* — sonst bleibt der Kanal ein stiller No-op (ehrlich, aber
+  wirkungslos).
+- *Erst bei nicht-trivialer Abdeckung:* die trennt-nur-Regel in die `same_scope`/Supersession-Logik
+  einhängen — und nur dort, wo der Shadow sie rechtfertigt.
+
