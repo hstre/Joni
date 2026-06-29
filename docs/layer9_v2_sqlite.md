@@ -231,3 +231,31 @@ the flag.
 What this does **not** do: the per-emit O(n²) snapshot hashing *inside a running cycle* is a kernel
 concern (`desi_layer9.hashing` / the submit path) and is out of scope here — this backend fixes the
 load/replay hang and the multi-MB JSON rewrite, not the kernel's in-cycle hashing.
+
+### 9a. Cold-start checkpoint — the first load without a replay
+
+The SQLite backend fixes **warm** loads (restore from the store). But the *first* adoption goes
+JSON→SQLite via `persistence.load`, which **replays the journal** unless the fast-load sidecar
+matches — and on a fresh CI runner it never does, so the cold start re-hits the >100-min replay that
+parked the loop. Root cause, confirmed in the kernel: `hashing.chain_event` sets
+`after_hash = snapshot_hash(state)` on **every** ledger emit, and `snapshot_hash` hashes all ~22k
+objects — so a full replay (≈15k emits) is **O(n²)**. (`verify_chain` is O(n) and does not recompute
+`after_hash`, so verifying a checkpoint is cheap; only *producing* the state by replay is expensive.)
+
+The fix is a **committed, compact materialised checkpoint** — the journal stays the source of truth,
+the checkpoint is a *verified cache*:
+
+- `desi_store.write_checkpoint(state, path)` — the kernel's snapshot (dead `measurement.pairs` blobs
+  stripped to stay git-friendly) + the `snapshot_hash` it seals to.
+- `desi_store.load_via_checkpoint(json, checkpoint)` — restore **without replay**, accepted **only**
+  if its hash matches the committed journal's recorded `snapshot_hash` **and** `verify_chain` passes;
+  otherwise `None` → the caller replays. A stale/absent checkpoint is never trusted, only ever skips
+  work.
+- `core_state` cold-start order: SQLite store → checkpoint → (last resort) full replay. `save()`
+  re-seals the checkpoint **every cycle** and writes the journal, so a fresh CI job restores the
+  committed `state/layer9.checkpoint.json` (≈0.8 s) instead of cold-replaying.
+- `python -m joni.autonomy checkpoint` — the one-time bootstrap / manual re-seal.
+
+The one-time bootstrap pays a single full replay (done once, locally, and committed); **CI then never
+replays**. This is what makes unparking the loop safe — the separate, operator-gated next step. It is
+still **not** the root fix: the per-emit O(n²) inside a running cycle remains the kernel's Phase A.

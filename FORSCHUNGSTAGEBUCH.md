@@ -1443,3 +1443,60 @@ möglich, ist aber eine *nicht-deterministische* Entscheidung und damit ein eige
 - *Live-Schaltung* der nun fünf charakterisierten Vektoren bleibt die nächste, ausdrücklich
   operator-gated Entscheidung — die Evidenz dafür steht jetzt vollständig.
 
+### Eintrag 2026-06-29 (IV) — „Live schalten" stößt auf den geparkten Loop: der Kaltstart-Hang an der Wurzel, und sein Fix
+
+**[Entscheidung]** Der Betreiber gab die Freigabe: die fünf Vektoren **steuernd live** schalten und
+den Loop **entparken**. Bevor ich etwas Outward-Facing an einem autonomen, selbst-committenden System
+scharf schalte, habe ich das auf eine *verifizierbare* Tatsache gegated statt blind zu flippen: **lädt
+der SQLite-Kaltstart auf dem echten Zustand schnell — oder triggert er den Replay-Hang neu, der den
+Loop geparkt hat?**
+
+**[Messergebnis — der Gate-Befund]** `load_or_migrate` mit `JONI_PERSISTENCE=sqlite` lief **>5 Minuten
+ohne durchzukommen**. Das SQLite-Backend behebt **warme** Loads (Restore aus dem Store), aber der
+**allererste** Load geht JSON→SQLite über `persistence.load` — und das **replayt das Journal**, weil
+der Fast-Load-Sidecar veraltet ist (Hash-Mismatch → Replay-Fallback). Auf einem frischen CI-Runner:
+kein passender Cache → Kaltstart → Hang. Exakt der offene Punkt aus Eintrag 06-26: *kaschiert, nicht
+beseitigt.* **Blind entparken hätte den ersten CI-Zyklus aufgehängt** und das autonome System kaputt
+hinterlassen — also gestoppt und gemeldet, statt scharf geschaltet.
+
+**[Schluss → die Wurzel, im Kernel bestätigt]** Nicht vermutet, sondern gelesen: `hashing.chain_event`
+(bei **jedem** Ledger-Emit aufgerufen) setzt `ev.after_hash = snapshot_hash(state)` — und
+`snapshot_hash` hasht **alle ~22k Objekte** (sortiert, kanonisch). 15k Emits × O(Objekte) = **O(n²)**.
+Das ist die per-Emit-Quadratik (Phase A des Umbau-Plans), die jeden Voll-Replay minuten-bis-stündlich
+macht. `verify_chain` dagegen ist O(n) und rechnet `after_hash` *nicht* nach — die Chain-Verifikation
+ist billig, nur die Erzeugung ist teuer.
+
+**[Eingriff] Der Kaltstart-Fix: ein committeter Materialisierungs-Checkpoint (kein Replay beim Laden).**
+Das Journal bleibt die Quelle der Wahrheit; der Checkpoint ist ein *verifizierter Cache*:
+- `desi_store.write_checkpoint` — kompakter materialisierter Snapshot (tote `measurement.pairs`-Blobs
+  gestrippt) + der `snapshot_hash`, auf den er sich versiegelt.
+- `desi_store.load_via_checkpoint` — restauriert **ohne Replay**, akzeptiert **nur**, wenn der Hash zum
+  committeten Journal passt **und** die Ledger-Chain verifiziert; sonst `None` → Caller replayt. Ein
+  veralteter/fehlender Checkpoint wird nie vertraut, er spart nur Arbeit.
+- `core_state`-Kaltstart: SQLite-Store → Checkpoint → (letzter Ausweg) Replay. `save()` versiegelt den
+  Checkpoint **jeden Zyklus** neu **und** schreibt das Journal → ein frischer CI-Job restauriert den
+  committeten Checkpoint statt zu replayen.
+- `joni.autonomy checkpoint` — der einmalige Bootstrap.
+
+**[Schluss → warum das den Kaltstart wirklich löst]** Den ~2h-Replay zahle **ich einmal lokal**,
+committe `state/layer9.checkpoint.json` — danach **replayt CI nie** (Restore ~0,8 s, kein OOM). Das ist
+der Unterschied zur Cache-Band-Aid von 06-23: der Checkpoint ist **committed** (überlebt den frischen
+Runner), nicht git-ignoriert. Kernel **unangetastet** (die per-Emit-Quadratik selbst bleibt Phase A,
+human-gated); der Loop **nicht** entparkt.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| Kaltstart-Fix-*Mechanismus* (checkpoint restore/seal) | **1 · gebaut + getestet** | 3 Tests (Round-Trip ohne Replay, veralteter Hash abgelehnt, fehlend→None); volle v2-Suite grün; ruff |
+| Bootstrap-Checkpoint (echte Daten) | **0 → in Arbeit** | einmaliger O(n²)-Replay (~2h) läuft; committed, sobald erzeugt |
+| Entparken + steuernd live | **0 · operator-gated** | erst nach committetem Checkpoint sicher; bewusst danach |
+
+**[Offen]**
+- *Bootstrap-Checkpoint committen* — sobald der einmalige Replay durch ist; dann Cold-Start verifiziert
+  schnell und Entparken ist sicher.
+- *Phase A (inkrementelles Hashing im Kernel)* bleibt der eigentliche Wurzel-Fix — der Checkpoint
+  *umgeht* die Quadratik beim Laden, beseitigt sie aber nicht im laufenden Zyklus. Human-gated.
+- *Entparken + Live-Steering* danach — der ausdrücklich operator-gated Schritt, jetzt mit sicherem
+  Kaltstart als Vorbedingung.
+

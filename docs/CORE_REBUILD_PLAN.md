@@ -85,6 +85,14 @@ them in order; do **not** drip-feed them into unrelated work.
   fallback is affordable), keep `JONI_PERSISTENCE=json` as the escape hatch for one release.
 - **Equivalence proof:** load(materialised) == replay(journal) on the real state; deliberate
   corruption triggers the replay fallback and is detected by the chain check.
+- **Shipped already (a partial, non-kernel step toward this):** a committed materialised **checkpoint**
+  (`desi_store.write_checkpoint` / `load_via_checkpoint`, wired into `core_state` cold-start; see
+  `docs/layer9_v2_sqlite.md` §9a). It restores state WITHOUT replay, accepted only if its hash matches
+  the committed journal and the chain verifies — the journal stays authoritative, the checkpoint is a
+  verified cache. This removes the cold-start replay (the loop-parking hang) without touching the
+  kernel; full Phase B (making the materialised store the *default* source of truth) is still the
+  gated step. Note it does **not** remove the per-emit O(n²) inside a cycle — that is Phase A, and the
+  one-time checkpoint bootstrap still pays one full replay until A lands.
 
 ### Phase C — model convergence (the big decision)
 
