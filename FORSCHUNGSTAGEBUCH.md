@@ -1500,3 +1500,58 @@ human-gated); der Loop **nicht** entparkt.
 - *Entparken + Live-Steering* danach — der ausdrücklich operator-gated Schritt, jetzt mit sicherem
   Kaltstart als Vorbedingung.
 
+### Eintrag 2026-06-29 (V) — Phase A: die per-Emit-Quadratik im Kernel an der Wurzel getötet
+
+**[Eingriff → Wurzel statt Symptom]** Der Betreiber hatte recht: der Checkpoint rettet den *Kaltstart*,
+aber `chain_event` rechnete **pro Emit** weiter `snapshot_hash` über alle ~22k Objekte — der laufende
+Zyklus wäre beim nächsten großen Lauf wieder an der Last erstickt. Also Phase A vorgezogen: das
+eigentliche, kleinste-Eingriff-größte-Hebelwirkung-Problem.
+
+**[Schluss → der Befund, der den Eingriff klein machte]** Die Analyse war der schwere Teil, nicht der
+Code: (1) `event_canonical` schließt `after_hash` ein → der Hash ist in die Chain eingebacken → der
+Wert *muss* sich ändern → einmaliges Re-Sealing. (2) Objekte werden in-place mutiert, aber **jeder
+Handler gibt `changed` zurück** = die vollständige Liste berührter Objekte (schon für die Ledger-
+`output_refs` genutzt). Damit war der Dirty-Contract bereits vorhanden — keine 20 Sites einzeln zu
+auditieren.
+
+**[Eingriff]** Neues Schema (`hashing.py`): ein **order-unabhängiger additiver Set-Hash** — Summe mod
+2²⁵⁶ von `sha256(object_canonical(o))` über alle Objekte. Hinzufügen/Ändern/Entfernen *eines* Objekts
+aktualisiert eine gepflegte laufende Summe in O(1) → **jeder Emit O(1), Replay O(n)**.
+Kollisionsresistenz = die des sha256 über die Objekt-Multimenge; `object_canonical` unverändert, also
+bleibt `record_object_hash` der Beitrag jedes Objekts. `core.py:_emit` hält die Summe exakt (rehasht
+`input_refs ∪ output_refs` + die Proposal/Decision-Lifecycle-Mutationen nach dem Emit);
+`snapshot.restore` baut sie neu auf.
+
+**[Messergebnis — der Beweis]** Voll-Replay des echten Journals: **8,1 s** (vorher **>2h**), Objekte
+byte-identisch (39.568), Chain verifiziert. Das **Äquivalenz-Oracle**
+(`test_layer9_incremental_hash`) spielt echte + synthetische Operator-Sequenzen durch und prüft bei
+*jedem* Emit den gepflegten Hash gegen eine Voll-Neuberechnung — ein verpasster Mutations-Site kann
+nicht still durchgehen. **Es hat während der Entwicklung drei gefangen** (Proposal-`ledger_event`, die
+`changed`-`ledger_event`/`status` nach dem Emit, das Decision-Objekt) — genau die Sicherheits-Funktion,
+für die es da ist.
+
+**[Schluss → ehrliche semantische Verschiebung]** `snapshot_hash` ist jetzt ein *gepflegter* Wert, kein
+Von-Grund-auf-Neuberechnen pro Aufruf. In-Band (der einzige Schreibpfad ist `submit`→`_rehash`) bleibt
+er exakt (das Oracle garantiert es). Ein **out-of-band** White-Box-Tamper eines gespeicherten Objekts
+wird jetzt von `snapshot_hash_full` (Neuberechnung) gefangen statt vom gepflegten Wert — drei
+Integritäts-Tests wurden entsprechend umgestellt. **Die Produktions-Tamper-Evidenz ist voll intakt:**
+beim Laden replayt `from_doc`, baut die Summe inkrementell und prüft `snapshot_hash == recorded` +
+`verify_chain`; ein manipuliertes Journal fliegt auf. Benennen statt kaschieren.
+
+**[Migration]** `state/layer9.json` einmalig re-sealt (Recorded-Hash `d5ee..`→`a8335..`, Journal-
+Einträge + Objekte byte-identisch). Volle Suite: nur die 9 bekannten Embedding-Failures. ruff sauber.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Phase A · inkrementelles Hashing | **2 · belegt** | Replay >2h→8,1s; Oracle (real+synthetisch) bei jedem Emit gleich; 744 Tests (−9 Embedding) |
+| In-Cycle-O(n²) | **beseitigt** | jeder Emit O(1) statt O(n) |
+| Kaltstart | **doppelt abgesichert** | Replay jetzt 8s **und** der Checkpoint-Pfad bleibt als Optimierung |
+
+**[Offen]**
+- *`joni_core.lock` auf die desi_layer9-Kernel-Dateien ausweiten* — der Lock deckt heute nur
+  `src/joni/*.py`; Phase A hat den vendored Kernel berührt. Eigene, gated Governance-Aktion.
+- *Entparken + Live-Steering* — jetzt **technisch sicher** (kein In-Cycle- und kein Kaltstart-O(n²)
+  mehr); bleibt die ausdrücklich operator-gated Entscheidung.
+

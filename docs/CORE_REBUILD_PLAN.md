@@ -57,7 +57,17 @@ Identical to #167 §2, restated because they bind the whole rebuild:
 Each phase is independently shippable, flag-guarded where possible, and ends with a re-`lock`. Do
 them in order; do **not** drip-feed them into unrelated work.
 
-### Phase A — incremental snapshot hashing (kernel)
+### Phase A — incremental snapshot hashing (kernel) ✅ DONE (2026-06-29, `a62a9e0`)
+
+> **Shipped.** The snapshot hash is now an order-independent additive set hash (sum mod 2²⁵⁶ of
+> sha256(object_canonical)), maintained in O(1) per object change in `desi_layer9/core.py:_emit`.
+> Each emit is O(1), replay is O(n): the **full real-journal replay dropped from >2h to 8.1s**,
+> objects byte-identical (39 568), chain verifies. An equivalence oracle
+> (`tests/test_layer9_incremental_hash.py`) asserts the maintained hash equals a from-scratch
+> recompute at every emit over real + synthetic operator sequences (it caught three missed mutation
+> sites during development). `state/layer9.json` was re-sealed under the new scheme (recorded hash
+> changed, journal/objects identical). Remaining: extend `joni_core.lock` to the touched kernel files
+> (a separate gated action).
 
 - **Goal:** kill the in-cycle O(n²). Maintain the snapshot hash **incrementally** as objects change
   instead of re-hashing all objects per emit.
