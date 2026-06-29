@@ -1550,8 +1550,10 @@ Einträge + Objekte byte-identisch). Volle Suite: nur die 9 bekannten Embedding-
 | Kaltstart | **doppelt abgesichert** | Replay jetzt 8s **und** der Checkpoint-Pfad bleibt als Optimierung |
 
 **[Offen]**
-- *`joni_core.lock` auf die desi_layer9-Kernel-Dateien ausweiten* — der Lock deckt heute nur
-  `src/joni/*.py`; Phase A hat den vendored Kernel berührt. Eigene, gated Governance-Aktion.
+- ~~*`joni_core.lock` auf die desi_layer9-Kernel-Dateien ausweiten*~~ — **erledigt** (`43fc270`):
+  `compute_core_hashes` deckt jetzt jede `desi_layer9/*.py` (13 → 30 Einträge, dynamisch entdeckt),
+  `verify` grün. Ein autonomer Lauf, der den Kernel änderte, würde jetzt fail-safe stoppen — genau wie
+  für den `src/joni`-Core.
 - *Entparken + Live-Steering* — jetzt **technisch sicher** (kein In-Cycle- und kein Kaltstart-O(n²)
   mehr); bleibt die ausdrücklich operator-gated Entscheidung.
 

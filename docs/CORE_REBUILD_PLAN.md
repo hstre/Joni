@@ -66,8 +66,9 @@ them in order; do **not** drip-feed them into unrelated work.
 > (`tests/test_layer9_incremental_hash.py`) asserts the maintained hash equals a from-scratch
 > recompute at every emit over real + synthetic operator sequences (it caught three missed mutation
 > sites during development). `state/layer9.json` was re-sealed under the new scheme (recorded hash
-> changed, journal/objects identical). Remaining: extend `joni_core.lock` to the touched kernel files
-> (a separate gated action).
+> changed, journal/objects identical). **The lock extension is done** (`43fc270`): `joni_core.lock`
+> now also covers every `desi_layer9/*.py` (13 → 30 entries), so the kernel the lock claims to
+> protect is actually frozen.
 
 - **Goal:** kill the in-cycle O(n²). Maintain the snapshot hash **incrementally** as objects change
   instead of re-hashing all objects per emit.
