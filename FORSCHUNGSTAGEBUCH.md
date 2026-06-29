@@ -1260,3 +1260,76 @@ schiebt.** Gehört notiert, nicht geglättet.
   (`joni.state.Layer9` / `desi_layer9.Layer9` / dreiräumig) müssen irgendwann zu einer werden; die
   Entscheidung steht aus.
 
+### Eintrag 2026-06-29 — Der Router-Blindspot-Fix trifft auf Jonis echten Graphen: ein ehrlicher Negativbefund, dann die Strukturursache
+
+**[Kontext]** Parallel zum Layer-9-Umbau lief die andere Linie weiter: der DESi-Router hat einen
+benannten Blindspot — einen **plausibel falschen State-Slice** (sieht kohärent aus, aber eine
+relevante Gegen-Evidenz, Supersession oder Quelle fehlt). Auf einen externen Ideen-Satz (ChatGPT) hin
+sind in der DESi-Governance **drei deterministische Checks** entstanden (kein LLM-Judge): *missing
+opposition* (der Graph hält Widerspruch, den der Slice auslässt), *provenance entropy* (viele Claims,
+eine Wurzelquelle / all-derived / stale), *scope match* (korrekter Claim, falscher Scope). An einem
+adversarialen Fixture-Set (PWS) treiben sie `false_clean` **1.0 → 0.0** bei **0.0 over_caution** — auf
+*konstruierten* Fällen. Die ehrliche Frage blieb: **feuern sie auf Jonis echten Daten?**
+
+**[Eingriff]** Ein **reiner Beobachter** (`shadow/slice_quality_shadow.py` + `layer9_v2/checks/
+slice_scan.py`): er hängt die Checks an Jonis echten v2-Graphen (Converter-Output, 21.987 Objekte),
+projiziert pro Topic den Slice + einen slice-unabhängigen Graph-Scan in DESis `DesiReport`, ruft das
+echte `select_mode` und aggregiert die Feuerrate. Schreibt nie Joni-State, fasst den Loop nicht an.
+
+**[Messergebnis — der Negativbefund]** Erste Messung (287 Topics): **missing_opposition 0.0,
+thin_provenance 0.01 (3/287), scope_mismatch 0.0.** Die Checks feuern praktisch **nie**. Bewusst
+**nicht** als „funktioniert" verbucht — der erste Reflex (mehr Checks = mehr Sicherheit) ist genau der,
+vor dem dieses Tagebuch warnt. Stattdessen: *warum* feuert es nicht?
+
+**[Schluss → die Strukturursache]** Die Analyse der 78 `contradicts`-Kanten war eindeutig und kippte
+meine erste Hypothese: **alle 78 Kanten haben *beide* Endpunkte `contested` — kein einziger aktiver
+Claim berührt einen Widerspruch**, und alle sind *same-topic*. Heißt: **Jonis Gate partitioniert bei
+einer Konfliktregistrierung beide Seiten aus `active` heraus** (nach `contested`). Die Opposition lebt
+also vollständig im inaktiven Teilgraphen. Folge:
+- Auf **Topic-Granularität** kann nichts „ausgelassen" sein: beide contested Partner liegen im
+  *selben* Topic-Slice — der Slice ist korrekt **zweiseitig**. Auch `active+contested` ändert das
+  nicht (beide bleiben co-präsent).
+- Der Hebel ist die **per-Claim-Granularität**: der contested Partner eines *einzelnen* Claims liegt
+  außerhalb des Ein-Claim-Slice → ausgelassen → der Check feuert.
+
+**[Messergebnis — mit dem Hebel]** Auf 1.366 lebenden Claims (active+contested):
+
+| Konfiguration | missing_opposition | thin_provenance | scope |
+|---|---|---|---|
+| topic / active | 0/287 | 3/287 | 0 |
+| topic / active+contested | 0/287 | 3/287 | 0 |
+| **claim / active+contested** | **90/1366 (6,6 %)** → 90× `guarded` | 41/1366 (3 %) | 0 |
+
+**[Schluss → was das wirklich sagt]** Drei Dinge, alle ehrlich:
+1. **Die Checks sind nicht kaputt — Jonis Graph ist flach.** Die Mechanik ist an Fixtures bewiesen;
+   ob sie *greift*, entscheidet die **Struktur in den Daten**, nicht der Code. Genau die Trennung, die
+   dieses Tagebuch durchzieht: Apparatur ≠ Wirkung.
+2. **Die richtige Granularität ist die Antwort-Slice (per-Claim), nicht das Topic.** Bei Topic trägt
+   der Slice beide Seiten (gut); bei per-Claim wird der ausgelassene contested Partner korrekt
+   geflaggt (6,6 % → `guarded`). Das ist eine konkrete Design-Vorgabe für die spätere Live-Schaltung.
+3. **`scope` bleibt strukturell tot** (0/1366): **kein** Joni-Claim trägt einen Scope-Tag (0/1622).
+   Der Check kann nicht feuern, bis das Claim-Modell Scope führt. Benennen statt kaschieren.
+
+**[Schluss → eigener Fehler, ungeschönt]** Mein Shadow scannte zuerst **nur `active`** — und verfehlte
+damit die Definition des Routers selbst, der `active` **oder** `contested` als „lebend" behandelt.
+Hätte ich das übernommen statt gegenzuprüfen, wäre der Negativbefund (0 %) als „kein Risiko vorhanden"
+durchgegangen, obwohl 90 Claims sehr wohl einen ausgelassenen Widerspruch tragen. Die Lehre wiederholt
+sich: **ein 0-Ergebnis ist eine Frage, kein Beweis** — erst die Strukturanalyse trennt „feuert nicht,
+weil sauber" von „feuert nicht, weil falsch gemessen".
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| 3 deterministische Checks (DESi-Governance) | **2 · im Benchmark belegt** | PWS false_clean 1.0→0.0, over_caution 0.0; 80-Fälle-Benchmark unverändert |
+| Verdrahtung an Jonis echten v2-Graphen (Shadow) | **1 · gebaut + auf Echtdaten gemessen** | 90/1366 per-Claim feuern → guarded; reiner Beobachter, kein Loop-Effekt |
+| Live-Schaltung (Router steuert Joni) | **0** | bewusst nicht; erst per-Claim-Granularität + Scope-Tags im Datenmodell, dann Operator-Freigabe |
+
+**[Offen]**
+- *Per-Claim als Default für den Live-Check* — die Granularität, bei der der Blindspot in Joni
+  überhaupt sichtbar wird.
+- *Scope-Tags ins Claim-Modell* — sonst bleibt einer der drei Checks dauerhaft wirkungslos.
+- *#2 k-Sensitivität / #5 SPO-Supersession / #7 Anti-Delphi-Slice-Angriff* aus dem Ideen-Satz sind
+  noch offen; #5 ist in Joni durch Text+Topic-Claims (keine Subject-Predicate-Object-Tripel)
+  teilblockiert.
+

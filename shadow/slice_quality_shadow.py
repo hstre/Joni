@@ -42,7 +42,7 @@ class _Snap:
 
 
 def live_claims_by_topic(conn, statuses: tuple[str, ...]) -> dict[str, list[str]]:
-    """topic -> live claim ids (``statuses`` = the router's live set: active or active+contested)."""
+    """topic -> live claim ids (``statuses`` = the router's live set, e.g. active+contested)."""
     placeholders = ",".join("?" for _ in statuses)
     by_topic: dict[str, list[str]] = {}
     for oid, payload in conn.execute(
