@@ -1333,3 +1333,60 @@ weil sauber" von „feuert nicht, weil falsch gemessen".
   noch offen; #5 ist in Joni durch Text+Topic-Claims (keine Subject-Predicate-Object-Tripel)
   teilblockiert.
 
+### Eintrag 2026-06-29 (II) — Der Rest gemessen, und mit Evidenz übernommen (nicht alles)
+
+**[Eingriff]** Die restlichen drei Ideen aus dem Satz sind gebaut — alle deterministisch, kein
+LLM-Judge: **#5 Supersession** (`supersession.py`: ein *neuerer* Geschwister-Claim mit gleichem
+Scope, den der Slice auslässt — „silent staleness", ohne Widerspruchskante, Claim noch aktiv),
+**#2 k-Stabilität** (`k_stability.py`: weitet man den Slice und der Modus eskaliert / das Update
+fällt weg → fragil), und **#7 Anti-Delphi-Slice-Angriff** (`slice_attack.py`: *ein* Einstiegspunkt,
+der alle fünf Vektoren als Falsifikationspass fährt und meldet, welche feuern — ein Slice
+„überlebt" nur, wenn keiner feuert). Am PWS-Benchmark schließen jetzt **alle fünf** Vektoren:
+blind→aware `false_clean` **1.0 → 0.0** je Subset (opp/prov/scope/super/kstab), `over_caution`
+**0.0**, das 80-Fälle-Benchmark unverändert. Das ist die *konstruierte* Evidenz.
+
+**[Messergebnis — die ECHTE Evidenz, per-Claim auf 1.366 lebenden Claims]** Genau hier zahlt sich das
+„übernehmen *mit Evidenz*" aus — denn die Fixtures hätten die Übernahme von #5 gerechtfertigt, die
+Realdaten tun es **nicht**:
+
+| Vektor | Feuerrate (real) | Urteil |
+|---|---|---|
+| missing_opposition (#3) | **6,6 %** (90/1366) → guarded | **übernehmen** — selektiv |
+| thin_provenance (#4) | **3,0 %** (41/1366) | **übernehmen** — selektiv |
+| **same_scope_newer (#5)** | **64,8 %** (885/1366) | **NICHT übernehmen** — over-fire |
+| scope_mismatch (#6) | 0 % | strukturell tot (keine Scope-Tags) |
+| k_unstable (#2) | 0,4 % (5/1366) | marginal |
+
+**[Schluss → die Evidenz-Entscheidung]** Übernommen wird nur, was die Realdaten tragen:
+1. **#3 + #4 übernehmen.** 6,6 % / 3,0 % — selektiv, keine Über-Eskalation. Genau die Hotspots, die
+   ein Antwort-Slice übersehen würde.
+2. **#5 *nicht* übernehmen — der Over-Fire ist der Befund.** Bei 64,8 % würde jeder Claim, der nicht
+   der neueste seines Topics ist, geflaggt → das wäre das `always_guarded` der Phase-3-Falle, nur an
+   anderer Stelle. Ursache: **Topic ist ein zu grober Stellvertreter für „Scope".** #5 ist an
+   Fixtures korrekt, aber auf Jonis Daten erst brauchbar, wenn Claims echte Scope-/Subjekt-Identität
+   tragen (dieselbe Lücke wie #6). Hätte ich nur die Fixtures gesehen, hätte ich #5 fälschlich
+   scharf geschaltet — die Realmessung verhindert genau das.
+3. **#6 bleibt blockiert** (0 %, kein Scope-Tag im Datenmodell). **#2 ist marginal** (0,4 %): in Joni
+   *löst* das Weiten eines Slice die Auslassung meist auf (der contested Partner ist same-topic und
+   taucht im breiteren Slice auf), statt neue Gefahr zu enthüllen — die Instabilität zeigt also nach
+   „sicherer", nicht nach „gefährlicher". Ein ehrliches, leicht kontraintuitives Detail.
+
+**[Schluss → das Prinzip, an dem das hängt]** „Mit Evidenz übernehmen" heißt hier wörtlich: **die
+Adoption jedes Checks ist an eine Realmessung gebunden, nicht an den Fixture-Erfolg.** Drei von fünf
+Vektoren sind an Fixtures bewiesen *und* auf Realdaten brauchbar (übernehmen); einer over-fired
+(zurückgehalten, mit benanntem Datenbedarf); einer ist datenblockiert. Genau die Trennung, vor deren
+Verwechslung dieses Tagebuch durchgehend warnt: **an Fixtures bewiesen ≠ in Produktion übernehmbar.**
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| 5 Vektoren + `attack_slice` (#7) in DESi | **2 · im Benchmark belegt** | PWS false_clean 1.0→0.0 über alle 5; 86 Tests; 80-Fälle unverändert |
+| Realmessung auf Jonis Graph (per-Claim) | **2 · auf Echtdaten belegt** | 1.366 Claims; Feuerraten 6,6/3,0/64,8/0/0,4 % — reiner Beobachter |
+| Übernahme #3+#4 als scharfe Checks | **1 · evidenzgestützt entschieden** | selektiv, kein Over-Fire; Live-Schaltung weiter Operator-gated |
+
+**[Offen]**
+- *Scope-/Subjekt-Identität ins Claim-Modell* — schaltet #5 **und** #6 erst sinnvoll frei (heute der
+  Flaschenhals für zwei der fünf Vektoren).
+- *#5 zurückgehalten* bis dahin — als gebaut+gemessen dokumentiert, bewusst nicht scharf.
+
