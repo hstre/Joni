@@ -41,6 +41,11 @@ PROTECTED_CORE: tuple[str, ...] = (
     "autonomy/governance.py",   # the guard guards itself
 )
 
+# The vendored DESi engine (``src/desi_layer9/``) IS the protected core too — it carries the
+# deterministic state, the gate, the integrity hashing and replay. The lock historically covered
+# only ``src/joni/*.py``; Phase A (incremental hashing) touched the kernel, so the lock now covers
+# every kernel module — discovered dynamically, so a re-``lock`` always freezes the current set.
+
 # Paths (relative to repo root) autonomous runs are allowed to write/commit.
 PERIPHERAL_WRITE_ALLOW: tuple[str, ...] = (
     "state/",
@@ -59,10 +64,23 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _kernel_modules() -> list[str]:
+    """Every desi_layer9 kernel module, as a ``desi_layer9/<file>.py`` name relative to ``src/``.
+    Discovered dynamically so a re-``lock`` always covers the current engine, additions included."""
+    pkg = _package_dir().parent / "desi_layer9"
+    return sorted(f"desi_layer9/{p.name}" for p in pkg.glob("*.py"))
+
+
 def compute_core_hashes() -> dict[str, str]:
-    """Current sha256 of every protected-core module."""
-    base = _package_dir()
-    return {name: _sha256(base / name) for name in PROTECTED_CORE}
+    """Current sha256 of every protected-core module — the ``src/joni`` modules plus the whole
+    vendored desi_layer9 kernel. ``src/joni`` names resolve against ``src/joni``; ``desi_layer9/..``
+    names resolve against ``src``."""
+    base = _package_dir()                 # src/joni
+    src = base.parent                     # src
+    hashes = {name: _sha256(base / name) for name in PROTECTED_CORE}
+    for name in _kernel_modules():
+        hashes[name] = _sha256(src / name)
+    return hashes
 
 
 def write_lock(repo_root: Path | str = ".") -> Path:

@@ -7,7 +7,9 @@ from joni.autonomy import governance
 
 def test_core_hashes_cover_all_protected_modules():
     hashes = governance.compute_core_hashes()
-    assert set(hashes) == set(governance.PROTECTED_CORE)
+    assert set(governance.PROTECTED_CORE) <= set(hashes)     # the src/joni core modules
+    kernel = {k for k in hashes if k.startswith("desi_layer9/")}
+    assert {"desi_layer9/core.py", "desi_layer9/hashing.py", "desi_layer9/persistence.py"} <= kernel
     assert all(len(h) == 64 for h in hashes.values())
 
 
