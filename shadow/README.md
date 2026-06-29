@@ -97,10 +97,22 @@ cycle's state — the per-cycle gate selectivity is observable over time without
 
 Runs the five DESi plausible-wrong-slice vectors (missing-opposition / same-scope-newer /
 thin-provenance / scope-mismatch / k-unstable) over Joni's real v2 graph and aggregates the per-vector
-fire-rate. This is what turned three fixtures-passing checks into an evidence-based adoption: per-claim
-on 1 366 live claims, `missing_opposition` 6.6 % and `thin_provenance` 3.0 % fire selectively (adopt),
-`same_scope_newer` over-fired at 64.8 % with topic-scope (held back until a real subject key), `scope`
-is dead without scope tags (0 %), `k_unstable` marginal (0.4 %).
+fire-rate. This is what turns fixtures-passing checks into an evidence-based adoption.
+
+**Latest reading — per-claim, 2 486 live claims (`active`+`contested`), v2 graph:**
+
+| vector | fire-rate | verdict |
+|---|---|---|
+| missing_opposition (#3) | 6.4 % (158) | selective — adopt |
+| same_scope_newer (#5) | **7.2 %** (180) | **now selective** (was 64.8 % with topic-scope) |
+| thin_provenance (#4) | 2.3 % (58) | selective — adopt |
+| scope_mismatch (#6) | 0 % | structurally dead (no scope tags in the model) |
+| k_unstable (#2) | 0.2 % (5) | marginal |
+
+The headline is #5: held back at **64.8 %** on 1 366 claims with a *topic* scope, it dropped to **7.2 %**
+once claims carried the deterministic subject key — the bet that "same subject" (not topic) is the
+right granularity, paid in by real data. Would-gate-update on 370/2 486; modes `state_slice` 2 328 /
+`guarded` 158.
 
 ```bash
 DESI_REPO=/home/user/DESi python shadow/slice_quality_shadow.py --granularity claim
@@ -128,6 +140,14 @@ DESI_REPO=/home/user/DESi python shadow/ontology_coverage_shadow.py --seed-demo 
 The default WordNet adapter is fail-open (0 coverage when the corpus is absent); `--seed-demo` makes the
 mechanism visible via a small, explicitly-labelled in-memory ontology. Adoption stays gated on a
 non-zero coverage reading — not on the fixtures.
+
+**Latest reading — 2 486 live claims, 2 030 subject keys, 2 271 distinct tokens:** addressable pool =
+**283** same-subject collision groups (739 claims). WordNet coverage **0** (no corpus → silent no-op).
+Demo seed: 4 covered ambiguous tokens (`agent`/`kernel`/`memory`/`model`), but **0 of 283** collision
+groups carry one — the 7 ambiguous-token keys are all singletons. **Conclusion: not adopted on this
+data** — Joni's collisions are genuine same-subject repeats, not homonymy, so the separate-only rule
+has no target here. The channel stays built + unit-correct, gated on a real corpus *and* evidence that
+homonymy collisions actually occur.
 
 ## Not yet (next increments)
 

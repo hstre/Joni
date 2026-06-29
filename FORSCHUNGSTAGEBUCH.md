@@ -1700,3 +1700,66 @@ Produktion übernehmbar" — dieselbe Trennung, die diesen Bericht durchzieht.
 - *Erst bei nicht-trivialer Abdeckung:* die trennt-nur-Regel in die `same_scope`/Supersession-Logik
   einhängen — und nur dort, wo der Shadow sie rechtfertigt.
 
+
+### Eintrag 2026-06-29 (VIII) — Die Messung gezogen: #5 ist jetzt selektiv, die Ontology Probe (noch) ohne Ziel
+
+**[Eingriff]** Die Apparatur stand seit Eintrag VII, die Zahl fehlte. Also gebaut, was bereitlag: den
+v2-Store aus dem aktuellen Snapshot materialisiert (Journal-Replay → `snapshot.capture` → 39.568
+Objekte, 16,2 s; Converter: 39.568 Objekte, 72.534 Kanten, Chain OK) und **beide Shadows** auf dem
+echten Graphen gefahren. Reiner Beobachter, kein Loop-Effekt.
+
+**[Messergebnis — der eigentliche Befund: #5 ist selektiv geworden]** Slice-Quality, per-Claim, auf
+**2.486 lebenden Claims** (gewachsen von 1.366):
+
+| Vektor | damals (1.366, Topic-Scope) | jetzt (2.486, Subjekt-Schlüssel) | Urteil |
+|---|---|---|---|
+| missing_opposition (#3) | 6,6 % | **6,4 %** (158) | stabil selektiv |
+| **same_scope_newer (#5)** | **64,8 %** (Topic) | **7,2 %** (180) | **Over-Fire weg** |
+| thin_provenance (#4) | 3,0 % | **2,3 %** (58) | stabil selektiv |
+| scope_mismatch (#6) | 0 % | 0 % | strukturell tot (keine Scope-Tags) |
+| k_unstable (#2) | 0,4 % | 0,2 % (5) | marginal |
+
+Das ist die Bestätigung, die Eintrag II/III schuldig blieben: #5 wurde damals **zurückgehalten**, weil
+es mit Topic-Scope auf 64,8 % over-fired („jeder Claim, der nicht der neueste seines *Topics* ist").
+Der deterministische **Subjekt-Schlüssel** (Eintrag III) + die **NFC-Härtung** (Eintrag VII) waren die
+Wette, dass „dasselbe Subjekt" die richtige Granularität ist. Die Realmessung zahlt sie ein: **64,8 % →
+7,2 %**. #5 ist jetzt im selben selektiven Band wie #3/#4 — die Evidenz trägt die Übernahme, die an
+Fixtures schon stimmte und an Realdaten bis hierher *nicht*.
+
+**[Messergebnis — der ehrliche Negativbefund: die Ontology Probe hat hier kein Ziel]** Coverage-Shadow
+auf denselben 2.486 Claims (2.030 Subjekt-Schlüssel, 2.271 distinkte Token):
+
+- **Addressable Pool:** 283 Kollisionsgruppen (gleicher Subjekt-Schlüssel, ≥2 Claims), 739 Claims.
+- **WordNet-Adapter:** Coverage **0** (kein Korpus installiert) — der Kanal bleibt ein stiller No-op,
+  fail-open, genau wie gebaut. Ehrlich berichtet, nicht fingiert.
+- **Demo-Seed (6 Begriffe):** deckt 4 reale Token (`agent`/`kernel`/`memory`/`model`, alle
+  across-kind-ambig) — aber **0 von 283 Kollisionsgruppen** enthält eines davon. Quergeprüft: die 7
+  Schlüssel mit einem ambigen Token sind **allesamt Singletons**.
+
+**[Schluss → was das sagt, doppelt ehrlich]** Zwei Dinge, beide unverschönt:
+1. **Die Subjekt-Schlüssel-Wette war richtig.** Nicht „mehr Checks = mehr Sicherheit", sondern eine
+   benannte Hypothese (Topic zu grob → Subjekt ist die Granularität), an Realdaten *eingelöst*. #5 darf
+   jetzt scharf — Live-Schaltung bleibt operator-gated wie alles andere.
+2. **Die Ontology Probe ist auf diesem Graphen wirkungslos — und das ist ein Ergebnis, kein Fehlschlag.**
+   Selbst *mit* Abdeckung trifft die Cross-Kind-Ambiguität (operator math vs. Mensch) die echten
+   Subjekt-Kollisionen **nicht**: Jonis Kollisionen sind echte Gleich-Subjekt-Wiederholungen, keine
+   Homonymie-Verwechslungen. Die Probe ist an Unit-Tests korrekt (trennt-nur, fail-open, may_gate-nie)
+   und bleibt als Kanal verfügbar — aber sie hier „scharf zu schalten" wäre genau die Apparatur-≠-
+   Wirkung-Verwechslung, vor der dieser Bericht durchgängig warnt. Gebaut, gemessen, **nicht übernommen**
+   — mit benanntem Grund (kein Korpus *und* kein Ziel im Over-Fire-Pool).
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| #5 same_scope_newer (Subjekt-Schlüssel) | **2 · auf Echtdaten belegt** | 64,8 % → 7,2 % auf 2.486 Claims; Übernahme jetzt evidenzgestützt, Live operator-gated |
+| #3/#4 weiterhin selektiv | **2 · auf Echtdaten belegt** | 6,4 % / 2,3 % — stabil über den gewachsenen Graphen |
+| Ontology Probe auf Echtdaten | **0 · nicht übernommen** | Coverage 0 (kein Korpus); 0/283 Gruppen adressierbar selbst mit Seed — kein Ziel, ehrlich benannt |
+| #6 scope_mismatch | **blockiert** | 0 % — kein Scope-Tag im Claim-Modell (unverändert der Flaschenhals) |
+
+**[Offen]**
+- *#5 live schalten* — die Evidenz trägt es jetzt; bleibt die operator-gated Entscheidung.
+- *Ontology Probe:* nur weiterverfolgen, wenn (a) ein echter Korpus *und* (b) ein Befund, dass
+  Homonymie-Kollisionen auf Jonis Graph überhaupt vorkommen — sonst löst der Kanal ein Problem, das die
+  Daten nicht haben.
+- *Scope-Tags ins Claim-Modell* — bleibt der einzige strukturelle Blocker (#6 dauerhaft 0 % ohne ihn).
