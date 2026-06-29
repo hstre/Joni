@@ -1763,3 +1763,46 @@ auf denselben 2.486 Claims (2.030 Subjekt-Schlüssel, 2.271 distinkte Token):
   Homonymie-Kollisionen auf Jonis Graph überhaupt vorkommen — sonst löst der Kanal ein Problem, das die
   Daten nicht haben.
 - *Scope-Tags ins Claim-Modell* — bleibt der einzige strukturelle Blocker (#6 dauerhaft 0 % ohne ihn).
+
+### Eintrag 2026-06-29 (IX) — Das Gate gegen *Unter*-Blockierung red-teamen, und ob die Tests die Logik wirklich pinnen
+
+**[Eingriff]** Bisher war bewiesen, dass das Gate **nicht über-blockiert** (over_caution 0.0). Die
+schärfere, ungestellte Frage: gibt es einen **sauber aussehenden, aber falschen** Slice, der alle fünf
+Vektoren *und* `select_mode` passiert? Ein deterministischer Red-Team-Katalog (`underblock.py`) baut
+„plausibel-falsch-aber-passt"-Familien und misst jede **zweifach**: *überlebt* sie (Gate übersieht sie),
+und wird sie *gefangen, sobald ihr fehlendes Signal eingespeist ist*.
+
+**[Messergebnis — der tragende Befund]** Vier Familien, jede überlebt (das Loch ist real und sichtbar):
+Supersession-per-Paraphrase (anderer Subjekt-Schlüssel), gewaschene Provenienz (N Quellen, ein
+Ursprung), Out-of-Scope ohne Tag, und confident-wrong ohne Opposition im Graphen. Der entscheidende
+Punkt: **jede nicht-irreduzible wird gefangen, *sobald* ihr Signal da ist** — d.h. die Abdeckung des
+Gates ist durch die **eingespeisten Signale** begrenzt, nicht durch die Check-Logik. Die eine
+irreduzible Untergrenze (eine falsche Behauptung, deren Widerspruch nie extrahiert wurde) wird
+**benannt**, nicht kaschiert — die sieht kein Slice-Check, nur ein externer Evidenz-Schritt.
+
+**[Eingriff → pinnen die Tests die Logik?]** Eine kleine Mutations-Probe (`mutation_probe.py`)
+mutiert die entscheidungskritischen Stellen in `modes.py` und prüft, ob die Suite jeden Mutanten tötet:
+**9/12 getötet.** Die 3 Überlebenden sind **beweisbar äquivalent** — das diskrete Risiko-Gitter
+erreicht nie `wrong_state_poisoning == 0.7` und nie ein `max(risk) == 0.4`, also haben die
+`>=`-Schwellen bei `_HIGH`/`_MOD` Spiel; es gibt kein Off-by-one zu fangen. Die **eine echte Lücke**
+(ein `and`→`or`, das einen *vorhandenen-aber-nicht-berührten* invalidierten Claim über-blockiert hätte)
+ist jetzt durch einen Regressionstest gepinnt.
+
+**[Schluss → das ist die ehrliche Aussage über das Gate]** Nicht „das Gate ist sicher", sondern das
+Präzisere und Belegte: **die Gate-*Logik* ist solide (9/12 + 3 äquivalent), und ihre *Abdeckung* hängt
+an der Signalqualität** — besserer Subjekt-Schlüssel, ursprungsbewusste Provenienz, Scope-Tags. Genau
+die Apparatur-≠-Wirkung-Trennung, nur diesmal auf das Gate selbst angewandt: was es übersieht, ist
+benannt und klassifiziert (irreduzibel / Signal-Upstream / Datenmodell), nicht weggelächelt.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Under-Block-Red-Team-Katalog | **2 · belegt** | 4 Familien, alle nicht-irreduziblen gefangen-sobald-gespeist; 4 Tests |
+| Mutations-Probe auf `modes.py` | **2 · belegt** | 9/12 getötet, 3 beweisbar äquivalent; 1 reale Lücke gefunden + gepinnt |
+
+**[Offen]**
+- *Die drei Signal-Upstream-Familien schließen*, wenn (und nur wenn) die Realdaten es rechtfertigen:
+  besserer Subjekt-Schlüssel (Paraphrase), ursprungsbewusste Provenienz-Familie, Scope-Tags (#6).
+- *Mutations-Probe auf `clsp.py` + die Checks ausweiten* — `modes.py` ist der Kern, aber der Rest
+  verdient denselben Test.
