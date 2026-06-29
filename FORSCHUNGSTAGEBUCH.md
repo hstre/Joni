@@ -1557,3 +1557,81 @@ Einträge + Objekte byte-identisch). Volle Suite: nur die 9 bekannten Embedding-
 - *Entparken + Live-Steering* — jetzt **technisch sicher** (kein In-Cycle- und kein Kaltstart-O(n²)
   mehr); bleibt die ausdrücklich operator-gated Entscheidung.
 
+### Eintrag 2026-06-29 (VI) — Entparkt und live: der Kaltstart hält in echter CI; und CLSP als deterministischer Sprach-Probe-Kern
+
+**[Entscheidung → Eingriff]** Der Betreiber gab frei: *„Ja entparke wir schauen was passiert."* Also
+den stündlichen Schedule wieder scharf geschaltet (`cdd831f`), `run_window.json` auf ein frisches
+Fenster zurückgesetzt, und einen `workflow_dispatch` ausgelöst. Pre-flight auf dem re-sealten Stand:
+`load_or_migrate` **8,6 s**, Zustand konsistent + Chain verifiziert. Bewusst auf dem (jetzt schnellen)
+JSON-Journal — SQLite bleibt aus, weil Phase A den Grund dafür beseitigt hat.
+
+**[Messergebnis — der Beweis, den die letzten drei Einträge schuldig blieben]** Run **#155** lief in
+echter GitHub-Actions-CI. Die Job-Steps sind der eigentliche Befund, kein lokales Maß mehr:
+
+| Step | Ergebnis |
+|---|---|
+| checkout → install (Kevin, DESi, Embedding) | ✓ in ~30 s |
+| **Verify protected core (fail-safe)** | ✓ **SUCCESS** — die Lock-Erweiterung auf `desi_layer9/*.py` (`43fc270`) greift in CI |
+| **Restore fast-load snapshot** | ✓ — **kein** Kaltstart-Replay |
+| Run Joni continuously | 🟢 in den Loop, läuft bis Zeitbudget |
+
+Von checkout bis **in die Autonomie-Schleife in ~30 s** — derselbe Pfad, der vor Phase A im
+Kaltstart-Replay **>2 h** hing (Einträge 06-23 / 06-26 / IV). Das ist die **Stufe-2-Bestätigung im
+Betrieb**, die die Checkpoint- und Phase-A-Einträge ausdrücklich offen ließen: nicht *gemessen*,
+sondern in echter CI *gelaufen*. Der `Verify protected core`-Erfolg ist dabei der zweite, leisere
+Beweis — der erweiterte Lock blockiert einen Kernel-Selbsteingriff jetzt nachweislich im realen Lauf,
+nicht nur im Unit-Test.
+
+**[Schluss → ehrliche Grenze]** „Läuft" heißt: der **Kaltstart** hält und der Loop arbeitet. Der erste
+*committe* autonome Zyklus erscheint erst, wenn der Loop-Step sein Zeitbudget erreicht (State-Commit +
+Snapshot-Cache sind die Folge-Steps) — bis dahin ist „ein Zyklus end-to-end durchgelaufen" noch
+**Beobachtung, kein Beleg**. Benannt, nicht vorweggenommen.
+
+**[Eingriff → Sprach-Idee] CLSP — Cross-Lingual Semantic Probe, der deterministische Kern.** Auf
+*„jetzt kannst du mal nach unsere sprache idee schauen"* die gemeinsame Idee (Betreiber + ChatGPT)
+gebaut — und zwar **evidence-first und an der Architektur-Grenze entlang**: die LLM-Spracharbeit
+(übersetzen, pro Sprache Claims extrahieren, „derselbe Claim" über Sprachen zu einem Cluster
+ausrichten) bleibt **außen**; der **Entscheidungskern ist deterministisch**, genau wie
+`modes.select_mode`. Die tragende Regel ist fix: **die primäre (Leit-)Sprache des Autors ist die
+semantische Autorität; jede Projektion in andere Sprachen ist ein Probe-Kanal.** Ein Claim, der nur in
+einer Probe-Sprache auftaucht, bleibt **Kandidat** — er darf den Claim-Graphen nicht betreten, bis er
+in der Leitsprache re-verankert ist. Sechs Kategorien (`invariant_core` / `emergent_candidate` /
+`probe_only_candidate` / `translation_artifact` / `semantic_loss` / `overamplification_risk`), ein
+**Over-Amplification-Detektor** (ein gehedgter Originalspan, der in der Projektion zu einer
+kausalen/normativen/sicheren Aussage *aufgeblasen* wird), und die Promotions-Gate.
+
+**[Schluss → der Fixture, der die Idee bestätigte]** Ein Fall fiel zuerst durch: *„nicht ganz
+unproblematisch"* → projiziert auf *„the method is definitely invalid"* wurde fälschlich als
+promotbar eingestuft. Ursache: **Litotes** — eine Abschwächung durch doppelte Verneinung, die mein
+Hedge-Lexikon nicht als Hedge erkennt. **Genau die deutsche Understatement-Falle, die der Vorschlag
+benannt hatte.** Strukturell gefangen (`_LITOTES`: nicht/not + (ganz) + un-Wort | nicht/not +
+ohne/without), nicht durch ein gelerntes Modell im harten Pfad. Danach: `false_candidate_rate` **0.0**,
+`overamp_detection` **1.0**, `anchor_rate` **1.0** auf 7 Fixtures — **nichts Un-verankertes** rutscht
+in den Graphen.
+
+**[Eingriff → eingebaut, nicht danebengestellt]** Auf *„bau clsp ein"* die Brücke `to_report_inputs`
+geschrieben: die promotbaren Kandidaten werden zu `report_from_snapshot`-Kwargs, laufen also durch
+**dieselbe** deterministische Gate wie jeder andere Claim. Die Leitsprach-Regel bleibt end-to-end
+erhalten: probe-only / Artefakt / Loss-Cluster werden **nie** zu vertrautem State; ein nur schwach
+verankerter (emergenter) Kandidat senkt die Extraktions-Konfidenz, sodass `select_mode` **einen
+Verifier erzwingt**, bevor die Antwort etwas behaupten darf; ein durchweg `invariant_core`-Slice
+(stark, mehrsprachig, verankert) wird vertraut. **Kein paralleles System** — CLSP-Funde fließen durch
+die bestehende Governance, nicht daran vorbei.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| Entparken + Live-Lauf (Kaltstart) | **2 · im Betrieb belegt** | Run #155 in CI: protected-core ✓, snapshot-restore ✓, in den Loop in ~30 s (vorher >2 h) |
+| Erster *committer* autonomer Zyklus | **beobachtet, nicht belegt** | erscheint erst am Ende des Loop-Step-Zeitbudgets — wird gemeldet, nicht vorweggenommen |
+| CLSP deterministischer Kern + Bridge | **2 · im Benchmark belegt** | 7+4 Tests, `false_candidate_rate 0.0` / `overamp 1.0` / `anchor 1.0`; eingebaut in die Gate, 97 Governance-Tests grün |
+| CLSP auf realer cross-lingualer Extraktion | **0 · LLM-/Budget-gated** | der deterministische Kern + die Bridge stehen; der mehrsprachige Extraktions-/Alignment-Input (LLM) fehlt noch — bewusst nicht behauptet |
+
+**[Offen]**
+- *Erster committer Zyklus auf `main`* — der Beleg, dass ein voller autonomer Lauf end-to-end durchläuft
+  (Unpark + Phase A halten *über* einen ganzen Zyklus, nicht nur bis in die Schleife). Wird beobachtet.
+- *CLSP mit echter Extraktion speisen* — der LLM-Teil (Cluster-Alignment); Budget-/Key-gated, der Loop
+  verbraucht aktuell das Wochenbudget. Als pluggable Harness bauen, wenn Keys/Budget da sind.
+- *H1-Probe* (ändert Rollen-Sprache den Review-Pfad des LLM?) — die Prämissen-Validierung für EIR;
+  ebenfalls LLM-/budget-gated, noch offen.
+
