@@ -176,9 +176,12 @@ def test_record_object_hash_is_the_same_material_snapshot_uses():
     core = _core()
     _record(core, _payload())
     oid = core.all(ObjectType.METHOD_TRIAL_EVENT)[0].id
-    before = hashing.snapshot_hash(core)
+    before = hashing.snapshot_hash_full(core)
     core._objects[oid].epistemic_authority = "authoritative"   # white-box: tamper the STORED object
-    assert hashing.snapshot_hash(core) != before  # snapshot folds in the same object material
+    # Phase A: the maintained ``snapshot_hash`` trusts in-band ``_rehash`` (the equivalence oracle
+    # proves it stays exact); an OUT-OF-BAND tamper of a stored object is caught by the full
+    # recompute, which folds in the SAME per-object material (object_canonical) the maintained one does.
+    assert hashing.snapshot_hash_full(core) != before
 
 
 def test_record_object_hash_shares_one_serializer_with_snapshot():
@@ -211,9 +214,9 @@ def test_one_canonical_serializer_feeds_both_record_and_snapshot(monkeypatch):
     core = _core()
     _record(core, _payload())
     orig = hashing.object_canonical
-    before = hashing.snapshot_hash(core)
+    before = hashing.snapshot_hash_full(core)        # Phase A: from-scratch path resolves the patch
     monkeypatch.setattr(hashing, "object_canonical", lambda o: "MARK|" + orig(o))
-    assert hashing.snapshot_hash(core) != before
+    assert hashing.snapshot_hash_full(core) != before
 
 
 # -- 4. an unsupported / non-writable schema version --------------------------------------------- #
@@ -296,7 +299,9 @@ def test_in_place_tampering_is_detectable_and_not_in_the_replayable_truth():
     stored = core._objects[oid]                            # white-box: corrupt the STORED object
     stored.canonical_payload = stored.canonical_payload.replace("no_benefit", "success")  # tamper
     # the live state no longer matches what the journal deterministically reproduces -> detectable.
-    assert hashing.snapshot_hash(core) != clean
+    # Phase A: an out-of-band tamper (bypassing the gate's ``_rehash``) is caught by the full
+    # recompute; on reload, replay rebuilds from the untampered journal and the divergence shows there.
+    assert hashing.snapshot_hash_full(core) != clean
     # ...and the tamper never entered the replayable truth: replay from the journal is original.
     replayed = persistence.replay(core.journal)
     assert replayed.method_trial_events()[0]["payload"]["epistemic_result"] == "no_benefit"

@@ -33,7 +33,8 @@ from .enums import (
     SemanticState,
     Status,
 )
-from .hashing import chain_event, object_canonical
+from .hashing import _MASK as _HASH_MASK
+from .hashing import chain_event, object_canonical, object_int
 from .ids import IdMinter
 from .ledger import LedgerEvent
 from .objects import (
@@ -169,6 +170,11 @@ class Layer9:
     _ledger: list[LedgerEvent] = field(default_factory=list)
     _journal: list[JournalEntry] = field(default_factory=list)
     _seq: int = 0
+    # Phase A: the incrementally-maintained additive snapshot hash (see hashing) and the
+    # per-object contributions that back it. Derived state — excluded from equality/repr; rebuilt on
+    # restore. Kept exact by ``_rehash`` for every object a ``submit`` touches.
+    _running: int = field(default=0, compare=False, repr=False)
+    _obj_hashes: dict[str, int] = field(default_factory=dict, compare=False, repr=False)
 
     # -- IMMUTABLE read surface --------------------------------------------- #
     # ``submit`` is the ONLY epistemic object/ledger write path; ``set_clock`` is the only explicit
@@ -265,6 +271,24 @@ class Layer9:
         return [c for c in self._all(ObjectType.CONFLICT)
                 if c.conflict_status in (ConflictStatus.OPEN, ConflictStatus.UNDER_REVIEW)]
 
+    # -- incremental snapshot hash (Phase A) -------------------------------- #
+    def _rehash(self, oid: str) -> None:
+        """O(1) update of the running snapshot hash for ONE object id (added / changed / removed):
+        subtract its old contribution, add its new. Called from ``_emit`` for every object a submit
+        touched, so ``snapshot_hash`` stays exact without re-scanning all ~22k objects each emit."""
+        old = self._obj_hashes.pop(oid, 0)
+        obj = self._objects.get(oid)
+        new = object_int(obj) if obj is not None else 0
+        if new:
+            self._obj_hashes[oid] = new
+        self._running = (self._running - old + new) & _HASH_MASK
+
+    def rebuild_running_hash(self) -> None:
+        """Recompute the running hash and per-object contributions from scratch (O(n)). Used after a
+        snapshot restore and by the equivalence oracle."""
+        self._obj_hashes = {oid: object_int(o) for oid, o in self._objects.items()}
+        self._running = sum(self._obj_hashes.values()) & _HASH_MASK
+
     # -- ledger (internal) -------------------------------------------------- #
     def _emit(self, operator: Operator, actor: str, *, decision: str, reason: str,
               input_refs: tuple = (), output_refs: tuple = (), reviewed_by: str = "",
@@ -276,6 +300,11 @@ class Layer9:
             input_refs=tuple(input_refs), output_refs=tuple(output_refs),
             reviewed_by=reviewed_by, cost=cost, sampling_provenance=sampling or {},
         )
+        # Update the running snapshot hash for every object this event touched BEFORE chain_event
+        # reads it. input_refs are usually only read (rehashing an unchanged object is a no-op);
+        # output_refs are the created/changed objects (every handler returns them as ``changed``).
+        for oid in {*input_refs, *output_refs}:
+            self._rehash(oid)
         previous = self._ledger[-1] if self._ledger else None
         self._ledger.append(ev)
         chain_event(ev, previous, self)
@@ -309,6 +338,7 @@ class Layer9:
         ev0 = self._emit(Operator.PROPOSAL_SUBMIT, actor, decision="submitted",
                          reason=proposal.reason, output_refs=(proposal.id,))
         proposal.ledger_event = ev0.id
+        self._rehash(proposal.id)        # ledger_event set AFTER the emit -> re-fold the proposal
 
         op = proposal.requested_operator
         origin = proposal.provenance.origin_type
@@ -349,6 +379,9 @@ class Layer9:
         for cid in changed:
             self._objects[cid].ledger_event = ev.id
         proposal.status = Status.ACTIVE
+        for cid in changed:              # ledger_event + status set AFTER the emit -> re-fold
+            self._rehash(cid)
+        self._rehash(proposal.id)
         return self._decide(proposal, op, True, new_status, reason, rejected_fields, ev.id)
 
     # -- gate helpers ------------------------------------------------------- #
@@ -376,6 +409,7 @@ class Layer9:
             status=Status.ACTIVE, authority=Authority.AUTHORITATIVE,
         )
         self._objects[d.id] = d
+        self._rehash(d.id)               # the Decision is created here, outside any emit's refs
         return d
 
     def _mint(self, cls, object_type: ObjectType, proposal: Proposal, actor: str, **fields):

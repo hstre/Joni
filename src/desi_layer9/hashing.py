@@ -39,14 +39,45 @@ def _sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def snapshot_hash(state) -> str:
-    """Deterministic hash of all authoritative objects (ledger excluded).
+# Phase A — incremental snapshot hashing.
+# The old scheme hashed the sorted concatenation of all object canonicals: O(n) per ledger emit, so
+# a replay (~15k emits over ~22k objects) was O(n^2) and a fresh cold start hung for hours. The new
+# scheme is an ORDER-INDEPENDENT additive set hash (AdHash): the snapshot value is the sum, mod
+# 2^256, of sha256(object_canonical(o)) over all objects. Add/change/remove of an object updates
+# the running sum in O(1) (subtract its old contribution, add its new), so each emit is O(1) and
+# replay is O(n). Collision resistance: forging a colliding state means finding a multiset of object
+# canonicals summing to the same 256-bit value — as hard as for the underlying sha256.
+_MASK = (1 << 256) - 1
 
-    Reads the INTERNAL ``_objects`` store directly (not the public ``objects`` snapshot, which deep-
-    copies every value) - integrity hashing is hot (called on every ledger emit) and must hash the
-    real objects, not throw-away copies."""
-    parts = [object_canonical(o) for o in sorted(state._objects.values(), key=lambda o: o.id)]
-    return _sha("\n".join(parts))
+
+def object_int(obj: EpistemicObject) -> int:
+    """One object's contribution to the additive snapshot hash: int(sha256(canonical))."""
+    return int(_sha(object_canonical(obj)), 16)
+
+
+def running_from_objects(objects) -> int:
+    """The full additive snapshot value over an object collection (O(n) — used by restore and the
+    equivalence oracle, never on the per-emit hot path)."""
+    total = 0
+    for o in objects:
+        total += object_int(o)
+    return total & _MASK
+
+
+def snapshot_hash_full(state) -> str:
+    """O(n) recomputation of the snapshot hash directly from ``_objects`` — the value the
+    incrementally-maintained running sum must always equal. Used by restore, the oracle, and as a
+    fallback for states that predate the incremental machinery."""
+    return format(running_from_objects(state._objects.values()), "064x")
+
+
+def snapshot_hash(state) -> str:
+    """Deterministic hash of all authoritative objects (ledger excluded). O(1) when the kernel
+    maintains the running value; falls back to a full recompute for states without it."""
+    running = getattr(state, "_running", None)
+    if running is None:
+        return snapshot_hash_full(state)
+    return format(running & _MASK, "064x")
 
 
 def event_canonical(ev: LedgerEvent) -> str:

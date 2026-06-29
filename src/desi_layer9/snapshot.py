@@ -106,4 +106,5 @@ def restore(snap: dict, journal_entries, *, tick: int = 0):
     core._objects = {oid: _deser(o) for oid, o in snap["objects"].items()}
     core._ledger = [_deser(ev) for ev in snap["ledger"]]
     core._journal = list(journal_entries)
+    core.rebuild_running_hash()           # Phase A: running snapshot hash is derived, not stored
     return core
