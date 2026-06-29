@@ -1390,3 +1390,56 @@ Verwechslung dieses Tagebuch durchgehend warnt: **an Fixtures bewiesen ≠ in Pr
   Flaschenhals für zwei der fünf Vektoren).
 - *#5 zurückgehalten* bis dahin — als gebaut+gemessen dokumentiert, bewusst nicht scharf.
 
+### Eintrag 2026-06-29 (III) — Der Flaschenhals aufgelöst: ein deterministischer Subjekt-Schlüssel macht #5 und #6 selektiv
+
+**[Eingriff]** Der benannte Flaschenhals war **„Topic ist ein zu grober Stellvertreter für Scope"**.
+Auflösung ohne Modell und ohne Kern-Eingriff: ein deterministischer **Subjekt-Schlüssel**
+(`layer9_v2/checks/subject.py`) — Topic + die wenigen salientesten Inhaltstoken des Claim-Textes
+(salient = längste, alphabetisch entschieden), de-dupliziert und sortiert, also reihenfolge-
+unabhängig. Zwei Claims über *dasselbe Subjekt* teilen den Schlüssel; same-topic-aber-anderes-Subjekt
+nicht. „Rules for logic", replay-stabil, kein Embedding. Der Schlüssel wird **deterministisch zur
+Scan-Zeit aus dem Text abgeleitet** — keine Persistenz nötig, der v2-Store bleibt ein rebuildbarer
+Cache. (Das `scope`-Feld im `desi_layer9`-Claim existiert übrigens längst — es war nur nie befüllt;
+darum kein Kern-/Modell-Eingriff.)
+
+**[Messergebnis — die Auflösung, an Zahlen]** Subjekt statt Topic als Scope, auf denselben
+1.366 lebenden Claims:
+
+| Vektor | mit Topic-Scope | **mit Subjekt-Scope** | Urteil |
+|---|---|---|---|
+| same_scope_newer (#5) | 64,8 % (over-fire) | **3,7 %** (51/1366) | **jetzt übernehmbar** |
+| scope_mismatch (#6) | 0 % (datenblockiert) | **3,1 %** (9/287, topic-Slice) | **jetzt übernehmbar** |
+
+**[Schluss]** Die Subjekt-Identität löst **beide** zuvor unbrauchbaren Vektoren auf — und zwar genau
+in die selektive Zone, nicht durch Abschalten:
+1. **#5: 64,8 % → 3,7 %.** Jetzt feuert es nur, wenn ein *neuerer Claim über dasselbe Subjekt*
+   existiert — die echte „silent staleness", nicht „nicht der neueste seines Topics". Selektiv,
+   übernehmbar.
+2. **#6: 0 % → 3,1 %.** Mit Subjekt-Keys wird messbar, ob ein Topic-Antwort-Slice *mehrere Subjekte
+   mischt* (scope-inkohärent) — feuert auf 9 von 287 Topics. Das ist die in Joni realisierbare Form
+   von Scope-Match (Slice-Kohärenz), selektiv.
+3. **Damit sind alle fünf Vektoren auf Realdaten charakterisiert:** #3 (6,6 %), #4 (3,0 %),
+   #5 (3,7 %), #6 (3,1 %) selektiv → übernommen; #2 (0,4 %) marginal. Kein Vektor mehr im Over-Fire,
+   keiner mehr datenblockiert.
+
+**[Schluss → die ehrliche Restgrenze]** Der Subjekt-Schlüssel ist ein **lexikalischer Proxy**, bewusst
+unvollkommen: Paraphrasen mit anderen salienten Wörtern landen in verschiedenen Schlüsseln (der Check
+*unter*-feuert dann — die sichere Richtung), und zwei unverwandte Claims mit einem seltenen langen
+gemeinsamen Wort könnten kollidieren. Eine reichere, embedding-basierte Subjekt-Clusterung wäre
+möglich, ist aber eine *nicht-deterministische* Entscheidung und damit ein eigener, separater Schritt
+— nicht stillschweigend in den harten Entscheidungspfad. Benennen statt kaschieren.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Subjekt-Schlüssel (deterministisch) | **2 · auf Echtdaten belegt** | #5 64,8 %→3,7 %, #6 0 %→3,1 %; 6 Unit-Tests; ruff |
+| Alle 5 Vektoren auf Realdaten selektiv | **2 · belegt** | 6,6 / 3,0 / 3,7 / 3,1 / 0,4 % — reiner Beobachter, kein Loop-Effekt |
+| Live-Schaltung (Router steuert Joni) | **0** | weiterhin Operator-gated; Shadow ist die Evidenzstufe davor |
+
+**[Offen]**
+- *Embedding-basierte Subjekt-Clusterung* als optionale, nicht-deterministische Verfeinerung — nur
+  als Vorschlag-/Diagnoseschicht, nie im harten Pfad.
+- *Live-Schaltung* der nun fünf charakterisierten Vektoren bleibt die nächste, ausdrücklich
+  operator-gated Entscheidung — die Evidenz dafür steht jetzt vollständig.
+

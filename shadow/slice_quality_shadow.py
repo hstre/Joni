@@ -26,6 +26,7 @@ sys.path.insert(0, str(_REPO / "src"))
 sys.path.insert(0, os.environ.get("DESI_REPO") or os.environ.get("DESI_ROOT") or "/home/user/DESi")
 
 from joni.layer9_v2.checks import slice_scan  # noqa: E402
+from joni.layer9_v2.checks.subject import subject_key  # noqa: E402
 from joni.layer9_v2.storage import sqlite as S  # noqa: E402
 
 try:
@@ -44,29 +45,30 @@ _FIRE_KEYS = ("fires_missing_opposition", "fires_same_scope_newer", "fires_thin_
 
 
 def _claim_index(conn, statuses: tuple[str, ...]) -> dict[str, dict]:
-    """id -> {topic, tick, title} for every live claim (the same-scope-newer + widening pool)."""
+    """id -> {topic, subject, tick, title} per live claim. ``subject`` is the deterministic
+    subject key (finer than topic) — the 'scope' topic was too coarse to be."""
     placeholders = ",".join("?" for _ in statuses)
     idx: dict[str, dict] = {}
     for oid, payload, title in conn.execute(
             f"SELECT id, payload_json, title FROM objects WHERE space='content' AND type='claim' "
             f"AND status IN ({placeholders})", statuses):
         f = (json.loads(payload) or {}).get("fields", {})
-        idx[oid] = {"topic": f.get("topic") or "_untopiced",
+        topic = f.get("topic") or "_untopiced"
+        idx[oid] = {"topic": topic, "subject": subject_key(f.get("text") or title, topic),
                     "tick": f.get("created_tick") or 0, "title": title or ""}
     return idx
 
 
-def _newer_siblings(slice_ids, idx, by_topic) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Same-topic claims NEWER than a slice claim, not in the slice (the #5 silent-staleness pool).
-    Topic stands in for scope because Joni claims carry no scope tag — deliberately coarse; the run
-    reports whether that over-fires."""
+def _newer_siblings(slice_ids, idx, by_subject) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Same-SUBJECT claims NEWER than a slice claim, not in slice (the #5 silent-staleness pool).
+    Subject (not topic) is the scope: only a newer claim about the *same subject* displaces."""
     sl = set(slice_ids)
     ids, texts = [], []
     for cid in slice_ids:
         meta = idx.get(cid)
         if not meta:
             continue
-        for sib in by_topic.get(meta["topic"], ()):
+        for sib in by_subject.get(meta["subject"], ()):
             if sib in sl or sib in ids:
                 continue
             if idx.get(sib, {}).get("tick", 0) > meta["tick"]:
@@ -75,12 +77,19 @@ def _newer_siblings(slice_ids, idx, by_topic) -> tuple[tuple[str, ...], tuple[st
     return tuple(ids), tuple(texts)
 
 
-def _report(conn, label, slice_ids, idx, by_topic, *, with_supersession=True):
+def _report(conn, label, slice_ids, idx, by_subject, *, with_supersession=True, with_scope=False):
     scan = slice_scan.scan_slice(conn, slice_ids)
     if with_supersession:
-        nids, ntexts = _newer_siblings(slice_ids, idx, by_topic)
+        nids, ntexts = _newer_siblings(slice_ids, idx, by_subject)
         scan["newer_sibling_ids"] = nids
         scan["newer_sibling_texts"] = ntexts
+    if with_scope and slice_ids:
+        # scope-coherence (#6): the answer's scope = the slice's DOMINANT subject; any claim of a
+        # different subject is out of scope for that answer (the slice mixes subjects).
+        subs = [idx.get(c, {}).get("subject", "") for c in slice_ids]
+        dominant = Counter(subs).most_common(1)[0][0]
+        scan["task_scope"] = dominant
+        scan["claim_scopes"] = tuple(subs)
     texts = tuple(idx.get(cid, {}).get("title", "")[:160] for cid in slice_ids)
     return report_from_snapshot(
         f"shadow:{label}", _Snap(),
@@ -88,9 +97,10 @@ def _report(conn, label, slice_ids, idx, by_topic, *, with_supersession=True):
         extraction_confidence=0.9, state_recall_estimate=1.0, **scan)
 
 
-def _decide(conn, label, slice_ids, idx, by_topic, *, wide_ids=None) -> dict:
-    rep = _report(conn, label, slice_ids, idx, by_topic)
-    wide = (_report(conn, f"{label}:wide", wide_ids, idx, by_topic, with_supersession=False)
+def _decide(conn, label, slice_ids, idx, by_subject, *, wide_ids=None, with_scope=False) -> dict:
+    rep = _report(conn, label, slice_ids, idx, by_subject, with_scope=with_scope)
+    wide = (_report(conn, f"{label}:wide", wide_ids, idx, by_subject,
+                    with_supersession=False, with_scope=False)
             if wide_ids and tuple(wide_ids) != tuple(slice_ids) else None)
     res = attack_slice(rep, retrieval_available=True, wide_report=wide)
     fired = set(res.fired)
@@ -116,19 +126,22 @@ def run(db_path: str | Path, *, granularity: str = "claim",
     try:
         idx = _claim_index(conn, statuses)
         by_topic: dict[str, list[str]] = {}
+        by_subject: dict[str, list[str]] = {}
         for cid, m in idx.items():
             by_topic.setdefault(m["topic"], []).append(cid)
+            by_subject.setdefault(m["subject"], []).append(cid)
         if granularity == "claim":
             ids = [c for v in by_topic.values() for c in v]
             if limit:
                 ids = ids[:limit]
-            rows = [_decide(conn, cid, (cid,), idx, by_topic,
+            rows = [_decide(conn, cid, (cid,), idx, by_subject,
                             wide_ids=tuple(by_topic[idx[cid]["topic"]][:12])) for cid in ids]
         else:
             topics = sorted(by_topic, key=lambda t: (-len(by_topic[t]), t))
             if limit:
                 topics = topics[:limit]
-            rows = [_decide(conn, t, tuple(by_topic[t][:12]), idx, by_topic) for t in topics]
+            rows = [_decide(conn, t, tuple(by_topic[t][:12]), idx, by_subject, with_scope=True)
+                    for t in topics]
     finally:
         conn.close()
     n = len(rows) or 1
