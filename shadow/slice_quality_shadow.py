@@ -41,31 +41,31 @@ class _Snap:
     provenance = type("P", (), {"snapshot_hash": "shadow"})()
 
 
-def topics_with_active_claims(conn) -> dict[str, list[str]]:
-    """topic -> active claim ids, read straight from the materialised v2 store."""
+def live_claims_by_topic(conn, statuses: tuple[str, ...]) -> dict[str, list[str]]:
+    """topic -> live claim ids (``statuses`` = the router's live set: active or active+contested)."""
+    placeholders = ",".join("?" for _ in statuses)
     by_topic: dict[str, list[str]] = {}
     for oid, payload in conn.execute(
-            "SELECT id, payload_json FROM objects WHERE space='content' AND type='claim' "
-            "AND status='active'"):
+            f"SELECT id, payload_json FROM objects WHERE space='content' AND type='claim' "
+            f"AND status IN ({placeholders})", statuses):
         f = (json.loads(payload) or {}).get("fields", {})
         by_topic.setdefault(f.get("topic") or "_untopiced", []).append(oid)
     return by_topic
 
 
-def shadow_for_topic(conn, topic: str, claim_ids: list[str]) -> dict:
-    slice_ids = tuple(claim_ids[:12])               # the answer's working slice
+def _decide(conn, label: str, slice_ids: tuple[str, ...]) -> dict:
     scan = slice_scan.scan_slice(conn, slice_ids)
     texts = []
     for cid in slice_ids:
         row = conn.execute("SELECT title FROM objects WHERE id=?", (cid,)).fetchone()
         texts.append((row[0] or "")[:160] if row else "")
     rep = report_from_snapshot(
-        f"shadow:{topic}", _Snap(),
+        f"shadow:{label}", _Snap(),
         selected_claim_ids=slice_ids, selected_claim_texts=tuple(texts),
         extraction_confidence=0.9, state_recall_estimate=1.0, **scan)
     dec = select_mode(rep, retrieval_available=True)
     return {
-        "topic": topic, "n_active": len(claim_ids),
+        "unit": label, "n": len(slice_ids),
         "fires_missing_opposition": bool(rep.omitted_opposition_ids),
         "fires_thin_provenance": bool(rep.provenance_under_support),
         "fires_scope_mismatch": bool(rep.scope_mismatch_scopes),
@@ -74,21 +74,31 @@ def shadow_for_topic(conn, topic: str, claim_ids: list[str]) -> dict:
     }
 
 
-def run(db_path: str | Path, *, limit: int | None = None) -> dict:
+def run(db_path: str | Path, *, granularity: str = "topic",
+        statuses: tuple[str, ...] = ("active", "contested"), limit: int | None = None) -> dict:
+    """Scan slices and aggregate fire-rates. ``granularity``: ``topic`` (slice = a topic's live
+    claims) or ``claim`` (slice = a single live claim — the granularity at which an omitted
+    same-topic opposition can surface). ``statuses``: the router's live set."""
     conn = S.open_db(db_path)
     try:
-        by_topic = topics_with_active_claims(conn)
-        topics = sorted(by_topic, key=lambda t: (-len(by_topic[t]), t))
-        if limit:
-            topics = topics[:limit]
-        rows = [shadow_for_topic(conn, t, by_topic[t]) for t in topics]
+        by_topic = live_claims_by_topic(conn, statuses)
+        if granularity == "claim":
+            ids = [c for ids in by_topic.values() for c in ids]
+            if limit:
+                ids = ids[:limit]
+            rows = [_decide(conn, cid, (cid,)) for cid in ids]
+        else:
+            topics = sorted(by_topic, key=lambda t: (-len(by_topic[t]), t))
+            if limit:
+                topics = topics[:limit]
+            rows = [_decide(conn, t, tuple(by_topic[t][:12])) for t in topics]
     finally:
         conn.close()
     n = len(rows) or 1
     fires = {k: sum(r[k] for r in rows) for k in
              ("fires_missing_opposition", "fires_thin_provenance", "fires_scope_mismatch")}
     return {
-        "topics_scanned": len(rows),
+        "granularity": granularity, "statuses": list(statuses), "units_scanned": len(rows),
         "fires": fires,
         "fire_rate": {k: round(v / n, 3) for k, v in fires.items()},
         "would_gate_update": sum(r["would_gate_update"] for r in rows),
@@ -100,8 +110,11 @@ def run(db_path: str | Path, *, limit: int | None = None) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", default=str(_REPO / "state" / "layer9_v2.sqlite"))
+    ap.add_argument("--granularity", choices=("topic", "claim"), default="topic")
+    ap.add_argument("--statuses", default="active,contested",
+                    help="the router's live set (comma-separated)")
     ap.add_argument("--limit", type=int, default=None)
-    ap.add_argument("--json", action="store_true", help="emit the full per-topic rows as JSON")
+    ap.add_argument("--json", action="store_true", help="emit the full per-unit rows as JSON")
     args = ap.parse_args(argv)
     if select_mode is None:
         print(f"FATAL: could not import desi_router.governance ({_IMPORT_ERR}). "
@@ -111,16 +124,18 @@ def main(argv=None) -> int:
         print(f"FATAL: v2 store {args.db} not found — build it with `joni-layer9-convert` first.",
               file=sys.stderr)
         return 2
-    summary = run(args.db, limit=args.limit)
+    statuses = tuple(s.strip() for s in args.statuses.split(",") if s.strip())
+    summary = run(args.db, granularity=args.granularity, statuses=statuses, limit=args.limit)
     if args.json:
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 0
-    print(f"Slice-quality shadow · {summary['topics_scanned']} topics · v2 graph · real data\n")
-    print("  check fire-rate (how often the signal is present on real topics):")
+    n = summary["units_scanned"]
+    print(f"Slice-quality shadow · {n} {summary['granularity']}-slices · "
+          f"live={summary['statuses']} · v2 graph · real data\n")
+    print(f"  check fire-rate (signal present per {summary['granularity']}):")
     for k, v in summary["fire_rate"].items():
-        print(f"    {k.replace('fires_',''):22s} {v:>6}  ({summary['fires'][k]} topics)")
-    g, n = summary["would_gate_update"], summary["topics_scanned"]
-    print(f"\n  would-gate-update on {g}/{n} topics")
+        print(f"    {k.replace('fires_',''):22s} {v:>6}  ({summary['fires'][k]}/{n})")
+    print(f"\n  would-gate-update on {summary['would_gate_update']}/{n}")
     print(f"  mode distribution: {summary['mode_distribution']}")
     return 0
 
