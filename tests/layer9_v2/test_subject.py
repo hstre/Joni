@@ -1,6 +1,8 @@
 """The deterministic subject key — a finer scope than topic, replay-stable, no model."""
 from __future__ import annotations
 
+import unicodedata
+
 from joni.layer9_v2.checks.subject import subject_key
 
 
@@ -35,3 +37,20 @@ def test_deterministic_across_calls():
 def test_stopwords_do_not_define_a_subject():
     # only generic/stop words -> no salient subject, falls back to topic
     assert subject_key("this has been very good and also better", topic="x") == "topic:x"
+
+
+def test_unicode_composed_and_decomposed_forms_share_a_key():
+    # NFC (é = U+00E9) vs NFD (e + combining U+0301): canonically EQUAL, so the key must match.
+    nfc = unicodedata.normalize("NFC", "café latency réplica plateau")
+    nfd = unicodedata.normalize("NFD", "café latency réplica plateau")
+    assert nfc != nfd                                    # genuinely byte-different inputs
+    assert subject_key(nfc, topic="perf") == subject_key(nfd, topic="perf")
+
+
+def test_accented_words_fold_and_participate():
+    # 'müller' folds to base letters and contributes a token instead of truncating at the umlaut
+    assert subject_key("Müller pipeline", topic="t") == subject_key("muller pipeline", topic="t")
+    # the topic itself is folded too, so an accented topic is excluded from its own tokens
+    k = subject_key("réplica drift", topic="réplica")
+    assert k.startswith("topic:replica|")
+    assert "replica" not in k.split("|", 1)[1]
