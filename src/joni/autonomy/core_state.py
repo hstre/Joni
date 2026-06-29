@@ -604,9 +604,14 @@ def load_or_migrate(paths: Paths) -> CoreState:
     """
     if _use_sqlite():
         from ..layer9_v2.runtime import desi_store
-        core = desi_store.load(paths.core_sqlite)
+        core = desi_store.load(paths.core_sqlite)            # warm: SELECT from the sqlite store
+        if core is None:
+            # cold start: restore the committed checkpoint (NO replay); only if it matches the
+            # journal's recorded hash. This is the fix for the >100-min cold replay that parked
+            # the loop — the journal stays the source of truth, the checkpoint is a verified cache.
+            core = desi_store.load_via_checkpoint(paths.core, paths.checkpoint)
         if core is None and paths.core.exists():
-            core = persistence.load(paths.core)    # one-time adopt: first run after the flag flips
+            core = persistence.load(paths.core)    # last resort: full replay (checkpoint stale)
         if core is not None:
             return CoreState(core)
         # no sqlite store and no JSON core yet -> fall through to legacy migrate / seed
@@ -629,6 +634,10 @@ def save(cs: CoreState, paths: Paths) -> None:
     if _use_sqlite():
         from ..layer9_v2.runtime import desi_store
         desi_store.save(cs.core, paths.core_sqlite)
+        # keep the committed cold-start checkpoint fresh (cheap; state is in memory) so the NEXT
+        # fresh CI job restores it instead of replaying. The journal is still written below.
+        desi_store.write_checkpoint(cs.core, paths.checkpoint)
+        persistence.save(cs.core, paths.core)     # journal stays the committed source of truth
     else:
         persistence.save(cs.core, paths.core)
 

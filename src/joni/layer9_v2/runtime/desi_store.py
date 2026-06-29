@@ -23,6 +23,63 @@ from desi_layer9.hashing import snapshot_hash, verify_chain
 
 from ..storage.sqlite import connect
 
+# measurement.pairs is the O(members²) semantic-adapter log — stored on the object but never read.
+# The committed checkpoint drops it so the cold-start artefact stays small (git-friendly).
+_DEAD_MEASUREMENT_KEYS = ("pairs",)
+
+
+def _strip_dead_blobs(snap: dict) -> int:
+    dropped = 0
+    for o in snap.get("objects", {}).values():
+        f = o.get("f") if isinstance(o, dict) else None
+        m = (f or {}).get("measurement") if isinstance(f, dict) else None
+        d = m.get("__d__") if isinstance(m, dict) else None
+        if isinstance(d, dict):
+            for k in _DEAD_MEASUREMENT_KEYS:
+                if k in d:
+                    d.pop(k, None)
+                    dropped += 1
+    return dropped
+
+
+def write_checkpoint(state, checkpoint_path: str | Path) -> Path:
+    """Write a COMPACT, materialised cold-start checkpoint: the kernel's snapshot (dead measurement
+    blobs stripped) + the snapshot hash it seals to. Loading it via ``load_via_checkpoint`` restores
+    the state WITHOUT replaying the journal. Cheap (the state is already in memory)."""
+    checkpoint_path = Path(checkpoint_path)
+    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+    snap = snapshot.capture(state)
+    _strip_dead_blobs(snap)
+    doc = {"snapshot_hash": snapshot_hash(state), "tick": state.tick, "state_snapshot": snap}
+    checkpoint_path.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")),
+                              encoding="utf-8")
+    return checkpoint_path
+
+
+def load_via_checkpoint(core_json_path: str | Path, checkpoint_path: str | Path):
+    """Fast cold-start: restore the committed materialised checkpoint (NO replay) and accept it ONLY
+    if its hash matches the committed journal's recorded ``snapshot_hash`` AND the ledger chain
+    verifies. Returns a ``Layer9`` or None — None means the caller must fall back to a full replay
+    (the journal stays the source of truth; the checkpoint is a verified cache)."""
+    core_json_path, checkpoint_path = Path(core_json_path), Path(checkpoint_path)
+    if not checkpoint_path.exists() or not core_json_path.exists():
+        return None
+    try:
+        doc = json.loads(core_json_path.read_text(encoding="utf-8"))
+        recorded = doc.get("snapshot_hash")
+        ck = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+        if not recorded or ck.get("snapshot_hash") != recorded:
+            return None                              # stale checkpoint -> replay
+        journal = [JournalEntry.from_dict(e) for e in doc.get("journal", [])]
+        state = snapshot.restore(ck["state_snapshot"], journal, tick=int(doc.get("tick", 0)))
+        if snapshot_hash(state) != recorded:
+            return None                              # safety: restored state must match exactly
+        ok, _ = verify_chain(state)
+        return state if ok else None
+    except Exception:  # noqa: BLE001 — a malformed checkpoint is never fatal; replay instead
+        return None
+
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS kv      (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS journal (idx INTEGER PRIMARY KEY, data TEXT NOT NULL);

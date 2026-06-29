@@ -33,6 +33,11 @@ class Paths:
         return self.root / "state" / "layer9.sqlite"        # materialised runtime store (opt-in)
 
     @property
+    def checkpoint(self) -> Path:
+        # committed, compact materialised checkpoint -> cold-start restore WITHOUT a journal replay
+        return self.root / "state" / "layer9.checkpoint.json"
+
+    @property
     def budget(self) -> Path:
         return self.root / "state" / "budget.json"
 

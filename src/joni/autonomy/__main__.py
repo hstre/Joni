@@ -26,7 +26,8 @@ RETIRED_EXIT = 42
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="joni.autonomy")
-    parser.add_argument("command", choices=["run", "verify", "compact", "lock", "approve"])
+    parser.add_argument("command",
+                        choices=["run", "verify", "compact", "checkpoint", "lock", "approve"])
     parser.add_argument("ref", nargs="?", help="draft id for 'approve'")
     args = parser.parse_args(argv)
     root = paths().root
@@ -63,6 +64,24 @@ def main(argv: list[str] | None = None) -> int:
         from desi_layer9 import persistence
         summary = persistence.compact(paths().core)
         print(f"compacted {paths().core} -> {summary}")
+        return 0
+
+    if args.command == "checkpoint":
+        # Write the committed cold-start checkpoint so a fresh CI job restores it instead of doing
+        # the >100-min journal replay that parked the loop. The first run replays once (bootstrap);
+        # later runs restore the existing checkpoint (fast) and re-seal it. Data-only; core safe.
+        from desi_layer9 import persistence
+
+        from ..layer9_v2.runtime import desi_store
+        p = paths()
+        # prefer the fast checkpoint restore; only the very first bootstrap pays the full replay
+        core = desi_store.load_via_checkpoint(p.core, p.checkpoint) or persistence.load(p.core)
+        if core is None:
+            print("no core state to checkpoint", file=sys.stderr)
+            return 1
+        out = desi_store.write_checkpoint(core, p.checkpoint)
+        mb = out.stat().st_size / 1e6
+        print(f"wrote cold-start checkpoint -> {out} ({mb:.1f} MB)")
         return 0
 
     summary = one_cycle()
