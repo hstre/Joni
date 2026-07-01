@@ -277,7 +277,11 @@ class CoreState:
         return max(self.core.all(object_type), key=lambda o: int(o.id.split("-")[-1]))
 
     def set_day(self, day: int) -> None:
-        self.core.set_clock(max(0, int(day)))
+        # The logical clock is MONOTONIC (the kernel forbids moving it backward). ``day`` is derived
+        # from the runtime window, which can be reset/backdated below the current clock (e.g. an
+        # unpark that starts a fresh window) — feeding that backward raised ValueError and crashed
+        # every cycle. Only ever advance the clock, never regress it.
+        self.core.set_clock(max(self.core.tick, 0, int(day)))
 
     # -- contradiction detection: open conflicts, never force-resolve -------- #
     def detect_and_open_conflicts(self) -> list[str]:

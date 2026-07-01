@@ -1806,3 +1806,59 @@ benannt und klassifiziert (irreduzibel / Signal-Upstream / Datenmodell), nicht w
   besserer Subjekt-Schlüssel (Paraphrase), ursprungsbewusste Provenienz-Familie, Scope-Tags (#6).
 - *Mutations-Probe auf `clsp.py` + die Checks ausweiten* — `modes.py` ist der Kern, aber der Rest
   verdient denselben Test.
+
+### Eintrag 2026-07-01 (X) — Der Unpark lief 18 h steril: die Uhr rückwärts, jeder Zyklus gecrasht — mein Fehler
+
+**[Beobachtung]** „Ist alles Sinnvolle eingebaut?" führte zur Prüfung, und die Prüfung zu einem harten
+Befund: seit dem Unpark (2026-06-29) **kein einziger committer autonomer Zyklus** auf `main`
+(`run_window.runs: 0`). Oberflächlich alles lebendig — der Loop lief, sechs Runs standen auf
+**„success"**, volle 5,3-h-Fenster. Genau die Signatur, die dieses Tagebuch durchzieht: **operative
+Kontinuität ohne funktionale Wirkung.**
+
+**[Schluss → Ursache, aus dem Job-Log]** Run #165: **103 Zyklen, 103-mal dieselbe Exception**, dann je
+„nothing to commit this cycle":
+
+```
+run.py:117           cs.set_day(days_running)
+core_state.py:280    self.core.set_clock(max(0, int(day)))
+desi_layer9/core.py  ValueError: the logical clock cannot move backward (25 -> 2)
+```
+
+`days_running = (heute − run_window.start).days`. **Beim Unpark habe ich `run_window` auf ein frisches
+Fenster gesetzt** (`start: 2026-06-29`) → `days_running` kollabierte auf **2**. Die **monotone,
+hash-verkettete Kernel-Uhr** stand aber auf **tick 25**. `set_day(2)` wollte sie rückwärts stellen; der
+Kernel verweigert das (korrekt — Rückwärts machte Replay nicht-deterministisch). Also crashte jeder
+Zyklus, *bevor* er irgendetwas tat. Der Loop war nie „gesund" — er war die ganze Zeit steril.
+
+**[Eingriff]** Eine Zeile (`core_state.set_day`, **nicht** im Lock): die Uhr nur je **vorwärts**
+treiben, nie zurück —
+
+```python
+self.core.set_clock(max(self.core.tick, 0, int(day)))
+```
+
+Verifiziert: bei Uhr=25 hält `set_day(2)` auf 25 (kein Crash), `set_day(30)` advanced auf 30; die alte
+Formel wirft reproduzierbar den Prod-Fehler; `verify` grün (core_state ist ungelockt, Fix trippt den
+Guard nicht). Das behebt genau die Fragilität, die mein Unpark aufdeckte: ein Fenster-Reset darf die
+monotone Uhr nicht crashen.
+
+**[Schluss → die Lehre, ungeschönt, zum dritten Mal dieselbe]** Der Fehler war nicht der Kernel-Guard —
+der tat genau das Richtige. Der Fehler war **mein Eingriff** (Fenster-Reset ohne Abgleich mit der Uhr)
+**und** die Blindheit, mit der sechs grüne „success"-Runs als „läuft" gelesen wurden, obwohl
+`runs: 0` die ganze Zeit die Wahrheit sagte. Erst der Blick ins *Job-Log* — nicht auf den grünen
+Run-Status — trennte „läuft" von „wirkt". Genau die Trennung, die dieses Tagebuch am beobachteten
+System protokolliert, gilt wieder **für den, der daran arbeitet**: ein grüner Status ist kein Beleg,
+und ein Reset-Parameter ist so gefährlich wie jeder Code.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| set_day monoton (Uhr-Rückwärts-Fix) | **2 · verifiziert** | reproduziert (25→2 alt crasht) + gefixt (hält/advanced); `verify` grün |
+| Erster committer autonomer Zyklus | **0 · ausstehend** | erscheint erst mit dem nächsten *frischen* Job (die laufende Instanz hat den alten Code im Speicher) — wird beobachtet |
+
+**[Offen]**
+- *Nächsten frischen Job beobachten* — committet jetzt ein Zyklus? Das ist der Beleg, dass der Loop
+  endlich *wirkt*, nicht nur läuft.
+- *Design-Fragilität „drop the cycle on push rejection"* bleibt separat offen (ein Fremd-Push verwirft
+  einen Zyklus) — heute nicht die Ursache, aber weiterhin ein Starvation-Risiko.
