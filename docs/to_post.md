@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_5 offene(r) Entwurf/Entwürfe._
+_6 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -43,6 +43,14 @@ Hat jemand gute Quellen oder Erfahrungen zu 'paradlc-bench'? Ich sammle dazu Mat
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'Predictive learning analytics enable data-informed decision-making for teachers in adaptive digital education settings.' (from forum) might also apply to paradlc-bench." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-349-e98658 · Vorschlag: hacker_news
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'attention'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
