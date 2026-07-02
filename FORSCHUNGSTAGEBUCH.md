@@ -1862,3 +1862,18 @@ und ein Reset-Parameter ist so gefährlich wie jeder Code.
   endlich *wirkt*, nicht nur läuft.
 - *Design-Fragilität „drop the cycle on push rejection"* bleibt separat offen (ein Fremd-Push verwirft
   einen Zyklus) — heute nicht die Ursache, aber weiterhin ein Starvation-Risiko.
+
+**[Nachtrag 2026-07-02 — belegt + die Fragilität geschlossen]** Der `set_day`-Fix hat gegriffen, sobald
+ein *frischer* Job ihn eincheckte: `run_window.runs` **0 → 29+**, autonome `actions@github.com`-Commits
+im **~45-min-Takt** (09:07, 09:52, 10:38, 11:23, 12:10 …). Joni kuratiert wieder eigenständig — **~2.698
+aktive Claims über 399 Themen** (Tag 3), Themen wie retrieval/distillation/alignment/calibration/
+provenance/benchmarking; er verknüpft Ideen (Support/Widerspruch), fordert eigene Ideen adversarial
+heraus („survived 3 challenges"), nutzt den echten DESi-Router, und schreibt Aufträge an einen Menschen
+statt sich am Kern zu vergreifen. **degen 0.** Der Beleg, der Eintrag X offen ließ, ist damit erbracht:
+der Loop *wirkt*, nicht nur *läuft*.
+
+Und die dort benannte Design-Fragilität ist jetzt geschlossen: der Zyklus-Commit **droppt bei einer
+Push-Rejection nicht mehr blind**, sondern **rebased sich auf das vorgerückte `main`** (bis zu 3
+Versuche); nur ein *echter* State-Konflikt (eine zweite Loop-Instanz) wird verworfen. Ein Fremd-Push,
+der die State-Dateien nicht anfasst (Mensch-Code-Push, gemergter PR), kostet damit **keinen** Zyklus
+mehr — genau die Selbst-Verschuldung aus Eintrag X strukturell entschärft.
