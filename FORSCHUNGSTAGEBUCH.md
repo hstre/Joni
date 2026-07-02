@@ -1919,3 +1919,56 @@ statt kaschieren.
 - *Die restlichen offenen Aufträge* sind entweder schon gebaut (SproutRAG #160, OCR #161) oder haben
   Akzeptanzkriterien (Macro-F1/Precision@k auf gelabelten Sets, Experten-Doppelblind, LLM-Facetten), die
   Jonis keyless CI ehrlich nicht erfüllen kann — die deterministisch verifizierbaren sind durch.
+
+### Eintrag 2026-07-02 (XII) — Kevin liefert die Bedingung — und die Mauer dahinter: kein echtes Signal, ein Plan statt Schein
+
+**[Eingriff]** Die in Eintrag XI benannte Grenze — der Condition-Guard feuert nur, wo Pro-Bedingungs-
+Fakten je Methoden-ID vorliegen — habe ich an der Wurzel angefasst: **Kevin liefert die Bedingung jetzt
+als First-Class-Vertragsfeld** (`feecc15`: `report["details"][].condition` = die Fremd-Task-Domäne, pro
+Methode, deterministisch), und **Joni konsumiert sie** (`83a1ac7`: `run_trials` speist `(method_id,
+condition, passed)` über einen gemeinsamen `_record_condition`-Helfer ins `method_ledger`; `run.py`
+reicht `extensions` durch). Guard + Recording sind getestet.
+
+**[Schluss → die Mauer, ungeschönt]** Beim Verdrahten stieß ich auf den eigentlichen Boden — und der
+ist tiefer als „ein fehlendes Feld". Zwei Befunde, beide benannt statt kaschiert:
+1. **Der *gemessene* Trial ist auf EINE Methode fest verdrahtet.** `real_trial.run_joni_conflict_trial`
+   misst immer `contradiction-first-review` auf einem eingefrorenen Konflikt-Set. Ihn über das Shelf zu
+   „rotieren" ginge nur mit **echten Task-Sätzen + Solvern pro Methode**, die eine beliebige Methode
+   tatsächlich anwenden — die gibt es nicht. Das ist die Forschungsfrage „wie misst man den
+   Transfernutzen einer beliebigen Denk-Methode empirisch", **kein Plumbing.**
+2. **Kevins Breiten-Trial ist ein deklarierter synthetischer Mock** (`epistemic_weight="none"`) und in
+   Produktion per `JONI_SYNTHETIC_TRIALS=0` aus. Damit ist das ganze Trial→Retire-Subsystem in Prod
+   **epistemisch ruhend**: keine echten Trials → keine Ausmusterung auf echtem Signal → der
+   Condition-Guard hat, so korrekt er ist, **keine Live-Wirkung.** Die Vertrags-Ebene steht; das Signal
+   dahinter existiert nicht.
+
+Ehrlich zu mir selbst: mein Vorschlag „den gemessenen Trial übers Shelf rotieren" war zu optimistisch —
+ich hätte vor dem „mach das" sehen müssen, dass er auf eine nicht existierende Fähigkeit baut. Genau die
+Apparatur-≠-Wirkung-Verwechslung, diesmal in meiner eigenen Planung. Zurückgerudert, **nichts auf
+Verdacht gebaut.**
+
+**[Eingriff → Plan statt Schein]** Statt ein Signal zu fingieren: `docs/METHOD_TRIAL_MEASUREMENT_PLAN.md`
+(`c99e345`) — ein **falsifikations-first, budget-quarantänierter** 6-Stufen-Plan. Die tragende Frage ist
+nicht „wie messen wir billiger", sondern **„transferieren gespeicherte Methoden überhaupt messbar,
+stärker als eine *verwürfelte* Kontrolle?"** Der Angelpunkt ist die **Negativkontrolle in Stufe 2**:
+schlägt eine echte Methode eine verwürfelte nicht, ist der Effekt „jede Präambel hilft" — und dann wird
+die *Idee* des Methoden-Trialings-nach-Wirkung ausgemustert, nicht ein Messen von Nichts perfektioniert.
+Gemessene Trials laufen **offline**, nie im €20-Loop, bis ein billiger Proxy gegen die gemessene Wahrheit
+kalibriert ist (Stufe 4); prüfbare Antworten statt LLM-Judges; jedes Null-Ergebnis ist ein gültiges,
+protokolliertes Resultat.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| Kevin liefert Bedingung (Vertrag) | **2 · belegt** | `feecc15`: `details[].condition`, deterministisch, +Test |
+| Joni konsumiert Bedingung | **2 · belegt** | `83a1ac7`: `_record_condition` in `run_trials`+`run_real_method_trial`, +Test |
+| Echtes gemessenes Signal je Methode | **0 · Forschungsfrage** | `real_trial` fest auf 1 Methode; breite Messung braucht Task-Sätze/Solver pro Methode — existiert nicht |
+| Trial→Retire in Produktion wirksam | **0 · ruhend** | synthetisch = kein epistemisches Gewicht; in Prod aus |
+| Mess-Plan | **1 · geschrieben** | `c99e345`, falsifikations-first, Negativkontrolle als Gate |
+
+**[Offen]**
+- *Stufe 0 + 1 des Plans* (kostenlos, kein Modell): vorregistrierte Spec + eine Gold-Batterie mit
+  prüfbaren Antworten. Erst dann kostet Stufe 2 einen kleinen Betrag für das *eine* Experiment.
+- *Die ehrliche Möglichkeit* bleibt: das Ergebnis von Stufe 2 könnte sein, dass Methoden-Trialing nichts
+  misst — dann ist der saubere Schritt, das Subsystem auszumustern, nicht es zu polieren.
