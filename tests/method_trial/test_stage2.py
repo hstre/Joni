@@ -73,3 +73,35 @@ def test_bootstrap_ci_is_deterministic_for_a_fixed_seed():
     a = run_stage2.decide(res, seed=123)
     b = run_stage2.decide(res, seed=123)
     assert a["vs_controls"] == b["vs_controls"]
+
+
+def test_deep_battery_and_conditions_are_well_formed():
+    from joni.method_trial import conditions, deep_methods
+    from joni.method_trial.contract import validate_battery
+    from joni.method_trial.gold_deep_v1 import CASES as DEEP
+    rep = validate_battery(DEEP, min_tasks=10)
+    assert rep["ok"], rep["problems"]
+    valid_ids = {m.id for m in deep_methods.DEEP_METHODS}
+    for t in DEEP:
+        assert t.expected_method_class in valid_ids, f"{t.id}: not a deep-method id"
+        built = conditions.build_deep(t)
+        assert set(built) == set(conditions.CONDITIONS)
+        # the intervention carries the method's real procedure (multi-line steps)
+        assert "Follow the procedure exactly" in built["intervention"]
+        assert built["plain_baseline"] == t.prompt
+
+
+def test_deep_pipeline_runs_end_to_end_with_a_stub():
+    from joni.method_trial import conditions, deep_methods, run_stage2
+    from joni.method_trial.gold_deep_v1 import CASES as DEEP
+    from joni.method_trial.solver import StubSolver
+
+    def oracle(prompt):
+        for t in DEEP:
+            if t.prompt in prompt:
+                pre = deep_methods.as_preamble(t.expected_method_class)
+                return t.gold if prompt.startswith(pre) else (t.wrong_example or "Answer: nope")
+        return "Answer: none"
+    dec = run_stage2.decide(run_stage2.run(StubSolver(oracle), DEEP, builder=conditions.build_deep))
+    assert dec["accuracy"]["intervention"] == 1.0
+    assert dec["method_wins"] is True

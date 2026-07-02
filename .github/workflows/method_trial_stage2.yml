@@ -9,11 +9,11 @@ on:
   workflow_dispatch:
     inputs:
       battery:
-        description: "which gold battery: hard (discrimination-capable) or micro (easy)"
+        description: "battery: deep (requires a deep method) / hard / micro"
         required: false
-        default: "hard"
+        default: "deep"
         type: choice
-        options: ["hard", "micro"]
+        options: ["deep", "hard", "micro"]
       limit:
         description: "run only the first N tasks (blank = all)"
         required: false

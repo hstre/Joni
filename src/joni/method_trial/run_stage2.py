@@ -20,12 +20,15 @@ from .gold_micro_v1 import CASES
 from .preregistration import SPEC, content_hash
 
 
-def run(solver, cases=None) -> dict:
-    """Solve every (task, condition) and grade. Returns per-task correctness + raw answers."""
+def run(solver, cases=None, *, builder=None) -> dict:
+    """Solve every (task, condition) and grade. Returns per-task correctness + raw answers.
+    ``builder`` picks how the 5 conditions are built (shallow ``conditions.build`` by default,
+    ``conditions.build_deep`` for the deep-method battery)."""
     cases = cases or CASES
+    build = builder or conditions.build
     rows = []
     for t in cases:
-        prompts = conditions.build(t)
+        prompts = build(t)
         cond = {}
         for name, prompt in prompts.items():
             ans = solver.solve(prompt)
@@ -81,16 +84,20 @@ def decide(result: dict, *, seed: int = 20260702, iters: int = 4000) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--battery", choices=("micro", "hard"), default="micro",
-                    help="which gold battery to run")
+    ap.add_argument("--battery", choices=("micro", "hard", "deep"), default="micro",
+                    help="which gold battery to run (deep = tasks requiring a deep method)")
     ap.add_argument("--limit", type=int, default=None, help="run only the first N tasks")
     ap.add_argument("--dry", action="store_true", help="print the call count, do not call")
     ap.add_argument("--out", default=None, help="write the full result + decision JSON here")
     ap.add_argument("--stub", action="store_true", help="always-wrong stub (no network/cost)")
     args = ap.parse_args(argv)
 
+    builder = None
     if args.battery == "hard":
         from .gold_hard_v1 import CASES as battery
+    elif args.battery == "deep":
+        from .gold_deep_v1 import CASES as battery
+        builder = conditions.build_deep
     else:
         battery = CASES
     cases = battery[: args.limit] if args.limit else battery
@@ -108,7 +115,7 @@ def main(argv=None) -> int:
         from .solver import DeepSeekSolver
         solver = DeepSeekSolver()
 
-    result = run(solver, cases)
+    result = run(solver, cases, builder=builder)
     dec = decide(result)
     print(f"\n  accuracy: {dec['accuracy']}")
     for c, v in dec["vs_controls"].items():

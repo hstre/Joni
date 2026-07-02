@@ -253,3 +253,41 @@ def to_records() -> list[dict]:
              "steps": list(m.steps), "correctness_conditions": list(m.correctness_conditions),
              "failure_modes": list(m.failure_modes), "worked_example": m.worked_example,
              "provenance": m.provenance} for m in DEEP_METHODS]
+
+
+# -- as Stage-2 preambles: the intervention supplies the ACTUAL procedure ---------------------------
+def as_preamble(method_id: str) -> str:
+    m = by_id(method_id)
+    if m is None:
+        return ""
+    body = "\n".join(f"- {s}" for s in m.steps)
+    return f"Apply this method — {m.name}. Follow the procedure exactly:\n{body}"
+
+
+def _seed(s: str) -> int:
+    import hashlib
+    return int(hashlib.sha256(s.encode()).hexdigest()[:8], 16)
+
+
+def scrambled_deep(method_id: str) -> str:
+    import random
+    words = as_preamble(method_id).split()
+    random.Random(_seed(method_id)).shuffle(words)
+    return " ".join(words)
+
+
+def irrelevant_deep(method_id: str) -> str:
+    ids = [m.id for m in DEEP_METHODS]
+    i = ids.index(method_id)
+    return as_preamble(ids[(i + 1) % len(ids)])
+
+
+def neutral_deep(method_id: str) -> str:
+    target = len(as_preamble(method_id).split())
+    filler = ("Take your time. Read the problem carefully. Work through it step by step. Be precise "
+              "and double-check each computation before committing to a final answer.")
+    ws = filler.split()
+    out: list[str] = []
+    while len(out) < target:
+        out.extend(ws)
+    return " ".join(out[:target])

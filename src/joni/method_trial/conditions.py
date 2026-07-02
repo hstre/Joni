@@ -29,3 +29,17 @@ def build(task: Task) -> dict[str, str]:
         "scrambled_method": _wrap(methods.scrambled(mc), task),
         "irrelevant_method": _wrap(methods.irrelevant_for(mc), task),
     }
+
+
+def build_deep(task: Task) -> dict[str, str]:
+    """Conditions for a DEEP-method task: the intervention supplies the method's real procedure from
+    the deep-methods database; controls neutralise length / structure / relevance the same way."""
+    from . import deep_methods as D
+    mid = task.expected_method_class
+    return {
+        "intervention": _wrap(D.as_preamble(mid), task),
+        "plain_baseline": _wrap("", task),
+        "neutral_preamble": _wrap(D.neutral_deep(mid), task),
+        "scrambled_method": _wrap(D.scrambled_deep(mid), task),
+        "irrelevant_method": _wrap(D.irrelevant_deep(mid), task),
+    }
