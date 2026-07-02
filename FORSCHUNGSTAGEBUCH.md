@@ -2230,3 +2230,63 @@ auf dem richtigen Fundament.
 - *DB wachsen lassen:* Jonis Harvest/Doktores auf *tiefe, domänenübergreifende* Methoden richten.
 - *Fairer Transfer-Test* (optional): eine Methode content-fremd anwenden (z.B. Bilanz auf eine
   Wahrscheinlichkeitsverteilung) und gegen die Kontrollen messen.
+
+### Eintrag 2026-07-02 (XIX) — Gemessen: der Cross-Domain-Transfer schlägt die Kontrollen NICHT — DeepSeek löst die fremde Anwendung schon selbst (Decke 1.0)
+
+**[Eingriff]** Der offene Test aus XVIII, jetzt gefahren. `gold_cross_v1.py`: 10 fehleranfällige, objektiv
+prüfbare Aufgaben, jede in einer **fremden** Oberflächen-Domäne (Physik / Chemie / Wahrscheinlichkeit /
+diskretes Puzzle), aber geknackt durch eine tiefe Methode, deren **Herkunft woanders liegt** — Schubfach
+→ Energieniveaus, doppeltes Abzählen → C-C-Bindungen, Invariante → Reaktions-Erreichbarkeit, Erhaltung →
+Zähler-Parität, Inklusion-Exklusion → funktionelle Gruppen, DP → Gitter-Füllungen, Bijektion → Doppel-
+bindungen, **Bilanz → Markov-Steady-State** (genau das „Bilanz auf eine Wahrscheinlichkeitsverteilung"),
+Extremal → Ruhelage, Widerspruch → Kelvin-Maschine. Intervention = die Methoden-Prozedur content-frei
+vorangestellt; die vier Kontrollen neutralisieren Länge / Struktur / Relevanz wie bei der deep-Batterie.
+Lauf über die Stage-2-Workflow (DeepSeek, Temperatur 0, 50 Calls, Repo-Secret, Ergebnis als Artefakt).
+
+**[Messergebnis — vorregistriert, ungeschönt]**
+
+| Bedingung | Accuracy |
+|---|---|
+| intervention (Methode) | **1.0** |
+| plain_baseline | **1.0** |
+| neutral_preamble | 1.0 |
+| scrambled_method | 1.0 |
+| irrelevant_method | 0.9 |
+
+- intervention vs plain_baseline: Δ = +0.000, CI95 [0.0, 0.0] → **kein Sieg**
+- vs neutral_preamble: Δ = +0.000 → kein Sieg
+- vs scrambled_method: Δ = +0.000 → kein Sieg
+- vs irrelevant_method: Δ = +0.100, CI95 [0.0, 0.3] → **kein Sieg** (CI berührt 0)
+- **method_wins (schlägt alle 4): False**
+
+**[Schluss → dreifach ehrlich]** (1) **Decke bei 1.0.** DeepSeek löst *jede* der zehn cross-domänen
+Aufgaben ungestützt — es wendet die tiefen Methoden über Fächergrenzen **von selbst** an. Damit ist keine
+Diskriminierung möglich: kein Kopfraum, in dem eine vorangestellte Methode etwas beitragen könnte. (2) Die
+einzige Bewegung ist **nach unten**: `irrelevant_method` fiel auf 0.9 — ein off-target-Methodentext hat
+*eine* Aufgabe leicht **verschlechtert**, das Gegenteil eines Methodennutzens. (3) Zusammen mit den
+früheren Läufen ist das Bild konsistent: micro 0.917, hard 1.0, **deep 0.8** (dort *gab* es Kopfraum — und
+die Methode gewann **trotzdem** nicht), cross 1.0. Ob mit oder ohne Kopfraum: **auf einem fähigen Modell
+bringt das Voranstellen der tiefen Methode — auch content-unabhängig — keinen messbaren Vorteil über die
+Kontrollen.**
+
+**[Was das über die eigentliche Frage sagt — und was NICHT]** Es sagt **nicht** „tiefe Methoden übertragen
+nicht" — es sagt „**DeepSeek braucht die Übertragung nicht angesagt**, es macht sie ohnehin". Das ist exakt
+der im Plan (Stage 2/3) vorregistrierte Fall: *„Wenn ein starkes Modell die Batterie trotzdem meistert,
+ist der Befund ‚dieses Modell braucht die Methode nicht — nimm ein schwächeres', keine Politur."* Der
+Wert der Cross-Domain-DB liegt damit belegt **nicht** im Benchmark-Sieg auf einem starken Modell, sondern
+als **wiederverwendbares, komponierbares Wissens-Asset** — für schwächere Agenten, für Menschen, als
+Vokabular. Genau die ehrliche Vorwarnung aus XVII/XVIII, jetzt gemessen bestätigt.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Cross-Domain-Transfer schlägt Kontrollen (starkes Modell) | **falsifiziert / nicht messbar** | cross-Lauf, Decke 1.0, method_wins False |
+| Cross-Domain-Batterie (fair, prüfbar, content-fremd) | **2 · gebaut + gefahren** | 10 Aufgaben, 20 Tests grün, DeepSeek-Lauf 2026-07-02 |
+| Wert der DB als Wissens-Asset (nicht Benchmark) | **belegt (per Ausschluss)** | vier Batterien, nie ein Methodensieg auf DeepSeek |
+
+**[Offen — der ehrliche, klar begrenzte Rest]**
+- *Transfer auf einem SCHWÄCHEREN Solver* (der eine Weg, der Kopfraum schafft): nur sinnvoll, wenn ein
+  schwächeres Modell verfügbar ist — plan-konform, aber neues Budget. Solange keins da ist, ist der Befund
+  „DeepSeek braucht es nicht" das ehrliche Ende dieser Linie.
+- Die DB bleibt als Asset stehen; der Transfer-Nutzen ist für *dieses* Modell verneint, nicht für alle.

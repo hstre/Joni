@@ -16,6 +16,19 @@
 > also internalised the *standard* deep methods, so the asset's value may be as reusable/composable
 > knowledge rather than a benchmark win. Only the shallow-method mock stays retired
 > (`epistemic_weight=none`, out of production). Diary XIV–XVII hold the numbers and this correction.
+>
+> **UPDATE (2026-07-02), the deep + cross-domain question is now MEASURED — same null.** Two further
+> DeepSeek runs closed the loop: the **deep** battery (each task requires a specific procedure) had real
+> headroom — baseline **0.8** — and the method *still* did not beat the four controls (`method_wins=False`);
+> the **cross-domain** battery (a deep method applied content-independently in a FOREIGN domain — Bilanz on
+> a Markov steady state, Schubfach on energy levels, Invariante on a reaction) ceilinged at baseline **1.0**
+> (`method_wins=False`, the only movement being `irrelevant_method` *down* to 0.9). Across all four
+> batteries (micro 0.917 / hard 1.0 / deep 0.8 / cross 1.0) there is **no measurable method benefit on a
+> capable model** — with headroom (deep) it did not win, without headroom (cross) it could not. Per this
+> plan's own Stage-2/3 pre-registration, that is the *"a strong model needs no method — use a weaker one"*
+> outcome, not a polish. The deep-methods DB's value is confirmed as a reusable knowledge asset, **not** a
+> benchmark lever on a strong solver. The only open door is a genuinely weaker solver (new budget); until
+> one exists, this line is honestly closed. Diary XVIII–XIX hold the cross numbers.
 
 **Status (historical):** the falsification-first, budget-quarantined path to replace the *synthetic*
 method-trial mock with a **measured** signal that retirement (and the condition guard,
