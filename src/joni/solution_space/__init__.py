@@ -17,6 +17,12 @@ from .cartography import (
     SolutionPoint,
     cartograph,
 )
+from .coordinates import (
+    build_points,
+    embed_texts,
+    embeddings_backend,
+    state_vector_of,
+)
 from .discovery import (
     DiscoveredAffinity,
     discover_affinities,
@@ -49,4 +55,9 @@ __all__ = [
     "DiscoveredAffinity",
     "discover_affinities",
     "to_extra_affinities",
+    # coordinate plumbing (records -> SolutionPoints)
+    "build_points",
+    "embed_texts",
+    "embeddings_backend",
+    "state_vector_of",
 ]

@@ -102,6 +102,22 @@ Holdout-/Falsifikations-Reflex, der den Methoden-Trial-Apparat trägt).
   vorregistrierte FP-vor-FN-Priorität). **Offen darunter:** die Historie ist real noch leer — der Entdecker
   läuft, sobald echte Trials anfallen.
 
+## Daten-Plumbing (Stand nach „Ja mach das")
+
+- **DESi-`SCHEMA_VERSION`-Fix:** ✅ **ERLEDIGT** (DESi-Feature-Branch). `solution_space_gap` exportiert
+  jetzt `SCHEMA_VERSION` und ein erweitertes `SnapshotProvenance` (`core_commit` / `schema_version` /
+  `field_sources`). Damit läuft der **Live-Pfad** `from_core` (Layer 9 → Snapshot → tiefe Operatoren) —
+  belegt durch `test_from_core_live` (echter Konflikt → echte Operator-Vorschläge, nicht mehr fail-open).
+- **Koordinaten-Zufuhr:** ✅ **Adapter gebaut** (`joni.solution_space.coordinates`). `embed_texts` nutzt
+  `fastembed` (real semantisch), fällt sonst deterministisch auf lexikalisches Hashing zurück (klar
+  gelabelt); `state_vector_of` normalisiert DESi-`StateVector`/Tupel/Dict; `build_points` baut aus Records
+  `SolutionPoint`s. **Offen darunter:** eine *Quelle*, die pro Lösungspunkt einen 9-dim StateVector liefert
+  (DESi rechnet StateVectors aus **Trajektorien**, nicht aus Einzel-Claims — dieses Mapping fehlt noch).
+- **Trial-Store:** ✅ **gebaut** (`joni.solution_space.trial_store`). Append-only JSONL-Ledger für
+  `DeepMethodTrial`; `discover_from_store` liest direkt in Baustein C. **Offen darunter:** die Befüllung —
+  der Loop muss einen vorgeschlagenen Operator anwenden, benoten und das Outcome anhängen (Live-Loop-Schritt,
+  noch nicht verdrahtet).
+
 ## Offene, ehrlich benannte Punkte
 
 - Die semantischen Koordinaten sind **ableitbar, aber nicht gratis** (Embedding-Schritt auf den Lösungstext).

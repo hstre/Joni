@@ -2633,3 +2633,44 @@ ist ausschließlich **Daten-Plumbing**: (1) echte Koordinaten (9-dim StateVector
 `fastembed`-Embeddings), (2) echte `DeepMethodTrial`-Outcomes (statt synthetischer), (3) der kleine
 DESi-`SCHEMA_VERSION`-Fix für den `from_core`-Pfad. Keine offene *Konzept*-Frage mehr — nur Anschluss an echte
 Daten, und dann die Messung auf echten Lösungsräumen.
+
+### Eintrag 2026-07-02 (XXVI) — Daten-Plumbing: DESi-Fix (Live-Pfad läuft), Koordinaten-Adapter, Trial-Store
+
+**[Eingriff]** „Ja mach das." Die drei Plumbing-Stücke, die zwischen der Synthetik-Mechanik und einer
+Messung auf echten Daten standen:
+
+**(3) DESi-`SCHEMA_VERSION`-Fix — erledigt, Live-Pfad belegt.** `desi.solution_space_gap` exportiert jetzt
+`SCHEMA_VERSION` und ein erweitertes `SnapshotProvenance` (`core_commit` / `schema_version` /
+`field_sources`; die ersten beiden Felder bleiben positional, DESis eigene 8 Tests unberührt). Damit
+importiert Jonis `epistemic_gap_projector` sauber und `from_core` degradiert **nicht** mehr fail-open:
+`test_from_core_live` baut einen echten Layer-9-Core mit offenem Konflikt und bekommt echte tiefe Operator-
+Vorschläge zurück — der ganze Live-Pfad Layer 9 → Snapshot → tiefe Methoden läuft. (DESi-Fix auf dem
+DESi-Feature-Branch; Joni-Rest auf `main`.)
+
+**(1) Koordinaten-Adapter — gebaut.** `joni.solution_space.coordinates`: `embed_texts` nutzt `fastembed`
+für echte Semantik (in dieser Umgebung als Backend gemeldet), fällt sonst deterministisch auf lexikalisches
+Hashing zurück (klar gelabelt — lexikalische Überlappung ist *nicht* Semantik); `state_vector_of`
+normalisiert DESi-`StateVector`/Tupel/Dict; `build_points` baut aus Records `SolutionPoint`s (Embeddings in
+einem Batch). Der Adapter steht; was fehlt, ist eine *Quelle* für den 9-dim StateVector pro Punkt (DESi
+rechnet die aus **Trajektorien**, nicht aus Einzel-Claims — dieses Mapping ist der eine echte Rest).
+
+**(2) Trial-Store — gebaut.** `joni.solution_space.trial_store`: append-only JSONL-Ledger für
+`DeepMethodTrial`, `discover_from_store` liest direkt in Baustein C. Der Store ist der ehrliche leere Sitz:
+die Aufnahme- und Konsum-Mechanik steht und ist getestet, die *Befüllung* mit echten Outcomes ist der
+Live-Loop-Schritt (Operator vorschlagen → anwenden → benoten → anhängen), noch nicht in den Loop verdrahtet.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| DESi-`SCHEMA_VERSION`-Fix / Live-`from_core` | **2 · erledigt** | DESi 8 Tests grün; `test_from_core_live` grün |
+| Koordinaten-Adapter (fastembed + Fallback) | **2 · gebaut** | `coordinates`, 5 Tests; StateVector-Quelle offen |
+| Trial-Store (Ledger + Discovery-Read) | **2 · gebaut** | `trial_store`, 3 Tests; Befüllung offen |
+| solution_space gesamt | **32 Tests grün, ruff sauber** | A+B+Pipeline+C+Coordinates+Store |
+
+**[Der ehrliche Rest bis zur Messung auf echten Daten]** Genau **zwei** Anschlüsse, beide klar benannt:
+(a) eine Quelle, die pro Lösungspunkt einen echten 9-dim StateVector liefert (Claim/Hypothese → Trajektorie
+→ `StateVector`), und (b) der Loop, der vorgeschlagene Operatoren anwendet, benotet und die Outcomes in den
+Store schreibt. Beides ist Loop-Integration in den geschützten Kern — der nächste, bewusst zu gehende
+Schritt. Danach steht die Messung: läuft die Kartografie auf echten Governance-Zuständen + echten
+Embeddings, und findet der Entdecker aus echten Trials tragfähige Kanten?
