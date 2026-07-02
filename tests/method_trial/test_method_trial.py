@@ -78,6 +78,30 @@ def test_hard_battery_meets_the_contract():
             assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
 
 
+def test_novel_battery_reference_solvers_are_cross_checked():
+    """The recall-proof battery is only usable if its GOLD is trustworthy: every reference solver is
+    cross-checked against an independent method (brute force / BFS / sieve vs inclusion-excl.)."""
+    from joni.method_trial import gold_novel_v1 as N
+    N.selftest()  # raises on any disagreement between the two independent computations
+
+
+def test_novel_battery_meets_the_contract_and_is_recall_proof():
+    from joni.method_trial import deep_methods as D
+    from joni.method_trial.contract import validate_battery
+    from joni.method_trial.gold_novel_v1 import CASES as NOVEL
+    rep = validate_battery(NOVEL, min_tasks=10)
+    assert rep["ok"], rep["problems"]
+    for t in NOVEL:
+        assert t.checker(t.gold), f"{t.id}: checker rejected its gold"
+        assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
+        assert D.by_id(t.expected_method_class) is not None, f"{t.id}: unknown method"
+    # the boolean tasks are balanced (both yes and no appear) so the battery is not degenerate
+    yesno_golds = {t.gold for t in NOVEL if "yes" in t.gold or "no" in t.gold}
+    assert any("yes" in g for g in yesno_golds) and any("no" in g for g in yesno_golds)
+    # at least one count is large enough to be genuinely un-memorisable
+    assert any(t.id.startswith("tiling_") for t in NOVEL)
+
+
 def test_cross_battery_is_well_formed_and_content_independent():
     """The cross-domain battery: every task is cracked by a DEEP method whose ORIGIN differs from
     the task's surface domain (the operator's 'Induktion in der Chemie' idea). Contract holds,

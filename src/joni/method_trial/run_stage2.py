@@ -84,9 +84,10 @@ def decide(result: dict, *, seed: int = 20260702, iters: int = 4000) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--battery", choices=("micro", "hard", "deep", "cross"), default="micro",
-                    help="gold battery (deep = native deep method; cross = deep method used in a "
-                         "FOREIGN domain)")
+    ap.add_argument("--battery", choices=("micro", "hard", "deep", "cross", "novel"),
+                    default="micro",
+                    help="gold battery (deep=native deep method; cross=deep method in a foreign "
+                         "domain; novel=recall-proof, reference-checked instances)")
     ap.add_argument("--limit", type=int, default=None, help="run only the first N tasks")
     ap.add_argument("--dry", action="store_true", help="print the call count, do not call")
     ap.add_argument("--out", default=None, help="write the full result + decision JSON here")
@@ -101,6 +102,9 @@ def main(argv=None) -> int:
         builder = conditions.build_deep
     elif args.battery == "cross":
         from .gold_cross_v1 import CASES as battery
+        builder = conditions.build_deep
+    elif args.battery == "novel":
+        from .gold_novel_v1 import CASES as battery
         builder = conditions.build_deep
     else:
         battery = CASES
