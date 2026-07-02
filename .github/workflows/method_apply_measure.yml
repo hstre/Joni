@@ -1,0 +1,33 @@
+name: method-apply-measure
+
+# The first real measurement of the EXECUTED apply: does a deep method, applied by an LLM to resolve a
+# checkable conflict, beat the controls (none / scrambled / irrelevant)? 4 modes x 10 conflicts = 40
+# DeepSeek calls (temperature 0), so MANUAL ONLY. The secret stays on GitHub; the result JSON and the
+# real-method trial ledger are uploaded as artifacts (the ledger feeds Baustein C).
+on:
+  workflow_dispatch: {}
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install (vendored desi_layer9 is enough; no external DESi needed)
+        run: python -m pip install -e .
+      - name: Run the apply measurement (real DeepSeek, temperature 0)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python -m joni.solution_space.measure_apply \
+            --store apply_trials.jsonl --out apply_result.json
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: method-apply-measure-result
+          path: |
+            apply_result.json
+            apply_trials.jsonl
