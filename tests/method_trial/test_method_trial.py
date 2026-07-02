@@ -93,3 +93,26 @@ def test_deep_methods_database_is_well_formed():
     assert D.by_id("mathematical_induction").aka == "vollständige Induktion"
     assert D.by_kind("counting") and D.applicable("union of overlapping sets")
     assert len(D.to_records()) == len(ms)
+
+
+def test_deep_methods_are_cross_domain_and_content_independent():
+    """The catalogue's point: a method is a Kernfrage applied ACROSS domains, not a domain fact
+    (vollständige Induktion in der Chemie). Every method carries a core question and its domains,
+    the catalogue spans math + physics + chemistry, and most methods transfer to >= 2 domains."""
+    from joni.method_trial import deep_methods as D
+    ms = D.DEEP_METHODS
+    for m in ms:
+        assert m.core_question, f"{m.id}: must state its Kernfrage (the content-free question)"
+        assert m.domains, f"{m.id}: must declare the domains its schema applies in"
+    doms = set(D.domains())
+    assert {"math", "physics", "chemistry"} <= doms, f"catalogue must span the three: {doms}"
+    assert D.by_domain("chemistry") and D.by_domain("physics") and D.by_domain("math")
+    # the physics/chemistry deep methods the operator named are present
+    for mid in ("conservation_law", "symmetry_argument", "mass_balance",
+                "thermodynamic_feasibility", "structure_property"):
+        assert D.by_id(mid) is not None, f"missing named deep method: {mid}"
+    # most methods are genuinely cross-domain (schema travels independent of content)
+    assert len(D.cross_domain()) >= len(ms) // 2
+    # to_records round-trips the new fields
+    rec = next(r for r in D.to_records() if r["id"] == "conservation_law")
+    assert rec["core_question"] and rec["domains"]

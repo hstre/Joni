@@ -25,6 +25,8 @@ class DeepMethod:
     failure_modes: tuple[str, ...]  # named ways it is applied WRONG
     worked_example: str
     provenance: str                 # where it comes from (a-priori / cited), never a trial outcome
+    core_question: str = ""         # the Kernfrage — the one question the method asks, content-free
+    domains: tuple[str, ...] = ()   # where the SCHEMA applies — math, physics, chemistry, ... (transfer)
 
 
 DEEP_METHODS: list[DeepMethod] = [
@@ -44,7 +46,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "off-by-one in the base n0"),
         worked_example="Sum 1..n = n(n+1)/2: base n=1 -> 1=1; assume for k; then "
                        "1..k+(k+1) = k(k+1)/2 + (k+1) = (k+1)(k+2)/2.",
-        provenance="standard mathematics (induction axiom / Peano)"),
+        provenance="standard mathematics (induction axiom / Peano)",
+        core_question="Gilt es am Anfang, und vererbt der Schritt es weiter? Dann gilt es fuer alle.",
+        domains=("math", "computer-science", "chemistry", "physics")),  # e.g. homologe Reihe: property of unit n -> n+1
     DeepMethod(
         id="strong_induction", name="Strong induction", aka="starke Induktion",
         kind="proof_technique",
@@ -59,7 +63,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "silently assuming exactly one predecessor"),
         worked_example="Every n>=2 factors into primes: if n is prime, done; else n=ab with "
                        "2<=a,b<n, and by strong hypothesis both a,b factor.",
-        provenance="standard mathematics"),
+        provenance="standard mathematics",
+        core_question="Braucht der Schritt ALLE kleineren Faelle, nicht nur den letzten?",
+        domains=("math", "computer-science")),
     DeepMethod(
         id="proof_by_contradiction", name="Proof by contradiction", aka="Widerspruchsbeweis",
         kind="proof_technique",
@@ -75,7 +81,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "declaring a counter-intuitive result a 'contradiction'"),
         worked_example="sqrt(2) irrational: assume = p/q in lowest terms; then p^2=2q^2, so p even, "
                        "p=2r, q^2=2r^2, q even -> p,q share factor 2, contradicting lowest terms.",
-        provenance="classical logic"),
+        provenance="classical logic",
+        core_question="Wenn das Gegenteil galt — welche Unmoeglichkeit erzwingt es?",
+        domains=("math", "physics", "chemistry")),  # e.g. Perpetuum mobile widerspricht Energieerhaltung
     DeepMethod(
         id="contrapositive", name="Proof by contrapositive", aka="Kontraposition",
         kind="proof_technique",
@@ -89,7 +97,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "negating only one side"),
         worked_example="'if n^2 is even then n is even': contrapositive 'if n is odd then n^2 is odd'; "
                        "n=2k+1 -> n^2=4k^2+4k+1, odd.",
-        provenance="classical logic"),
+        provenance="classical logic",
+        core_question="Ist 'nicht-B erzwingt nicht-A' leichter zu zeigen als 'A erzwingt B'?",
+        domains=("math", "computer-science")),
     DeepMethod(
         id="inclusion_exclusion", name="Inclusion-exclusion", aka="Inklusion-Exklusion",
         kind="counting",
@@ -103,7 +113,9 @@ DEEP_METHODS: list[DeepMethod] = [
         failure_modes=("stopping after subtracting pairs (over-subtracting triples)",
                        "sign errors on higher-order terms"),
         worked_example="1..1000 divisible by 3 or 5: 333+200-|by15|=333+200-66=467.",
-        provenance="combinatorics"),
+        provenance="combinatorics",
+        core_question="Was habe ich doppelt gezaehlt, und auf welcher Ueberlappungsstufe?",
+        domains=("math", "computer-science", "chemistry")),  # e.g. counting isomers avoiding several substituent clashes
     DeepMethod(
         id="pigeonhole", name="Pigeonhole principle", aka="Schubfachprinzip",
         kind="existence",
@@ -117,7 +129,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "claiming WHICH hole (pigeonhole only gives existence)"),
         worked_example="Among 13 people, two share a birth month: 13 pigeons, 12 months -> a month "
                        "has >= 2.",
-        provenance="combinatorics (Dirichlet)"),
+        provenance="combinatorics (Dirichlet)",
+        core_question="Sind mehr Objekte als Faecher da? Dann teilt sich ein Fach.",
+        domains=("math", "computer-science", "physics")),  # e.g. more states than energy levels -> degeneracy forced
     DeepMethod(
         id="invariant_argument", name="Invariant / monovariant argument", aka="Invariantenmethode",
         kind="impossibility",
@@ -134,7 +148,9 @@ DEEP_METHODS: list[DeepMethod] = [
         worked_example="Two opposite corners removed from an 8x8 board can't be tiled by dominoes: each "
                        "domino covers one black+one white; removing two same-colour squares leaves an "
                        "imbalance the tiling can't match.",
-        provenance="olympiad combinatorics"),
+        provenance="olympiad combinatorics",
+        core_question="Welche Groesse bleibt unter JEDEM erlaubten Schritt gleich (oder faellt streng)?",
+        domains=("math", "physics", "chemistry")),  # the shared root of Erhaltungssaetze / Invarianten below
     DeepMethod(
         id="extremal_principle", name="Extremal principle", aka="Extremalprinzip",
         kind="existence",
@@ -149,7 +165,9 @@ DEEP_METHODS: list[DeepMethod] = [
         worked_example="In a finite set of points not all collinear, a Sylvester-Gallai line through "
                        "exactly two exists — take the point/line pair with the smallest positive "
                        "distance and argue.",
-        provenance="olympiad combinatorics"),
+        provenance="olympiad combinatorics",
+        core_question="Was gilt fuer das groesste/kleinste Objekt — und was bricht, wenn es nicht gilt?",
+        domains=("math", "physics")),  # e.g. a system settles at the extremum of a potential
     DeepMethod(
         id="double_counting", name="Double counting", aka="doppeltes Abzählen",
         kind="counting",
@@ -164,7 +182,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "an ordering/labelling mismatch"),
         worked_example="Sum of degrees in a graph = 2*(#edges): count edge-endpoints by vertices, and "
                        "by edges.",
-        provenance="combinatorics"),
+        provenance="combinatorics",
+        core_question="Kann ich DASSELBE auf zwei Arten zaehlen und die Ergebnisse gleichsetzen?",
+        domains=("math", "physics", "chemistry")),  # e.g. bonds counted per-atom vs per-molecule (valence balance)
     DeepMethod(
         id="bijection", name="Bijective proof", aka="bijektiver Beweis",
         kind="counting",
@@ -178,7 +198,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "an inverse that isn't actually inverse"),
         worked_example="#subsets of an n-set = 2^n: map each subset to its 0/1 indicator string, a "
                        "bijection to {0,1}^n.",
-        provenance="combinatorics"),
+        provenance="combinatorics",
+        core_question="Gibt es eine umkehrbare Zuordnung, die zwei Mengen gleich gross macht?",
+        domains=("math", "physics")),  # e.g. microstate correspondences in statistical mechanics
     DeepMethod(
         id="diagonalization", name="Diagonalization", aka="Diagonalisierung",
         kind="proof_technique",
@@ -192,7 +214,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "the enumeration assumption is not actually used"),
         worked_example="Reals in (0,1) are uncountable: given any list, build x differing from the n-th "
                        "number in its n-th decimal; x is not on the list.",
-        provenance="Cantor; adapted by Turing/Gödel"),
+        provenance="Cantor; adapted by Turing/Gödel",
+        core_question="Kann ich ein Objekt bauen, das sich von jedem gelisteten an einer Stelle unterscheidet?",
+        domains=("math", "computer-science")),
     DeepMethod(
         id="dynamic_programming", name="Dynamic programming", aka="dynamische Programmierung",
         kind="optimization",
@@ -210,7 +234,9 @@ DEEP_METHODS: list[DeepMethod] = [
                        "recomputation from a wrong evaluation order"),
         worked_example="Longest common subsequence: dp[i][j] from dp[i-1][j-1]+1 on a match, else "
                        "max(dp[i-1][j], dp[i][j-1]).",
-        provenance="Bellman"),
+        provenance="Bellman",
+        core_question="Baut sich die optimale Loesung aus optimalen Teilloesungen auf?",
+        domains=("math", "computer-science", "physics")),  # e.g. optimal-path / least-action discretisations
     DeepMethod(
         id="divide_and_conquer", name="Divide and conquer", aka="Teile und herrsche",
         kind="algorithm",
@@ -224,7 +250,277 @@ DEEP_METHODS: list[DeepMethod] = [
         failure_modes=("overlapping sub-instances (should be DP instead)",
                        "an incorrect or costly combine step"),
         worked_example="Mergesort: split in halves, sort each, merge in linear time -> O(n log n).",
-        provenance="classical algorithms"),
+        provenance="classical algorithms",
+        core_question="Zerfaellt das Problem in unabhaengige Teile, die ich einzeln loese und zusammenfuege?",
+        domains=("math", "computer-science", "chemistry")),  # e.g. retrosynthesis: split a target into sub-syntheses
+
+    # -- UNIVERSAL / PHYSICS / CHEMISTRY deep methods --------------------------------------------
+    # These are the content-independent schemata the operator named: a method is a QUESTION you ask
+    # of a system, not a fact about one domain. Erhaltung, Symmetrie, Bilanz, Grenzfall, Skalierung,
+    # Gleichgewicht, Stabilitaet, Optimierung, Mechanismus, Invariante — each usable on a foreign
+    # system (e.g. a mass-balance argument applied to a probability distribution).
+    DeepMethod(
+        id="conservation_law", name="Conservation-law argument", aka="Erhaltungssatz",
+        kind="invariant",
+        when_to_use="constrain or forbid an outcome via a quantity that cannot change",
+        steps=("Name a conserved quantity (energy, momentum, charge, mass, particle number).",
+               "Evaluate it in the initial and final states.",
+               "Impose initial = final; any outcome violating the balance is impossible.",
+               "Read off the constraint the conservation forces."),
+        correctness_conditions=("the quantity is genuinely conserved under the actual dynamics/closure",
+                                "the system boundary is drawn so nothing leaks unaccounted"),
+        failure_modes=("assuming conservation across an open boundary (leak/source ignored)",
+                       "conflating a conserved quantity with one that is merely often constant"),
+        worked_example="A perpetuum mobile is impossible: it would output work with no input, "
+                       "violating energy conservation (first law).",
+        provenance="physics (Noether); chemistry (mass/charge balance)",
+        core_question="Welche Groesse kann nicht verschwinden — und was erzwingt ihre Bilanz?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="symmetry_argument", name="Symmetry argument", aka="Symmetrieargument",
+        kind="invariant",
+        when_to_use="deduce structure/vanishing/degeneracy from a transformation the system ignores",
+        steps=("Identify a transformation under which the system is invariant (mirror, rotation, "
+               "exchange, gauge).",
+               "Argue that any result must respect that invariance.",
+               "Conclude: asymmetric answers are forbidden; a conserved current or selection rule "
+               "follows (Noether: symmetry -> conservation)."),
+        correctness_conditions=("the system really is invariant under the transformation (check the "
+                                "Hamiltonian / structure, not just the picture)",
+                                "the observable transforms the way you assume"),
+        failure_modes=("assuming a symmetry that a small term actually breaks",
+                       "ignoring spontaneous symmetry breaking (symmetric law, asymmetric state)"),
+        worked_example="A symmetric charge distribution has zero dipole moment; a centrosymmetric "
+                       "molecule is IR-inactive for modes that preserve the centre.",
+        provenance="physics (Noether, group theory); chemistry (molecular point groups)",
+        core_question="Was bleibt gleich, wenn ich das System spiegle/drehe/vertausche?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="dimensional_analysis", name="Dimensional analysis", aka="Dimensionsanalyse",
+        kind="estimation",
+        when_to_use="find the FORM of a relation, or sanity-check one, from units alone",
+        steps=("List the relevant quantities and their dimensions (M, L, T, ...).",
+               "Form dimensionless groups (Buckingham pi).",
+               "The target must be a function of those groups; fix scaling exponents by matching "
+               "dimensions.",
+               "A leftover pure number needs experiment/theory, but the scaling is forced."),
+        correctness_conditions=("all relevant quantities are included and no irrelevant one sneaks in",
+                                "dimensions balance on both sides exactly"),
+        failure_modes=("omitting a governing quantity, giving a wrong power law",
+                       "treating a dimensionless constant as if dimensions could set it"),
+        worked_example="Pendulum period: [T] from length L and g ([L/T^2]) forces T ~ sqrt(L/g); "
+                       "mass cannot enter (no way to cancel M).",
+        provenance="physics; engineering (Buckingham pi)",
+        core_question="Welche Form erzwingen die Einheiten allein, bevor ich rechne?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="limiting_case", name="Limiting-case / boundary analysis", aka="Grenzfallbetrachtung",
+        kind="estimation",
+        when_to_use="check or narrow a result by pushing a parameter to an extreme",
+        steps=("Pick a parameter and send it to a limit (0, infinity, equal, symmetric).",
+               "Predict the known behaviour there from first principles.",
+               "Compare the candidate expression's limit to that prediction.",
+               "A mismatch falsifies the candidate; agreement constrains it."),
+        correctness_conditions=("the limit is taken consistently across the whole expression",
+                                "the 'known' limiting behaviour is itself trustworthy"),
+        failure_modes=("a singular limit where terms silently blow up or cancel",
+                       "assuming a smooth limit across a phase change / discontinuity"),
+        worked_example="Relativistic KE (gamma-1)mc^2 must reduce to (1/2)mv^2 as v<<c — a Taylor "
+                       "limit that any correct formula has to pass.",
+        provenance="physics; applied mathematics",
+        core_question="Was passiert am Rand des Modells — und stimmt es dort mit dem Bekannten?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="variational_principle", name="Variational / extremal principle", aka="Variationsprinzip",
+        kind="optimization",
+        when_to_use="find the realised state as the extremum of a functional (action, energy, entropy)",
+        steps=("Write the quantity nature extremises (action S, free energy G, entropy).",
+               "Set its first variation to zero over admissible states (delta S = 0).",
+               "Solve the resulting Euler-Lagrange / stationarity condition.",
+               "Check it is the right kind of extremum (min/max/saddle)."),
+        correctness_conditions=("the functional and the admissible-variation space are correct",
+                                "boundary/constraint terms are handled (Lagrange multipliers)"),
+        failure_modes=("finding a stationary point that is a saddle, not the physical minimum",
+                       "wrong or missing constraints"),
+        worked_example="Light path (Fermat): the ray extremises travel time, giving Snell's law "
+                       "n1 sin(t1) = n2 sin(t2).",
+        provenance="physics (Lagrange, Hamilton, Fermat); chemistry (free-energy minimisation)",
+        core_question="Welche Groesse macht die Natur extremal — und was folgt aus delta=0?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="perturbation", name="Perturbation / linearization", aka="Stoerungstheorie",
+        kind="approximation",
+        when_to_use="a hard problem is a small correction to a solvable one",
+        steps=("Split into a solvable base plus a small term: H = H0 + eps*V.",
+               "Expand the answer in powers of eps around the base solution.",
+               "Keep leading corrections; linearize about the base state.",
+               "Check the expansion parameter is genuinely small (convergence)."),
+        correctness_conditions=("the perturbation is actually small relative to the base",
+                                "no degeneracy/resonance that makes naive terms diverge"),
+        failure_modes=("using it where the 'small' term is not small (series diverges)",
+                       "missing a secular term that grows without bound"),
+        worked_example="Anharmonic oscillator: treat the x^4 term as a small correction to the "
+                       "harmonic solution; first-order shift of the energy levels.",
+        provenance="physics (QM/celestial mechanics); applied mathematics",
+        core_question="Ist das Problem eine kleine Stoerung eines loesbaren Falls?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="scaling_argument", name="Scaling / renormalization argument", aka="Skalierungsargument",
+        kind="estimation",
+        when_to_use="understand how behaviour changes with size/scale, or extract critical exponents",
+        steps=("Rescale the governing variables by a factor.",
+               "See which terms dominate / are invariant under the rescaling.",
+               "Extract the scaling law (power) that the invariance forces.",
+               "Identify the scale at which the dominant balance changes (crossover)."),
+        correctness_conditions=("the rescaling respects the actual governing equations",
+                                "the dominant balance is correctly identified in each regime"),
+        failure_modes=("assuming one power law holds across a crossover it doesn't",
+                       "ignoring a scale-dependent coupling"),
+        worked_example="Surface-to-volume ratio scales as 1/L: why small animals lose heat faster and "
+                       "why nanoparticles are disproportionately reactive.",
+        provenance="physics (renormalization group); biology/chemistry (allometry, surface effects)",
+        core_question="Wie aendert sich das Verhalten, wenn ich alles um einen Faktor skaliere?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="equilibrium_thinking", name="Equilibrium analysis", aka="Gleichgewichtsdenken",
+        kind="invariant",
+        when_to_use="find the resting state where opposing tendencies balance (forces, rates, potentials)",
+        steps=("Identify the opposing tendencies (forward/back rates, drive/restore forces).",
+               "Set them equal: net force = 0, or forward rate = backward rate.",
+               "Solve for the equilibrium state (Le Chatelier: how it shifts under a push).",
+               "Distinguish stable from unstable equilibria."),
+        correctness_conditions=("the system can actually reach equilibrium (closed enough, given time)",
+                                "all opposing contributions are included in the balance"),
+        failure_modes=("confusing steady-state (throughput) with true equilibrium (no net flux)",
+                       "ignoring kinetic barriers that prevent reaching it"),
+        worked_example="A + B <=> C: at equilibrium k_f[A][B] = k_r[C], giving K = k_f/k_r; add A and "
+                       "the system shifts toward C (Le Chatelier).",
+        provenance="chemistry (mass action, Le Chatelier); physics (mechanical equilibrium)",
+        core_question="Wo heben sich die gegenlaeufigen Tendenzen genau auf?",
+        domains=("chemistry", "physics", "math")),
+    DeepMethod(
+        id="stability_analysis", name="Stability analysis", aka="Stabilitaetsanalyse",
+        kind="invariant",
+        when_to_use="decide whether a state persists or runs away under a small disturbance",
+        steps=("Take an equilibrium/steady state and perturb it slightly.",
+               "Linearize the dynamics about that state.",
+               "Check whether the perturbation decays (stable) or grows (unstable) — sign of the "
+               "eigenvalues / second derivative of the potential.",
+               "Classify: stable, unstable, marginal."),
+        correctness_conditions=("the linearization is valid for small enough perturbations",
+                                "all relevant modes/directions are checked, not just one"),
+        failure_modes=("declaring stability from one direction while another is unstable (saddle)",
+                       "missing a nonlinear instability the linear analysis can't see"),
+        worked_example="A ball at the bottom of a bowl returns (stable, potential minimum); on a hill "
+                       "top it rolls away (unstable, maximum) — the sign of V''.",
+        provenance="physics/dynamical systems; chemistry (reaction stability)",
+        core_question="Kehrt das System nach einer kleinen Stoerung zurueck, oder laeuft es weg?",
+        domains=("physics", "chemistry", "math")),
+    DeepMethod(
+        id="mass_balance", name="Balance / accounting argument", aka="Bilanzierung",
+        kind="counting",
+        when_to_use="track a conserved substance through a system: what goes in must come out or accumulate",
+        steps=("Draw a boundary around the system.",
+               "Sum all inflows and outflows of the tracked quantity.",
+               "in - out = accumulation (0 at steady state).",
+               "Solve for the unknown flow/amount the balance pins down."),
+        correctness_conditions=("the boundary is closed and every flow across it is counted",
+                                "the same units/species are tracked consistently"),
+        failure_modes=("forgetting a stream (unaccounted source or sink)",
+                       "mixing species or basis (mass vs moles) mid-balance"),
+        worked_example="Balancing CH4 + 2 O2 -> CO2 + 2 H2O: atoms of each element in = out; the "
+                       "coefficients are forced by the element balances.",
+        provenance="chemistry/chemical engineering (mass balance); physics (continuity)",
+        core_question="Was geht rein, was kommt raus, was reichert sich an?",
+        domains=("chemistry", "physics", "math")),
+    DeepMethod(
+        id="thermodynamic_feasibility", name="Thermodynamic feasibility", aka="thermodynamische Triebkraft",
+        kind="invariant",
+        when_to_use="decide whether a process CAN happen spontaneously (direction), ignoring speed",
+        steps=("Identify the relevant potential (Gibbs free energy G at const T,p).",
+               "Compute its change: delta G = delta H - T*delta S.",
+               "delta G < 0 -> spontaneous in that direction; > 0 -> not; = 0 -> equilibrium.",
+               "Separate the enthalpy (bond/energy) and entropy (disorder) drivers."),
+        correctness_conditions=("the right potential for the constraints is used (G for T,p; A for T,V)",
+                                "state-function values are taken between the actual end states"),
+        failure_modes=("confusing feasibility (thermodynamics) with rate (kinetics)",
+                       "sign errors in delta H vs delta S trade-off"),
+        worked_example="Diamond -> graphite has delta G < 0 (favourable) yet is unobservably slow: "
+                       "feasible thermodynamically, forbidden kinetically.",
+        provenance="chemistry/physics (thermodynamics, Gibbs)",
+        core_question="Zeigt die Triebkraft (delta G) ueberhaupt in diese Richtung?",
+        domains=("chemistry", "physics")),
+    DeepMethod(
+        id="kinetic_accessibility", name="Kinetic-barrier analysis", aka="kinetische Zugaenglichkeit",
+        kind="invariant",
+        when_to_use="decide whether a thermodynamically-allowed process is FAST enough to matter",
+        steps=("Find the highest barrier on the path (transition state / activation energy Ea).",
+               "Estimate the rate from Ea and temperature (Arrhenius: k ~ exp(-Ea/RT)).",
+               "Compare the timescale to the one that matters.",
+               "If blocked, ask what lowers the barrier (catalyst, temperature, alternate path)."),
+        correctness_conditions=("the rate-limiting step (highest barrier) is correctly identified",
+                                "the mechanism/path assumed is the one actually taken"),
+        failure_modes=("assuming a favourable delta G implies a usable rate",
+                       "missing a lower-barrier alternative pathway"),
+        worked_example="H2 + O2 is hugely favourable but stable at room temperature until a spark "
+                       "provides the activation energy; a catalyst lowers Ea instead.",
+        provenance="chemistry (Arrhenius, transition-state theory)",
+        core_question="Ist der Weg dorthin schnell genug — oder blockiert eine Barriere?",
+        domains=("chemistry", "physics")),
+    DeepMethod(
+        id="structure_property", name="Structure-property / structure-reactivity reasoning",
+        aka="Struktur-Eigenschafts-Prinzip", kind="mechanism",
+        when_to_use="predict a substance's behaviour from its structure (bonds, geometry, electronics)",
+        steps=("Read the structure: connectivity, geometry, polarity, charge distribution.",
+               "Map structural features to the governing property (acidity, reactivity, colour, "
+               "conductivity) via known trends.",
+               "Locate the reactive/vulnerable site the structure dictates.",
+               "Predict behaviour; where trends conflict, weigh the dominant one."),
+        correctness_conditions=("the structure is right (correct isomer/conformer/charge state)",
+                                "the trend invoked actually governs this property"),
+        failure_modes=("reasoning from a wrong structure",
+                       "over-generalising one trend against a dominant opposing effect"),
+        worked_example="More electronegative substituents stabilise a carboxylate's negative charge, "
+                       "so trichloroacetic acid is far stronger than acetic acid.",
+        provenance="chemistry (physical-organic; structure-activity relationships)",
+        core_question="Was an der STRUKTUR erzwingt dieses Verhalten?",
+        domains=("chemistry", "physics")),
+    DeepMethod(
+        id="mechanism_decomposition", name="Mechanistic decomposition", aka="Mechanismusanalyse",
+        kind="mechanism",
+        when_to_use="explain an overall change by the ordered sequence of elementary steps behind it",
+        steps=("Break the overall transformation into elementary steps.",
+               "Track what each step does to the key participants (electrons, atoms, energy).",
+               "Identify intermediates and the rate-/outcome-determining step.",
+               "Check the steps sum to the overall change and conserve everything."),
+        correctness_conditions=("each elementary step is itself valid and conserves mass/charge",
+                                "the steps compose to exactly the observed overall change"),
+        failure_modes=("a step that violates conservation or geometry",
+                       "an intermediate that can't actually form"),
+        worked_example="SN1 vs SN2: the mechanism (carbocation intermediate vs concerted backside "
+                       "attack) predicts the rate law and the stereochemistry, not the overall "
+                       "equation alone.",
+        provenance="chemistry (reaction mechanisms); physics (multi-step processes)",
+        core_question="Welche Kette von Elementarschritten steckt hinter der Gesamtaenderung?",
+        domains=("chemistry", "physics")),
+    DeepMethod(
+        id="state_function_cycle", name="State-function / thermodynamic-cycle argument",
+        aka="Hess'scher Satz", kind="invariant",
+        when_to_use="get a hard-to-measure change from easy ones, because the total is path-independent",
+        steps=("Recognise the quantity is a state function (path-independent: enthalpy, energy, "
+               "entropy).",
+               "Build a cycle/alternate path from steps whose values you know.",
+               "Sum the known steps; the total equals the direct (unknown) change.",
+               "Close the cycle: around any loop the net change is zero."),
+        correctness_conditions=("the quantity really is a state function (path-independent)",
+                                "the constructed path starts and ends at the same states"),
+        failure_modes=("applying it to a path-dependent quantity (heat/work in general)",
+                       "steps that don't actually connect the same end states"),
+        worked_example="Hess's law: delta H of a reaction = sum of delta H of any set of steps that "
+                       "add up to it, even steps you can't run directly.",
+        provenance="chemistry (Hess); physics (potentials, exact differentials)",
+        core_question="Ist die Groesse wegunabhaengig — kann ich sie ueber einen Umweg berechnen?",
+        domains=("chemistry", "physics", "math")),
 ]
 
 
@@ -247,12 +543,29 @@ def applicable(keyword: str) -> list[DeepMethod]:
     return [m for m in DEEP_METHODS if k and k in m.when_to_use.lower()]
 
 
+def by_domain(domain: str) -> list[DeepMethod]:
+    """Methods whose content-independent schema is declared to apply in a domain."""
+    d = (domain or "").lower()
+    return [m for m in DEEP_METHODS if d in m.domains]
+
+
+def domains() -> tuple[str, ...]:
+    return tuple(sorted({d for m in DEEP_METHODS for d in m.domains}))
+
+
+def cross_domain() -> list[DeepMethod]:
+    """The point of the catalogue: methods declared usable in more than one domain — the schema
+    (vollständige Induktion, Erhaltung, Symmetrie, ...) travels independent of the content."""
+    return [m for m in DEEP_METHODS if len(m.domains) >= 2]
+
+
 def to_records() -> list[dict]:
     """A JSON-serialisable dump — the seed for a persisted deep-methods DB."""
     return [{"id": m.id, "name": m.name, "aka": m.aka, "kind": m.kind, "when_to_use": m.when_to_use,
              "steps": list(m.steps), "correctness_conditions": list(m.correctness_conditions),
              "failure_modes": list(m.failure_modes), "worked_example": m.worked_example,
-             "provenance": m.provenance} for m in DEEP_METHODS]
+             "provenance": m.provenance, "core_question": m.core_question,
+             "domains": list(m.domains)} for m in DEEP_METHODS]
 
 
 # -- as Stage-2 preambles: the intervention supplies the ACTUAL procedure ---------------------------

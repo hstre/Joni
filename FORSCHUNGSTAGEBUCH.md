@@ -2181,3 +2181,52 @@ nicht im Benchmark-Sieg. Beides sauber getrennt, nichts überversprochen.
 - *DB wachsen lassen:* Jonis Harvest/Doktores auf *tiefe* Methoden richten (heute greift er flache
   „technique"-Erwähnungen ab) — ein größerer, eigener Schritt.
 - *Fairer Tiefen-Transfer-Test* (optional): Aufgaben, die ein spezifisches Verfahren erzwingen.
+
+### Eintrag 2026-07-02 (XVIII) — Die eigentliche Präzisierung: Methode = Kernfrage, nicht Inhalt — die DB wird domänenübergreifend (Induktion in der Chemie)
+
+**[Präzisierung des Betreibers, wörtlich genommen]** *„Ich möchte, dass die Methoden **unabhängig von
+den Inhalten** benutzt werden — z.B. die vollständige Induktion in der Chemie."* Und, bestätigend, eine
+ganze Taxonomie tiefer Methoden aus Physik und Chemie. Das verschiebt die DB von *math-lastig* zu dem,
+was eine tiefe Methode wirklich ist: **eine Frage, die man an ein System stellt — kein Fakt über eine
+Domäne.** „Was kann nicht verschwinden?" (Erhaltung) ist dieselbe Denkbewegung, ob die Größe Energie,
+Ladung, Masse oder eine Wahrscheinlichkeit ist.
+
+**[Eingriff → die DB wird domänenübergreifend]** `deep_methods.py` bekommt zwei content-freie Felder pro
+Methode: **`core_question`** (die Kernfrage, in einem Satz, ohne Domänen-Inhalt) und **`domains`** (wo
+das *Schema* trägt — math / physics / chemistry / computer-science). Die 13 mathematischen Verfahren
+tragen jetzt ihre Kernfrage **und** ihre Reichweite über Mathe hinaus (vollständige Induktion → auch
+Chemie: Eigenschaft der Einheit n ⇒ n+1 in der homologen Reihe). Dazu **15 neue universelle/physik-/
+chemie-Methoden** exakt aus der Taxonomie des Betreibers: Erhaltungssatz, Symmetrieargument,
+Dimensionsanalyse, Grenzfallbetrachtung, Variationsprinzip, Störungstheorie/Linearisierung,
+Skalierungsargument, Gleichgewichtsdenken, Stabilitätsanalyse, Bilanzierung, thermodynamische Triebkraft,
+kinetische Zugänglichkeit, Struktur-Eigenschafts-/Struktur-Reaktivitäts-Denken, Mechanismusanalyse,
+Hess'scher Satz (Zustandsfunktion/Zyklus). **28 Methoden gesamt, alle mit Kernfrage, alle
+domänenübergreifend** (`domains ≥ 2`), spannt math + physics + chemistry. Neue Abfragen: `by_domain`,
+`domains`, `cross_domain`.
+
+**[Beleg]** `chemistry`-Bucket enthält u.a. `mathematical_induction` — die vom Betreiber genannte
+„vollständige Induktion in der Chemie" ist buchstäblich abrufbar. Neuer Test
+`test_deep_methods_are_cross_domain_and_content_independent`: jede Methode trägt Kernfrage + Domänen, der
+Katalog spannt die drei Felder, die benannten Physik/Chemie-Methoden sind da, `to_records` serialisiert
+die neuen Felder. 18 Tests im Paket grün, ruff sauber.
+
+**[Schluss → warum das der richtige Rahmen ist]** Der Betreiber hatte zweimal recht, wo ich zu eng war:
+erst „tief statt flach" (XVII), jetzt „content-**un**abhängig statt native". Eine Methode als *Kernfrage*
+zu speichern — „Was bleibt gleich, wenn ich das System verändere?" (Symmetrie), „Was geht rein, was kommt
+raus?" (Bilanz), „Was passiert am Rand des Modells?" (Grenzfall) — macht sie erst übertragbar. Das ist der
+eigentliche Wert des Assets: nicht ein Benchmark-Sieg, sondern ein **Vokabular von Denkbewegungen**, das
+über Fächergrenzen trägt. Der offene Transfer-Test bleibt offen; die DB, die er testen würde, steht jetzt
+auf dem richtigen Fundament.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Domänenübergreifende Tiefe-Methoden-DB | **2 · gebaut** | 28 Methoden, je Kernfrage + `domains`, math+physik+chemie; 18 Tests, ruff grün |
+| „Vollständige Induktion in der Chemie" abrufbar | **belegt** | `by_domain('chemistry')` enthält `mathematical_induction` |
+| Tiefer/domänenübergreifender Transfer (starkes Modell) | **0 · offen** | ungetestet; separates faires Experiment nötig |
+
+**[Offen]**
+- *DB wachsen lassen:* Jonis Harvest/Doktores auf *tiefe, domänenübergreifende* Methoden richten.
+- *Fairer Transfer-Test* (optional): eine Methode content-fremd anwenden (z.B. Bilanz auf eine
+  Wahrscheinlichkeitsverteilung) und gegen die Kontrollen messen.
