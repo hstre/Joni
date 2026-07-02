@@ -108,15 +108,21 @@ Holdout-/Falsifikations-Reflex, der den Methoden-Trial-Apparat trägt).
   jetzt `SCHEMA_VERSION` und ein erweitertes `SnapshotProvenance` (`core_commit` / `schema_version` /
   `field_sources`). Damit läuft der **Live-Pfad** `from_core` (Layer 9 → Snapshot → tiefe Operatoren) —
   belegt durch `test_from_core_live` (echter Konflikt → echte Operator-Vorschläge, nicht mehr fail-open).
-- **Koordinaten-Zufuhr:** ✅ **Adapter gebaut** (`joni.solution_space.coordinates`). `embed_texts` nutzt
-  `fastembed` (real semantisch), fällt sonst deterministisch auf lexikalisches Hashing zurück (klar
-  gelabelt); `state_vector_of` normalisiert DESi-`StateVector`/Tupel/Dict; `build_points` baut aus Records
-  `SolutionPoint`s. **Offen darunter:** eine *Quelle*, die pro Lösungspunkt einen 9-dim StateVector liefert
-  (DESi rechnet StateVectors aus **Trajektorien**, nicht aus Einzel-Claims — dieses Mapping fehlt noch).
-- **Trial-Store:** ✅ **gebaut** (`joni.solution_space.trial_store`). Append-only JSONL-Ledger für
-  `DeepMethodTrial`; `discover_from_store` liest direkt in Baustein C. **Offen darunter:** die Befüllung —
-  der Loop muss einen vorgeschlagenen Operator anwenden, benoten und das Outcome anhängen (Live-Loop-Schritt,
-  noch nicht verdrahtet).
+- **Koordinaten-Zufuhr:** ✅ **Adapter + Live-Quelle gebaut** (`coordinates` + `core_points`).
+  `embed_texts` nutzt `fastembed` (real semantisch), sonst deterministisches lexikalisches Hashing (gelabelt);
+  `build_points` baut aus Records `SolutionPoint`s. **(a) erledigt:** `points_from_core(core)` leitet **echte
+  9-dim StateVectors aus Layer-9-Fakten** ab (confidence_or_support, status, provenance, derived_from, offene
+  Konflikte) — dieselbe „ableiten, Unbekanntes markieren, nichts erfinden"-Disziplin wie der Projektor; zwei
+  Achsen (branch_cost, routing_state) haben keine ehrliche Einzel-Objekt-Quelle und bleiben 0.0. Es ist eine
+  **Punkt-Projektion in den Governance-Raum, nicht** die Trajektorien-Φ — sauber so benannt.
+- **Trial-Store + Lern-Zyklus:** ✅ **gebaut** (`trial_store` + `operator_cycle`). **(b) erledigt:**
+  `run_operator_cycle(core, store, apply_fn)` = **vorschlagen (`from_core`) → anwenden (INJIZIERTES
+  `apply_fn`) → benoten nach RESOLUTION (Konflikt im Core weg = success, offen = no_benefit, Fehler =
+  technical_failure — beobachtet, kein Richter) → in den Store schreiben**, der Baustein C speist. Der
+  kreative „Methode-anwenden"-Schritt ist eingehängt — der Loop/LLM liefert ihn; dieses Modul erfindet ihn
+  nicht und mutiert den geschützten Kern nicht selbst. **Offen darunter:** der *echte* `apply_fn` (der Loop
+  erzeugt via der Methode einen brückenden Claim) — und dessen Wert ist genau das, was der Sechs-Batterien-
+  Null offen lässt; das ist der nächste Mess-Gegenstand.
 
 ## Offene, ehrlich benannte Punkte
 

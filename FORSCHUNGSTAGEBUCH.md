@@ -2674,3 +2674,46 @@ Live-Loop-Schritt (Operator vorschlagen → anwenden → benoten → anhängen),
 Store schreibt. Beides ist Loop-Integration in den geschützten Kern — der nächste, bewusst zu gehende
 Schritt. Danach steht die Messung: läuft die Kartografie auf echten Governance-Zuständen + echten
 Embeddings, und findet der Entdecker aus echten Trials tragfähige Kanten?
+
+### Eintrag 2026-07-02 (XXVII) — A und B verdrahtet: echte Koordinaten + Lern-Zyklus — die Pipeline läuft auf ECHTEM Core
+
+**[Eingriff]** „Ja, wir probieren's auf dem Branch — A und b." Beide Anschlüsse gebaut, als
+**injizierbares, deterministisches Gerüst** (die kreative Aktion bleibt eingehängt, der geschützte Kern
+wird nicht modifiziert):
+
+**(a) Echte Koordinaten — `core_points.py`.** `points_from_core(core)` leitet pro Layer-9-Claim einen
+**echten 9-dim StateVector aus den Governance-Fakten** ab: `contradiction_load` aus den offenen Konflikten,
+`confidence` aus `confidence_or_support`, `anchor_density` aus `derived_from`+Quellen, `support_state` aus
+`status`, `novelty` aus dem Alter, `frame_id` aus dem Topic. Zwei Achsen (`branch_cost`, `routing_state`)
+haben keine ehrliche Einzel-Objekt-Quelle → 0.0, klar markiert. Es ist eine **Punkt-Projektion in den
+Governance-Raum, nicht** die Trajektorien-Φ — gleiche „ableiten/markieren/nicht erfinden"-Disziplin wie der
+Projektor. Read-only, fail-open.
+
+**(b) Lern-Zyklus — `operator_cycle.py`.** `run_operator_cycle(core, store, apply_fn)`:
+**vorschlagen** (`from_core`) → **anwenden** (INJIZIERTES `apply_fn(core, proposal)`) → **benoten nach
+Resolution** (Konflikt danach weg = `success`, offen = `no_benefit`, Fehler = `technical_failure` — aus dem
+beobachteten Core, **kein Richter**) → **in den Store schreiben**, der Baustein C speist. Der kreative
+„Methode-anwenden"-Schritt ist eingehängt: Tests injizieren Stubs (resolve → success, no-op → no_benefit,
+raise → technical_failure); der Loop/LLM liefert später den echten.
+
+**[Belegt — der Live-Lauf auf echtem Core]** Realer Layer-9-Core (zwei widersprüchliche Sepsis-Claims + ein
+harter Konflikt): (a) zwei `SolutionPoint`s mit echten StateVectors (contradiction_load 0.20, confidence
+0.50, support 0.20); (b) ein Zyklus schlägt `reduction` für den Konflikt vor, wendet (no-op) an, benotet
+ehrlich `no_benefit` (Konflikt bleibt offen), schreibt den Trial in den Store → Futter für C. Die **ganze
+Vision läuft damit end-to-end auf ECHTEN Daten**, nicht mehr nur Synthetik.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| (a) Live-Koordinaten (`points_from_core`) | **2 · gebaut** | `core_points`, 3 Tests + Live-Test grün |
+| (b) Lern-Zyklus (`run_operator_cycle`) | **2 · gebaut** | `operator_cycle`, 6 Tests + Live-Test grün |
+| Gesamtpipeline auf echtem Core | **belegt** | Live-Demo: echte StateVectors + ein aufgezeichneter Trial |
+| solution_space gesamt | **43 Tests grün, ruff sauber** | A+B+Pipeline+C+Coords+Store+CorePoints+Cycle |
+
+**[Der eine ehrliche Rest — und warum er der Mess-Gegenstand ist]** Es fehlt nur noch der **echte
+`apply_fn`**: der Loop, der via der vorgeschlagenen Methode tatsächlich einen brückenden Claim erzeugt und
+einreicht. Sein Wert ist **genau das, was der Sechs-Batterien-Null offen lässt** — ob eine tiefe Methode als
+*ausgeführtes* Gerüst (nicht als Prompt-Zettel) eine echte Lücke schließt. Das Gerüst steht jetzt so, dass
+genau diese Frage messbar wird: echte Vorschläge, echte Anwendung, deterministische Benotung nach Resolution,
+echte Trials → und dann die Messung, ob der Entdecker daraus tragfähige (Methode → Gap-Art)-Kanten mint.

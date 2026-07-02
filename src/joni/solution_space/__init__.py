@@ -23,11 +23,13 @@ from .coordinates import (
     embeddings_backend,
     state_vector_of,
 )
+from .core_points import points_from_core, state_vector_from_object
 from .discovery import (
     DiscoveredAffinity,
     discover_affinities,
     to_extra_affinities,
 )
+from .operator_cycle import grade_by_resolution, run_operator_cycle
 from .operators import (
     DeepMethodProposal,
     DeepMethodTrial,
@@ -60,4 +62,9 @@ __all__ = [
     "embed_texts",
     "embeddings_backend",
     "state_vector_of",
+    # (a) live coordinate source + (b) the learning cycle
+    "points_from_core",
+    "state_vector_from_object",
+    "run_operator_cycle",
+    "grade_by_resolution",
 ]

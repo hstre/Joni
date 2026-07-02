@@ -82,6 +82,7 @@ class DeepMethodProposal:
     expected_information_gain: str         # "low" | "medium" | "high"
     priority: float
     is_bridge: bool = False                # True when raised by success in ANOTHER scope
+    gap_kind: str = ""                     # the gap kind targeted (a cycle records it on the trial)
     provenance: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
@@ -90,7 +91,7 @@ class DeepMethodProposal:
             "core_question": self.core_question, "method_kind": self.method_kind,
             "reason": list(self.reason),
             "expected_information_gain": self.expected_information_gain,
-            "priority": self.priority, "is_bridge": self.is_bridge,
+            "priority": self.priority, "is_bridge": self.is_bridge, "gap_kind": self.gap_kind,
             "provenance": dict(self.provenance),
         }
 
@@ -172,7 +173,7 @@ def propose_operators(snapshot, *, deep_trials=(), top_k_per_gap: int = 3,
                     target=f"conflict:{gap_id}", method_id=m.id, method_name=m.name,
                     core_question=m.core_question, method_kind=method_kind, reason=reason,
                     expected_information_gain=_info_gain(priority), priority=priority,
-                    is_bridge=is_bridge, provenance=prov))
+                    is_bridge=is_bridge, gap_kind=gap_kind, provenance=prov))
         # keep the strongest few per gap; a bridge wins ties (more informative than a fresh try)
         per_gap.sort(key=lambda p: (-p.priority, not p.is_bridge, p.method_id))
         out.extend(per_gap[: max(0, top_k_per_gap)])
