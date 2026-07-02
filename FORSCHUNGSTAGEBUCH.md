@@ -2865,3 +2865,49 @@ Methoden-Frage über den jetzigen (achtfach konsistenten) Null hinaus noch härt
 | Routing-Confound (XXIX) | **entlarvt + entfernt** | reduction-für-alle → fair: deklarierte Methode |
 | Methode hilft mit RICHTIGEM Routing | **nein, task-für-task = Baseline** | method 0.917 = none 0.917, method−none 0.0 |
 | Achte Messung, Gesamtbild | **konsistent: kein Prompt/Execute-Hebel** | + „stören schadet" (scrambled 0.833) |
+
+### Eintrag 2026-07-02 (XXXI) — Letzte offene Zelle: schwächeres Modell (deepseek-v4-flash) — endlich Kopfraum, Methode schadet, Rauschen regiert
+
+**[Eingriff]** „Schwächeres Modell testen, nimm das kleine deepseek modell." Erst per API-`/models`-Abfrage
+entdeckt: DeepSeek serviert jetzt **`deepseek-v4-pro`** (stark) und **`deepseek-v4-flash`** (klein/schnell)
+— V4 ist seit unseren Läufen live, `deepseek-chat` war ein Alias. Die harte, fair-geroutete Batterie also
+auf **`deepseek-v4-flash`** gefahren (`--model` durchgereicht).
+
+**[Messergebnis — endlich echter Kopfraum]**
+
+| Modus | Resolution-Accuracy |
+|---|---|
+| none (Baseline) | **0.583** |
+| method (richtige Methode) | **0.417** |
+| scrambled | **0.917** |
+| irrelevant | **0.167** |
+
+`method − none = **−0.166**`, `beats_all_controls = False`. Baseline 0.583 → das kleine Modell scheitert
+an fast der Hälfte, viel Kopfraum.
+
+**[Zwei ehrliche Befunde]** (1) **Die richtige Methode half nicht — sie schadete** (−0.166): reparierte
+X-6, zerbrach aber X-3, X-11, X-12 (die die Baseline richtig hatte). (2) **Der Verräter:** `scrambled`
+0.917 (das *Beste*) vs `irrelevant` 0.167 (das *Schlechteste*) — Spanne **0.75** auf identischen Aufgaben.
+Dass die *zerhackte* Methode am besten abschneidet, ist der Beweis: kein Methodensignal, sondern ein
+**chaotisch preamble-empfindliches schwaches Modell** — irgendein vorangestellter Text wirft seine
+Antworten zufällig hin und her. Rauschen/Instabilität regiert, nicht der Inhalt.
+
+**[Ehrlicher Vorbehalt]** N=12, ein Lauf; die 0.75-Spanne zeigt, die Messung ist beim schwachen Modell
+**varianzdominiert** — eine *robuste* Zahl bräuchte mehrere Seeds / mehr Aufgaben. Was klar ist: **kein
+Hinweis, dass die Methode hilft** (sie schadet), plus starker Hinweis, dass Preamble-Text ein schwaches
+Modell destabilisiert.
+
+**[Schluss über NEUN Messungen]** micro/hard/deep/cross/novel/search (Prompt) + executed-apply (chat, easy
+& hard) + executed-apply (**v4-flash, schwach**): in **keiner** hebt die tiefe Methode als geliefertes
+Artefakt die Leistung über die Baseline. Auf starken Modellen inert (Decke/kein Kopfraum), auf dem schwachen
+schädlich-und-rauschig. Die *einzige* je vermutete Hebel-Zelle (schwaches Modell + Kopfraum) ist jetzt auch
+getroffen — und rettet die Hypothese nicht. Der bestätigte Wert der DB/Pipeline bleibt **Navigation +
+Selbst-Entdeckung**, nicht der Prompt/Execute-Hebel.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Schwaches Modell + Kopfraum (letzte Zelle) | **getroffen: kein Hebel, Methode schadet** | v4-flash: none 0.583 / method 0.417, scrambled 0.917 = Rauschen |
+| Methoden-als-Artefakt-Frage | **9-fach geschlossen** | stark: inert; schwach: schädlich/varianzdominiert |
+| Offen (nur für robuste Zahl) | **Mehr-Seed-Lauf** | falls eine belastbare schwach-Modell-Zahl gewünscht ist |
