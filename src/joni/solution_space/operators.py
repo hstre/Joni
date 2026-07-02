@@ -65,6 +65,7 @@ class DeepMethodTrial:
     result: str
     scope: str = "unknown"
     count: int = 1
+    gap_kind: str = "unknown"              # the KIND of gap it was tried on (feeds Baustein C)
 
 
 @dataclass(frozen=True)
@@ -94,8 +95,12 @@ class DeepMethodProposal:
         }
 
 
-def _relevant_kinds(gap_kind: str) -> tuple[tuple[str, float], ...]:
-    return _METHOD_KINDS_BY_GAP.get(gap_kind, _BASE)
+def _relevant_kinds(gap_kind: str, extra=None) -> tuple[tuple[str, float], ...]:
+    base = dict(_METHOD_KINDS_BY_GAP.get(gap_kind, _BASE))
+    if extra and gap_kind in extra:
+        for mk, w in extra[gap_kind]:               # discovered edges (Baustein C) augment / raise
+            base[mk] = max(base.get(mk, 0.0), w)
+    return tuple(sorted(base.items(), key=lambda kv: (-kv[1], kv[0])))
 
 
 def _info_gain(priority: float) -> str:
@@ -126,13 +131,15 @@ def _under_addressed(deep_trials, method_id: str, gap_id: str) -> tuple[float, s
     return 1.0, "never tried on this gap", False
 
 
-def propose_operators(snapshot, *, deep_trials=(),
-                      top_k_per_gap: int = 3) -> list[DeepMethodProposal]:
+def propose_operators(snapshot, *, deep_trials=(), top_k_per_gap: int = 3,
+                      extra_kind_affinities=None) -> list[DeepMethodProposal]:
     """Rank deep-method operators for each open gap in a DESi ``EpistemicGapSnapshot``.
 
     ``deep_trials`` (Joni-side ``DeepMethodTrial`` list) supplies scope-bound deep-method outcomes;
     empty means every method is untried and the ranking is the a-priori severity x kind table.
-    Returns a flat, priority-sorted list of ``DeepMethodProposal`` (<= ``top_k_per_gap`` per gap).
+    ``extra_kind_affinities`` (``{gap_kind: ((method_kind, weight), ...)}``) augments the a-priori
+    taxonomy with edges DISCOVERED by Baustein C (holdout-validated) — operator-gated, never
+    auto-mutated. Returns a flat, priority-sorted list (<= ``top_k_per_gap`` per gap).
     Deterministic; fail-open (no conflicts -> [])."""
     conflicts = tuple(getattr(snapshot, "conflicts", ()) or ())
     prov_obj = getattr(snapshot, "provenance", None)
@@ -146,7 +153,7 @@ def propose_operators(snapshot, *, deep_trials=(),
         sev = _SEVERITY_W.get(getattr(c, "severity", "soft"), 0.6)
         unresolved_since = getattr(c, "unresolved_since", 0)
         per_gap: list[DeepMethodProposal] = []
-        for method_kind, relevance in _relevant_kinds(gap_kind):
+        for method_kind, relevance in _relevant_kinds(gap_kind, extra_kind_affinities):
             for m in D.by_kind(method_kind):
                 under, why, is_bridge = _under_addressed(deep_trials, m.id, gap_id)
                 if under <= 0:

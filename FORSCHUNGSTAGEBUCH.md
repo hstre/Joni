@@ -2585,3 +2585,51 @@ ein verkleidetes Problem, das ich schon gelöst habe?"), für die Brücke **`red
 - *Baustein C (Entdecker):* wiederkehrende erfolgreiche `(Methode, Gap-Art)`-Muster zu neuen `DeepMethod`s
   abstrahieren, holdout-validiert — braucht die noch leere `DeepMethodTrial`-Historie.
 - *DESi-`SCHEMA_VERSION`-Skew:* kleiner Fix auf dem DESi-Feature-Branch, damit `from_core` auch lokal lebt.
+
+### Eintrag 2026-07-02 (XXV) — „Alles machen, dann messen": Baustein C (Entdecker) gebaut UND gemessen — FP-sicher
+
+**[Eingriff]** „Wir werden alles machen müssen und dann messen." Also der Meta-Loop:
+`joni/solution_space/discovery.py`. `discover_affinities(trials)` mint aus der `DeepMethodTrial`-Historie
+neue (Methoden-Art → Gap-Art)-Kanten — auch solche, die die a-priori-Taxonomie nie listete (`is_new`) — und
+speist sie über `to_extra_affinities` operator-gated zurück in Baustein B (`extra_kind_affinities`). Damit
+schließt sich die Schleife: B schlägt Operatoren vor → Outcomes werden Trials → C entdeckt neue Kanten → B
+nutzt sie. Ehrlicher Scope: entdeckt **Transfers/Affinitäten**, nicht neue Prozedur-*Schritte* (das bräuchte
+generatives Reasoning, außerhalb).
+
+**[Das Falsifikations-Gate — direkt eingebaut]** Eine entdeckte Kante gilt nur als `confirmed`, wenn sie auch
+auf **zurückgehaltenen** Gaps trägt. Der Split ist **by gap-id** — die vorregistrierte Unabhängigkeitseinheit
+(eine ganze Gap ist Train *oder* Holdout, nie beides), also fällt ein Train-only-Zufall durch. Genau die
+Disziplin aus den Methoden-Batterien, eine Ebene höher.
+
+**[Gemessen — die eigentliche Prüfung des Mechanismus]** `discovery_measure.py`: eine **synthetische
+Ground-Truth** (bestimmte (Methoden-Art, Gap-Art)-Paare sind echt bei `p_true`, der Rest Rauschen bei
+`p_noise`), Trials daraus synthetisiert, entdeckt, und die *confirmed* Kanten gegen die Wahrheit auf dem
+Holdout gescort — Konfusionsmatrix mit herausgestellter FP-Rate.
+
+| Regime | recall | precision | FP-Rate |
+|---|---|---|---|
+| sauber (p=.85/.12) | **1.0** | 1.0 | **0.0** |
+| hart (p=.68/.32) | 0.67 | 1.0 | **0.0** |
+
+**[Schluss]** Im sauberen Regime findet der Entdecker **alle** gepflanzten Kanten und erfindet **keine**. Im
+harten Regime *verfehlt* er lieber eine schwache Kante (recall 0.67), als eine falsche zu bestätigen
+(**FP-Rate 0.0**) — exakt die vorregistrierte **FP-vor-FN-Priorität** (eine falsche Entdeckung ≫ eine
+verpasste). Der Mechanismus ist damit belegt tragfähig **und** konservativ. Falsch wäre ein Entdecker, der
+bei Rauschen Kanten halluziniert — und genau das tut er nicht.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| C · Entdecker (Kanten aus Trials, holdout-validiert) | **2 · gebaut** | `joni.solution_space.discovery`, Tests grün |
+| C · Messung (FP/FN gegen Ground-Truth) | **belegt** | `discovery_measure`: sauber recall 1.0/FP 0.0, hart precision 1.0/FP 0.0 |
+| Rückkopplung C→B (`extra_kind_affinities`) | **2 · verdrahtet** | `to_extra_affinities` + `propose_operators`-Param, Test |
+| solution_space gesamt (A+B+Pipeline+C) | **23 Tests grün, ruff sauber** | |
+
+**[Der ehrliche Stand der Gesamt-Pipeline]** A (Kartograph), B (Operatoren), A→B (Pipeline), C (Entdecker)
+**stehen und sind getestet** — die *Mechanik* der ganzen Vision läuft end-to-end auf Synthetik, mit einer
+sauberen Messung an der einen Stelle, wo Selbst-Entdeckung schiefgehen könnte. Was zum **Live**-Betrieb fehlt,
+ist ausschließlich **Daten-Plumbing**: (1) echte Koordinaten (9-dim StateVector aus DESi-Trajektorien +
+`fastembed`-Embeddings), (2) echte `DeepMethodTrial`-Outcomes (statt synthetischer), (3) der kleine
+DESi-`SCHEMA_VERSION`-Fix für den `from_core`-Pfad. Keine offene *Konzept*-Frage mehr — nur Anschluss an echte
+Daten, und dann die Messung auf echten Lösungsräumen.

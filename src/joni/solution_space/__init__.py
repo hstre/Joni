@@ -5,6 +5,8 @@ The deep-method OPERATOR layer over DESi's epistemic gap map. Where DESi's
 METHOD (with its Kernfrage) as the operator to try on that gap — and, via the same 'success in
 another scope' logic, a BRIDGE between solution spaces. Consumes DESi's read-only
 ``EpistemicGapSnapshot`` (Joni depends on DESi, never the reverse); reads Joni's deep-methods DB.
+Baustein A (cartography) maps the product space into islands/gaps/bridges; the pipeline composes
+A->B; Baustein C (discovery) learns new method<->gap-kind affinities from trials, holdout-validated.
 Deterministic, no LLM, fail-open.
 """
 
@@ -14,6 +16,11 @@ from .cartography import (
     Island,
     SolutionPoint,
     cartograph,
+)
+from .discovery import (
+    DiscoveredAffinity,
+    discover_affinities,
+    to_extra_affinities,
 )
 from .operators import (
     DeepMethodProposal,
@@ -38,4 +45,8 @@ __all__ = [
     # end-to-end pipeline A -> B
     "ReachPlan",
     "plan",
+    # Baustein C — discovery
+    "DiscoveredAffinity",
+    "discover_affinities",
+    "to_extra_affinities",
 ]

@@ -90,7 +90,17 @@ Holdout-/Falsifikations-Reflex, der den Methoden-Trial-Apparat trägt).
   **Offen darunter:** die `DeepMethodTrial`-Ergebnisse müssen noch befüllt werden (heute leer → Ranking = die
   a-priori severity×kind-Tabelle, ehrlich markiert); und der Joni↔DESi-Projektor-Schema-Skew
   (`SCHEMA_VERSION`) blockiert lokal den `from_core`-Pfad (CI zieht DESi main, dort läuft er).
-- **C · Entdecker:** der Meta-Loop — erst sinnvoll, wenn B echte Trial-Daten produziert.
+- **C · Entdecker:** ✅ **GEBAUT + GEMESSEN** (`joni.solution_space.discovery`, `discover_affinities`).
+  Mint aus der `DeepMethodTrial`-Historie neue (Methoden-Art → Gap-Art)-Kanten — auch solche, die die
+  a-priori-Taxonomie nie listete (`is_new`) — und speist sie über `to_extra_affinities` zurück in Baustein B
+  (`extra_kind_affinities`, operator-gated). **Falsifikations-Gate:** eine Kante gilt nur als `confirmed`,
+  wenn sie auch auf **zurückgehaltenen** Gaps trägt (Split by gap-id = die vorregistrierte Unabhängigkeits-
+  einheit). Ehrlicher Scope: entdeckt **Transfers/Affinitäten**, nicht neue Prozedur-*Schritte* (das bräuchte
+  generatives Reasoning). **Gemessen** (`discovery_measure.py`, synthetische Ground-Truth): sauberes Regime
+  (p=.85/.12) → recall 1.0, **FP-Rate 0.0**; hartes Regime (p=.68/.32) → recall 0.67, aber **Precision 1.0 /
+  FP-Rate 0.0** — der Gate verfehlt lieber eine schwache Kante, als eine falsche zu erfinden (die
+  vorregistrierte FP-vor-FN-Priorität). **Offen darunter:** die Historie ist real noch leer — der Entdecker
+  läuft, sobald echte Trials anfallen.
 
 ## Offene, ehrlich benannte Punkte
 
