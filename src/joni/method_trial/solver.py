@@ -72,3 +72,16 @@ class DeepSeekSolver(Solver):
         with urllib.request.urlopen(req, timeout=self.timeout, context=_ssl_context()) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         return data["choices"][0]["message"]["content"]
+
+
+def list_models(*, base_url: str = "https://api.deepseek.com/models") -> list[str]:
+    """Ask the DeepSeek API which models it actually serves (GET /models). Reads DEEPSEEK_API_KEY
+    from the environment. Used to DISCOVER whether a smaller model exists rather than guess an id."""
+    key = os.getenv("DEEPSEEK_API_KEY")
+    if not key:
+        raise RuntimeError("DEEPSEEK_API_KEY is not set.")
+    req = urllib.request.Request(base_url, method="GET", headers={
+        "Authorization": f"Bearer {key}", "Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=30, context=_ssl_context()) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    return [m.get("id", "?") for m in data.get("data", [])]

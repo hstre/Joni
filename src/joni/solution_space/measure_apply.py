@@ -96,25 +96,37 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--battery", choices=("easy", "hard"), default="easy",
                     help="easy = trivially checkable facts; hard = computation-heavy (real headroom)")
+    ap.add_argument("--model", default="deepseek-chat",
+                    help="DeepSeek model id (e.g. deepseek-chat, deepseek-reasoner)")
+    ap.add_argument("--list-models", action="store_true",
+                    help="print the models the DeepSeek API serves, then exit (discover a small one)")
     ap.add_argument("--stub", action="store_true", help="offline: a stub that always answers 'A'")
     ap.add_argument("--store", default=None, help="write real-method trials here (feeds Baustein C)")
     ap.add_argument("--out", default=None, help="write the full result JSON here")
     args = ap.parse_args(argv)
     cases = HARD_CASES if args.battery == "hard" else CASES
 
+    if args.list_models:
+        from ..method_trial.solver import list_models
+        print("DeepSeek models served by the API:")
+        for mid in list_models():
+            print(f"  - {mid}")
+        return 0
+
     if args.stub:
         from ..method_trial.solver import StubSolver
         solver = StubSolver(lambda p: "Answer: A")
     else:
         from ..method_trial.solver import DeepSeekSolver
-        solver = DeepSeekSolver()
+        solver = DeepSeekSolver(model=args.model)
 
     fair = args.battery == "hard"       # the hard battery declares each conflict's right method
     per_mode = {m: run_mode(solver, m, store_path=args.store, cases=cases, fair_routing=fair)
                 for m in MODES}
     base = per_mode["none"]["accuracy"]
     summary = {
-        "solver": getattr(solver, "name", "stub"), "battery": args.battery,
+        "solver": getattr(solver, "name", "stub"), "model": getattr(solver, "model", "stub"),
+        "battery": args.battery,
         "routing": "fair (declared right method)" if fair else "taxonomy (gap-kind default)",
         "accuracy": {m: per_mode[m]["accuracy"] for m in MODES},
         "method_minus_none": round(per_mode["method"]["accuracy"] - base, 3),

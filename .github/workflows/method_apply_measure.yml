@@ -13,6 +13,16 @@ on:
         default: "hard"
         type: choice
         options: ["hard", "easy"]
+      model:
+        description: "DeepSeek model id (deepseek-chat = strong; try a smaller/weaker one for headroom)"
+        required: false
+        default: "deepseek-chat"
+      list_models:
+        description: "just list the models the API serves, then stop (discover a small one)"
+        required: false
+        default: "no"
+        type: choice
+        options: ["no", "yes"]
 
 jobs:
   measure:
@@ -29,9 +39,14 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
-          python -m joni.solution_space.measure_apply \
-            --battery "${{ github.event.inputs.battery }}" \
-            --store apply_trials.jsonl --out apply_result.json
+          if [ "${{ github.event.inputs.list_models }}" = "yes" ]; then
+            python -m joni.solution_space.measure_apply --list-models
+          else
+            python -m joni.solution_space.measure_apply \
+              --battery "${{ github.event.inputs.battery }}" \
+              --model "${{ github.event.inputs.model }}" \
+              --store apply_trials.jsonl --out apply_result.json
+          fi
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
