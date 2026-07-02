@@ -1,0 +1,45 @@
+name: method-trial-allmethods
+
+# The "did you try ALL methods?" experiment: for each task, baseline + a portfolio of the whole
+# toolbox + every single method on its own (oracle best-of). Many more calls than Stage 2, so it is
+# MANUAL ONLY and gets a long timeout. Secret stays on GitHub; result JSON is uploaded as an artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      battery:
+        description: "battery to throw all methods at"
+        required: false
+        default: "search"
+        type: choice
+        options: ["search", "novel", "cross", "deep", "micro"]
+      limit:
+        description: "run only the first N tasks (blank = all)"
+        required: false
+        default: ""
+
+jobs:
+  allmethods:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install -e .
+      - name: Cost shape (dry, no calls)
+        run: python -m joni.method_trial.run_allmethods --battery "${{ github.event.inputs.battery }}" --dry
+      - name: Run all-methods (real DeepSeek, temperature 0)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          BATTERY="${{ github.event.inputs.battery }}"
+          LIMIT="${{ github.event.inputs.limit }}"
+          if [ -n "$LIMIT" ]; then LIM="--limit $LIMIT"; else LIM=""; fi
+          python -m joni.method_trial.run_allmethods --battery "$BATTERY" --out allmethods_result.json $LIM
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: method-trial-allmethods-${{ github.event.inputs.battery }}-result
+          path: allmethods_result.json

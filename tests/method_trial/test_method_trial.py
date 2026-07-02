@@ -78,6 +78,36 @@ def test_hard_battery_meets_the_contract():
             assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
 
 
+def test_allmethods_builds_baseline_portfolio_and_every_single_method():
+    """The 'throw all methods' runner: for each task it builds the naked baseline, a portfolio of
+    the WHOLE toolbox, and one condition per deep method; summarize computes baseline/portfolio/
+    oracle and the honest 'rescued by some method' counts. Verified offline with a stub."""
+    from joni.method_trial import deep_methods as D
+    from joni.method_trial import run_allmethods as A
+    from joni.method_trial.gold_search_v1 import CASES
+    t = CASES[0]
+    conds = A.build_conditions(t)
+    assert conds["plain_baseline"] == t.prompt
+    assert conds["portfolio"].endswith(t.prompt) and conds["portfolio"] != t.prompt
+    assert sum(1 for k in conds if k.startswith("m:")) == len(D.DEEP_METHODS)   # every method there
+    # a stub that "solves" only when the induction method is present -> oracle rescues, baseline not
+    def stub_solve(p):
+        return "Answer: 42" if "Mathematical induction" in p else "Answer: wrong"
+    class Stub:
+        name = "stub"
+        def solve(self, p):
+            return stub_solve(p)
+    # craft a one-task battery whose gold is 42 so exactly the induction condition passes
+    from joni.method_trial import checkers as C
+    from joni.method_trial.gold_micro_v1 import Task
+    fake = Task(id="x", skill="s", expected_method_class="mathematical_induction",
+                forbidden_origin_domain="d", prompt="P", gold="Answer: 42",
+                checker=C.exact_int(42), failure_modes=("f",), why_not_verbosity="w")
+    s = A.summarize(A.run(Stub(), [fake]))
+    assert s["baseline"] == 0.0 and s["oracle_best_of_any_method"] == 1.0
+    assert s["tasks_rescued_by_some_method"] == 1 and s["of_which_by_the_registered_method"] == 1
+
+
 def test_search_battery_is_verifiable_and_recall_proof():
     """NP-style battery: self-certifying certificates (Hamiltonian cycle, subset-sum) + exact optima
     (knapsack, TSP) cross-checked against brute force. Every gold is accepted, every wrong rejected,
