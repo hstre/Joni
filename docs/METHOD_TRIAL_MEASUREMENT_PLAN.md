@@ -44,6 +44,21 @@
 > prompt-fixable, and there is no lever between. Across five batteries there is **no measurable method
 > benefit on a capable model**, and the only robust effect is that an irrelevant preamble HURTS it. Diary XX
 > holds the per-task table.
+>
+> **CAPSTONE (2026-07-02), the SEARCH battery — even at the method's best theoretical shot, no lever.** The
+> operator's NP-style class (Hamiltonian cycle; "a solution plus a provable bound") moved the bottleneck
+> from arithmetic to *search/strategy* — the one place backtracking/branch-and-bound could help
+> (`gold_search_v1.py`: planted Hamiltonian cycles + subset-sums, self-certifying; exact knapsack/TSP,
+> reference DP/Held-Karp cross-checked). Genuine headroom (baseline **0.2**), yet: intervention **0.2**,
+> identical task-for-task to neutral and scrambled (CI [0,0]), a one-for-one swap vs baseline (noise),
+> irrelevant **0.0** — `method_wins=False`. **8/10 unsolved by every condition** (both TSPs, both knapsacks,
+> the bigger Hamiltonians): DeepSeek cannot execute the search in one pass, and prose describing the method
+> rescues none of it. Six batteries (micro 0.917 / hard 1.0 / deep 0.8 / cross 1.0 / novel 0.6 / search 0.2)
+> converge: no benefit from prepending the method as text. **Scope of the null (important):** this tests
+> method-as-a-PROMPT-HINT to a one-shot solver, NOT method-as-an-EXECUTED-SCAFFOLD (an agent running the
+> procedure step-by-step with tools) — the latter is where a method-as-code plausibly *does* help and is
+> untested here. The DB's lever, if any, is in EXECUTING methods, not prompting them. Diary XXI holds the
+> per-task table and this boundary.
 
 **Status (historical):** the falsification-first, budget-quarantined path to replace the *synthetic*
 method-trial mock with a **measured** signal that retirement (and the condition guard,

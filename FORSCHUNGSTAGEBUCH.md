@@ -2366,3 +2366,83 @@ schädlich: 0.6 → 0.3/0.1).
 - Der einzige verbleibende Weg bleibt ein **schwächeres Modell** (Kopfraum bei der Methoden-*Wahl*, nicht
   nur der Ausführung). Ohne eins ist die Linie ehrlich geschlossen: die DB ist ein Wissens-Asset, kein
   Prompt-Hebel.
+
+### Eintrag 2026-07-02 (XXI) — Der Suche-Engpass (Hamiltonkreis, TSP, Knapsack): auch dort kein Hebel — und die ehrliche Grenze des Befunds
+
+**[Der Einwand des Betreibers]** *„Hamiltonkreis — die richtige Knotenfolge. Oder ein Optimierungs-
+problem: ich finde nicht sicher das globale Optimum; jemand liefert Lösung plus beweisbare Schranke."*
+Genau die NP-Asymmetrie: **schwer zu lösen, leicht zu prüfen.** Zuerst die ehrliche Zweiteilung: Yang-
+Mills-Massenlücke, Navier-Stokes-Glattheit, Protein-De-novo sind *schwer auch zu PRÜFEN* — kein
+deterministischer Checker, nur ein Urteil → außerhalb des Apparats (der Plan verbietet den Richter).
+Messbar sind die zertifikat-prüfbaren: `gold_search_v1.py` — 3 Hamiltonkreise (gepflanzt, „finde eine
+gültige Tour", selbst-zertifizierend), 3 Subset-Sums (zeige eine Teilmenge auf die Zielsumme), 2 exakte
+Knapsacks, 2 exakte TSP-Touren (das beweisbare Optimum, Referenz DP/Held-Karp gegen Brute-Force geprüft).
+**Der Witz:** hier ist der Engpass **Suche/Strategie**, nicht Arithmetik — der einzige Ort, wo „Backtracking
+mit Beschneidung" theoretisch helfen könnte.
+
+**[Messergebnis — viel Kopfraum, trotzdem kein Sieg]**
+
+| Bedingung | Accuracy |
+|---|---|
+| intervention | **0.2** |
+| plain_baseline | **0.2** |
+| neutral_preamble | 0.2 |
+| scrambled_method | 0.2 |
+| irrelevant_method | 0.0 |
+
+- vs plain_baseline: Δ = 0.000, CI [-0.3, 0.3] → kein Sieg
+- vs neutral / vs scrambled: Δ = 0.000, CI [0,0] → kein Sieg (**task-für-task identisch**)
+- vs irrelevant: Δ = +0.200, CI [0.0, 0.5] → kein Sieg
+- **method_wins: False**
+
+**[Aufschlüsselung pro Aufgabe]** (1 = richtig)
+
+| Aufgabe | Methode | I | B | S | N | R |
+|---|---|:-:|:-:|:-:|:-:|:-:|
+| hamilton_8 | backtracking | . | **1** | . | . | . |
+| hamilton_10 | backtracking | . | . | . | . | . |
+| hamilton_12 | backtracking | . | . | . | . | . |
+| subsetsum_12 | backtracking | 1 | 1 | 1 | 1 | . |
+| subsetsum_14 | backtracking | **1** | . | 1 | 1 | 1 |
+| subsetsum_15 | backtracking | . | . | . | . | . |
+| knapsack_9 | dynamic_programming | . | . | . | . | . |
+| knapsack_10 | dynamic_programming | . | . | . | . | . |
+| tsp_8 (a) | dynamic_programming | . | . | . | . | . |
+| tsp_8 (b) | dynamic_programming | . | . | . | . | . |
+
+**[Schluss → dreifach, das Kapstein-Ergebnis]** (1) **8 von 10 löst NIEMAND** — beide Knapsacks, beide TSP,
+die zwei größeren Hamiltonkreise, das schwerste Subset. Diese echten Such-/Optimierungsprobleme kann
+DeepSeek in einem Vorwärtsdurchlauf schlicht nicht ausführen, und **kein vorangestellter Methodentext
+rettet eine einzige davon.** (2) Wo sich etwas bewegt, ist es **Rauschen**: die Methode reparierte
+subsetsum_14 (Baseline falsch → richtig), zerbrach aber hamilton_8 (Baseline richtig → falsch) — netto
+null. Und **intervention = scrambled überall**: der *Inhalt* der Methode trägt nichts, nur das *Vorhandensein*
+eines Preambles wackelt in beide Richtungen. (3) Der einzige systematische Effekt ist wieder **negativ**:
+irrelevant → 0.0.
+
+**[Die Synthese über SECHS Batterien]** micro 0.917 · hard 1.0 · deep 0.8 · cross 1.0 · novel 0.6 · search
+0.2 — über Decke (Erinnern), Kopfraum-Arithmetik und jetzt Kopfraum-**Suche** hinweg: **kein messbarer
+Nutzen davon, einem fähigen Modell die tiefe Methode als Text voranzustellen; der einzige robuste Effekt
+ist, dass ein irrelevanter Preamble schadet.** Der Grund verdichtet sich: Der begrenzende Faktor ist nicht,
+die Methode zu *kennen*, sondern die *ausgedehnte Ausführung* (Rechnen, Suchen) in einem Durchlauf — und
+die ersetzt keine Beschreibung.
+
+**[Die ehrliche Grenze DIESES Befunds — wichtig]** Getestet ist **Methode-als-kurzer-Prompt-Hinweis**,
+ein Versuch, Temperatur 0. **Nicht** getestet ist **Methode-als-ausgeführtes-Gerüst**: ein Agent, der die
+Prozedur *Schritt für Schritt mit Werkzeug ausführt* (Backtracking wirklich laufen lassen, DP-Tabelle
+wirklich füllen). Genau dort könnten tiefe Methoden sehr wohl tragen — das ist ja, was Algorithmen-als-Code
+sind. Der Null-Befund gilt für das **Anprompten**, nicht für das **Ausführen**. Das ist die konstruktive
+Wendung: Jonis Wert aus der DB liegt vermutlich darin, Methoden **auszuführen** (als Code / als Werkzeug-
+Schritte), nicht sie einem One-Shot-Modell vorzusprechen.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Suche-Batterie (NP, zertifikat-prüfbar) | **2 · gebaut + gefahren** | 10 Instanzen, self-cert + DP/Held-Karp gegen Brute-Force, 24 Tests grün |
+| Methode hebt bei Such-Engpass | **falsifiziert** | search, Δ vs Baseline = 0, intervention = scrambled |
+| „Anprompten inert, Ausführen offen" | **abgegrenzt** | Null gilt für Prompt-Hinweis, nicht für ausgeführtes Gerüst |
+
+**[Offen — sauber benannt]**
+- *Methode-als-ausgeführtes-Gerüst* (Agent führt die Prozedur mit Werkzeug aus) — die eine Richtung, in der
+  die DB ein echter Hebel sein könnte; ganz anderer Aufbau (ReAct/Tool-Use), nicht dieser Prompt-Test.
+- *Schwächeres Modell* für den Methoden-*Wahl*-Kopfraum bleibt der andere offene Weg.
