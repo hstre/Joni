@@ -76,7 +76,7 @@ class DeepSeekSolver(Solver):
 
 def list_models(*, base_url: str = "https://api.deepseek.com/models") -> list[str]:
     """Ask the DeepSeek API which models it actually serves (GET /models). Reads DEEPSEEK_API_KEY
-    from the environment. Used to DISCOVER whether a smaller model exists rather than guess an id."""
+    from the environment. Used to DISCOVER whether a smaller model exists rather than guess."""
     key = os.getenv("DEEPSEEK_API_KEY")
     if not key:
         raise RuntimeError("DEEPSEEK_API_KEY is not set.")
