@@ -1877,3 +1877,45 @@ Push-Rejection nicht mehr blind**, sondern **rebased sich auf das vorgerückte `
 Versuche); nur ein *echter* State-Konflikt (eine zweite Loop-Instanz) wird verworfen. Ein Fremd-Push,
 der die State-Dateien nicht anfasst (Mensch-Code-Push, gemergter PR), kostet damit **keinen** Zyklus
 mehr — genau die Selbst-Verschuldung aus Eintrag X strukturell entschärft.
+
+### Eintrag 2026-07-02 (XI) — Ein Auftrag, der schon (fast) erfüllt war: Stopp statt Parallel-Code, dann die eine echte Lücke
+
+**[Beobachtung → Stopp]** Aufgabe: einen von Jonis Aufträgen umsetzen. Gewählt: „Zustandsbuch für die
+Methoden-Ausmusterung". Ich baute ein sauberes, getestetes Modul (`retirement_ledger.py`) — Akzeptanz
+erfüllt (naive 7 Fehl-Ausmusterungen → 0). **Dann fand ich in `retire_unproductive` bereits ein
+`method_ledger` (Auftrag #145, „after LedgerAgent"):** es hält Methoden mit Pass im Fenster (inkonsistent)
+und mustert erst nach `max_trials` aus (vorzeitig). Mein Modul **duplizierte** das — genau das
+„parallele System, das nicht in Joni verdrahtet ist", vor dem mein Auftrag mich stoppen lässt.
+**Revertiert, nichts committet.** Der erste Reflex — „bauen, weil der Auftrag offen ist" — ist genau der,
+vor dem dieses Tagebuch warnt; erst der Blick in den *bestehenden* Code trennte „offen" von „ungetan".
+
+**[Eingriff → die eine echte Lücke]** Was dem bestehenden Ledger fehlt, ist die Kern-Idee der Quelle
+(LedgerAgent): **die Bedingung prüfen**. Es zählt aggregiert (`success`/`failure`), weiß aber nicht,
+*unter welcher Bedingung* ein Fehler auftrat. Also **erweitert, nicht dupliziert**: das `method_ledger`
+merkt sich jetzt die Task-Sets (`task_set_sha`), unter denen eine Methode bestand, und die
+Retirement-Logik bekommt einen **Condition-Guard** — eine Methode, deren jüngster Fehler nur unter einer
+*neuen, nie bestandenen* Bedingung liegt, wird gehalten (ein bedingungsspezifischer Fehler ist kein
+fairer Ausmusterungsgrund). 2 Tests (Halten unter neuer Bedingung; korrektes Ausmustern bei echtem
+Verfall auf der gleichen Bedingung), ruff + `verify` grün.
+
+**[Schluss → die ehrliche Grenze]** Der Guard ist korrekt und in den *echten* Pfad verdrahtet — aber er
+feuert nur, wo Pro-Bedingungs-Fakten je Methode vorliegen, und die liefert heute allein der gemessene
+Konflikt-Trial. Kevins aggregierter Trial-Runner gibt **keine** Bedingung pro Methoden-ID zurück, also
+ist die breite Abdeckung durch die **Datenverfügbarkeit** begrenzt, nicht durch die Logik — exakt die
+„signal-quality upstream"-Grenze, die schon der Router-Under-Block-Katalog benannte. Gebaut, verdrahtet,
+getestet; die Reichweite wächst, wenn der Trial-Layer Bedingungen je Methoden-ID emittiert. Benennen
+statt kaschieren.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg / Grenze |
+|---|---|---|
+| Condition-Guard in `retire_unproductive` | **2 · belegt** | 2 Tests (Halten/Ausmustern); in den echten Pfad verdrahtet, nicht parallel |
+| Breite Wirkung auf Echtdaten | **1 · datenbegrenzt** | feuert erst mit Pro-Bedingungs-Trialdaten je Methoden-ID (Kevin-Runner liefert aggregiert) |
+
+**[Offen]**
+- *Kevins Trial-Runner um Bedingung-je-Methoden-ID erweitern* — dann greift der Guard flächig (separates
+  Repo, eigener Auftrag).
+- *Die restlichen offenen Aufträge* sind entweder schon gebaut (SproutRAG #160, OCR #161) oder haben
+  Akzeptanzkriterien (Macro-F1/Precision@k auf gelabelten Sets, Experten-Doppelblind, LLM-Facetten), die
+  Jonis keyless CI ehrlich nicht erfüllen kann — die deterministisch verifizierbaren sind durch.

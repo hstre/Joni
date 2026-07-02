@@ -165,3 +165,32 @@ def test_state_ledger_holds_a_method_that_recently_passed(monkeypatch):
     # well past the window -> no recent pass -> retired through the gate
     assert trials.retire_unproductive(cs, _Proto(), 40, extensions=ext) == 1
     assert cs.core.get(mid).status.value == "rejected"
+
+
+def test_condition_specific_failure_is_held_not_retired(monkeypatch):
+    """Condition guard: a method that passed under condition A but whose most recent trial failed
+    under a NEW, never-validated condition B is HELD, not retired — the failure is condition-
+    not a decay on its home ground (the LedgerAgent 'check the precondition' idea)."""
+    from joni.autonomy.core_state import seed_core
+    cs = CoreState(seed_core())
+    mid = cs.propose_method(name="m", summary="s", applicable_to=("routing",))
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "0")     # trial budget exhausted -> would retire
+    ext = {"method_ledger": {mid: {"success": 0, "last_pass_cycle": -(10**9),
+                                   "passed_conditions": ["condA"], "last_condition": "condB",
+                                   "last_condition_passed": False}}}
+    assert trials.retire_unproductive(cs, _Proto(), 5, max_retire=5, extensions=ext) == 0
+    assert cs.core.get(mid).status.value != "rejected"    # held, not discarded
+
+
+def test_failure_on_a_validated_condition_still_retires(monkeypatch):
+    """Control: a failure under the SAME condition it once passed on is real decay — retire
+    so the guard is not a blanket hold."""
+    from joni.autonomy.core_state import seed_core
+    cs = CoreState(seed_core())
+    mid = cs.propose_method(name="m", summary="s", applicable_to=("routing",))
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "0")
+    ext = {"method_ledger": {mid: {"success": 0, "last_pass_cycle": -(10**9),
+                                   "passed_conditions": ["condA"], "last_condition": "condA",
+                                   "last_condition_passed": False}}}
+    assert trials.retire_unproductive(cs, _Proto(), 5, max_retire=5, extensions=ext) == 1
+    assert cs.core.get(mid).status.value == "rejected"

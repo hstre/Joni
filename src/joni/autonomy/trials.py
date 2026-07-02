@@ -74,6 +74,23 @@ def run_real_method_trial(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     prev = extensions.get("real_trial", {})
     extensions["real_trial"] = result
 
+    # Condition-aware ledger (Auftrag #145 follow-up · the LedgerAgent "check the condition" idea):
+    # record WHICH task set (condition) this method passed/failed under, so retirement can tell a
+    # method degrading on its home ground from one merely failing on a NEW task set it never passed.
+    # Recorded here because this is the one trial path that knows the condition (task_set_sha),
+    # keyed by the trial's method_id; the guard fires for a shelf method once its id matches.
+    try:
+        mid = str(result.get("method_id", ""))
+        cond = str(result.get("task_set_sha", ""))
+        if mid and cond and isinstance(extensions, dict):
+            rec = extensions.setdefault("method_ledger", {}).setdefault(mid, {})
+            rec["last_condition"] = cond
+            rec["last_condition_passed"] = bool(result.get("passed"))
+            if result.get("passed"):
+                rec["passed_conditions"] = sorted(set(rec.get("passed_conditions", [])) | {cond})
+    except Exception:  # noqa: BLE001 - bookkeeping never breaks a cycle
+        pass
+
     # WRITER + CONSUMER: record the measured trial as an immutable sealed v4 event, then project the
     # accumulated events into the DESi solution-space-gap view. Clean no-ops if unavailable.
     from . import kevin_trial_bridge as bridge
@@ -130,6 +147,12 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
     persisted ``method_ledger`` records observed facts per method - its success count over time and
     the cycle it last gained a pass - and the retirement consults it: a method with a pass within
     ``JONI_METHOD_LEDGER_WINDOW`` cycles is HELD, not discarded. Nothing is auto-confirmed.
+
+    **Condition guard (LedgerAgent follow-up)**: the ledger also records the *condition* (task set)
+    each method passed/failed under. A method whose recent failure is only under a NEW condition it
+    never passed on is HELD too — a condition-specific failure is not a fair basis to retire. This
+    fires for a method once per-condition facts are recorded for it (from the measured-trial path);
+    broad coverage awaits per-condition trial data keyed by method id from Kevin's runner.
     """
 
     import desi_layer9 as l9
@@ -165,6 +188,21 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
                              f"holding method {m.id} '{getattr(m, 'name', m.id)}' - the ledger "
                              f"shows a pass within {window} cycle(s); retiring now would be "
                              "premature")
+                continue
+            # Condition guard (LedgerAgent: check the precondition before the state-changing act):
+            # the method passed under some condition(s) but its most recent trial failed under a
+            # DIFFERENT, never-validated condition, the failure is condition-specific, not decay on
+            # its home ground - retiring on it would be inconsistent. Hold it. Fires only when the
+            # ledger holds per-condition facts for this method (from the measured trial path).
+            crec = ledger.get(m.id, {})
+            passed_conds = set(crec.get("passed_conditions", []))
+            last_cond = crec.get("last_condition")
+            if (passed_conds and last_cond and last_cond not in passed_conds
+                    and not crec.get("last_condition_passed", False)):
+                proto.record(cycle, "trialed",
+                             f"holding method {m.id} '{getattr(m, 'name', m.id)}' - its recent "
+                             f"failure is under a new task set it never passed ({last_cond[:8]}); "
+                             "not a fair basis to retire")
                 continue
             cs.reject_method(m.id)
             retired += 1
