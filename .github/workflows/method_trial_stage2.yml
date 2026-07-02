@@ -9,11 +9,11 @@ on:
   workflow_dispatch:
     inputs:
       battery:
-        description: "battery: deep (requires a deep method) / hard / micro"
+        description: "battery: cross (deep method in a FOREIGN domain) / deep / hard / micro"
         required: false
-        default: "deep"
+        default: "cross"
         type: choice
-        options: ["deep", "hard", "micro"]
+        options: ["cross", "deep", "hard", "micro"]
       limit:
         description: "run only the first N tasks (blank = all)"
         required: false

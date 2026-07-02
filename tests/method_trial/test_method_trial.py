@@ -78,6 +78,39 @@ def test_hard_battery_meets_the_contract():
             assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
 
 
+def test_cross_battery_is_well_formed_and_content_independent():
+    """The cross-domain battery: every task is cracked by a DEEP method whose ORIGIN differs from
+    the task's surface domain (the operator's 'Induktion in der Chemie' idea). Contract holds,
+    checkers discriminate, and every expected method resolves to a real deep-methods entry."""
+    from joni.method_trial import deep_methods as D
+    from joni.method_trial.contract import validate_battery
+    from joni.method_trial.gold_cross_v1 import CASES as CROSS
+    rep = validate_battery(CROSS, min_tasks=10)
+    assert rep["ok"], rep["problems"]
+    for t in CROSS:
+        assert t.checker(t.gold), f"{t.id}: checker rejected its gold"
+        if t.wrong_example:
+            assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
+        m = D.by_id(t.expected_method_class)
+        assert m is not None, f"{t.id}: method {t.expected_method_class} not in the deep-methods DB"
+    # the battery spans several distinct deep methods (not one method dressed up ten ways)
+    assert len({t.expected_method_class for t in CROSS}) >= 6
+
+
+def test_cross_battery_builds_five_conditions_via_deep_procedures():
+    """The intervention supplies the deep method's actual procedure; the four controls neutralise
+    length / structure / relevance — all via conditions.build_deep, one prompt per condition."""
+    from joni.method_trial import conditions
+    from joni.method_trial.gold_cross_v1 import CASES as CROSS
+    t = CROSS[0]
+    conds = conditions.build_deep(t)
+    assert set(conds) == set(conditions.CONDITIONS)
+    assert conds["plain_baseline"] == t.prompt          # baseline is the naked task
+    assert conds["intervention"].endswith(t.prompt)     # method prepended, task preserved
+    assert conds["intervention"] != conds["plain_baseline"]
+    assert all(conds[c] for c in conditions.CONDITIONS)  # every condition is a non-empty prompt
+
+
 def test_deep_methods_database_is_well_formed():
     from joni.method_trial import deep_methods as D
     ms = D.DEEP_METHODS
