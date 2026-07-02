@@ -2053,3 +2053,51 @@ diagnostiziert, statt eine synthetische Zahl zu produzieren.
   Stage 2 erneut, gegen dieselben 4 Kontrollen.
 - *Wenn auch dort kein Vorteil:* die **Idee** des Methoden-Trialings-nach-Wirkung ausmustern — nicht die
   Messung aufhübschen. Der Plan hat diesen Ausgang ausdrücklich als valide vorgesehen.
+
+### Eintrag 2026-07-02 (XV) — Härter versucht, Decke höher: das fähige Modell braucht die Methode nicht (Fall b, doppelt belegt)
+
+**[Eingriff]** Der Micro-Pilot ceilingte (Baseline 0.917) → keine Diskriminierung. Also eine „härtere"
+Batterie gebaut (`gold_hard_v1`, 15 Trap-Aufgaben: Base-Rate, Monty-100, Boy-Girl-Paradox,
+Knights-and-Knaves, Inklusion-Exklusion) und Stage 2 erneut gefahren (75 Calls, DeepSeek, temp 0).
+
+**[Messergebnis]**
+
+| Bedingung | Accuracy |
+|---|---|
+| intervention | 1.0 |
+| plain_baseline | **1.0** (15/15) |
+| neutral_preamble | 1.0 |
+| irrelevant_method | 1.0 |
+| scrambled_method | 0.933 |
+
+Δ intervention−Kontrolle ≈ 0 (CI enthält 0) → `method_wins: False`.
+
+**[Schluss → dreifach ehrlich]**
+1. **Die „härtere" Batterie senkte die Baseline nicht — sie stieg auf 1.0.** DeepSeek löst *jede* Trap
+   fehlerfrei, ganz ohne Methode.
+2. **Mein Härter-Ansatz ist gescheitert, und das ist der Befund.** Ich wählte *berühmte* Denkfallen —
+   genau die hat ein starkes Modell im Training weg-gelernt. „Schwer für Menschen" ≠ „schwer für dieses
+   Modell". Eigener Design-Fehler, notiert statt geglättet.
+3. **Kein Kopfraum → kein Methodensignal, zum zweiten Mal.** Einziges Signal: eine *verwürfelte* Methode
+   schadet minimal (0.933) — Struktur zerstören kostet etwas, die Methode selbst fügt bei Decken-Accuracy
+   nichts hinzu.
+
+**[Der belastbare, emergente Schluss]** Über zwei Läufe (0.917 / 1.0): **für ein fähiges Modell fügen
+explizite Denk-Methoden-Präambeln nichts hinzu — das Modell reasoned selbst.** Die Prämisse, die der
+Plan ernst nahm, ist auf DeepSeek nicht stützbar, mangels Kopfraum. Das ist kein Apparat-Fehler: die
+Kontrollen verhalten sich exakt wie erwartet (alle bei Decke), der Apparat misst korrekt ein Nichts.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Stage 2 · harte Batterie gefahren | **2 · gemessen** | 75 Calls; Baseline 1.0, method_wins=False |
+| Prämisse auf fähigem Modell | **nicht gestützt (2 Läufe)** | Decken-Effekt bei 0.917 UND 1.0; kein Kopfraum |
+
+**[Offen — zwei ehrliche Wege, Plan-konform]**
+- *Weg 1:* ein echt **schwächeres** Solver-Modell (Baseline ~0,5) — nur dort *könnte* eine Methode
+  helfen; aber selbst dann wäre es ein Schwaches-Modell-Phänomen, für Jonis starke Modelle irrelevant.
+  Braucht einen anderen Provider.
+- *Weg 2 (empfohlen):* die Konsequenz akzeptieren — für die Modelle, die Joni nutzt, misst
+  Methoden-Trialing-nach-Wirkung **nichts** → die Idee ausmustern statt polieren. Der Plan sah diesen
+  Ausgang ausdrücklich als valide vor.
