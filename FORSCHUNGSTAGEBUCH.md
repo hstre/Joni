@@ -2764,3 +2764,53 @@ deterministische Benotung → echte Trials → Entdecker** dreht sich damit zum 
 Konflikte**, bei denen die Baseline *scheitert* (Kopfraum) — genau wie deep/novel erst mit härteren Aufgaben
 diskriminierten. Dann zeigt sich, ob die ausgeführte Methode dort trägt, wo Erinnern/Raten nicht reicht.
 (Der Sechs-Batterien-Null legt nahe: eher nicht — aber jetzt ist es *messbar*, statt behauptet.)
+
+### Eintrag 2026-07-02 (XXIX) — Zweiter Messlauf, harte Batterie: auch AUSGEFÜHRT kein Methodennutzen — leicht schädlich. Der Kapstein.
+
+**[Eingriff]** „Weiter." Harte prüfbare Konflikt-Batterie (`HARD_CASES`): 12 rechenintensive
+Widersprüche mit verifizierter Grundwahrheit und knapp-daneben-Alternativen (Derangements D5/D6,
+3×n-Domino-Zählungen 153/2131/29681, Inklusion-Exklusion 228, Catalan 42, C(12,5), 234×567, 7^4 mod 100,
+13³, Determinante), balanciert 6× korrekt-A / 6× korrekt-B. Gefahren über die Workflow (DeepSeek, 4 Modi
+× 12).
+
+**[Messergebnis — endlich mit Kopfraum, ungeschönt]**
+
+| Modus | Resolution-Accuracy |
+|---|---|
+| none (Baseline) | **0.917** |
+| method | **0.833** |
+| scrambled | 0.833 |
+| irrelevant | 0.917 |
+
+`method − none = **−0.084**`, `beats_all_controls = False`.
+
+**[Der entscheidende Blick pro Konflikt]** Kopfraum war da: die Baseline scheitert an **X-3**
+(Inklusion-Exklusion, 228) — die rechenintensivste. Und die Methode half dort **nicht** (auch
+`no_benefit`). Schlimmer: an **X-12** (3×16-Tiling, 29681) löste die **Baseline richtig**, aber der
+**Methoden-Preamble zerbrach es** (`none=success → method=no_benefit`). `method = scrambled = 0.833`
+(Struktur wieder inert); die Methode **verliert** gegen die nackte Baseline.
+
+**[Schluss — der Kapstein der ganzen Methoden-Untersuchung]** Die Frage, die der Sechs-Batterien-Null offen
+ließ — *hilft eine tiefe Methode als AUSGEFÜHRTES Gerüst, nicht als Prompt-Zettel?* — ist jetzt **gemessen,
+mit echtem Kopfraum, durch die ganze Pipeline** (Core → Vorschlag → LLM-Anwendung → deterministische
+Benotung nach Resolution): **Nein.** Selbst ausgeführt hebt die Methode die Auflösungsrate **nicht** über
+die Baseline — sie **schadet leicht** (−0.084), genau wie „irrelevanter Preamble schadet" es vorhersagte.
+Über **sieben** Messungen (micro/hard/deep/cross/novel/search + executed-apply) konvergiert alles: **eine
+tiefe Methode als *geliefertes Artefakt* — ob angepromptet oder ausgeführt — bringt einem fähigen Modell
+keinen messbaren Vorteil.** Ihr Wert liegt, gemessen bestätigt, als **Wissens-Asset** (für schwächere
+Agenten, für Menschen, als Vokabular und als Navigations-/Entdeckungs-Operator über der Lösungsraum-Karte),
+nicht als Leistungs-Hebel im Prompt oder im Ausführungsschritt eines starken Modells.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Executed-Scaffold-Messung, harte Batterie | **gemessen: kein Nutzen, −0.084** | none 0.917 / method 0.833, method=scrambled |
+| „Methode als Artefakt hilft starkem Modell" | **falsifiziert (7 Messungen)** | micro/hard/deep/cross/novel/search/executed |
+| Wert der DB = Wissens-Asset / Navigations-Operator | **belegt (per Ausschluss + Pipeline)** | Kartograph+Operator+Entdecker laufen; Prompt/Execute-Hebel verneint |
+
+**[Offen — ehrlich, klein]** Der Kopfraum blieb dünn (A/B-Format, Baseline 0.917 — nur X-3 wirklich hart);
+ein noch härteres Produce-the-number-Format würde mehr Kopfraum geben, aber die Richtung ist über sieben
+Läufe eindeutig. Der eigentliche, unbestrittene Wert der ganzen `solution_space`-Pipeline ist die
+**Navigation** (Karte → unerreichte Inseln → Brücken → welcher Operator) und die **Selbst-Entdeckung**
+(FP-sicher gemessen) — nicht der Methoden-im-Prompt-Hebel, den sieben Messungen jetzt verneinen.
