@@ -2717,3 +2717,50 @@ einreicht. Sein Wert ist **genau das, was der Sechs-Batterien-Null offen lässt*
 *ausgeführtes* Gerüst (nicht als Prompt-Zettel) eine echte Lücke schließt. Das Gerüst steht jetzt so, dass
 genau diese Frage messbar wird: echte Vorschläge, echte Anwendung, deterministische Benotung nach Resolution,
 echte Trials → und dann die Messung, ob der Entdecker daraus tragfähige (Methode → Gap-Art)-Kanten mint.
+
+### Eintrag 2026-07-02 (XXVIII) — Erster echter Messlauf des ausgeführten apply: der Loop läuft live — Decken-Null, aber echte Trials
+
+**[Eingriff]** „Ja, bau den echten `apply_fn` und fahr den ersten Messlauf." Beides getan. Der echte
+`apply_fn` (`llm_apply.py`): der LLM entscheidet — optional durch die vorgeschlagene tiefe Methode geführt —
+**welcher von zwei widersprüchlichen Claims korrekt ist**, die Antwort wird **deterministisch** gegen ein
+Register geprüft, und der Konflikt im Core wird **nur bei korrekter Antwort** geschlossen. So ist die
+Benotung „Konflikt aufgelöst = success" eine *geprüfte richtige Auflösung*, **kein Urteil**. Vier Modi =
+die Kontroll-Batterie (method / none / scrambled / irrelevant). Prüfbare Konflikte + `seed_core`
+(`resolvable_conflicts.py`), Messläufer über die Stage-artige Workflow (DeepSeek, 40 Calls).
+
+**[Messergebnis — ehrlich, eine Decke]**
+
+| Modus | Resolution-Accuracy |
+|---|---|
+| method | **1.0** |
+| none | **1.0** |
+| scrambled | 1.0 |
+| irrelevant | 1.0 |
+
+`method − none = +0.000`, `beats_all_controls = False`. DeepSeek löst **alle 10** prüfbaren Konflikte in
+*jedem* Modus — 7×8=56, Wasser kocht bei 100 °C, √144=12 sind trivial auflösbar → **kein Kopfraum**, in dem
+eine Methode etwas beitragen könnte. Dasselbe Muster wie cross/novel: wo das Modell ohnehin richtig liegt,
+ist die Methode inert. Kein Executed-Scaffold-Signal — aber auch nichts, das eines geben *könnte*, bei
+Decke 1.0.
+
+**[Was der Lauf trotzdem BELEGT — der ganze Kreis läuft live]** Realer Layer-9-Core → Baustein B schlägt
+pro Konflikt `reduction` vor → echter DeepSeek-`apply_fn` löst → **deterministische Benotung nach
+Resolution** → **10 echte `DeepMethodTrial` in den Store** (`reduction / unqualified / success`). Und
+Baustein C **liest die echten Trials**: findet die Kandidaten-Kante `reduction → unqualified`
+(train 1.0/n=8, holdout 1.0/n=2), **verweigert aber die Bestätigung** (holdout n=2 < min_support 4) — genau
+das konservative, ehrliche Verhalten. Der komplette Kreis **Karte → Operator → ausgeführte Anwendung →
+deterministische Benotung → echte Trials → Entdecker** dreht sich damit zum ersten Mal auf **echten Daten**.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Echter `apply_fn` (LLM löst, deterministisch geprüft) | **2 · gebaut** | `llm_apply`, Stub-Tests + Live-Lauf |
+| Erster Executed-Scaffold-Messlauf | **gemessen: Decken-Null** | alle Modi 1.0, method−none 0.0 |
+| Ganzer Kreis auf echten Daten (bis Baustein C) | **belegt** | 10 echte Trials, C liest + verweigert Bestätigung ehrlich |
+
+**[Offen — der klare nächste Schritt für Diskriminierung]** Die prüfbaren Konflikte sind zu leicht (Decke
+1.0). Um die Executed-Scaffold-Frage überhaupt beantworten zu können, braucht es **härtere prüfbare
+Konflikte**, bei denen die Baseline *scheitert* (Kopfraum) — genau wie deep/novel erst mit härteren Aufgaben
+diskriminierten. Dann zeigt sich, ob die ausgeführte Methode dort trägt, wo Erinnern/Raten nicht reicht.
+(Der Sechs-Batterien-Null legt nahe: eher nicht — aber jetzt ist es *messbar*, statt behauptet.)
