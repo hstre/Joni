@@ -200,6 +200,16 @@ def one_cycle() -> dict:
         proto.record(cycle, "conflict_open",
                      f"opened {conflict_id} - two claims held open, not smoothed away")
 
+    # 3-nav. Solution-space navigation (READ-ONLY, deterministic, no model): surface the
+    #     highest-priority place to work next - an unreached island or a bridge between solution
+    #     spaces - with the deep-method operator to try. Non-authoritative, never mutates the core.
+    #     This is the confirmed value of the solution-space work (navigation + self-discovery), NOT
+    #     the method-as-prompt lever that nine measurements found null. Fail-open by construction.
+    from .navigation_view import top_agenda_line
+    nav_line = top_agenda_line(cs.core, allow_model=False)
+    if nav_line:
+        proto.record(cycle, "navigation", nav_line)
+
     # 3a-esc. Audited escalation to DeepSeek (joni-hard): Granite proposed above and Layer 9 now
     #     holds the conflicts. ONLY when a named, deterministic rule fires (high conflict load,
     #     contested, low coverage, ...) is DeepSeek invoked as the escalation analyst - never a

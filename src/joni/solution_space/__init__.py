@@ -30,7 +30,14 @@ from .discovery import (
     discovery_report,
     to_extra_affinities,
 )
-from .navigation import NavigationReport, NavItem, navigate
+from .navigation import (
+    NavigationReport,
+    NavItem,
+    NavStep,
+    navigate,
+    navigate_core,
+    navigate_iteratively,
+)
 from .operator_cycle import grade_by_resolution, run_operator_cycle
 from .operators import (
     DeepMethodProposal,
@@ -60,10 +67,13 @@ __all__ = [
     "discover_affinities",
     "to_extra_affinities",
     "discovery_report",
-    # navigation — the prioritised exploration agenda
+    # navigation — the prioritised exploration agenda + live hookup + iterative loop
     "navigate",
+    "navigate_core",
+    "navigate_iteratively",
     "NavigationReport",
     "NavItem",
+    "NavStep",
     # coordinate plumbing (records -> SolutionPoints)
     "build_points",
     "embed_texts",

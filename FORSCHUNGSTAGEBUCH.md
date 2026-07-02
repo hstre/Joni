@@ -2945,3 +2945,45 @@ soll.
 **iterative Loop** (explorieren → Karte aktualisieren → neu priorisieren) und echte Koordinaten-Zufuhr aus
 dem Live-Core (Baustein (a) steht, braucht nur den Daten-Anschluss). Der Wert-Kern — priorisierte Navigation
 + FP-sichere Entdeckung — steht getestet.
+
+### Eintrag 2026-07-02 (XXXIII) — Live-Anschluss, iterativer Loop, und Joni bekommt's: die Navigation läuft im Autonomie-Zyklus
+
+**[Eingriff]** „Live-Koordinaten-Anschluss und danach den iterativen Navigationsloop, wenn das läuft
+bekommt es Joni." Alle drei, der Reihe nach, jeweils getestet.
+
+**(1) Live-Anschluss — `navigate_core(core)`** verdrahtet Baustein (a) mit der Navigation: echte
+`SolutionPoint`s aus dem Layer-9-Core (9-dim StateVector aus Governance-Fakten + Embedding des Claim-Textes)
+→ Karte → priorisierte Agenda. Read-only, fail-open. Live-Test auf einem echten Core (Claims über Sepsis /
+Pneumonie / Kardio) läuft end-to-end.
+
+**(2) Iterativer Loop — `navigate_iteratively(points_provider, explore_fn)`**: navigieren → das
+höchstpriorisierte, **noch nicht explorierte** Item wählen → `explore_fn` (injiziert) → neu navigieren, bis
+nichts Neues mehr bleibt. Item-Identität = **Mitglieder-Menge** (stabil über Re-Clustering, anders als die
+positionsabhängigen Insel-IDs), also wird jeder Gap höchstens einmal exploriert und der Loop **terminiert
+immer**. Der kreative Explorations-Schritt bleibt eingehängt — kein Fabrizieren, kein Anfassen des
+geschützten Kerns. Test: ein Explorer, der erreichte Inseln verankert, führt `n_unreached → 0`.
+
+**(3) Joni bekommt's — im Autonomie-Zyklus verdrahtet.** `joni/autonomy/navigation_view.py`
+(`run_navigation`, `top_agenda_line`) ist eine **read-only** Fähigkeit; in `run.py:one_cycle` direkt nach dem
+Öffnen der Konflikte protokolliert Joni jetzt pro Zyklus eine Navigations-Zeile — nicht-autoritativ,
+deterministisch, kein Modell im Loop-Pfad, fail-open. Belegt: `joni.autonomy.run` importiert sauber, und die
+Zeile lautet z. B. `navigation: reach_island island_0 (prio 0.5) -> try reduction — unreached region …`.
+
+**[Was das bedeutet]** Der über neun Messungen bestätigte Wert — **priorisierte Navigation + FP-sichere
+Selbst-Entdeckung**, *nicht* der Methoden-im-Prompt-Hebel — ist jetzt nicht nur gebaut, sondern **läuft in
+Jonis Zyklus**: jeder Lauf sagt read-only, wo im Lösungsraum die nächste unerreichte Insel / Brücke liegt
+und mit welchem tiefen Operator man sie angehen würde. Das Handeln darauf bleibt bewusst außen vor (der
+kreative Schritt), aber das *Zeigen, wo die Räume sind*, ist verdrahtet.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Live-Anschluss (`navigate_core`) | **2 · gebaut** | Live-Test auf echtem Core, read-only |
+| Iterativer Navigations-Loop | **2 · gebaut** | `navigate_iteratively`, Member-Set-Identität, terminiert |
+| In Joni verdrahtet (Zyklus-Log) | **2 · gebaut** | `run.py:one_cycle` navigation-Zeile, `navigation_view` read-only |
+| solution_space gesamt | **61 Tests grün, ruff sauber** | + Loop + Live + Joni-View |
+
+**[Offen]** Das *Handeln* auf der Agenda (Joni exploriert tatsächlich eine Insel/Brücke) ist der nächste,
+größere Schritt und braucht einen echten `explore_fn` (kreativ, core-schreibend, human-gegated) — bewusst
+noch nicht verdrahtet.
