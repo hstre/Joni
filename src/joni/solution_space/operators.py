@@ -41,6 +41,11 @@ _METHOD_KINDS_BY_GAP: dict[str, tuple[tuple[str, float], ...]] = {
                          ("invariant", 0.6)),
     "unqualified":      (("reduction", 0.9), ("mechanism", 0.7), ("modeling", 0.6),
                          ("estimation", 0.5)),
+    # geometry gaps from the cartographer (Baustein A): reach an unreached region, or bridge two.
+    "unanchored_island": (("reduction", 1.0), ("estimation", 0.8), ("search", 0.7),
+                          ("optimization", 0.6)),
+    "bridge_candidate":  (("reduction", 1.0), ("invariant", 0.9), ("counting", 0.7),
+                          ("modeling", 0.6)),
 }
 _BASE: tuple[tuple[str, float], ...] = (("reduction", 0.8), ("impossibility", 0.7),
                                         ("estimation", 0.6), ("proof_technique", 0.5))

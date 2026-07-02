@@ -2543,3 +2543,45 @@ Outcomes anfallen (das Futter für Baustein C, den Entdecker). Dieselbe Ehrlichk
 
 **[Offen]** Baustein C (Entdecker) braucht die `DeepMethodTrial`-Historie; und der DESi-`SCHEMA_VERSION`-
 Skew wäre ein eigener kleiner Fix (DESi-Feature-Branch), damit der `from_core`-Pfad auch lokal lebt.
+
+### Eintrag 2026-07-02 (XXIV) — „Durchziehen": Baustein A (Kartograph) + die A→B-Pipeline — die Vision läuft end-to-end (auf Synthetik)
+
+**[Eingriff]** „Dann weiter, ziehen wir das durch." Also die andere große Hälfte: **Baustein A, der
+Kartograph** (`joni/solution_space/cartography.py`), und die **A→B-Pipeline** (`pipeline.py`), die alles
+zusammensteckt. Damit läuft die vom Betreiber skizzierte Schleife zum ersten Mal end-to-end.
+
+**[Baustein A — die Karte]** `cartograph(points)` bettet Lösungspunkte in den **Produktraum** ein
+(9-dim `state_vector` ⊕ semantisches `embedding`), Distanz = `w_gov·gov ⊕ w_sem·sem` (governance =
+range-normalisierte Manhattan-Distanz über die neun Achsen; semantisch = Cosinus-Distanz). Single-Linkage
+(Union-Find, deterministisch, stdlib) → **Inseln**; Cluster ohne Anker → **unerreichte Inseln**; Insel-Paare
+semantisch nah aber Governance-fern → **Brücken** (die „Verknüpfung zwischen Lösungsräumen"). Ehrlicher
+Scope: **keine** Void-Erfindung zwischen dünnen Punkten (in hoher Dimension unzuverlässig) — ein Gap ist ein
+*ankerloser Cluster* oder eine *Brücke*, beide an echten Punkten verankert.
+
+**[A→B — die Pipeline]** `plan(points)` kartografiert, macht jede unerreichte Insel + jede Brücke zu einem
+Gap-Target (dieselbe Duck-Type-Form, die Baustein B schon versteht) und lässt B die tiefen Methoden-
+Operatoren dafür ranken. Neue Gap-Arten in B: `unanchored_island` → Reduktion/Schätzung/Suche/Optimierung
+(eine neue Region *erreichen*), `bridge_candidate` → Reduktion/Invariante/Zählen/Modellierung (zwei Räume
+*verbinden*).
+
+**[Belegt — der Lauf auf Synthetik]** 6 Punkte → 3 Inseln; `island_1` (gleiches Thema wie die gelöste
+Insel, aber ferner Governance-Zustand, kein Anker) korrekt als **unerreicht** markiert; eine **Brücke**
+`island_0~island_1` (sem=0.00, gov=0.99). Vorschläge: für die unerreichte Insel **`reduction`** („Ist das
+ein verkleidetes Problem, das ich schon gelöst habe?"), für die Brücke **`reduction` + `conservation_law`**
+(was bleibt zwischen den Räumen invariant?). Genau die richtigen Züge — deterministisch, kein Modell.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| A · Kartograph (Produktraum → Inseln/Gaps/Brücken) | **2 · gebaut** | `joni.solution_space.cartography`, Tests grün |
+| A→B · Pipeline (Karte → Operatoren pro Gap) | **2 · gebaut** | `joni.solution_space.pipeline`, End-to-End-Demo läuft |
+| Koordinaten-Zufuhr (StateVector + Embedding, live) | **0 · offen** | heute liefert der Aufrufer die Punkte; Geometrie steht, Plumbing fehlt |
+| solution_space gesamt | **17 Tests grün, ruff sauber** | A + B + Pipeline |
+
+**[Offen — der ehrliche Rest der Pipeline]**
+- *Daten-Zufuhr:* echte `StateVector.to_tuple()` aus DESi-Trajektorien + `fastembed`-Embeddings statt
+  synthetischer Punkte — dann läuft die Karte auf echten Lösungsräumen.
+- *Baustein C (Entdecker):* wiederkehrende erfolgreiche `(Methode, Gap-Art)`-Muster zu neuen `DeepMethod`s
+  abstrahieren, holdout-validiert — braucht die noch leere `DeepMethodTrial`-Historie.
+- *DESi-`SCHEMA_VERSION`-Skew:* kleiner Fix auf dem DESi-Feature-Branch, damit `from_core` auch lokal lebt.

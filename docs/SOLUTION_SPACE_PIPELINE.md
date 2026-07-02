@@ -72,8 +72,15 @@ Holdout-/Falsifikations-Reflex, der den Methoden-Trial-Apparat trägt).
 
 ## Baureihenfolge (offen, Betreiber entscheidet)
 
-- **A · Kartograph:** Lösungspunkte in (9-dim ⊕ Embedding) einbetten, clustern → Inseln + Gaps. Fundament,
-  aber braucht Trajektorien-+Embedding-Plumbing (größerer Lift).
+- **A · Kartograph:** ✅ **GEBAUT** (`joni.solution_space.cartography`, `cartograph`). Punkte im Produktraum
+  (9-dim `state_vector` ⊕ semantisches `embedding`) → **Inseln** (Single-Linkage über die kombinierte
+  Distanz), **unerreichte Inseln** (Cluster ohne Anker), **Brücken** (Inseln semantisch nah, aber
+  Governance-fern → „Verknüpfung zwischen Lösungsräumen"). Deterministisch, stdlib-only. **Offen darunter:**
+  die Koordinaten-Zufuhr — echte `StateVector.to_tuple()` aus DESi-Trajektorien + Embeddings aus `fastembed`
+  (heute liefert der Aufrufer die Punkte; die Geometrie steht, das Daten-Plumbing fehlt noch).
+- **A→B · Pipeline:** ✅ **GEBAUT** (`joni.solution_space.pipeline`, `plan`). Kartografiert die Punkte, macht
+  jede unerreichte Insel + jede Brücke zu einem Gap-Target und lässt Baustein B die tiefen Methoden-Operatoren
+  (mit Kernfrage) dafür ranken. Der MVP der ganzen Vision auf beliebigen Punkten (synthetisch heute).
 - **B · Operator-Layer:** ✅ **GEBAUT** (`joni.solution_space.operators`, `propose_operators`). Der tiefe
   Zwilling von DESis `analyze_gaps`: derselbe `EpistemicGapSnapshot` rein → **tiefe Methoden als Operatoren**
   raus, jede mit ihrer Kernfrage, gerankt `severity × kind_relevance × under_addressed`, inkl. Brücken-Logik

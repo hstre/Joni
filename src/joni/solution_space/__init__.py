@@ -8,16 +8,34 @@ another scope' logic, a BRIDGE between solution spaces. Consumes DESi's read-onl
 Deterministic, no LLM, fail-open.
 """
 
+from .cartography import (
+    BridgeCandidate,
+    Cartography,
+    Island,
+    SolutionPoint,
+    cartograph,
+)
 from .operators import (
     DeepMethodProposal,
     DeepMethodTrial,
     from_core,
     propose_operators,
 )
+from .pipeline import ReachPlan, plan
 
 __all__ = [
+    # Baustein B — deep-method operators over the gap map
     "DeepMethodProposal",
     "DeepMethodTrial",
     "propose_operators",
     "from_core",
+    # Baustein A — the product-space cartographer
+    "SolutionPoint",
+    "Island",
+    "BridgeCandidate",
+    "Cartography",
+    "cartograph",
+    # end-to-end pipeline A -> B
+    "ReachPlan",
+    "plan",
 ]
