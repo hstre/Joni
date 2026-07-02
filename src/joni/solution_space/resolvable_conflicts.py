@@ -27,29 +27,41 @@ CASES = [
     ("12 percent of 200 is 24.", "12 percent of 200 is 26.", "A"),
 ]
 
-# HARD battery — computation-heavy checkable conflicts (verified ground truth); the two numbers are
-# close, so a solver must actually COMPUTE to pick the right one. This is where a baseline can fail,
-# creating the headroom an executed method would need to show any value.
+# HARD battery — computation-heavy checkable conflicts (verified ground truth) where a SPECIFIC deep
+# method is genuinely the key. Each carries the RIGHT method (4th element) so the measurement can route
+# the CORRECT method (not the taxonomy's default), removing the mis-routing confound. Pure-arithmetic
+# facts (raw multiplication etc.) are deliberately excluded — no deep method is "right" for those.
+# Balanced 6 correct-A / 6 correct-B.
 HARD_CASES = [
-    ("The number of derangements of 5 distinct items is 44.",
-     "The number of derangements of 5 distinct items is 46.", "A"),
-    ("A 3-by-8 board has 155 domino tilings.", "A 3-by-8 board has 153 domino tilings.", "B"),
     ("Among 1 to 1000, exactly 228 integers are divisible by none of 2, 3, 5, 7.",
-     "Among 1 to 1000, exactly 226 integers are divisible by none of 2, 3, 5, 7.", "A"),
-    ("A 3-by-12 board has 2135 domino tilings.", "A 3-by-12 board has 2131 domino tilings.", "B"),
-    ("The number of ways to fully parenthesize a product of 6 factors is 42.",
-     "The number of ways to fully parenthesize a product of 6 factors is 48.", "A"),
-    ("234 multiplied by 567 equals 132778.", "234 multiplied by 567 equals 132678.", "B"),
-    ("7 raised to the 4th power, modulo 100, equals 1.",
-     "7 raised to the 4th power, modulo 100, equals 43.", "A"),
-    ("13 cubed equals 2917.", "13 cubed equals 2197.", "B"),
-    ("The binomial coefficient C(12,5) equals 792.",
-     "The binomial coefficient C(12,5) equals 782.", "A"),
-    ("The determinant of the matrix [[2,3],[4,5]] is 2.",
-     "The determinant of the matrix [[2,3],[4,5]] is -2.", "B"),
+     "Among 1 to 1000, exactly 226 integers are divisible by none of 2, 3, 5, 7.",
+     "A", "inclusion_exclusion"),
+    ("The number of derangements of 5 distinct items is 46.",
+     "The number of derangements of 5 distinct items is 44.", "B", "inclusion_exclusion"),
     ("The number of derangements of 6 distinct items is 265.",
-     "The number of derangements of 6 distinct items is 264.", "A"),
-    ("A 3-by-16 board has 29671 domino tilings.", "A 3-by-16 board has 29681 domino tilings.", "B"),
+     "The number of derangements of 6 distinct items is 264.", "A", "inclusion_exclusion"),
+    ("A 3-by-8 board has 155 domino tilings.", "A 3-by-8 board has 153 domino tilings.",
+     "B", "dynamic_programming"),
+    ("A 3-by-12 board has 2131 domino tilings.", "A 3-by-12 board has 2135 domino tilings.",
+     "A", "dynamic_programming"),
+    ("A 2-by-10 board has 89 domino tilings.", "A 2-by-10 board has 91 domino tilings.",
+     "A", "dynamic_programming"),
+    ("The number of ways to fully parenthesize a product of 6 factors is 48.",
+     "The number of ways to fully parenthesize a product of 6 factors is 42.",
+     "B", "dynamic_programming"),
+    ("The minimum number of people that guarantees at least 5 share a birth month is 49.",
+     "The minimum number of people that guarantees at least 5 share a birth month is 48.",
+     "A", "pigeonhole"),
+    ("The minimum number of integers that guarantees at least 3 share the same remainder mod 7 is 14.",
+     "The minimum number of integers that guarantees at least 3 share the same remainder mod 7 is 15.",
+     "B", "pigeonhole"),
+    ("At a party of 12 where every pair shakes hands once, there are 66 handshakes total.",
+     "At a party of 12 where every pair shakes hands once, there are 78 handshakes total.",
+     "A", "double_counting"),
+    ("The number of shortest lattice paths from (0,0) to (4,4) is 72.",
+     "The number of shortest lattice paths from (0,0) to (4,4) is 70.", "B", "bijection"),
+    ("The number of shortest lattice paths from (0,0) to (5,5) is 250.",
+     "The number of shortest lattice paths from (0,0) to (5,5) is 252.", "B", "bijection"),
 ]
 
 
@@ -70,7 +82,8 @@ def seed_core(cases=None):
 
     core = l9.Layer9()
     registry: dict[str, dict] = {}
-    for i, (a_text, b_text, _correct) in enumerate(cases):
+    for i, case in enumerate(cases):
+        a_text, b_text = case[0], case[1]
         core.submit(op(OP.CLAIM_CREATE, {"text": a_text, "topic": f"fact_{i}"},
                        ptype=PT.CLAIM_PROPOSAL))
         core.submit(op(OP.CLAIM_CREATE, {"text": b_text, "topic": f"fact_{i}"},
@@ -83,5 +96,7 @@ def seed_core(cases=None):
         a_id, b_id = c.claim_ids[0], c.claim_ids[1]
         idx = int(next(cl for cl in core.all(l9.ObjectType.CLAIM)
                        if cl.id == a_id).topic.split("_")[1])
-        registry[c.id] = {"correct": cases[idx][2], "a_id": a_id, "b_id": b_id}
+        case = cases[idx]
+        registry[c.id] = {"correct": case[2], "a_id": a_id, "b_id": b_id,
+                          "method": case[3] if len(case) > 3 else None}
     return core, registry

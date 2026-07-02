@@ -17,9 +17,10 @@ import argparse
 import json
 from dataclasses import dataclass
 
+from ..method_trial import deep_methods as D
 from .llm_apply import make_llm_apply
 from .operator_cycle import grade_by_resolution, open_conflict_ids
-from .operators import DeepMethodTrial, propose_operators
+from .operators import DeepMethodProposal, DeepMethodTrial, propose_operators
 from .resolvable_conflicts import CASES, HARD_CASES, seed_core
 from .trial_store import record_trial
 
@@ -50,10 +51,24 @@ def propose_for_core(core, *, top_k_per_gap: int = 1):
     return propose_operators(_Snap(conflicts=conflicts), top_k_per_gap=top_k_per_gap)
 
 
-def run_mode(solver, mode: str, *, store_path: str | None = None, cases=None) -> dict:
+def _fair_proposal(cid: str, method_id: str) -> DeepMethodProposal:
+    """A proposal carrying the conflict's RIGHT method (from the battery), bypassing the taxonomy —
+    so the intervention actually supplies the fitting deep method, not the gap-kind default."""
+    m = D.by_id(method_id)
+    return DeepMethodProposal(
+        target=f"conflict:{cid}", method_id=method_id, method_name=m.name if m else method_id,
+        core_question=m.core_question if m else "", method_kind=m.kind if m else "",
+        reason=(), expected_information_gain="high", priority=1.0, gap_kind="checkable_fact")
+
+
+def run_mode(solver, mode: str, *, store_path: str | None = None, cases=None,
+             fair_routing: bool = False) -> dict:
     core, registry = seed_core(cases)
     apply = make_llm_apply(solver, registry, mode=mode)
-    proposals = {p.target.split(":", 1)[-1]: p for p in propose_for_core(core, top_k_per_gap=1)}
+    if fair_routing:                    # route each conflict's DECLARED right method (no confound)
+        proposals = {cid: _fair_proposal(cid, registry[cid]["method"]) for cid in registry}
+    else:
+        proposals = {p.target.split(":", 1)[-1]: p for p in propose_for_core(core, top_k_per_gap=1)}
     results: dict[str, str] = {}
     for cid in list(registry):
         p = proposals.get(cid)
@@ -94,10 +109,13 @@ def main(argv=None) -> int:
         from ..method_trial.solver import DeepSeekSolver
         solver = DeepSeekSolver()
 
-    per_mode = {m: run_mode(solver, m, store_path=args.store, cases=cases) for m in MODES}
+    fair = args.battery == "hard"       # the hard battery declares each conflict's right method
+    per_mode = {m: run_mode(solver, m, store_path=args.store, cases=cases, fair_routing=fair)
+                for m in MODES}
     base = per_mode["none"]["accuracy"]
     summary = {
         "solver": getattr(solver, "name", "stub"), "battery": args.battery,
+        "routing": "fair (declared right method)" if fair else "taxonomy (gap-kind default)",
         "accuracy": {m: per_mode[m]["accuracy"] for m in MODES},
         "method_minus_none": round(per_mode["method"]["accuracy"] - base, 3),
         "method_beats_all_controls": all(
