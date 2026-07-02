@@ -74,8 +74,15 @@ Holdout-/Falsifikations-Reflex, der den Methoden-Trial-Apparat trägt).
 
 - **A · Kartograph:** Lösungspunkte in (9-dim ⊕ Embedding) einbetten, clustern → Inseln + Gaps. Fundament,
   aber braucht Trajektorien-+Embedding-Plumbing (größerer Lift).
-- **B · Operator-Layer:** `solution_space_gap.analyze_gaps` auf tiefe Methoden heben. Billiger, meist Reuse,
-  macht die DB sofort wirksam, liefert die Trial-Daten für Stufe 4. **Empfohlener Einstieg.**
+- **B · Operator-Layer:** ✅ **GEBAUT** (`joni.solution_space.operators`, `propose_operators`). Der tiefe
+  Zwilling von DESis `analyze_gaps`: derselbe `EpistemicGapSnapshot` rein → **tiefe Methoden als Operatoren**
+  raus, jede mit ihrer Kernfrage, gerankt `severity × kind_relevance × under_addressed`, inkl. Brücken-Logik
+  (Erfolg in anderem Scope → `is_bridge`) und scope-gebundener Trial-Awareness (`DeepMethodTrial`; technical
+  vs. no_benefit unterscheidet). Gap-Art → Methoden-*Art*-Taxonomie (skaliert mit der DB). Deterministisch,
+  fail-open (`from_core` degradiert zu `[]` bei DESi-Schema-Skew). 8 Tests grün.
+  **Offen darunter:** die `DeepMethodTrial`-Ergebnisse müssen noch befüllt werden (heute leer → Ranking = die
+  a-priori severity×kind-Tabelle, ehrlich markiert); und der Joni↔DESi-Projektor-Schema-Skew
+  (`SCHEMA_VERSION`) blockiert lokal den `from_core`-Pfad (CI zieht DESi main, dort läuft er).
 - **C · Entdecker:** der Meta-Loop — erst sinnvoll, wenn B echte Trial-Daten produziert.
 
 ## Offene, ehrlich benannte Punkte

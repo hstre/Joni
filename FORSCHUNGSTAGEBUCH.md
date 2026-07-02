@@ -2508,3 +2508,38 @@ Reifegrad 0, ehrlich als Design markiert.
 
 **[Offen]** Baustein B (Operator-Layer: `solution_space_gap` auf tiefe Methoden heben) als empfohlener
 erster Bau, wenn der Betreiber grünes Licht gibt.
+
+### Eintrag 2026-07-02 (XXIII) — Baustein B gebaut: die tiefen Methoden sind jetzt Operatoren über DESis Gap-Karte
+
+**[Eingriff]** „Bau Baustein B." Getan: `joni/solution_space/operators.py` — der **tiefe Zwilling** von
+DESis `solution_space_gap.analyze_gaps`. Derselbe read-only `EpistemicGapSnapshot` (den Joni schon per
+`epistemic_gap_projector` erzeugt) rein → **tiefe Methoden als Operatoren** raus. `propose_operators`
+rankt pro offenem Gap `priority = severity × kind_relevance × under_addressed` und gibt je Gap die
+stärksten Methoden mit ihrer **Kernfrage als konkretem Zug** zurück. Damit ist die DB zum ersten Mal
+*wirksam verdrahtet* statt nur abgelegt — genau die Lücke aus der Ziel-Architektur.
+
+**[Was übernommen wurde — Reuse, kein Parallel-Code]** Die Struktur spiegelt DESis Analyse eine Schicht
+tiefer: (1) **Gap-Art → Methoden-*Art*-Taxonomie** (`contradiction → proof_technique/impossibility`,
+`numeric → estimation/counting/invariant`, …), auf Methoden-*Kinds* statt ids, also skaliert mit der DB;
+(2) **scope-gebundene Trial-Awareness** (`DeepMethodTrial`): ein `success` hier entfernt den Zug (kein
+Gap mehr), ein `technical_failure` demotet **nicht** (kein methodisches Signal), `no_benefit/harmful`
+schon; (3) die **Brücken-Logik** — Erfolg in *anderem* Scope hebt einen hier ungenutzten Zug und markiert
+`is_bridge` (die „Verknüpfung zwischen Lösungsräumen"). Deterministisch, kein Modell.
+
+**[Ehrliche Grenzen, sauber markiert]** (a) Die `DeepMethodTrial`-Historie ist heute **leer** → das Ranking
+ist die a-priori severity×kind-Tabelle; Brücken und Demotions feuern erst, wenn echte tiefe-Methoden-
+Outcomes anfallen (das Futter für Baustein C, den Entdecker). Dieselbe Ehrlichkeit wie der Projektor schon
+über die flachen Trials führt. (b) Ein **vorbestehender Joni↔DESi-Schema-Skew**: der Projektor erwartet
+`SCHEMA_VERSION`, das der *lokale* DESi-Checkout nicht exportiert (CI zieht DESi main, dort läuft der Pfad)
+— nicht von B verursacht; `from_core` ist deshalb fail-open (`[]` statt Absturz).
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| B · Operator-Layer (tiefe Methoden als Gap-Operatoren) | **2 · gebaut** | `joni.solution_space.operators`, 8 Tests grün, ruff sauber |
+| End-to-End `from_core` (Layer9 → Vorschläge) | **fail-open** | blockiert vom vorbestehenden DESi-`SCHEMA_VERSION`-Skew (lokal), läuft gegen DESi main |
+| Tiefe-Methoden-Trial-Historie (Futter für Ranking + Entdecker) | **0 · offen** | heute leer; Ranking = a-priori-Tabelle bis Outcomes anfallen |
+
+**[Offen]** Baustein C (Entdecker) braucht die `DeepMethodTrial`-Historie; und der DESi-`SCHEMA_VERSION`-
+Skew wäre ein eigener kleiner Fix (DESi-Feature-Branch), damit der `from_core`-Pfad auch lokal lebt.
