@@ -2101,3 +2101,34 @@ Kontrollen verhalten sich exakt wie erwartet (alle bei Decke), der Apparat misst
 - *Weg 2 (empfohlen):* die Konsequenz akzeptieren — für die Modelle, die Joni nutzt, misst
   Methoden-Trialing-nach-Wirkung **nichts** → die Idee ausmustern statt polieren. Der Plan sah diesen
   Ausgang ausdrücklich als valide vor.
+
+### Eintrag 2026-07-02 (XVI) — Abschluss: Prämisse falsifiziert, Idee ausgemustert — „was schon optimiert ist, muss man nicht optimieren"
+
+**[Entscheidung des Betreibers]** Weg 2. Nach zwei gemessenen Läufen (Baseline 0.917 / 1.0, method_wins
+zweimal False) ist der Befund konsistent und mechanistisch erklärt: **ein fähiges Modell braucht die
+aufgesetzte Denk-Methode nicht — es reasoned die Aufgabe selbst.** Der Betreiber bringt es auf den
+Punkt: *was schon optimiert ist, muss man nicht optimieren.* Also ausmustern, nicht polieren.
+
+**[Was das konkret heißt — und was ausdrücklich NICHT passiert]**
+- Der Plan (`METHOD_TRIAL_MEASUREMENT_PLAN.md`) ist als **Prämisse-falsifiziert / ausgemustert** markiert.
+- Das synthetische Methoden-Trialing bleibt `epistemic_weight=none` und **aus der Produktion**
+  (`JONI_SYNTHETIC_TRIALS=0`) — war es schon; nichts zu tun.
+- Der condition-aware Retirement-Guard bleibt **gebaut-aber-ruhend** — korrekt und harmlos; kein
+  Ausbau nötig (er treibt in Prod ohnehin nichts).
+- Der ganze Mess-Apparat (Prä-Registrierung, zwei Batterien, Runner, Workflow) **bleibt stehen** als
+  belegtes Negativergebnis: Evidenz für das *Warum-nicht*, kein weggeworfener Aufwand.
+- **Wiedereröffnen nur**, falls Joni je den harten Reasoning-Pfad über ein *schwaches* Modell führt —
+  dort könnte Kopfraum existieren. Für die starken Modelle, die Joni nutzt, ist es erledigt.
+
+**[Schluss → der eigentliche Wert dieser Übung]** Wir haben nicht „eine Optimierung gebaut", sondern
+**einen Grund gefunden, sie NICHT zu bauen** — sauber, vorregistriert, doppelt gemessen, ohne
+LLM-Selbstbenotung. Das ist der Kern dieses Tagebuchs in Reinform: die Möglichkeit des Scheiterns
+ernst nehmen, es messen, und das Nichts *als Nichts* benennen, statt eine synthetische Zahl zu
+produzieren, die nach Fortschritt aussieht. Ein negativer, belastbarer Befund ist Fortschritt.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Methoden-Transfer messbar (Jonis Modelle) | **falsifiziert · abgeschlossen** | 2 Läufe, Decken-Effekt, method_wins=False; Plan als retired markiert |
+| Mess-Apparat als Negativergebnis-Record | **2 · steht** | Prä-Reg + 2 Batterien + Runner + Workflow, reproduzierbar |
