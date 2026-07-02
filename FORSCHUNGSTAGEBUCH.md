@@ -2814,3 +2814,54 @@ ein noch härteres Produce-the-number-Format würde mehr Kopfraum geben, aber di
 Läufe eindeutig. Der eigentliche, unbestrittene Wert der ganzen `solution_space`-Pipeline ist die
 **Navigation** (Karte → unerreichte Inseln → Brücken → welcher Operator) und die **Selbst-Entdeckung**
 (FP-sicher gemessen) — nicht der Methoden-im-Prompt-Hebel, den sieben Messungen jetzt verneinen.
+
+### Eintrag 2026-07-02 (XXX) — Der Confound entlarvt & entfernt: mit RICHTIGEM Routing bleibt der Null — sauberer, nicht schwächer
+
+**[Selbstkorrektur des Betreibers, ernst genommen]** *„Vielleicht ist das nicht die richtige
+Operationalisierung. Oder wir haben unbrauchbare Methoden draufgeworfen."* Nachgeprüft — und der Betreiber
+hatte recht bei einem echten Fehler: der Executed-Hard-Lauf (XXIX) hatte **`reduction` auf alle 12
+Konflikte** geroutet (weil sie als `conflict_kind = unqualified` geöffnet wurden), also die *falsche*
+Methode auf „berechne 3×16-Tilings" — faktisch der irrelevant-Kontrollfall, nicht ein fairer Methodentest.
+Die −0.084 aus XXIX maßen einen **Routing-Confound**, nicht „die richtige Methode hilft nicht".
+
+**[Eingriff — fair geroutet]** Harte Batterie neu: jeder Konflikt deklariert seine **richtige** tiefe
+Methode (Inklusion-Exklusion für die 228 & Derangements, DP für die Domino-/Catalan-Zählungen, Schubfach
+für die Schwellen, doppeltes Zählen für Handshakes, Bijektion für Gitterpfade); reine Arithmetik-Fakten
+(234×567 usw.) raus, weil dafür *keine* tiefe Methode „richtig" ist. `measure_apply` routet für die harte
+Batterie jetzt die **deklarierte** Methode (nicht die Taxonomie-Default). 6× korrekt-A / 6× korrekt-B.
+
+**[Messergebnis — mit RICHTIGER Methode]**
+
+| Modus | Resolution-Accuracy |
+|---|---|
+| none (Baseline) | **0.917** |
+| method (richtige Methode) | **0.917** |
+| scrambled | 0.833 |
+| irrelevant | 0.917 |
+
+`method − none = **0.000**`, **task-für-task identisch** auf allen 12. Beide scheitern nur an X-1
+(Inklusion-Exklusion, 228 — die eine mit Kopfraum), und die **richtige** Methode (`inclusion_exclusion`)
+dort vorangestellt **rettete sie nicht** (auch `no_benefit`).
+
+**[Schluss — der Confound war real, das Ergebnis ändert er nicht]** Zwei Dinge, beide ehrlich: (1) Der
+Betreiber hatte recht — das Routing WAR fehlerhaft, und ich habe es entlarvt und entfernt. (2) **Der Fix
+macht den Null nicht schwächer, sondern sauberer:** mit der *richtigen* Methode pro Konflikt liegt die
+Intervention **exakt** auf der Baseline (0.917 = 0.917, jede Aufgabe gleich), und auf dem einen wirklich
+harten Konflikt half auch die passende Methode nicht. `scrambled` fiel auf 0.833 (Zerstören der Struktur
+*schadet*), während `method = none` — genau das Muster aller Läufe: der *Inhalt/die Struktur* der Methode
+ist inert, Stören kann nur schaden. Die Mis-Routing-Erklärung ist damit **ausgeschlossen**: es lag nicht an
+der falschen Methode.
+
+**[Was ehrlich offen bleibt]** Der Kopfraum ist dünn (A/B-Format, nur X-1 hart) — die *eine* Zelle, die noch
+nie sauber getroffen wurde, ist **richtige Methode × Aufgabe, die sie erzwingt × Solver, der sie NICHT
+schon besitzt**. Auf DeepSeek ist die fast leer (es kennt die Methoden). Das braucht einen **schwächeren
+Solver** oder ein **Produce-the-number-Format mit viel mehr Kopfraum** — der letzte offene Weg, wenn wir die
+Methoden-Frage über den jetzigen (achtfach konsistenten) Null hinaus noch härter prüfen wollen.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Routing-Confound (XXIX) | **entlarvt + entfernt** | reduction-für-alle → fair: deklarierte Methode |
+| Methode hilft mit RICHTIGEM Routing | **nein, task-für-task = Baseline** | method 0.917 = none 0.917, method−none 0.0 |
+| Achte Messung, Gesamtbild | **konsistent: kein Prompt/Execute-Hebel** | + „stören schadet" (scrambled 0.833) |
