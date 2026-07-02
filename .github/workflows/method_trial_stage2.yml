@@ -1,0 +1,40 @@
+name: method-trial-stage2
+
+# The Stage-2 pilot of the method-transfer measurement (docs/METHOD_TRIAL_MEASUREMENT_PLAN.md):
+# does an a-priori method beat ALL four controls on the gold micro battery? It spends a small amount
+# of DeepSeek tokens (12 tasks x 5 conditions = 60 calls, temperature 0), so it is MANUAL ONLY. The
+# secret never leaves GitHub; the result JSON is uploaded as an artifact (not pushed to main, so it
+# never contends with the autonomous loop).
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "run only the first N tasks (blank = all 12)"
+        required: false
+        default: ""
+
+jobs:
+  stage2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install -e .
+      - name: Cost shape (dry, no calls)
+        run: python -m joni.method_trial.run_stage2 --dry
+      - name: Run Stage 2 (real DeepSeek, temperature 0)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          LIMIT="${{ github.event.inputs.limit }}"
+          if [ -n "$LIMIT" ]; then LIM="--limit $LIMIT"; else LIM=""; fi
+          python -m joni.method_trial.run_stage2 --out stage2_result.json $LIM
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: method-trial-stage2-result
+          path: stage2_result.json
