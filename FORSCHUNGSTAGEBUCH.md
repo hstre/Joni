@@ -2290,3 +2290,79 @@ Vokabular. Genau die ehrliche Vorwarnung aus XVII/XVIII, jetzt gemessen bestäti
   schwächeres Modell verfügbar ist — plan-konform, aber neues Budget. Solange keins da ist, ist der Befund
   „DeepSeek braucht es nicht" das ehrliche Ende dieser Linie.
 - Die DB bleibt als Asset stehen; der Transfer-Nutzen ist für *dieses* Modell verneint, nicht für alle.
+
+### Eintrag 2026-07-02 (XX) — Der entscheidende Lauf: erinnerungssichere Aufgaben schaffen ENDLICH Kopfraum — und trennen Methoden-WAHL (schon da) von AUSFÜHRUNG (nicht per Text heilbar)
+
+**[Der Einwand des Betreibers, der alles schärfte]** *„Oder Probleme, für die er noch keine Lösung im
+Trainingssatz hatte. Aufgaben, die du auch nicht lösen kannst."* Genau die Lücke aller vorigen Läufe: die
+Decke kam vom **Erinnern**. Also eine Batterie, die Erinnern ausschließt — `gold_novel_v1.py`: 10 frisch
+generierte, überdimensionierte Instanzen, deren Antwort weder das Modell noch ich aus dem Kopf kenne, die
+aber eine **unabhängige Referenz­implementierung** (Brute-Force / BFS / Sieb, alles im Code, kein LLM)
+exakt ausrechnet — jede Referenz gegen eine zweite Methode gegengeprüft (`selftest()`). Damit bleibt der
+„kein-Richter"-Vertrag gewahrt, und es entsteht echter Kopfraum.
+
+**[Messergebnis — endlich mit Kopfraum, ungeschönt]**
+
+| Bedingung | Accuracy |
+|---|---|
+| intervention (Methode) | **0.6** |
+| plain_baseline | **0.6** |
+| scrambled_method | 0.6 |
+| irrelevant_method | 0.3 |
+| neutral_preamble | 0.1 |
+
+- vs plain_baseline: Δ = +0.000, CI95 **[0.0, 0.0]** → kein Sieg (task-für-task **identisch**)
+- vs scrambled_method: Δ = +0.000, CI95 [-0.3, 0.3] → kein Sieg
+- vs neutral_preamble: Δ = +0.500, CI95 [0.2, 0.8] → „BEATS"
+- vs irrelevant_method: Δ = +0.300, CI95 [0.1, 0.6] → „BEATS"
+- **method_wins (alle 4): False**
+
+**[Die Aufschlüsselung pro Aufgabe — hier liegt der eigentliche Befund]** (1 = richtig)
+
+| Aufgabe | Methode | I | B | S | N | R |
+|---|---|:-:|:-:|:-:|:-:|:-:|
+| tiling_3x12 | dynamic_programming | . | . | 1 | . | . |
+| tiling_3x14 | dynamic_programming | . | . | . | . | . |
+| tiling_3x16 | dynamic_programming | . | . | . | . | . |
+| puzzle_solv_3 | invariant_argument | 1 | 1 | 1 | . | . |
+| puzzle_unsolv_4 | invariant_argument | 1 | 1 | 1 | . | 1 |
+| puzzle_solv_5 | invariant_argument | 1 | 1 | 1 | . | . |
+| incex_5000 | inclusion_exclusion | 1 | 1 | 1 | . | 1 |
+| incex_8000 | inclusion_exclusion | . | . | . | . | . |
+| chips_reach_5 | conservation_law | 1 | 1 | . | . | . |
+| chips_unreach_5 | conservation_law | 1 | 1 | 1 | 1 | 1 |
+
+**[Schluss → der sauberste Befund der ganzen Serie, dreifach]** (1) **Die 4 Fehler sind genau die
+ausführungs-/arithmetiklastigen Aufgaben** — alle drei 3×n-Domino-Zählungen (eine Rekurrenz von Hand zu
+großen Zahlen laufen lassen) und die größere Inklusion-Exklusion (N=8000, vier zusammengesetzte Moduli).
+**Jede struktur-entscheidende Aufgabe** (Paritäts-Invariante, Binär-Übertrag-Erhaltung) löst das Modell
+**ungestützt** richtig. (2) **Intervention = Baseline auf allen 10** (CI exakt [0,0]) — die Methoden-
+Prozedur ändert **nichts**: sie hilft der Ausführung nicht (Text kann die Arithmetik nicht für das Modell
+rechnen) und die Struktur-Aufgaben waren ohnehin gelöst. Auch **intervention = scrambled** (0.6 = 0.6):
+die *Struktur* der Methode trägt nichts, nur Rauschen. (3) Das einzige robuste Signal ist **negativ**:
+neutral_preamble stürzt auf 0.1, irrelevant auf 0.3 — vorangestellter *irrelevanter* Text **entgleist**
+ein fähiges Modell (es „schlägt" die Methode diese zwei nur, weil sie schaden, nicht weil sie hilft).
+
+**[Was das endgültig sagt]** Der Kopfraum war da — und **selbst mit Kopfraum hebt die tiefe Methode das
+Modell nicht über die Baseline.** Der Grund ist jetzt *erklärt*, nicht bloß beobachtet: das Modell **wählt
+die richtige Methode schon selbst** (Struktur-Aufgaben alle richtig, ungestützt); wo es scheitert, ist die
+**Ausführung** einer langen Rechnung — und die repariert keine Prozedur-Beschreibung, weil das Modell die
+Schritte längst kennt, nur die Arithmetik nicht zuverlässig ausführt. **Methoden-Wahl: intern. Ausführung:
+nicht per Prompt heilbar.** Kein Hebel dazwischen. Über fünf Batterien (micro/hard/deep/cross/novel):
+**kein messbarer Methodennutzen auf einem fähigen Modell** — und der einzige praktische Rat ist, einem
+starken Modell **kein** Methoden-Gerüst voranzustellen (bestenfalls inert, bei off-target-Retrieval
+schädlich: 0.6 → 0.3/0.1).
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Erinnerungssichere Batterie (Referenz-gegengeprüft) | **2 · gebaut + gefahren** | 10 Instanzen, Gold doppelt-berechnet, 24 Tests grün |
+| Methode hebt über Baseline (mit Kopfraum) | **falsifiziert** | novel, Δ vs Baseline = 0 task-für-task |
+| Fehlermodus = Ausführung, nicht Methoden-Wahl | **belegt** | pro-Aufgabe: Struktur ✓ ungestützt, Arithmetik ✗ überall |
+| „Irrelevanter Preamble schadet fähigem Modell" | **belegt** | neutral 0.1 / irrelevant 0.3 vs Baseline 0.6 |
+
+**[Offen]**
+- Der einzige verbleibende Weg bleibt ein **schwächeres Modell** (Kopfraum bei der Methoden-*Wahl*, nicht
+  nur der Ausführung). Ohne eins ist die Linie ehrlich geschlossen: die DB ist ein Wissens-Asset, kein
+  Prompt-Hebel.

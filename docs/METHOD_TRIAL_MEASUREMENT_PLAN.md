@@ -29,6 +29,21 @@
 > outcome, not a polish. The deep-methods DB's value is confirmed as a reusable knowledge asset, **not** a
 > benchmark lever on a strong solver. The only open door is a genuinely weaker solver (new budget); until
 > one exists, this line is honestly closed. Diary XVIII–XIX hold the cross numbers.
+>
+> **DECISIVE UPDATE (2026-07-02), the recall-proof run — headroom at last, still no method lever.** The
+> operator's sharpest point closed the ceiling loophole: test on *freshly generated, oversized instances
+> neither the model nor a human can solve from memory*, with an INDEPENDENT in-code reference (brute force
+> / BFS / sieve, cross-checked) computing the exact gold — so still checkable, no judge (`gold_novel_v1.py`).
+> Baseline finally dropped to **0.6** (real headroom). Result: intervention **0.6**, plain_baseline **0.6**
+> (task-for-task **identical**, CI [0,0]), scrambled **0.6**, and the method only "beats" the two controls
+> that actively *degrade* the model (neutral 0.1, irrelevant 0.3) — `method_wins=False`. The per-task view
+> explains it: the 4 failures are exactly the **arithmetic-heavy execution** tasks (3xN tiling counts, big
+> inclusion-exclusion); every **structure-decisive** task (parity invariant, binary-carry conservation) the
+> model solves **unaided**. So the model already *selects* the right method; where it fails is *executing* a
+> long computation — which no prose procedure fixes. Method-selection is internal, execution is not
+> prompt-fixable, and there is no lever between. Across five batteries there is **no measurable method
+> benefit on a capable model**, and the only robust effect is that an irrelevant preamble HURTS it. Diary XX
+> holds the per-task table.
 
 **Status (historical):** the falsification-first, budget-quarantined path to replace the *synthetic*
 method-trial mock with a **measured** signal that retirement (and the condition guard,
