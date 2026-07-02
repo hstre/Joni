@@ -1972,3 +1972,36 @@ protokolliertes Resultat.
   prüfbaren Antworten. Erst dann kostet Stufe 2 einen kleinen Betrag für das *eine* Experiment.
 - *Die ehrliche Möglichkeit* bleibt: das Ergebnis von Stufe 2 könnte sein, dass Methoden-Trialing nichts
   misst — dann ist der saubere Schritt, das Subsystem auszumustern, nicht es zu polieren.
+
+### Eintrag 2026-07-02 (XIII) — Stage 0 + 1 gebaut: der Falsifikationsapparat steht (kostenlos, kein Modell)
+
+**[Eingriff]** Der gehärtete Mess-Plan (v2) ist jetzt nicht mehr nur Papier: `src/joni/method_trial/`
+(non-core, offline, nie vom Loop importiert) bringt die ersten zwei Stufen — deterministisch, ohne
+Budget, ohne LLM. **Stage 0** ist eine **vorregistrierte, gehashte Spec** (`preregistration.py`):
+primäre Metrik, δ, CI-Methode, Unabhängigkeitseinheit, die **Vier-Kontrollen-Regel**, die FP-first-
+Politik und die Proxy-Schwelle — inhalts-gehasht, und ein Test pinnt den Hash, sodass jede spätere
+Änderung eine *bewusste* Revision sein muss, kein stiller Post-hoc-Tweak. **Stage 1** ist die **Gold
+Micro Battery** (`gold_micro_v1.py`): 12 Fremd-Tasks über 11 Skills / 8 Methodenklassen, jede mit
+Zielskill, erwarteter (a-priori) Methodenklasse, verbotener Herkunftsdomäne, **deterministischem
+Checker**, Fehlermodi und *warum-nicht-durch-Verbosität-lösbar*.
+
+**[Schluss → die zwei Sicherungen, die das ernst machen]** Erstens: **kein LLM-Judge.** Die Checker
+lesen die `Answer:`-Region und vergleichen exakt (Zahl in Band, exakte Ganzzahl, Option, Index-Menge,
+Token) — ein Test beweist, dass jeder Checker seine Gold-Antwort *akzeptiert* **und** ein plausibles
+Falsch-Beispiel *ablehnt*. Zweitens: **die Batterie kann sich nicht selbst schmeicheln.** Der Contract
+erzwingt vollständige Deklaration + Diskriminierung; die Plausibilität einer Methode ist a-priori
+vorregistriert, nie aus dem Ergebnis. Die Tasks sind bewusst antwort-eng (Counts, exakte Tokens,
+Optionen), damit eine wortreiche Leerantwort 0 punktet.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Stage 0 · vorregistrierte, gehashte Spec | **2 · belegt** | `preregistration.py`, Hash gepinnt, 4 Kontrollen + FP-first |
+| Stage 1 · Gold Micro Battery | **2 · belegt** | 12 Tasks, 11 Skills; jeder Checker akzeptiert Gold + lehnt Falsch ab; Contract grün |
+| Stage 2+ (gemessene Läufe) | **0 · budget-gated** | bewusst nicht gebaut — erst mit Keys/Budget, offline, gegen die 4 Kontrollen |
+
+**[Offen]**
+- *Stage 2:* das eine Experiment — schlägt eine echte Methode neutrale Präambel **und** verwürfelte
+  **und** irrelevante plausible Methode? Braucht ein Modell + kleines Budget; läuft offline, nie im Loop.
+- *Größere Holdout-Batterie* nach demselben Contract — Voraussetzung für jede retain/retire-Entscheidung.
