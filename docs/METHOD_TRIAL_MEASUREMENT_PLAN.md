@@ -1,18 +1,21 @@
 # Plan: do stored thinking-methods actually transfer? — measuring method value honestly
 
-> **CONCLUSION (2026-07-02): PREMISE FALSIFIED on the models Joni uses — the idea is RETIRED.**
-> The apparatus was built and run. Stage 2 on DeepSeek, twice: on the micro battery the plain baseline
-> scored **0.917** and the matched method mildly *hurt*; on the deliberately harder battery the
-> baseline *rose* to **1.0** (a strong model has already learned the classic traps), and the method
-> still added nothing — `method_wins = False` both times. The apparatus is sound (all four controls sit
-> exactly at the ceiling, as expected); there is simply no headroom, because **a capable model already
-> does the reasoning a stored method would encode.** Per the pre-registration a null is a valid
-> outcome, and the operator's call is the honest one: *don't optimise what is already optimised.* So
-> method-trialing-by-effect is retired for Joni's (strong) models — the synthetic mock stays
-> `epistemic_weight=none` and OUT of production (already so), and the condition-aware retirement guard
-> stays built-but-dormant (correct, harmless). The apparatus below remains as the recorded negative
-> result — evidence for *why not*, not wasted work. Re-open only if Joni ever routes hard-path reasoning
-> through a genuinely weak model, where headroom could exist. Diary XIV–XVI hold the numbers.
+> **RESULT (2026-07-02), SCOPE-CORRECTED: falsified only for SHALLOW methods; the DEEP-method
+> question is the real one and stays OPEN.** Stage 2 on DeepSeek, twice: baseline **0.917** then **1.0**,
+> `method_wins = False` both times — a capable model already does the reasoning that a *shallow* thinking-
+> move heuristic ("try to break each statement") would encode, so there is no headroom. **But those
+> shallow heuristics were never the goal** (operator, correctly): the target is *deep, procedural*
+> methods — vollständige Induktion, Inklusion-Exklusion, Diagonalisierung, dynamische Programmierung —
+> which are structured procedures with base/step form and correctness-critical parts, not vibes. My
+> experiment tested the shallow kind (matching Joni's own too-shallow "thinking-move shape" model), so
+> its null does **not** speak to deep methods. Corrected direction: Joni now keeps a **database of deep
+> methods** (`method_trial/deep_methods.py`) — each with its actual STEPS, correctness conditions,
+> failure modes, and a worked example — as a reusable knowledge asset. Whether supplying a deep method
+> *beats controls on a strong model* is a separate open experiment (fair test: hard tasks that REQUIRE a
+> specific procedure a model won't reach unprompted); note the honest caveat that a frontier model has
+> also internalised the *standard* deep methods, so the asset's value may be as reusable/composable
+> knowledge rather than a benchmark win. Only the shallow-method mock stays retired
+> (`epistemic_weight=none`, out of production). Diary XIV–XVII hold the numbers and this correction.
 
 **Status (historical):** the falsification-first, budget-quarantined path to replace the *synthetic*
 method-trial mock with a **measured** signal that retirement (and the condition guard,

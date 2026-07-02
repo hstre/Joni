@@ -17,4 +17,4 @@ from . import (
 
 # run_stage2 is intentionally NOT eagerly imported (it is the ``python -m`` entry point).
 __all__ = ["checkers", "contract", "gold_micro_v1", "preregistration", "methods", "conditions",
-           "solver", "gold_hard_v1"]
+           "solver", "gold_hard_v1", "deep_methods"]

@@ -2132,3 +2132,52 @@ produzieren, die nach Fortschritt aussieht. Ein negativer, belastbarer Befund is
 |---|---|---|
 | Methoden-Transfer messbar (Jonis Modelle) | **falsifiziert · abgeschlossen** | 2 Läufe, Decken-Effekt, method_wins=False; Plan als retired markiert |
 | Mess-Apparat als Negativergebnis-Record | **2 · steht** | Prä-Reg + 2 Batterien + Runner + Workflow, reproduzierbar |
+
+### Eintrag 2026-07-02 (XVII) — Korrektur: „Methode" war flach definiert — der Betreiber meinte tiefe. Eine Methoden-DB entsteht
+
+**[Selbstkorrektur, ungeschönt]** Der Betreiber fragte nach: *„Ist vollständige Induktion eine Methode?
+Das wäre nicht trivial."* — und legte damit einen Fehler offen, der bei mir liegt. Ich habe „Methode"
+nie vorab geklärt und **stillschweigend flach** definiert: Jonis/Kevins System modelliert Methoden als
+content-free „thinking-move shapes", und mein Stage-2-Experiment prüfte 8 **Ein-Satz-Heuristiken**
+(„versuche jede Aussage zu brechen"). Der Betreiber ging **immer von tiefen Methoden** aus. Damit
+beantwortet der ganze Null-Befund die *falsche* Frage.
+
+**[Der Unterschied, der zählt]** Eine *flache* Denkbewegung ist ein Vibe; eine *tiefe* Methode ist eine
+**strukturierte Prozedur** — Basisfall/Schritt bei der Induktion, Vorzeichen-Alternation bei
+Inklusion-Exklusion, Selbstreferenz bei der Diagonalisierung, Zustand+Rekurrenz bei DP. Sie hat
+korrektheits-kritische Teile und benannte Weisen, sie *falsch* zu machen. Genau die Sorte hat mein
+Experiment **nicht** getestet.
+
+**[Scope-Korrektur]** Der Plan-Abschluss (Eintrag XVI) war **zu stark**. Präzisiert: falsifiziert ist nur
+**flacher** Methoden-Transfer auf einem starken Modell; die **tiefe** Frage ist offen und ist die
+eigentliche. Nur der synthetische Flach-Mock bleibt ausgemustert.
+
+**[Eingriff → die eigentliche Richtung]** Joni bekommt, was gemeint war: eine **Datenbank tiefer
+Methoden** (`method_trial/deep_methods.py`) — 13 genuin nicht-triviale Verfahren über 6 Arten
+(Beweis / Zählen / Existenz / Unmöglichkeit / Optimierung / Algorithmus): vollständige & starke
+Induktion, Widerspruch, Kontraposition, Inklusion-Exklusion, Schubfachprinzip, Invarianten-,
+Extremal-, Doppelzähl-, bijektiver Beweis, Diagonalisierung, dynamische Programmierung, Teile-und-
+herrsche. **Jede** trägt: Zielsignatur (wann anwenden), die **echten Schritte**, Korrektheits-
+bedingungen, Fehlermodi, ein durchgerechnetes Beispiel, Provenienz. Indexierbar + serialisierbar
+(`by_kind`, `applicable`, `to_records`) — Saat für eine echte, wachsende DB. Reusable Wissens-Asset,
+unabhängig von jedem Benchmark.
+
+**[Schluss → ehrliche Trennung zweier Fragen]** (a) *Hat Joni eine tiefe Methoden-DB?* — jetzt ja, als
+Fundament. (b) *Schlägt eine tiefe Methode die Kontrollen auf einem starken Modell?* — separates,
+offenes Experiment; faire Version braucht Aufgaben, die ein *spezifisches* Verfahren erzwingen, das das
+Modell nicht von selbst findet. Ehrliche Vorwarnung: ein Frontier-Modell hat auch die *Standard*-Tiefen-
+methoden internalisiert, also könnte der Wert der DB primär im **Wiederverwenden/Komponieren** liegen,
+nicht im Benchmark-Sieg. Beides sauber getrennt, nichts überversprochen.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Tiefe-Methoden-DB (Schema + Seed) | **2 · gebaut** | 13 Methoden, 6 Arten, je Schritte+Korrektheit+Fehlermodi; 15 Tests, ruff/verify grün |
+| Flacher Methoden-Transfer (starkes Modell) | **falsifiziert** | 2 Läufe, Decken-Effekt (Eintrag XIV–XVI) |
+| Tiefer Methoden-Transfer (starkes Modell) | **0 · offen** | ungetestet; separates faires Experiment nötig |
+
+**[Offen]**
+- *DB wachsen lassen:* Jonis Harvest/Doktores auf *tiefe* Methoden richten (heute greift er flache
+  „technique"-Erwähnungen ab) — ein größerer, eigener Schritt.
+- *Fairer Tiefen-Transfer-Test* (optional): Aufgaben, die ein spezifisches Verfahren erzwingen.

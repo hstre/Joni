@@ -76,3 +76,20 @@ def test_hard_battery_meets_the_contract():
         assert t.checker(t.gold), f"{t.id}: checker rejected its gold"
         if t.wrong_example:
             assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
+
+
+def test_deep_methods_database_is_well_formed():
+    from joni.method_trial import deep_methods as D
+    ms = D.DEEP_METHODS
+    assert len(ms) >= 12
+    assert len({m.id for m in ms}) == len(ms)          # unique ids
+    assert len(D.kinds()) >= 4                          # spans proof / counting / existence / ...
+    for m in ms:
+        assert m.name and m.aka and m.kind and m.when_to_use and m.worked_example and m.provenance
+        assert len(m.steps) >= 3, f"{m.id}: a deep method needs a real multi-step procedure"
+        assert m.correctness_conditions, f"{m.id}: must state what its correctness rests on"
+        assert m.failure_modes, f"{m.id}: must name how it is applied wrong"
+    # it behaves like a database
+    assert D.by_id("mathematical_induction").aka == "vollständige Induktion"
+    assert D.by_kind("counting") and D.applicable("union of overlapping sets")
+    assert len(D.to_records()) == len(ms)
