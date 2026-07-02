@@ -2005,3 +2005,51 @@ Optionen), damit eine wortreiche Leerantwort 0 punktet.
 - *Stage 2:* das eine Experiment — schlägt eine echte Methode neutrale Präambel **und** verwürfelte
   **und** irrelevante plausible Methode? Braucht ein Modell + kleines Budget; läuft offline, nie im Loop.
 - *Größere Holdout-Batterie* nach demselben Contract — Voraussetzung für jede retain/retire-Entscheidung.
+
+### Eintrag 2026-07-02 (XIV) — Stage 2 gefahren: kein Methodensignal, ein sauberer Decken-Effekt — Negativresultat, ehrlich
+
+**[Eingriff]** Der Betreiber gab DeepSeek frei. Der Key liegt als Repo-Secret im Joni-Repo — den lesen
+nur Workflows, nicht meine Session; also Stage 2 als **manueller Workflow im Repo** gefahren
+(`method_trial_stage2.yml`, `secrets.DEEPSEEK_API_KEY`, der Key verlässt GitHub nie; Ergebnis als
+Artefakt, nicht auf `main`). 12 Tasks × 5 Bedingungen = 60 Calls, temperature 0.
+
+**[Messergebnis — vorregistriert, ungeschönt]**
+
+| Bedingung | Accuracy |
+|---|---|
+| intervention (passende Methode) | **0.75** (9/12) |
+| plain_baseline | 0.917 (11/12) |
+| neutral_preamble (längen-gematcht) | 0.917 |
+| scrambled_method | 0.917 |
+| irrelevant_plausible_method | 0.917 |
+
+Intervention vs. **jede** Kontrolle: Δ = −0,167, CI95 [−0,417, 0,0] → **kein Sieg**.
+`method_wins (beats all 4 controls): False`.
+
+**[Schluss → was das sagt, dreifach ehrlich]**
+1. **Die Behauptung ist auf diesem Pilot nicht gestützt** — die Methode half nicht, sie **schadete
+   leicht** (über-instruiert bei leichten Aufgaben). Genau das Nullresultat, das die Prä-Registrierung
+   als gültig deklariert.
+2. **Der dominante Confound ist ein Decken-Effekt**, kein kaputtes Setup: **alle vier Kontrollen liegen
+   identisch bei 0.917** — DeepSeek löst die Batterie fast ohne jede Methode. Wo der Baseline near-perfect
+   ist, gibt es keinen Kopfraum, in dem eine Methode Nutzen zeigen könnte. Die Micro-Batterie ist für
+   dieses Modell zu leicht, um Methodenwert zu *diskriminieren*.
+3. **N=12, Pilot, breites CI** (Obergrenze berührt 0): „Methode schadet" ist suggestiv, nicht bewiesen.
+   Der belastbare Teil ist: **kein positives Signal, und der Grund ist benannt.**
+
+Der Apparat hat funktioniert — er hat ein Nichts-Signal *als solches* erkannt und die Ursache
+diagnostiziert, statt eine synthetische Zahl zu produzieren.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Stage 2 · Pilot gefahren | **2 · gemessen** | 60 echte DeepSeek-Calls; method_wins=False, alle Kontrollen 0.917, Intervention 0.75 |
+| Prämisse „Methoden transferieren messbar" | **nicht gestützt (Pilot)** | Δ negativ gegen jede Kontrolle; Decken-Effekt diagnostiziert |
+
+**[Offen — der eine, klare nächste Schritt]**
+- *Härtere, diskriminierungsfähige Batterie* (Baseline ~0,4–0,6) — z. B. schwereres Modell-fern
+  konstruierte Tasks **oder** ein schwächeres/billigeres Solver-Modell, damit Kopfraum entsteht. Dann
+  Stage 2 erneut, gegen dieselben 4 Kontrollen.
+- *Wenn auch dort kein Vorteil:* die **Idee** des Methoden-Trialings-nach-Wirkung ausmustern — nicht die
+  Messung aufhübschen. Der Plan hat diesen Ausgang ausdrücklich als valide vorgesehen.
