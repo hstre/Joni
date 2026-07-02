@@ -1,15 +1,21 @@
 name: method-trial-stage2
 
 # The Stage-2 pilot of the method-transfer measurement (docs/METHOD_TRIAL_MEASUREMENT_PLAN.md):
-# does an a-priori method beat ALL four controls on the gold micro battery? It spends a small amount
-# of DeepSeek tokens (12 tasks x 5 conditions = 60 calls, temperature 0), so it is MANUAL ONLY. The
-# secret never leaves GitHub; the result JSON is uploaded as an artifact (not pushed to main, so it
-# never contends with the autonomous loop).
+# does an a-priori method beat ALL four controls on a gold battery? It spends a small amount of
+# DeepSeek tokens (tasks x 5 conditions, temperature 0), so it is MANUAL ONLY. The secret never leaves
+# GitHub; the result JSON is uploaded as an artifact (not pushed to main, so it never contends with
+# the autonomous loop).
 on:
   workflow_dispatch:
     inputs:
+      battery:
+        description: "which gold battery: hard (discrimination-capable) or micro (easy)"
+        required: false
+        default: "hard"
+        type: choice
+        options: ["hard", "micro"]
       limit:
-        description: "run only the first N tasks (blank = all 12)"
+        description: "run only the first N tasks (blank = all)"
         required: false
         default: ""
 
@@ -25,16 +31,17 @@ jobs:
       - name: Install
         run: python -m pip install -e .
       - name: Cost shape (dry, no calls)
-        run: python -m joni.method_trial.run_stage2 --dry
+        run: python -m joni.method_trial.run_stage2 --battery "${{ github.event.inputs.battery }}" --dry
       - name: Run Stage 2 (real DeepSeek, temperature 0)
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
+          BATTERY="${{ github.event.inputs.battery }}"
           LIMIT="${{ github.event.inputs.limit }}"
           if [ -n "$LIMIT" ]; then LIM="--limit $LIMIT"; else LIM=""; fi
-          python -m joni.method_trial.run_stage2 --out stage2_result.json $LIM
+          python -m joni.method_trial.run_stage2 --battery "$BATTERY" --out stage2_result.json $LIM
       - name: Upload result
         uses: actions/upload-artifact@v4
         with:
-          name: method-trial-stage2-result
+          name: method-trial-stage2-${{ github.event.inputs.battery }}-result
           path: stage2_result.json

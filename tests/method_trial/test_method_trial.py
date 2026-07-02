@@ -65,3 +65,14 @@ def test_battery_spans_several_skills_and_method_classes():
     rep = validate_battery(CASES)
     assert len(rep["skills"]) >= 8            # not a single-skill battery
     assert len(rep["method_classes"]) >= 5    # adversarial / exclusion / boundary / decomposition
+
+
+def test_hard_battery_meets_the_contract():
+    from joni.method_trial.contract import validate_battery
+    from joni.method_trial.gold_hard_v1 import CASES as HARD
+    rep = validate_battery(HARD, min_tasks=15)
+    assert rep["ok"], rep["problems"]
+    for t in HARD:
+        assert t.checker(t.gold), f"{t.id}: checker rejected its gold"
+        if t.wrong_example:
+            assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"

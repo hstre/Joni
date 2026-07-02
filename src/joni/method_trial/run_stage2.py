@@ -81,13 +81,19 @@ def decide(result: dict, *, seed: int = 20260702, iters: int = 4000) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--battery", choices=("micro", "hard"), default="micro",
+                    help="which gold battery to run")
     ap.add_argument("--limit", type=int, default=None, help="run only the first N tasks")
     ap.add_argument("--dry", action="store_true", help="print the call count, do not call")
     ap.add_argument("--out", default=None, help="write the full result + decision JSON here")
     ap.add_argument("--stub", action="store_true", help="always-wrong stub (no network/cost)")
     args = ap.parse_args(argv)
 
-    cases = CASES[: args.limit] if args.limit else CASES
+    if args.battery == "hard":
+        from .gold_hard_v1 import CASES as battery
+    else:
+        battery = CASES
+    cases = battery[: args.limit] if args.limit else battery
     calls = len(cases) * len(conditions.CONDITIONS)
     print(f"Stage 2 · {len(cases)} tasks x {len(conditions.CONDITIONS)} conditions = {calls} "
           f"solver calls (temperature 0)")

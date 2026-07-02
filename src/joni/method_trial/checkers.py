@@ -61,7 +61,8 @@ def index_set(gold: Iterable[int], universe: Iterable[int]) -> Callable[[str], b
 
 
 def contains_any(tokens: Iterable[str]) -> Callable[[str], bool]:
-    toks = [t.lower() for t in tokens]
+    # normalise tokens the SAME way as the answer, so punctuation (e.g. the '/' in '1/3') matches
+    toks = [_norm(t) for t in tokens]
     def chk(ans: str) -> bool:
         n = _norm(answer_region(ans))
         return any(t in n for t in toks)
