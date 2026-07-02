@@ -2446,3 +2446,65 @@ Schritte), nicht sie einem One-Shot-Modell vorzusprechen.
 - *Methode-als-ausgeführtes-Gerüst* (Agent führt die Prozedur mit Werkzeug aus) — die eine Richtung, in der
   die DB ein echter Hebel sein könnte; ganz anderer Aufbau (ReAct/Tool-Use), nicht dieser Prompt-Test.
 - *Schwächeres Modell* für den Methoden-*Wahl*-Kopfraum bleibt der andere offene Weg.
+
+### Eintrag 2026-07-02 (XXII) — „Hast du ALLE Methoden geworfen?" — ja, jetzt: Portfolio + Oracle, immer noch kein Hebel; und die eigentliche Vision festgehalten
+
+**[Der Einwand des Betreibers]** *„Hast du alle Methoden auf das Problem geworfen?"* — nein: jede Aufgabe
+bekam bisher nur ihre eine vorregistrierte Methode. Also `run_allmethods.py`: pro Aufgabe die naked
+Baseline, ein **Portfolio** aller 36 Methoden auf einmal, und **jede einzeln** (Oracle = gelöst, wenn
+*irgendeine* es knackt). 380 Calls auf der Suche-Batterie.
+
+**[Messergebnis — ungeschönt]**
+
+| Bedingung | Accuracy |
+|---|---|
+| plain_baseline | 0.1 |
+| portfolio (alle 36 zugleich) | 0.2 |
+| **oracle (best of any single method)** | **0.6** |
+
+- Aufgaben, die *irgendeine* Methode rettete: **5** — davon durch die **richtige** vorregistrierte: **1**.
+- Portfolio *verlor* sogar die eine Aufgabe, die die Baseline konnte (das Riesen-Preamble ersäuft die leichte).
+
+**[Warum die 0.6 KEIN Hebel ist — der entscheidende Blick pro Aufgabe]** Die mittelschweren Subset-Sums
+werden von **16–34 der 36 Methoden** gelöst — *inklusive* absurd irrelevanter (thermodynamische Triebkraft
+„löst" ein Subset-Sum, Hess'scher Satz auch). Der harte Kern — beide TSP, großer Knapsack, hamilton_12 —
+wird von **null** der 36 gelöst (das eine knapsack_10 „durch Schubfach" ist transparent zufällig). Das ist
+exakt der vorregistrierte **Mehrfachvergleichs-Artefakt**: bei 36 Versuchen kippt die modelleigene Varianz
+eine Grenzfall-Aufgabe irgendwann, und *welche* Methode dabei „hilft", ist Rauschen (die falschen genauso).
+Die richtige Methode war fast nie die, die trug. **Alle Methoden geworfen → immer noch kein Hebel; und was
+das Modell nicht ausführen kann, knackt kein Methodentext, egal wie viele.**
+
+**[Der eigentliche Grund, warum der Betreiber die DB will — jetzt verstanden und festgehalten]** Die DB war
+nie als Prompt-Zettel gedacht. Sie ist die **Operator-Schicht einer Lösungsraum-Pipeline**: DESi
+kartografiert den Lösungsraum → bekannte Lösungen werden Inseln zugeordnet → unerreichte Inseln und
+**Brücken zwischen Lösungsräumen** werden mit den Methoden gesucht → Joni entdeckt mit der Zeit selbst neue
+tiefe Methoden. Der Null-Befund bedroht das nicht — er **validiert den Pivot**: Methode-als-Text ist tot,
+Methode-als-ausgeführter-Operator-über-der-Karte ist der Weg.
+
+**[Das Erstaunliche: die Hälfte ist schon gebaut]** Verifiziert im echten Code:
+- **9-dim Governance-Raum** ist real — `desi.epistemic_trajectory.state.StateVector` mit neun benannten
+  Achsen (`frame_id, contradiction_load, anchor_density, source_quality, novelty, confidence, branch_cost,
+  support_state, routing_state`); die Kompression Φ (Trajektorie → 9 Zahlen, ≈96,5 %) ist das „Falten".
+- **`desi.solution_space_gap`** macht Stufen 1–3 **schon** — aber auf dem **flachen** Affinitäts-Vokabular:
+  `EpistemicGapSnapshot` = die Karte, `analyze_gaps` = zeigt unterbearbeitete-relevante Züge an Gaps, **inkl.
+  Brücken-Logik** („Erfolg in anderem Scope → Gap hochstufen").
+- Die **eine echte Lücke**: `solution_space_gap` von flachen Affinitäten auf **tiefe Methoden** heben.
+- Semantische Koordinaten: DESis SPL ist **symbolisch** (`Claim`s, kein Vektor) — der Inhalts-Raum kommt aus
+  einem Embedding (`fastembed`, Cosinus), ein kleiner Baustein. Der Raum ist das **Produkt** aus 9-dim
+  Governance (Wie) × Embedding (Wo).
+
+**[Entscheidung des Betreibers]** „Erst Design festhalten." Getan: **`docs/SOLUTION_SPACE_PIPELINE.md`** hält
+die Ziel-Architektur, die schon-gebauten Bausteine, die eine Lücke, den Entdecker-Meta-Loop (holdout-
+validiert) und die Baureihenfolge (A Kartograph / **B Operator-Layer, empfohlen** / C Entdecker) fest —
+Reifegrad 0, ehrlich als Design markiert.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| „Alle Methoden geworfen" (Portfolio + Oracle) | **gemessen, kein Hebel** | Portfolio 0.2, Oracle 0.6 = Mehrfachvergleichs-Rauschen, harter Kern 0 |
+| Ziel-Architektur (Lösungsraum-Pipeline) | **0 · Design festgehalten** | `docs/SOLUTION_SPACE_PIPELINE.md` |
+| Produktraum-Bausteine (9-dim, Gap-Modul) | **teils gebaut (in DESi)** | `epistemic_trajectory`, `solution_space_gap` verifiziert |
+
+**[Offen]** Baustein B (Operator-Layer: `solution_space_gap` auf tiefe Methoden heben) als empfohlener
+erster Bau, wenn der Betreiber grünes Licht gibt.
