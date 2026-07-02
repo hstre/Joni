@@ -27,11 +27,38 @@ CASES = [
     ("12 percent of 200 is 24.", "12 percent of 200 is 26.", "A"),
 ]
 
+# HARD battery — computation-heavy checkable conflicts (verified ground truth); the two numbers are
+# close, so a solver must actually COMPUTE to pick the right one. This is where a baseline can fail,
+# creating the headroom an executed method would need to show any value.
+HARD_CASES = [
+    ("The number of derangements of 5 distinct items is 44.",
+     "The number of derangements of 5 distinct items is 46.", "A"),
+    ("A 3-by-8 board has 155 domino tilings.", "A 3-by-8 board has 153 domino tilings.", "B"),
+    ("Among 1 to 1000, exactly 228 integers are divisible by none of 2, 3, 5, 7.",
+     "Among 1 to 1000, exactly 226 integers are divisible by none of 2, 3, 5, 7.", "A"),
+    ("A 3-by-12 board has 2135 domino tilings.", "A 3-by-12 board has 2131 domino tilings.", "B"),
+    ("The number of ways to fully parenthesize a product of 6 factors is 42.",
+     "The number of ways to fully parenthesize a product of 6 factors is 48.", "A"),
+    ("234 multiplied by 567 equals 132778.", "234 multiplied by 567 equals 132678.", "B"),
+    ("7 raised to the 4th power, modulo 100, equals 1.",
+     "7 raised to the 4th power, modulo 100, equals 43.", "A"),
+    ("13 cubed equals 2917.", "13 cubed equals 2197.", "B"),
+    ("The binomial coefficient C(12,5) equals 792.",
+     "The binomial coefficient C(12,5) equals 782.", "A"),
+    ("The determinant of the matrix [[2,3],[4,5]] is 2.",
+     "The determinant of the matrix [[2,3],[4,5]] is -2.", "B"),
+    ("The number of derangements of 6 distinct items is 265.",
+     "The number of derangements of 6 distinct items is 264.", "A"),
+    ("A 3-by-16 board has 29671 domino tilings.", "A 3-by-16 board has 29681 domino tilings.", "B"),
+]
 
-def seed_core():
+
+def seed_core(cases=None):
     """Build a fresh Layer-9 core with the checkable conflicts open. Returns ``(core, registry)`` where
-    ``registry[conflict_id] = {"correct": "A"|"B", "a_id": ..., "b_id": ...}``. Fails loud if Layer 9
+    ``registry[conflict_id] = {"correct": "A"|"B", "a_id": ..., "b_id": ...}``. ``cases`` defaults to
+    the easy ``CASES``; pass ``HARD_CASES`` for the computation-heavy battery. Fails loud if Layer 9
     is unavailable (this is a measurement seed, not a runtime path)."""
+    cases = cases if cases is not None else CASES
     import desi_layer9 as l9
     from desi_layer9 import Operator as OP
     from desi_layer9 import ProposalType as PT
@@ -43,7 +70,7 @@ def seed_core():
 
     core = l9.Layer9()
     registry: dict[str, dict] = {}
-    for i, (a_text, b_text, _correct) in enumerate(CASES):
+    for i, (a_text, b_text, _correct) in enumerate(cases):
         core.submit(op(OP.CLAIM_CREATE, {"text": a_text, "topic": f"fact_{i}"},
                        ptype=PT.CLAIM_PROPOSAL))
         core.submit(op(OP.CLAIM_CREATE, {"text": b_text, "topic": f"fact_{i}"},
@@ -56,5 +83,5 @@ def seed_core():
         a_id, b_id = c.claim_ids[0], c.claim_ids[1]
         idx = int(next(cl for cl in core.all(l9.ObjectType.CLAIM)
                        if cl.id == a_id).topic.split("_")[1])
-        registry[c.id] = {"correct": CASES[idx][2], "a_id": a_id, "b_id": b_id}
+        registry[c.id] = {"correct": cases[idx][2], "a_id": a_id, "b_id": b_id}
     return core, registry

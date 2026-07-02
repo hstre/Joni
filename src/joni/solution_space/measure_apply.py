@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from .llm_apply import make_llm_apply
 from .operator_cycle import grade_by_resolution, open_conflict_ids
 from .operators import DeepMethodTrial, propose_operators
-from .resolvable_conflicts import seed_core
+from .resolvable_conflicts import CASES, HARD_CASES, seed_core
 from .trial_store import record_trial
 
 MODES = ("method", "none", "scrambled", "irrelevant")
@@ -50,8 +50,8 @@ def propose_for_core(core, *, top_k_per_gap: int = 1):
     return propose_operators(_Snap(conflicts=conflicts), top_k_per_gap=top_k_per_gap)
 
 
-def run_mode(solver, mode: str, *, store_path: str | None = None) -> dict:
-    core, registry = seed_core()
+def run_mode(solver, mode: str, *, store_path: str | None = None, cases=None) -> dict:
+    core, registry = seed_core(cases)
     apply = make_llm_apply(solver, registry, mode=mode)
     proposals = {p.target.split(":", 1)[-1]: p for p in propose_for_core(core, top_k_per_gap=1)}
     results: dict[str, str] = {}
@@ -79,10 +79,13 @@ def run_mode(solver, mode: str, *, store_path: str | None = None) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--battery", choices=("easy", "hard"), default="easy",
+                    help="easy = trivially checkable facts; hard = computation-heavy (real headroom)")
     ap.add_argument("--stub", action="store_true", help="offline: a stub that always answers 'A'")
     ap.add_argument("--store", default=None, help="write real-method trials here (feeds Baustein C)")
     ap.add_argument("--out", default=None, help="write the full result JSON here")
     args = ap.parse_args(argv)
+    cases = HARD_CASES if args.battery == "hard" else CASES
 
     if args.stub:
         from ..method_trial.solver import StubSolver
@@ -91,10 +94,10 @@ def main(argv=None) -> int:
         from ..method_trial.solver import DeepSeekSolver
         solver = DeepSeekSolver()
 
-    per_mode = {m: run_mode(solver, m, store_path=args.store) for m in MODES}
+    per_mode = {m: run_mode(solver, m, store_path=args.store, cases=cases) for m in MODES}
     base = per_mode["none"]["accuracy"]
     summary = {
-        "solver": getattr(solver, "name", "stub"),
+        "solver": getattr(solver, "name", "stub"), "battery": args.battery,
         "accuracy": {m: per_mode[m]["accuracy"] for m in MODES},
         "method_minus_none": round(per_mode["method"]["accuracy"] - base, 3),
         "method_beats_all_controls": all(
