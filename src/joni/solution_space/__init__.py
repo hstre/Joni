@@ -27,8 +27,10 @@ from .core_points import points_from_core, state_vector_from_object
 from .discovery import (
     DiscoveredAffinity,
     discover_affinities,
+    discovery_report,
     to_extra_affinities,
 )
+from .navigation import NavigationReport, NavItem, navigate
 from .operator_cycle import grade_by_resolution, run_operator_cycle
 from .operators import (
     DeepMethodProposal,
@@ -57,6 +59,11 @@ __all__ = [
     "DiscoveredAffinity",
     "discover_affinities",
     "to_extra_affinities",
+    "discovery_report",
+    # navigation — the prioritised exploration agenda
+    "navigate",
+    "NavigationReport",
+    "NavItem",
     # coordinate plumbing (records -> SolutionPoints)
     "build_points",
     "embed_texts",

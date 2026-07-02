@@ -2911,3 +2911,37 @@ Selbst-Entdeckung**, nicht der Prompt/Execute-Hebel.
 | Schwaches Modell + Kopfraum (letzte Zelle) | **getroffen: kein Hebel, Methode schadet** | v4-flash: none 0.583 / method 0.417, scrambled 0.917 = Rauschen |
 | Methoden-als-Artefakt-Frage | **9-fach geschlossen** | stark: inert; schwach: schädlich/varianzdominiert |
 | Offen (nur für robuste Zahl) | **Mehr-Seed-Lauf** | falls eine belastbare schwach-Modell-Zahl gewünscht ist |
+
+### Eintrag 2026-07-02 (XXXII) — Weg B: den BESTÄTIGTEN Wert ausbauen — Navigations-Agenda + Entdecker-Report
+
+**[Entscheidung des Betreibers]** „Wir machen B." Nach neun Messungen ist der Methoden-als-Artefakt-Hebel
+verneint; ausgebaut wird, was *trägt* — Navigation und Selbst-Entdeckung. Beide deterministisch, kein LLM.
+
+**[Navigation — `navigation.navigate`]** Die Karte war bisher eine einmalige Momentaufnahme; jetzt wird sie
+eine **priorisierte Explorations-Agenda**: `NavigationReport` mit einer gerankten Worklist von `NavItem`s —
+*welche* unerreichte Insel / *welche* Brücke als Nächstes, *mit welchem* tiefen Operator und *warum*.
+Prinzipielle Priorität: eine unerreichte Insel steigt mit ihrer **Größe** (mehr Kandidaten) und ihrer
+**Erreichbarkeit** (Brücke zu einem Anker vorhanden = von bekanntem Grund aus erreichbar); eine Brücke steigt,
+je **semantisch näher** und zugleich **Governance-ferner** die zwei Inseln sind. Jedes Item trägt den
+Operator (aus B) und einen nachvollziehbaren Grund. Belegt am Lauf: 3 Inseln (2 verankert) → Agenda
+`1. reach island_1 (prio 1.0, „von einem Anker erreichbar", op=reduction)`, `2. bridge island_0~island_1
+(prio 0.99, „gleiches Thema, getrennte Reasoning")`.
+
+**[Entdecker-Report — `discovery.discovery_report`]** Ein menschenlesbarer Abschluss: **bestätigte** Kanten
+(auf Holdout gehalten), **Kandidaten** (Train ja, Holdout nein), und wie viele **neu** sind (nicht in der
+a-priori-Taxonomie). Auf den 10 echten Trials aus dem Apply-Lauf: 0 bestätigt (ehrlich — Holdout n=3 <
+min_support 4), 1 Kandidat (`reduction → unqualified`, train 1.0 / holdout 1.0). Konservativ, wie es sein
+soll.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Navigation (priorisierte Agenda) | **2 · gebaut** | `navigation.navigate`, `NavigationReport`; 5 Tests + Demo |
+| Entdecker-Report (bestätigt/Kandidat/neu) | **2 · gebaut** | `discovery_report`; 3 Tests + Live auf echten Trials |
+| solution_space gesamt | **54 Tests grün, ruff sauber** | A+B+Pipeline+C+Coords+CorePoints+Cycle+Store+Nav+Report |
+
+**[Offen — der ehrliche Wachstumspfad]** Die Navigation ist jetzt ein *Report*; der nächste Ausbau wäre der
+**iterative Loop** (explorieren → Karte aktualisieren → neu priorisieren) und echte Koordinaten-Zufuhr aus
+dem Live-Core (Baustein (a) steht, braucht nur den Daten-Anschluss). Der Wert-Kern — priorisierte Navigation
++ FP-sichere Entdeckung — steht getestet.

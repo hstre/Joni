@@ -105,3 +105,25 @@ def to_extra_affinities(discovered, *, only_confirmed: bool = True) -> dict:
             continue
         extra.setdefault(d.gap_kind, []).append((d.method_kind, round(d.holdout_rate, 4)))
     return {gk: tuple(v) for gk, v in extra.items()}
+
+
+def discovery_report(trials, **kwargs) -> dict:
+    """A human-facing summary of what the discoverer learned: the CONFIRMED edges (held up on
+    holdout), the CANDIDATES that cleared train but not holdout, and how many are NEW (absent from
+    the a-priori taxonomy). Honest: an empty/thin history yields an empty confirmed set."""
+    disc = discover_affinities(trials, **kwargs)
+    confirmed = [d for d in disc if d.confirmed]
+    candidates = [d for d in disc if not d.confirmed]
+
+    def _row(d):
+        return {"method_kind": d.method_kind, "gap_kind": d.gap_kind, "train_rate": d.train_rate,
+                "holdout_rate": d.holdout_rate, "support_train": d.support_train,
+                "support_holdout": d.support_holdout, "is_new": d.is_new}
+
+    return {
+        "n_trials": len(list(trials)),
+        "n_confirmed": len(confirmed),
+        "n_confirmed_new": sum(1 for d in confirmed if d.is_new),
+        "confirmed": [_row(d) for d in confirmed],
+        "candidates_unconfirmed": [_row(d) for d in candidates],
+    }

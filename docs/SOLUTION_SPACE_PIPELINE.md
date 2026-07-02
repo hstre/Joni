@@ -72,6 +72,12 @@ Holdout-/Falsifikations-Reflex, der den Methoden-Trial-Apparat trägt).
 
 ## Baureihenfolge (offen, Betreiber entscheidet)
 
+> **Der bestätigte Wert (nach 9 Messungen).** Der Methoden-als-Prompt/Execute-Hebel ist gemessen verneint
+> (stark: inert; schwach: schädlich/rauschig). Was **trägt** und ausgebaut wird, ist die **Navigation**
+> (`navigation.navigate` → priorisierte Explorations-Agenda: welche unerreichte Insel / welche Brücke als
+> Nächstes, mit welchem Operator und *warum*) und die **Selbst-Entdeckung** (`discovery` + `discovery_report`,
+> FP-sicher, holdout-validiert). Beide deterministisch, kein LLM.
+
 - **A · Kartograph:** ✅ **GEBAUT** (`joni.solution_space.cartography`, `cartograph`). Punkte im Produktraum
   (9-dim `state_vector` ⊕ semantisches `embedding`) → **Inseln** (Single-Linkage über die kombinierte
   Distanz), **unerreichte Inseln** (Cluster ohne Anker), **Brücken** (Inseln semantisch nah, aber
