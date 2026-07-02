@@ -194,3 +194,30 @@ def test_failure_on_a_validated_condition_still_retires(monkeypatch):
                                    "last_condition_passed": False}}}
     assert trials.retire_unproductive(cs, _Proto(), 5, max_retire=5, extensions=ext) == 1
     assert cs.core.get(mid).status.value == "rejected"
+
+
+def test_run_trials_records_kevin_conditions_into_the_ledger(monkeypatch):
+    """run_trials feeds each method's trial CONDITION (from Kevin's per-method details) into the
+    method_ledger, so the condition-aware retirement guard has data to act on — closing the coverage
+    gap. Uses a stub trial_runner so the test does not depend on the real Kevin package."""
+    import sys
+    import types
+    stub = types.ModuleType("kevin")
+    tr = types.ModuleType("kevin.trial_runner")
+    tr.trial_methods = lambda core, **kw: {
+        "trialed": 2, "succeeded": 1, "failed": 1, "activation_ready": [],
+        "details": [{"method": "method-1", "passed": True, "condition": "planning"},
+                    {"method": "method-2", "passed": False, "condition": "vision"}]}
+    stub.trial_runner = tr
+    monkeypatch.setitem(sys.modules, "kevin", stub)
+    monkeypatch.setitem(sys.modules, "kevin.trial_runner", tr)
+    monkeypatch.setenv("JONI_SYNTHETIC_TRIALS", "1")     # enable the trial path
+    from joni.autonomy.core_state import seed_core
+    cs = CoreState(seed_core())
+    ext: dict = {}
+    trials.run_trials(cs, _Proto(), 1, extensions=ext)
+    led = ext["method_ledger"]
+    assert led["method-1"]["passed_conditions"] == ["planning"]   # a pass records its condition
+    assert led["method-1"]["last_condition_passed"] is True
+    assert led["method-2"]["last_condition"] == "vision"          # a fail records the condition too
+    assert led["method-2"].get("passed_conditions", []) == []     # but not as a passed one

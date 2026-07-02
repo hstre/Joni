@@ -20,7 +20,21 @@ from __future__ import annotations
 import os
 
 
-def run_trials(cs, proto, cycle: int = 0, *, run_id: str | None = None) -> dict:
+def _record_condition(extensions, method_id: str, condition: str, passed: bool) -> None:
+    """Record one method's trial condition into the shared ``method_ledger`` (fail-open). Lets the
+    condition-aware retirement guard tell a method failing on its home ground from one failing under
+    a NEW condition it never passed on. Keyed by method id, so it matches the shelf."""
+    if not (method_id and condition and isinstance(extensions, dict)):
+        return
+    rec = extensions.setdefault("method_ledger", {}).setdefault(method_id, {})
+    rec["last_condition"] = condition
+    rec["last_condition_passed"] = bool(passed)
+    if passed:
+        rec["passed_conditions"] = sorted(set(rec.get("passed_conditions", [])) | {condition})
+
+
+def run_trials(cs, proto, cycle: int = 0, *, run_id: str | None = None,
+               extensions: dict | None = None) -> dict:
     empty = {"trialed": 0, "succeeded": 0, "failed": 0, "activation_ready": 0}
     # The synthetic keyword-shape simulator carries NO epistemic weight (it is honestly labelled as
     # a mock). Now that the REAL trial protocol exists, running it every cycle is just activity +
@@ -39,6 +53,13 @@ def run_trials(cs, proto, cycle: int = 0, *, run_id: str | None = None) -> dict:
     except Exception as exc:  # noqa: BLE001  - never let a trial break the cycle.
         proto.record(cycle, "note", f"method trials skipped: {exc}")
         return empty
+
+    # Record each method's trial CONDITION (the foreign task Kevin trialed it on) into the ledger,
+    # so the retirement guard can hold a failure under a never-passed condition. Kevin emits it per
+    # method in ``details`` — this closes the coverage gap (was: aggregate only).
+    for d in rep.get("details", []):
+        _record_condition(extensions, str(d.get("method", "")),
+                          str(d.get("condition") or d.get("task", "")), bool(d.get("passed")))
 
     ready = len(rep.get("activation_ready", []))
     if rep["trialed"]:
@@ -74,22 +95,10 @@ def run_real_method_trial(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     prev = extensions.get("real_trial", {})
     extensions["real_trial"] = result
 
-    # Condition-aware ledger (Auftrag #145 follow-up · the LedgerAgent "check the condition" idea):
-    # record WHICH task set (condition) this method passed/failed under, so retirement can tell a
-    # method degrading on its home ground from one merely failing on a NEW task set it never passed.
-    # Recorded here because this is the one trial path that knows the condition (task_set_sha),
-    # keyed by the trial's method_id; the guard fires for a shelf method once its id matches.
-    try:
-        mid = str(result.get("method_id", ""))
-        cond = str(result.get("task_set_sha", ""))
-        if mid and cond and isinstance(extensions, dict):
-            rec = extensions.setdefault("method_ledger", {}).setdefault(mid, {})
-            rec["last_condition"] = cond
-            rec["last_condition_passed"] = bool(result.get("passed"))
-            if result.get("passed"):
-                rec["passed_conditions"] = sorted(set(rec.get("passed_conditions", [])) | {cond})
-    except Exception:  # noqa: BLE001 - bookkeeping never breaks a cycle
-        pass
+    # Condition-aware ledger: the measured conflict trial also carries a condition (task_set_sha);
+    # record it like Kevin's transfer trials (the LedgerAgent "check the condition" idea).
+    _record_condition(extensions, str(result.get("method_id", "")),
+                      str(result.get("task_set_sha", "")), bool(result.get("passed")))
 
     # WRITER + CONSUMER: record the measured trial as an immutable sealed v4 event, then project the
     # accumulated events into the DESi solution-space-gap view. Clean no-ops if unavailable.
