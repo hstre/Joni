@@ -78,6 +78,26 @@ def test_hard_battery_meets_the_contract():
             assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
 
 
+def test_search_battery_is_verifiable_and_recall_proof():
+    """NP-style battery: self-certifying certificates (Hamiltonian cycle, subset-sum) + exact optima
+    (knapsack, TSP) cross-checked against brute force. Every gold is accepted, every wrong rejected,
+    and the self-certifying checkers really validate against the instance itself."""
+    from joni.method_trial import deep_methods as D
+    from joni.method_trial import gold_search_v1 as S
+    from joni.method_trial.contract import validate_battery
+    from joni.method_trial.gold_search_v1 import CASES as SEARCH
+    S.selftest()                          # exact solvers == brute force; checkers accept/reject
+    rep = validate_battery(SEARCH, min_tasks=10)
+    assert rep["ok"], rep["problems"]
+    for t in SEARCH:
+        assert t.checker(t.gold), f"{t.id}: checker rejected its gold"
+        assert not t.checker(t.wrong_example), f"{t.id}: checker accepted the wrong example"
+        assert D.by_id(t.expected_method_class) is not None, f"{t.id}: unknown method"
+    # a Hamiltonian answer is checked against THIS instance: a wrong node set must be rejected
+    ham = next(t for t in SEARCH if t.id.startswith("hamilton_"))
+    assert not ham.checker("Answer: " + " ".join(str(i) for i in range(1, 99)))
+
+
 def test_novel_battery_reference_solvers_are_cross_checked():
     """The recall-proof battery is only usable if its GOLD is trustworthy: every reference solver is
     cross-checked against an independent method (brute force / BFS / sieve vs inclusion-excl.)."""

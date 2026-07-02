@@ -9,11 +9,11 @@ on:
   workflow_dispatch:
     inputs:
       battery:
-        description: "battery: novel (recall-proof, reference-checked) / cross / deep / hard / micro"
+        description: "battery: search (NP hard-to-solve/easy-to-verify) / novel / cross / deep / hard / micro"
         required: false
-        default: "novel"
+        default: "search"
         type: choice
-        options: ["novel", "cross", "deep", "hard", "micro"]
+        options: ["search", "novel", "cross", "deep", "hard", "micro"]
       limit:
         description: "run only the first N tasks (blank = all)"
         required: false
