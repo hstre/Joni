@@ -1,0 +1,5 @@
+[
+  "A GPU-oriented formulation where the redundant, cell-wise (element-local) vector is the persistent primary representation of all field data, and it is proved that with a preconditioner whose image is continuous, the entire flexible conjugate gradient iteration can be carried out exactly on this unassembled representation, confining inter-element communication to the preconditioner.",
+  "The required direct stiffness summation is realized without indirect gather-scatter, atomics, or coloring, by a dimensionally-split cascade of one-to-one face exchanges that accumulates edge and vertex contributions, with unstructured macro-block interfaces and h-adaptive hanging nodes handled by disjoint topological kernels and a shadow-cell wrapper.",
+  "Numerical experiments on modern GPUs demonstrate that the resulting operator evaluation and solver outperform state-of-the-art matrix-free implementations, significantly exceeding throughput of existing implementations."
+]
