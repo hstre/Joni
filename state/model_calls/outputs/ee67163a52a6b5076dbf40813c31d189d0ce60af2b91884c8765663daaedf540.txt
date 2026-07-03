@@ -1,0 +1,18 @@
+[
+  {
+    "text": "Compute the variance decomposition by running the same model with identical inputs (prompt, tools, context) multiple times to measure stochasticity (temperature/sampling noise). If variance remains near 34%, then randomness is the dominant factor.",
+    "topic": "Isolate sampling noise"
+  },
+  {
+    "text": "Run the same model with the same prompt but systematically vary context (e.g., conversation history). If variance increases beyond 34%, context drift is a significant contributor.",
+    "topic": "Context sensitivity test"
+  },
+  {
+    "text": "Compare variance across models on a fixed task set to determine if between-model variance is larger than within-model variance. If within-model is 34% of total, then between-model differences may still dominate.",
+    "topic": "Between vs within variance ratio"
+  },
+  {
+    "text": "Measure performance variance when tools are delayed or reordered to quantify timing/primg effects. If variance tracks tool latency, it indicates non-random environmental drift.",
+    "topic": "Tool timing effect"
+  }
+]
