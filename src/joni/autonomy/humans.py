@@ -236,6 +236,13 @@ def draft_outbox(cs, extensions: dict, proto, cycle: int, *, platforms, max_new:
         drafts.append(draft)
         proto.record(cycle, "forum_draft",
                      f"drafted {fid} for {platform} (need {key}) - awaiting human approval")
+        try:  # shadow: a forum post is a T0.5 outward act (docs/CONSTITUTION.md); never blocks
+            from joni.constitution.gate import Proposal, check
+            _v = check(Proposal(question, outward=True, reach="public", channel="publish"))
+            proto.record(cycle, "gate",
+                         f"[shadow] constitution would {_v.decision} ({_v.principle}) - {fid}")
+        except Exception:  # noqa: BLE001 - a shadow check must never break drafting
+            pass
     extensions["forum_outbox"] = out[-200:]
     extensions["forum_asked"] = asked[-500:]
     return drafts
@@ -265,6 +272,13 @@ def draft_autopost(cs, extensions: dict, proto, cycle: int, *, autopost, max_new
             drafts.append(out[-1])
             proto.record(cycle, "forum_draft",
                          f"drafted {fid} for {platform} (need {key}) - agent-net, auto-posts")
+            try:  # shadow: same T0.5 outward-act check for agent-net drafts; never blocks
+                from joni.constitution.gate import Proposal, check
+                _v = check(Proposal(question, outward=True, reach="public", channel="publish"))
+                proto.record(cycle, "gate",
+                             f"[shadow] constitution would {_v.decision} ({_v.principle}) - {fid}")
+            except Exception:  # noqa: BLE001 - a shadow check must never break drafting
+                pass
         extensions[akey] = asked[-500:]
     extensions["forum_outbox"] = out[-200:]
     return drafts
