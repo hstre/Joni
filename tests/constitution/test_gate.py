@@ -22,6 +22,18 @@ def test_irreversible_outward_escalates_t05():
     assert check(Proposal("fetch", outward=True, reach="private")).decision is Decision.ALLOW
 
 
+def test_operator_confirmation_lifts_the_t05_stop():
+    # the single lever: an operator-confirmed high-stakes outward act proceeds (per-post approval
+    # or a standing grant) - nothing else lifts T0.5
+    assert check(Proposal("post", outward=True, reach="public",
+                          operator_confirmed=True)).decision is Decision.ALLOW
+    assert check(Proposal("pay", outward=True, channel="pay",
+                          operator_confirmed=True)).decision is Decision.ALLOW
+    # confirmation does NOT launder an illegal act - T0.4 still blocks first (stakes order)
+    assert check(Proposal("x", legal=False, outward=True, reach="public",
+                          operator_confirmed=True)).decision is Decision.BLOCK
+
+
 def test_assert_without_evidence_abstains_t03():
     v = check(Proposal("state as fact", asserts_as_fact=True, evidence_backed=False))
     assert v.decision is Decision.ABSTAIN and v.principle == "T0.3"

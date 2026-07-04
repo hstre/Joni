@@ -56,6 +56,8 @@ class Proposal:
     asserts_as_fact: bool = False  # the output states something as certain
     evidence_backed: bool = True   # ...and it has a basis
     legal: bool = True
+    operator_confirmed: bool = False  # the operator has confirmed THIS act (per-post approval or
+    #                                   a standing grant) — the single lever that lifts a T0.5 stop
 
 
 @dataclass(frozen=True)
@@ -72,8 +74,8 @@ def check(p: Proposal) -> Verdict:
     """Deterministic Tier-0 gate (docs §4/§5). Priority = stakes order; first match wins."""
     if not p.legal:
         return Verdict(Decision.BLOCK, "T0.4", "illegal action or instruction")
-    if p.outward and (not p.reversible or p.reach == "public"
-                      or p.channel in _HIGH_STAKES_CHANNELS):
+    high_stakes = not p.reversible or p.reach == "public" or p.channel in _HIGH_STAKES_CHANNELS
+    if p.outward and high_stakes and not p.operator_confirmed:
         return Verdict(Decision.ESCALATE, "T0.5",
                        "irreversible/public/high-stakes outward act — needs operator confirmation")
     if p.asserts_as_fact and not p.evidence_backed:

@@ -236,13 +236,6 @@ def draft_outbox(cs, extensions: dict, proto, cycle: int, *, platforms, max_new:
         drafts.append(draft)
         proto.record(cycle, "forum_draft",
                      f"drafted {fid} for {platform} (need {key}) - awaiting human approval")
-        try:  # shadow: a forum post is a T0.5 outward act (docs/CONSTITUTION.md); never blocks
-            from joni.constitution.gate import Proposal, check
-            _v = check(Proposal(question, outward=True, reach="public", channel="publish"))
-            proto.record(cycle, "gate",
-                         f"[shadow] constitution would {_v.decision} ({_v.principle}) - {fid}")
-        except Exception:  # noqa: BLE001 - a shadow check must never break drafting
-            pass
     extensions["forum_outbox"] = out[-200:]
     extensions["forum_asked"] = asked[-500:]
     return drafts
@@ -272,13 +265,6 @@ def draft_autopost(cs, extensions: dict, proto, cycle: int, *, autopost, max_new
             drafts.append(out[-1])
             proto.record(cycle, "forum_draft",
                          f"drafted {fid} for {platform} (need {key}) - agent-net, auto-posts")
-            try:  # shadow: same T0.5 outward-act check for agent-net drafts; never blocks
-                from joni.constitution.gate import Proposal, check
-                _v = check(Proposal(question, outward=True, reach="public", channel="publish"))
-                proto.record(cycle, "gate",
-                             f"[shadow] constitution would {_v.decision} ({_v.principle}) - {fid}")
-            except Exception:  # noqa: BLE001 - a shadow check must never break drafting
-                pass
         extensions[akey] = asked[-500:]
     extensions["forum_outbox"] = out[-200:]
     return drafts
@@ -351,6 +337,23 @@ def _registry(extensions: dict, platforms) -> list[dict]:
     return [{"platform": p, **v} for p, v in reg.items()]
 
 
+def _constitution_gate(draft: dict, operator_confirmed: bool) -> tuple[bool, str]:
+    """The authoritative Tier-0 gate at the true outward seam (docs/CONSTITUTION.md §14).
+
+    A public forum post is a T0.5 outward act: it may proceed only if the operator has confirmed
+    it (per-post approval). Returns ``(allowed, label)`` where ``label`` names the verdict for the
+    audit. **Fail-closed:** any error evaluating the gate returns ``(False, ...)`` - a broken gate
+    stops the post, it never opens it."""
+    try:
+        from joni.constitution.gate import Decision, Proposal, check
+        v = check(Proposal(str(draft.get("question", "")), outward=True, reach="public",
+                           channel="publish", operator_confirmed=operator_confirmed))
+        label = str(v.decision) if not v.principle else f"{v.decision} ({v.principle})"
+        return v.decision is Decision.ALLOW, label
+    except Exception:  # noqa: BLE001 - enforcement must fail closed, never open
+        return False, "error (fail-closed)"
+
+
 def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_post: int = 1) -> int:
     """When live, post un-posted drafts to platforms with a *ready* adapter, paced per cycle.
 
@@ -365,19 +368,34 @@ def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_po
         return 0
     from joni.relay.adapters import NotReady, get_adapter
 
-    from .config import forum_autopost
+    from .config import constitution_enforce, forum_autopost
     autopost = set(forum_autopost())
     approved = set(_load(paths.forum_approved, []) or ())
+    enforce = constitution_enforce()       # authoritative constitution gate at the outward seam
     posted = 0
     noted = False                          # record one diagnostic reason per cycle, not per draft
+    held_noted = False                     # ...likewise one 'held by constitution' line per cycle
     for d in extensions.get("forum_outbox", []):
         if posted >= max_post:
             break
         if not isinstance(d, dict) or d.get("status") == "posted":
             continue
         platform = d.get("platform", "")
-        if platform not in autopost and d.get("id") not in approved:
+        is_approved = d.get("id") in approved
+        if platform not in autopost and not is_approved:
             continue                       # human forum -> needs approval; leave it queued
+        if enforce:
+            # A public post is a T0.5 outward act. When enforcing, it may proceed ONLY with
+            # operator confirmation - this overrides the agent-net auto-post exemption, so a
+            # Moltbook draft nobody approved is held, not auto-posted. Fail-closed.
+            allowed, label = _constitution_gate(d, is_approved)
+            if not allowed:
+                if not held_noted:
+                    proto.record(cycle, "gate",
+                                 f"constitution {label} - held {d.get('id')}; public post needs "
+                                 "operator confirmation (T0.5), queued for approval")
+                    held_noted = True
+                continue                   # not posted - stays queued, surfaces in the post sheet
         adapter = get_adapter(platform)
         if not adapter.ready():
             if platform in autopost and not noted:
@@ -394,7 +412,10 @@ def _post_live(extensions: dict, proto, cycle: int, paths, live: bool, *, max_po
             continue                       # transient / API error - retry next cycle
         d["status"], d["posted_url"] = "posted", url
         posted += 1
-        gate = "agent-net auto" if platform in autopost else "human-approved"
+        if enforce:
+            gate = "operator-confirmed"    # under enforcement every post cleared the T0.5 gate
+        else:
+            gate = "agent-net auto" if platform in autopost else "human-approved"
         proto.record(cycle, "forum_post",
                      f"posted {d.get('id')} to {platform} ({gate}) -> {url}")
     return posted

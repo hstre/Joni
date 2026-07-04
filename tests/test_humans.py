@@ -165,6 +165,50 @@ def test_live_loop_autoposts_moltbook_without_approval(tmp_path, monkeypatch):
     assert res_off["posted"] == 0
 
 
+def test_enforce_holds_moltbook_autopost_until_operator_confirms(tmp_path, monkeypatch):
+    """The enforcement flip (docs/CONSTITUTION.md §14): with JONI_CONSTITUTION_ENFORCE on, the
+    agent-net auto-post exemption is overridden at the outward seam - a public Moltbook post is a
+    T0.5 act, held until the operator confirms it, then it posts."""
+    from joni.relay import adapters
+    monkeypatch.setenv("JONI_CONSTITUTION_ENFORCE", "1")
+    monkeypatch.setattr(adapters.MoltbookAdapter, "_has_creds", lambda self: True)
+    monkeypatch.setattr(adapters.MoltbookAdapter, "post",
+                        lambda self, text: "https://www.moltbook.com/posts/p1")
+    cs = CoreState(seed_core())
+    p = _routing_research_parent(cs)
+    cs.hypothesize("Hypothesis: routing should be local-first", "routing", parents=(p,))
+    ext: dict = {}
+    paths = _Paths(tmp_path)
+    proto = _Proto()
+    # enforcement on -> the public post is HELD, not auto-posted, and the hold is audited
+    res = humans.interact(cs, ext, proto, 1, paths=paths, platforms=("moltbook",), live=True)
+    assert res["posted"] == 0
+    held = [d for d in ext["forum_outbox"] if d["platform"] == "moltbook"]
+    assert held and held[0]["status"] == "drafted"            # queued for approval, not posted
+    assert any(kind == "gate" and "held" in msg for kind, msg in proto.events)
+    # the operator confirms THIS draft -> it now clears T0.5 and posts
+    humans.approve(paths.forum_approved, held[0]["id"])
+    res2 = humans.interact(cs, ext, proto, 2, paths=paths, platforms=("moltbook",), live=True)
+    assert res2["posted"] == 1
+    posted = [d for d in ext["forum_outbox"] if d["status"] == "posted"]
+    assert posted and posted[0]["posted_url"].endswith("/p1")
+
+
+def test_constitution_gate_fails_closed(monkeypatch):
+    """The outward-seam gate is deny-by-default: confirmed public post allowed, unconfirmed held,
+    and a *broken* gate fails CLOSED (never opens the post)."""
+    assert humans._constitution_gate({"question": "q"}, True)[0] is True
+    assert humans._constitution_gate({"question": "q"}, False)[0] is False
+    import joni.constitution.gate as gate
+
+    def _boom(_proposal):
+        raise RuntimeError("gate broke")
+
+    monkeypatch.setattr(gate, "check", _boom)
+    allowed, label = humans._constitution_gate({"question": "q"}, True)
+    assert allowed is False and "fail-closed" in label
+
+
 def test_draft_autopost_pulls_from_open_needs_and_dedupes_per_platform():
     cs = CoreState(seed_core())
     p = _routing_research_parent(cs)
