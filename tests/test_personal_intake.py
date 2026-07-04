@@ -21,7 +21,7 @@ def test_operator_statement_enters_as_confirmed_and_usable(tmp_path):
     inbox.write_text("preferences | prefers direct honest feedback\n"
                      "projects | DESi: 4 islands confirmed\n"
                      "# a comment line is ignored\n"
-                     "relationships | Leon is my son\n",          # out of phase-1 scope -> dropped
+                     "relationships | <a third-party note>\n",     # out of phase-1 scope -> dropped
                      encoding="utf-8")
     store = _store(tmp_path)
     res = personal_intake.interact(store, _Proto(), 1, tick=0,
