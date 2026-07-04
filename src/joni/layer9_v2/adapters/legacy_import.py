@@ -100,6 +100,45 @@ def _bump(d: dict, key) -> None:
     d[key] = d.get(key, 0) + 1
 
 
+# Scalar fields that can serve as a human-readable title, best first. Beyond the obvious
+# topic/text, this catches types that name their prose differently: evidence.content,
+# decision.reason. (Purely structural types — proposal, evidence_link, conflict — carry only
+# category/edge fields, no headline, and are intentionally left title-less; they are found via
+# links, not by title.)
+_TITLE_FIELDS = ("topic", "text", "statement", "summary", "content", "reason",
+                 "label", "name", "title")
+
+
+def _title_for(fields: dict) -> str | None:
+    """Best available human-readable title for a legacy object, or ``None``.
+
+    The full object is always preserved under ``payload.fields``; this only fills the indexed
+    ``title`` column so objects are findable. Older code read ``topic``/``text`` alone, which left
+    every ``semantic_cluster`` and ``preference`` with a NULL title (they name their headline
+    differently) — present in the store but opaque. This falls back through the common scalar title
+    fields, then handles the two structural types whose headline is composite. It **never
+    fabricates**: it only reads fields already on the object, and returns ``None`` if none apply."""
+    for k in _TITLE_FIELDS:
+        v = fields.get(k)
+        if isinstance(v, str) and v.strip():
+            return v.strip()[:200]
+    otype = fields.get("object_type")
+    if otype == "semantic_cluster":
+        terms = [t for t in (fields.get("surface_terms") or [])
+                 if isinstance(t, str) and t.strip()]
+        if terms:
+            return ", ".join(terms)[:200]
+        state = fields.get("semantic_state")
+        if isinstance(state, str) and state.strip():
+            return f"cluster ({state.strip()}, {len(fields.get('members') or [])} members)"[:200]
+    if otype == "preference":
+        parts = [str(fields[k]).strip() for k in ("stance", "subject")
+                 if isinstance(fields.get(k), str) and str(fields[k]).strip()]
+        if parts:
+            return " · ".join(parts)[:200]
+    return None
+
+
 def _evidence_relation(rel: str | None) -> str | None:
     """Map a legacy ``evidence_link.relation`` onto the closed v2 vocabulary, or None if it doesn't
     cleanly map (e.g. 'contextualizes'). We never fabricate support/contradiction semantics — an
@@ -133,7 +172,7 @@ def import_snapshot(conn: sqlite3.Connection, snapshot_path: str | Path,
             try:
                 fields = decode(wrapper)
                 otype = fields.get("object_type") or "unknown"
-                title = (fields.get("topic") or fields.get("text") or "")[:200] or None
+                title = _title_for(fields)
                 space = SPACE_MAP.get(otype)
                 status = str(fields.get("status") or "active")
                 store_type = otype
