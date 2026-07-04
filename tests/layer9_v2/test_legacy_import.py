@@ -119,6 +119,39 @@ def test_import_reconstructs_typed_links(tmp_path):
     assert ok
 
 
+def test_title_is_derived_for_types_without_a_text_field(tmp_path):
+    """semantic_cluster and preference name their headline differently than topic/text; the import
+    must still give them a non-NULL, human-readable title (the data was never lost, but a NULL title
+    made them opaque in the indexed store). Structural fallbacks never fabricate - they only read
+    fields already present."""
+    snap = tmp_path / "snap.json"
+    snap.write_text(json.dumps({"snapshot_hash": "x", "tick": 1, "state_snapshot": {"objects": {
+        # a cluster with surface terms -> title from the terms
+        "SC-1": _obj("SC-1", "semantic_cluster", surface_terms={"__t__": ["routing", "latency"]},
+                     semantic_state="synthesis-eligible", members={"__t__": ["C-1", "C-2"]}),
+        # a cluster with NO surface terms -> title from its semantic state + member count
+        "SC-2": _obj("SC-2", "semantic_cluster", surface_terms={"__t__": []},
+                     semantic_state="synthesis-eligible", members={"__t__": ["C-3", "C-4"]}),
+        # a preference -> title from stance + subject
+        "PR-1": _obj("PR-1", "preference", subject="router-note", stance="values", strength=0.6),
+        # evidence names its prose 'content'; a decision names its headline 'reason'
+        "E-9": _obj("E-9", "evidence", content="the Newtonian limit yields a Yukawa term"),
+        "D-9": _obj("D-9", "decision", operator="claim_create", reason="created claim C-1"),
+        # a plain topic-bearing claim still titles by topic (unchanged)
+        "C-9": _obj("C-9", "claim", topic="privacy", text="privacy is tracked"),
+    }}}), encoding="utf-8")
+    conn = S.open_db(tmp_path / "t.sqlite")
+    legacy_import.import_snapshot(conn, snap)
+    titles = {r["id"]: r["title"] for r in conn.execute("SELECT id, title FROM objects")}
+    assert titles["SC-1"] == "routing, latency"
+    assert titles["SC-2"] == "cluster (synthesis-eligible, 2 members)"
+    assert titles["PR-1"] == "values · router-note"
+    assert titles["E-9"] == "the Newtonian limit yields a Yukawa term"   # evidence.content
+    assert titles["D-9"] == "created claim C-1"                          # decision.reason
+    assert titles["C-9"] == "privacy"                       # scalar path unchanged
+    assert all(t for t in titles.values())                   # nothing imported with a NULL title
+
+
 def test_real_snapshot_imports_if_present(tmp_path):
     """Guarded: only runs where the real 22k-object snapshot is checked out. Confirms the import
     completes, every object maps to a valid space, and the chain still verifies."""
