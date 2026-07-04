@@ -71,28 +71,37 @@ def _assessments(cs, *, days: int, spend: float, topics_added: int,
     claim_ids = [c.id for c in live][:5]
     out: list[dict] = []
 
+    # Each assessment carries a STABLE key: dedup is on the key, not the text, so a self-model
+    # trait is minted once and does not re-mint when a live count in its wording changes. (The
+    # 'holds_contradictions' trait used to bake the conflict count into its text, so every changed
+    # count read as a new claim — 46 near-duplicates. The live count lives in the diary headline
+    # and the evidence links, not in the trait.)
     if live and not confirmed:
         out.append({
+            "key": "holds_revisable",
             "text": "I rarely promote beliefs to confirmed - I mostly hold active, "
                     "revisable claims.",
             "evidence": claim_ids, "counterevidence": []})
     if conflicts:
         out.append({
-            "text": f"I am willing to hold {len(conflicts)} contradiction(s) open rather "
-                    "than resolve them prematurely.",
+            "key": "holds_contradictions",
+            "text": "I hold contradictions open rather than resolving them prematurely.",
             "evidence": [x.id for x in conflicts], "counterevidence": []})
     if topics_added:
         out.append({
+            "key": "broadens_topics",
             "text": "I tend to broaden my topics quickly as I read.",
             "evidence": topics[:6],
             "counterevidence": [c.id for c in confirmed[:3]]})
     if model_calls:
         out.append({
+            "key": "uses_model_layer",
             "text": "My governance core stays deterministic, but I now use Granite and DeepSeek "
                     "as a non-authoritative proposal layer - their calls are logged, not free.",
             "evidence": [], "counterevidence": []})
     elif spend == 0:
         out.append({
+            "key": "deterministic_hour",
             "text": "This hour I operated entirely deterministically - no model call was made.",
             "evidence": [], "counterevidence": []})
     return out[:3]
@@ -288,6 +297,7 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     # Joni records, once (sm_seen dedupes), that he understands what an Auftrag to Claude IS:
     # in the first place a program change to himself - to his own non-core modules.
     assessments = [*assessments, {
+        "key": "commissions_are_self_change",
         "text": "My commissions to Claude are first of all program changes to myself - to my own "
                 "non-core modules - never an external or abstract task.",
         "evidence": [c.get("component_key", "") for c in extensions.get("commissions", [])
@@ -302,15 +312,17 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     if delta:
         sections.insert(0, delta)
 
+    # Dedup on the stable key (not the volatile text) so each self-model trait is minted at most
+    # once. Keys are few, so the retained set never evicts a still-relevant trait.
     seen = set(extensions.get("sm_seen", []))
     minted = []
     for a in assessments:
-        if a["text"] in seen:
+        if a["key"] in seen:
             continue
         sm_id = cs.propose_self_model(a["text"], evidence=a["evidence"],
                                       counterevidence=a["counterevidence"])
         minted.append(sm_id)
-        seen.add(a["text"])
+        seen.add(a["key"])
     extensions["sm_seen"] = sorted(seen)[-50:]
 
     run_part = f", run {runs}" if runs is not None else ""

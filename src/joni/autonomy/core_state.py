@@ -170,6 +170,14 @@ class CoreState:
 
     def note_preference(self, subject: str, *, stance: str = "values",
                         strength: float = 0.6) -> str:
+        """Note a preference, idempotent per ``(subject, stance)``. A recurring capability note
+        (e.g. 'router-note' seen every run a routing item shows up) reuses the existing preference
+        instead of minting a duplicate — anti-bloat, so the active set stays one-per-stance."""
+        for p in self.core.all(l9.ObjectType.PREFERENCE):
+            if (getattr(p, "subject", None) == subject
+                    and getattr(p, "stance", None) == stance
+                    and getattr(p, "status", None) is not Status.REJECTED):
+                return p.id
         self._op(ProposalType.PREFERENCE_PROPOSAL, Operator.PREFERENCE_PROPOSE,
                  {"subject": subject, "stance": stance, "strength": strength})
         return self._newest(l9.ObjectType.PREFERENCE).id
