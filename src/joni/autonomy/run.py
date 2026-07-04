@@ -22,7 +22,7 @@ import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from .. import desi_link
+from .. import desi_link, guard
 from . import (
     commission,
     core_state,
@@ -404,7 +404,8 @@ def one_cycle() -> dict:
                                runs=window["runs"],
                                context={"judged": judged, "methods": found_methods,
                                         "trialed": trialed, "developed": developed,
-                                        "invented": invented, "emerged": emerged})
+                                        "invented": invented, "emerged": emerged,
+                                        "personal": guard.usable_personal(personal_store.all())})
         reviewed = True
 
     # 6. Reflect through DESi: its real routing table + deterministic tools (free).

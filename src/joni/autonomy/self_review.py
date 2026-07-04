@@ -276,6 +276,21 @@ def _delta_section(snap: dict, act: dict, extensions: dict) -> dict | None:
     return {"title": "Since my last review", "text": "Net change: " + ", ".join(parts) + "."}
 
 
+def _personal_section(context: dict) -> dict | None:
+    """Consumption of the Personal Store (docs/PERSONAL_STATE.md §7): a grounded, deterministic
+    section stating the operator preferences Joni is applying to his voice. The claims arrive
+    already guard-filtered to the outward-usable set (confirmed/observed/inferred self; sensitive
+    and third-party excluded), so this only reads and states them — it never asserts a personal
+    fact it was not given, and it says nothing at all when the store holds no usable preference."""
+    prefs = [c for c in (context.get("personal") or [])
+             if getattr(c, "category", None) == "preferences"]
+    if not prefs:
+        return None
+    items = "; ".join(c.statement for c in prefs[:6])
+    return {"title": "What I keep in mind about you",
+            "text": f"I am applying what you have confirmed about how you like to work: {items}."}
+
+
 def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: float,
                runs: int | None = None, context: dict | None = None) -> dict:
     now = datetime.now(UTC)
@@ -301,6 +316,9 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     delta = _delta_section(snap, act, extensions)
     if delta:
         sections.insert(0, delta)
+    personal = _personal_section(context)      # consume the Personal Store: prefs Joni is applying
+    if personal:
+        sections.append(personal)
 
     seen = set(extensions.get("sm_seen", []))
     minted = []

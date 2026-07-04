@@ -16,6 +16,14 @@ from joni.personal.store import PersonalClaim, Use, use_policy
 _OUTWARD_USE = (Use.ASSERT, Use.SOFT)   # what may inform the outward voice; INTERNAL/NONE excluded
 
 
+def usable_personal(claims) -> tuple[PersonalClaim, ...]:
+    """The personal claims the use-policy permits to inform Joni's outward voice: confirmed/
+    observed/inferred self-claims (ASSERT/SOFT). Sensitive, third-party (``other:``), rejected and
+    outdated claims are dropped (INTERNAL/NONE). Single source of truth for the consumption filter —
+    both ``guard()`` and the self-review consumption path call it."""
+    return tuple(c for c in claims if use_policy(c) in _OUTWARD_USE)
+
+
 @dataclass(frozen=True)
 class GuardDecision:
     verdict: Verdict                              # the constitution decision (already audited)
@@ -32,7 +40,7 @@ def guard(proposal: Proposal, personal_claims=(), *, constitution: Constitution,
     inform the outward voice (confirmed/observed/inferred self-claims; sensitive / third-party /
     rejected / outdated are dropped)."""
     verdict = constitution.check(proposal)
-    usable = tuple(c for c in personal_claims if use_policy(c) in _OUTWARD_USE)
+    usable = usable_personal(personal_claims)
     stop = verdict.decision in (Decision.BLOCK, Decision.ESCALATE)
     allowed = True if mode == "shadow" else not stop
     return GuardDecision(verdict, allowed, usable, mode)
