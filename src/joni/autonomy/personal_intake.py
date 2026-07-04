@@ -16,11 +16,8 @@ from joni.personal.store import CATEGORIES, PersonalStore
 # The operator writes statements below this how-to; the loop ingests them as CONFIRMED self-claims,
 # then resets the file (same "you write, Joni ingests, box is cleared" pattern as forum_replies).
 _INBOX_TEMPLATE = (
-    "# Persönlicher Eingang — eine Aussage pro Zeile, Format:\n"
-    "#   kategorie | aussage\n"
-    "# kategorie ∈ {preferences, projects}. Beispiel:\n"
-    "#   preferences | bevorzugt direkte, ehrliche Rückmeldung — klar warnen wenn schwach\n"
-    "#   projects | DESi: solution_space kalibriert, 4 Inseln bestätigt\n"
+    "# Persönlicher Eingang — eine Aussage pro Zeile, Format:  kategorie | aussage\n"
+    "# kategorie ∈ {preferences, projects}.\n"
     "# Joni nimmt jede Zeile als BESTÄTIGTE Selbst-Aussage auf (du bist der vertraute Operator);\n"
     "# danach wird diese Datei geleert. Zeilen mit '#' werden ignoriert.\n"
 )

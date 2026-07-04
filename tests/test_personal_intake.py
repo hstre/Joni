@@ -18,10 +18,11 @@ def _store(tmp):
 
 def test_operator_statement_enters_as_confirmed_and_usable(tmp_path):
     inbox = tmp_path / "inbox.txt"
-    inbox.write_text("preferences | prefers direct honest feedback\n"
-                     "projects | DESi: 4 islands confirmed\n"
+    # abstract placeholders — the test exercises the mechanism, not any real personal content
+    inbox.write_text("preferences | p1\n"
+                     "projects | p2\n"
                      "# a comment line is ignored\n"
-                     "relationships | <a third-party note>\n",     # out of phase-1 scope -> dropped
+                     "relationships | p3\n",              # out of phase-1 scope -> dropped
                      encoding="utf-8")
     store = _store(tmp_path)
     res = personal_intake.interact(store, _Proto(), 1, tick=0,
@@ -33,7 +34,7 @@ def test_operator_statement_enters_as_confirmed_and_usable(tmp_path):
     assert all(use_policy(c) is Use.ASSERT for c in claims)       # confirmed self -> assertable
     # the drop box is reset to the template so the operator does not re-enter the same lines
     reset = inbox.read_text(encoding="utf-8")
-    assert "kategorie | aussage" in reset and "prefers direct" not in reset
+    assert "kategorie | aussage" in reset and "p1" not in reset
 
 
 def test_reconfirm_sheet_is_written_each_cycle(tmp_path):
