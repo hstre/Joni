@@ -41,6 +41,7 @@ from . import (
     layer9_view,
     methods,
     model_call,
+    personal_intake,
     projection,
     reader,
     reconsolidate,
@@ -371,6 +372,16 @@ def one_cycle() -> dict:
     human_io = humans.interact(cs, extensions, proto, cycle, paths=p,
                                platforms=forum_platforms(), live=forum_live())
 
+    # 4i-b. Personal Store (docs/PERSONAL_STATE.md): the operator's own statements enter as
+    #       CONFIRMED self-claims (the operator is the trusted HUMAN, not a forum SOURCE), the
+    #       store decays by half-life, and the re-confirmation queue is surfaced. Separate from
+    #       Layer 9 — it steers behaviour, never system truth.
+    from joni.personal.store import PersonalStore
+    personal_store = PersonalStore(p.personal_state, p.protocol)
+    personal_io = personal_intake.interact(personal_store, proto, cycle, tick=days_running,
+                                           inbox_path=p.personal_inbox,
+                                           reconfirm_path=p.personal_reconfirm)
+
     # 4j. Alexandria assessment panel (opt-in, budget-gated): when Joni is UNSURE (an open
     #     contradiction) OR when Kevin proposes something (a method/lens or invented hypothesis),
     #     three models cross-assess it - on a suggestion: is it a good idea, and why or why not?
@@ -444,6 +455,7 @@ def one_cycle() -> dict:
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
             "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io,
+            "personal_io": personal_io,
             "research": research, "projected": projected, "escalated": escalated,
             "doktores": {"orders": len(doktores_new),
                          "reviewed": len(extensions.get("doktores_review", []))}}

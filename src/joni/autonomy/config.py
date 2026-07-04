@@ -67,6 +67,21 @@ class Paths:
         return self.root / "commissions_done.json"
 
     @property
+    def personal_state(self) -> Path:
+        # The Personal Store (docs/PERSONAL_STATE.md) — what Joni knows about the operator.
+        return self.root / "state" / "personal.json"
+
+    @property
+    def personal_inbox(self) -> Path:
+        # The operator drops self-statements here; the loop ingests them as confirmed, then resets.
+        return self.root / "state" / "personal_inbox.txt"
+
+    @property
+    def personal_reconfirm(self) -> Path:
+        # The decayed-but-relevant re-confirmation sheet the loop writes each cycle.
+        return self.root / "state" / "personal_reconfirm.md"
+
+    @property
     def protocol(self) -> Path:
         return self.root / "protocol" / "protocol.jsonl"
 
