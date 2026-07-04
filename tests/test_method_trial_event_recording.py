@@ -180,7 +180,7 @@ def test_record_object_hash_is_the_same_material_snapshot_uses():
     core._objects[oid].epistemic_authority = "authoritative"   # white-box: tamper the STORED object
     # Phase A: the maintained ``snapshot_hash`` trusts in-band ``_rehash`` (the equivalence oracle
     # proves it stays exact); an OUT-OF-BAND tamper of a stored object is caught by the full
-    # recompute, which folds in the SAME per-object material (object_canonical) the maintained one does.
+    # recompute, which folds in the SAME per-object material the maintained one does.
     assert hashing.snapshot_hash_full(core) != before
 
 
@@ -300,7 +300,7 @@ def test_in_place_tampering_is_detectable_and_not_in_the_replayable_truth():
     stored.canonical_payload = stored.canonical_payload.replace("no_benefit", "success")  # tamper
     # the live state no longer matches what the journal deterministically reproduces -> detectable.
     # Phase A: an out-of-band tamper (bypassing the gate's ``_rehash``) is caught by the full
-    # recompute; on reload, replay rebuilds from the untampered journal and the divergence shows there.
+    # recompute; on reload, replay rebuilds from the journal and the divergence shows there.
     assert hashing.snapshot_hash_full(core) != clean
     # ...and the tamper never entered the replayable truth: replay from the journal is original.
     replayed = persistence.replay(core.journal)
