@@ -186,6 +186,18 @@ def forum_autopost() -> tuple[str, ...]:
     """Platforms where Joni may post WITHOUT per-post human approval - agent-only networks
     (Moltbook) where autonomous posting is the norm, not spam in a human community. Human
     forums are never here: they always wait for a human to approve/post. Still under
-    forum_live() as the master switch."""
+    forum_live() as the master switch.
+
+    Note: when constitution_enforce() is on, this per-platform exemption is overridden at the
+    outward seam - every public post is held for operator confirmation regardless (T0.5)."""
     raw = os.getenv("JONI_FORUM_AUTOPOST", "moltbook")
     return tuple(p.strip() for p in raw.split(",") if p.strip())
+
+
+def constitution_enforce() -> bool:
+    """Whether the constitution gate ENFORCES at the outward seam (docs/CONSTITUTION.md §14),
+    rather than only shadow-logging. Off by default: turning it on is a deliberate behavioural
+    flip. When on, ``humans._post_live`` posts only what the operator has confirmed - a public
+    post with no confirmation is held (T0.5 ESCALATE) instead of auto-posted, and a gate error
+    fails CLOSED (not posted)."""
+    return os.getenv("JONI_CONSTITUTION_ENFORCE", "0") == "1"

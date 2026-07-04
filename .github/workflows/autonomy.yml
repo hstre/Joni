@@ -138,9 +138,12 @@ jobs:
           # holds). Advice only - they never decide. OpenRouter is prepaid; spend is cooldown-
           # spaced and hard-capped by the weekly budget.
           JONI_EXPERTS: "1"
-          # Moltbook is an agent-only network: let Joni post APPROVED drafts there directly.
-          # Still gated by approval; human forums (no live adapter) keep waiting for a human.
+          # Moltbook is an agent-only network. Posting is live, but the constitution gate below
+          # enforces T0.5 at the outward seam: every public post (Moltbook included) is held for
+          # operator approval, not auto-posted. This makes the code match the "gated by approval"
+          # intent - a public outward act never leaves Joni without a human confirming it.
           JONI_FORUM_LIVE: "1"
+          JONI_CONSTITUTION_ENFORCE: "1"     # the enforcement flip: shadow -> real T0.5 stop
           MOLTBOOK_API_KEY: ${{ secrets.MOLTBOOK_SK_Q }}
           MOLTBOOK_SUBMOLT: "general"
           MOLTBOOK_AGENT: "epistemicwilly"   # Joni's handle: moltbook.com/u/epistemicwilly
