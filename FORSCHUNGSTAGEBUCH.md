@@ -2987,3 +2987,66 @@ kreative Schritt), aber das *Zeigen, wo die Räume sind*, ist verdrahtet.
 **[Offen]** Das *Handeln* auf der Agenda (Joni exploriert tatsächlich eine Insel/Brücke) ist der nächste,
 größere Schritt und braucht einen echten `explore_fn` (kreativ, core-schreibend, human-gegated) — bewusst
 noch nicht verdrahtet.
+
+
+### Eintrag 2026-07-03 (XXXIV) — Ein Werte-Root für Joni: kategorischer Imperativ + Grundgesetz als *Prüfer*, nicht als Ableitungsmaschine; und das Egress-Gate
+
+**[Eingriff]** Der Betreiber: „Es fehlen grundlegende Werte, von denen Joni alles ableiten können muss — z. B. der kategorische Imperativ, und weil wir in Deutschland sind, das Grundgesetz." Umgesetzt — aber bewusst umgedeutet.
+
+Die zentrale Designentscheidung: eine Verfassung **erzeugt keine Handlungen, sie filtert und priorisiert** vorgeschlagene. Der kategorische Imperativ ist ein *Test* (Verallgemeinerbarkeit, „nie *bloß* als Mittel"), kein Generator; das GG liefert seine **Wertordnung** (Würde, Rechtsstaatlichkeit, Verhältnismäßigkeit) + schlichte Legalität, nicht „Grundrechte als Code". Keine Moraltheorie ist der Motor — die Wurzel ist ein kleiner, robuster Constraint-Satz, dem fast alle ethischen Rahmen zustimmen; CI und GG-Wertordnung sind *zwei der Tests* darauf.
+
+Drei Spezifikationen geschrieben (`docs/CONSTITUTION.md`, `docs/EGRESS_GATE.md`, `docs/PERSONAL_STATE.md`) und am **schon existierenden** Governance-Code geerdet: der Großteil der Gate-Maschinerie ist bereits da (`governance.py` Core-Lock, `humans.py` Outbox, `model_call.py`). Die Verfassung ist v. a. eine Namens-/Konsolidierungsschicht darüber + der eine echte Auffang: allgemeine irreversible Außenwirkung jenseits des Forum-Posts.
+
+**(Egress-Gate, #168)** Erstes real absicherndes Stück: ein AST-Scan von `src/joni`, der CI scheitern lässt, sobald ein Modul ein rohes Egress-Primitiv importiert (`urllib.request`, `requests`/`httpx`/`socket`/`smtplib`, `subprocess`, `openai` …) **außerhalb** einer kleinen Allowlist der heutigen De-facto-Broker. Deny-by-default. Gegen `main` geprüft: 0 Violations über 134 Dateien.
+
+**(Constitution, #169)** `joni.constitution`: 10 Prinzipien (5 Tier-0, 5 Tier-1) als Daten in `state/constitution.json` + `check(Proposal) → Verdict(ALLOW|ABSTAIN|ESCALATE|BLOCK)` mit drei verdrahteten Tier-0-Prädikaten (T0.4 Legalität → BLOCK, T0.5 irreversibel/öffentlich → ESCALATE, T0.3 Behauptung ohne Basis → ABSTAIN). Plus ein **Shadow-Hook** am Forum-Draft, der nur protokolliert, was die Verfassung *entscheiden würde*. Verhaltensneutral, fail-open.
+
+**[Ehrliche Grenze]** Ein Werte-Root macht Joni nicht „sicher" oder „aligned". Er macht Wertkonflikte explizit, auditierbar, und blockiert das klar Falsche. Der Test, ob es echt ist: Wird je eine Handlung *tatsächlich* geblockt oder eskaliert? Shadow allein ist ein hübsches Dokument ohne Wirkung — der nächste Eintrag beißt.
+
+### Eintrag 2026-07-04 (XXXV) — Der Enforcement-Flip: aus Shadow ein echter T0.5-Stopp — an der *richtigen* Naht, fail-closed
+
+**[Eingriff]** „Mach den Enforcement-Flip — erst sauber designen." Also erst der Befund, dann der Bau.
+
+**[Befund]** Der Shadow-Hook (Eintrag XXXIV) saß in `draft_outbox`/`draft_autopost` — am **Draft-Punkt**. Ein Draft ist aber kein Außenakt (er landet nur in der Outbox), deshalb war Shadow verhaltensneutral *by construction* — es prüfte die falsche Naht. Der einzige Ort, an dem Joni **autonom öffentlich** emittiert, ist `humans._post_live`, wenn es an ein Agenten-Netz (Moltbook) **ohne Per-Post-Approval** postet. Nur dort hat Enforcement Zähne.
+
+Der Betreiber wählte den **harten Stopp**: Moltbook-Autoposts eskalieren ab jetzt und warten auf Approval wie Human-Foren — der autonome Agenten-Netz-Loop wird approval-gegatet.
+
+**(#170)** `Proposal.operator_confirmed` ist der **einzige** Hebel, der einen T0.5-Stopp aufhebt; wäscht nie einen illegalen Akt (T0.4 blockt zuerst, Stakes-Reihenfolge). Der Check wandert vom Draft an `_post_live`, direkt vor `adapter.post`, und ist jetzt **fail-closed**: ein unbestätigter Public-Post wird gehalten und auditiert, und *jeder Fehler* im Check → nicht posten (das Gegenteil von Shadows fail-open). `JONI_CONSTITUTION_ENFORCE=1` im Workflow ist der eigentliche Flip — und bringt den Code in Deckung mit der eigenen Workflow-Intention („gated by approval"), die der Autopost-Pfad still unterlief.
+
+**[Reifegrad]** `gate.py` + `humans.py` + Tests grün (`operator_confirmed` hebt T0.5 aber nicht T0.4; Autopost gehalten bis approved; Gate fails closed bei Fehler). Live ab dem nächsten frisch gestarteten Job (Checkout beim Job-Start).
+
+### Eintrag 2026-07-04 (XXXVI) — „Schau in die SQL-DB": zwei echte Bugs aus dem materialisierten State — der Titel-Verlust und die Duplikat-Blähung
+
+**[Eingriff]** „Schau dir die SQL-Datenbank an, ist da was Brauchbares drin?" Der `layer9_v2`-SQLite-Store ist im Betrieb dormant (`JONI_PERSISTENCE=json` → der Loop läuft auf dem JSON-Journal), aber aus dem echten State materialisierbar. Also gebaut und abgefragt — und dabei zwei Bugs gefunden.
+
+**(Titel-Fix, #171)** Der Legacy→v2-Import leitete den indexierten `title` nur aus `topic`/`text` ab. Objekttypen, die ihren Headline anders benennen, importierten mit `title = NULL` — im Store vorhanden, aber per Titel unauffindbar/opak. Betroffen: **alle 2.894 `semantic_cluster` (die Synthesen) und alle `preference`**. Die Daten gingen nie verloren (das volle Objekt liegt in `payload.fields`); nur die Titel-Spalte war leer. `_title_for` fällt jetzt durch die üblichen Textfelder + behandelt die zwei strukturellen Typen (Cluster: Surface-Terms bzw. `semantic_state`; Preference: `stance · subject`). Effekt am echten 22k-Snapshot: **von ~8% auf 60% betitelt**.
+
+**(Anti-Bloat-Dedup, #172)** Der materialisierte *aktuelle* State (54k Objekte) zeigte zwei Duplikat-Muster, die den Store aufblähen ohne Wissen zu addieren: **46 fast identische `self_model_claim`** — derselbe Trait „hold N contradictions open", nur die Zahl N wechselt; die Dedup verglich den vollen Text *mit* der Zahl → matcht nie. Und **12 identische `router-note`-Preferences** — eine pro Run mit Routing-Item, keine Idempotenz. Fix jeweils an der richtigen Schicht: stabiler `key` pro Self-Model-Assessment (Trait jetzt count-free, die Zahl lebt in Tagebuch + Evidence-Links), und `note_preference` idempotent pro `(subject, stance)`.
+
+**[Befund am Rande]** 69% des Stores sind Governance-Buchhaltung (proposal/decision-Paare); 84% der Claims hängen am generischen „forum"-Bucket. Der Wissenskern (~668 topic-getaggte Claims, ~2.7k synthesis-eligible Cluster, das Tagebuch, das Selbstmodell) ist real, aber klein und verdünnt. Und: das Selbstmodell war quasi-degeneriert (46 Rewrites eines Satzes) — Jonis *eigene* degen-Metrik sah das **nicht**, weil sie andere Duplikate zählt. Eine echte Lücke in der Selbst-Beobachtung.
+
+### Eintrag 2026-07-05 (XXXVII) — Die Persönlichkeitsdatenbank: von der Spec zum lebenden, dreistufig verdrahteten Store — und eine Korrektur in eigener Sache
+
+**[Eingriff]** „Ist die Persönlichkeitsdatenbank eingerichtet?" — nein: sie war designt + codiert + getestet, aber dormant auf der Design-Branch, nicht auf `main`, nicht verdrahtet, ohne Daten. Also live gebracht, in bewussten Schritten (Design → Port → Verdrahtung), mit den Betreiber-Entscheidungen: Eintritt als **`confirmed`**, **inklusive Consumption**.
+
+**(Port, #173)** `joni.personal` (Store: Status-Klassen observed/inferred/confirmed/rejected/outdated/superseded, deterministische `use_policy`, exponentieller Decay je Kategorie-Half-Life, `confirm()` braucht ein `human_ref` — es gibt **keinen System-Pfad** zu confirmed) + `joni.guard` auf `main`, dormant wie zuvor der SQLite-Store.
+
+**(Verdrahtung, #174)** `autonomy/personal_intake.py`, 1× pro Zyklus nach `humans.interact`: der Operator schreibt Selbst-Aussagen in `state/personal_inbox.txt` (`kategorie | aussage`), der Loop nimmt jede Zeile als **confirmed** auf (der Operator ist der vertraute HUMAN, kein Forum-SOURCE), der Store altert (`age`), und die Re-Confirm-Queue wird in `state/personal_reconfirm.md` vorgelegt („was ich über dich zu wissen glaube — korrigier mich"). Persistenz `state/personal.json`, jeder Write auditiert `personal_write`. Getrennt von Layer 9 — steuert Verhalten, nie Systemwahrheit. Phase 1: nur `preferences` + `projects`, nur `self`.
+
+**(Consumption, #175)** `guard.usable_personal` filtert auf die outward-nutzbare Menge (confirmed/observed/inferred self; sensitive, Dritte, rejected, outdated raus); die nutzbaren Preferences erscheinen in Jonis stündlichem Self-Review („What I keep in mind about you") — deterministisch, und sagt **gar nichts**, solange der Store leer ist. Tiefere Ton-Formung (ein Modell formuliert Text *unter* den Preferences um) braucht einen LLM-Phrasierungs-Seam, den der deterministische Loop noch nicht hat — spätere Phase.
+
+**(Runtime, #176)** `JONI_RUNTIME_DAYS 7 → 10`: das Fenster (Start 29. Juni) wäre am 6. Juli ausgelaufen; +3 Tage → ~9. Juli. Der nächste geplante Job nimmt den Loop wieder auf **und** zieht als frischer `main`-Checkout den ganzen Session-Code live. Verifiziert: `state/personal_reconfirm.md` erscheint jetzt im Tree — die Datei erzeugt nur der Loop, der Personal-Code läuft also.
+
+**[In eigener Sache]** Ein Test-Fixture trug „Leon is my son" — als *Beispiel* aus der früheren Design-Diskussion, aber ich hatte es unreflektiert als konkrete Personen-Aussage in eingecheckten Code übernommen. Der Betreiber hat das zu Recht gerügt. Gespeichert war nichts (die Zeile *wird verworfen* — sie testet gerade das Fallenlassen out-of-scope Kategorien), aber eine unbestätigte Dritt-Personen-Aussage gehört nicht in den Code — genau das, wovor diese Datenbank misstrauisch sein soll. Raus, danach **alle** Beispiele entfernt, das Operator-Template nur noch Format. Die Sorgfalt gilt auch für Fixtures — notiert.
+
+### Eintrag 2026-07-05 (XXXVIII) — Kollaps-Resistenz gemessen: kein „Critical Collapse", aber zwei gelbe Trends — und die fehlende Selbst-Metrik
+
+**[Eingriff]** Der Betreiber: „Joni zeigt aktuell keine Symptome des HF-Critical-Collapse-Musters — aber das beweist keine Immunität. Dafür braucht es Trendmetriken." Sieben genannt (Top-Topic-Dominanz, Topic-Entropy, Anteil schwach-aber-erhaltener Claims, degenerierte Claims, Widerspruchsgraph-Tiefe, Wiederlese- vs. Neuaufnahmequote, Wiederholung gleicher Schlussmuster). Also aus 434 Zyklen Protokoll + 138 Self-Reviews rekonstruiert, was aus den Daten ging.
+
+**[Befund]** Joni **kollabiert nicht** — die Graph-Integrität ist gesund und teils *besser* werdend: degen aktuell 0 (max je 3, in 27% der Zyklen kurz >0, immer bereinigt), semantic-cluster-decidable konstant **100%**, und die Widerspruchsdichte **fällt** (conflicts/claim 0.38 → 0.068 über die Laufzeit, absolut 30 → 246 sublinear). Das Critical-Collapse-Muster — Widersprüche stapeln sich zu tiefen unentscheidbaren Graphen, Entscheidbarkeit bricht ein — ist nicht im Gange.
+
+**Zwei gelbe Signale:** (1) **Input-Starvation** (das klarste): 52% der Zyklen bringen „0 new", die Neuaufnahme fiel von 2.4 auf 1.1 Items/Zyklus (erste vs. letzte 30). Kein Graph-Kollaps, aber **Lern-Stagnation** — die Feeds laufen trocken, Joni kaut zunehmend Bestehendes. (2) **Forum-Dominanz + stützungsarme Claim-Retention** — die 84%-Senke, strukturelle Verdünnung.
+
+**Plus ein Robustheits-Hinweis:** der Cold-Replay eines vollen Kernels hing lokal >5 min (Tage zuvor ~17s). Der Live-Loop umgeht das per Fast-Load-Sidecar, aber wachsende Cold-Replay-Kosten sind die Wurzel des Juni-Wedge (Eintrag IV/V) — latentes Risiko, kein akutes.
+
+**[Offen]** Der eigentliche Punkt, wie der Betreiber ihn setzte: **Joni trackt keine dieser 7 Metriken als Trend** — ich musste sie ad hoc aus dem Protokoll ziehen. Die Liste ist ein sauberes Spec für ein deterministisches **Collapse-Resistance-Panel**, das der Loop pro Zyklus mitschreibt (wie `vitality`, nur mit diesen Metriken + Schwellen als Frühwarnung). Noch nicht gebaut; der nächste Schritt, sobald der Betreiber es freigibt.
