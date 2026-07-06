@@ -41,7 +41,9 @@ INPUT_TYPES = ("desi_blind_spot", "cross_topic_analogy", "open_conflict",
 
 
 def enabled() -> bool:
-    return projection.enabled() and os.getenv("JONI_KEVIN_LLM", "1") != "0"
+    from . import extension_review
+    return (projection.enabled() and os.getenv("JONI_KEVIN_LLM", "1") != "0"
+            and extension_review.active("kevin_llm"))
 
 
 def _every() -> int:

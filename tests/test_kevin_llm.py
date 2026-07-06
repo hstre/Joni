@@ -188,3 +188,15 @@ def test_desi_steers_kevin_to_the_top_solution_space_gap():
     assert it == "desi_blind_spot"                       # DESi steered Kevin, not a generic topic
     assert islands[0]["missing_affinity"] in label
     assert {c.id for c in seeds} == {a, b}                           # the conflict's own claims
+
+
+def test_kevin_llm_respects_the_extension_review_benefit_gate(monkeypatch):
+    # the re-wired creative arm is benefit-reviewed: extension_review can auto-retire it, exactly
+    # the guardrail that keeps the vanished-output degeneration from ever running unwatched again.
+    from joni.autonomy import extension_review
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_KEVIN_LLM", "1")
+    monkeypatch.setattr(extension_review, "active", lambda name: name != "kevin_llm")
+    assert kevin_llm.enabled() is False
+    monkeypatch.setattr(extension_review, "active", lambda name: True)
+    assert kevin_llm.enabled() is True
