@@ -138,6 +138,13 @@ jobs:
           # ranking a "fit" vs "clash" reconstruction with the captured joni-hard model. Bounded to
           # a few rankings/cycle, budget-metered; only sets a conflict-kind marker, never resolves.
           JONI_PLAUSIBILITY_QUALIFIER: "1"
+          # OpenRouter file-parser OCR ON (Joni's Auftrag #7; operator noted OpenRouter's PDF
+          # backend). When a fetched PDF has no text layer (a SCAN) — the exact case pypdf could
+          # not read — the bytes go to OpenRouter's file-parser (cloudflare-ai = FREE), and the
+          # transcript enters the normal reading pipeline; it is also the inbox-image OCR backend.
+          # Capture-stable (file sha in the replay key, parsed once), benefit-reviewed (ocr_log).
+          JONI_OCR_OPENROUTER: "1"
+          # JONI_OCR_ENGINE default 'cloudflare-ai' (free); set 'mistral-ocr' for true scans ($2/1k pages).
           # Plateau-breaker (deliberately a little into the risk; reflectable + reversible): clock
           # the expensive arms faster so more development happens per cycle, and let a Doktores-
           # COHERENT idea mature on >=1 independent support (not >=2). Nothing is auto-confirmed;

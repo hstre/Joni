@@ -49,10 +49,32 @@ def _load_urls(path) -> list[str]:
 
 
 def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, online: bool,
-                max_papers: int = 2, max_urls: int = 2, max_claims: int = 5) -> dict:
+                max_papers: int = 2, max_urls: int = 2, max_claims: int = 5,
+                budget=None, runs_per_week: int = 0) -> dict:
     # The PDF steps need pypdf; the Markdown/LaTeX inbox ports do not, so they run even when
     # pypdf is absent (a clean way to read material offline).
     pdf_ok = pdf.available()
+
+    # OCR fallback (Auftrag #7, OpenRouter file-parser): when a fetched PDF has no text layer (a
+    # SCAN), hand the bytes to OpenRouter so it is transcribed into the normal pipeline. Dormant
+    # unless JONI_OCR_OPENROUTER is on; also becomes the inbox-image OCR backend. Read-layer only.
+    _ocr = None
+    from . import doc_ocr
+    if doc_ocr.enabled():
+        def _ocr(data, name):
+            return doc_ocr.parse(data, name, budget=budget, run_id=f"joni-c{cycle}-ocr",
+                                 store_dir=paths.model_calls, runs_per_week=runs_per_week)
+        from pathlib import Path as _Path
+
+        from . import ocr as _ocr_port
+
+        class _ORBackend:
+            name = "openrouter-file-parser"
+
+            def transcribe(self, image_path: str) -> str:
+                p = _Path(image_path)
+                return _ocr(p.read_bytes(), p.name) or ""
+        _ocr_port.set_backend(_ORBackend())
 
     read_keys = set(extensions.get("pdf_read", []))
     url_seen = set(extensions.get("pdf_urls_seen", []))
@@ -82,7 +104,7 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
             if getattr(item, "source", "") != "arxiv" or item.key in read_keys:
                 continue
             read_keys.add(item.key)
-            doc = pdf.read_arxiv(item)
+            doc = pdf.read_arxiv(item, ocr_fallback=_ocr) if _ocr else pdf.read_arxiv(item)
             if doc is not None:
                 ingest(doc, rel.topic or "unsorted", item.title[:60])
 
@@ -92,7 +114,7 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
             if papers >= max_papers + max_urls or url in url_seen:
                 continue
             url_seen.add(url)
-            doc = pdf.read_url(url)
+            doc = pdf.read_url(url, ocr_fallback=_ocr) if _ocr else pdf.read_url(url)
             if doc is not None:
                 topic = (cs.topics() or ["unsorted"])[0]
                 ingest(doc, topic, url.rsplit("/", 1)[-1][:60])

@@ -111,22 +111,31 @@ def arxiv_pdf_url(item_url: str, source_id: str) -> str | None:
     return f"https://arxiv.org/pdf/{aid}.pdf" if aid else None
 
 
-def read_url(url: str, *, source_id: str = "", title: str = "") -> PdfText | None:
-    """Read a direct PDF url (arXiv, SSRN download link, ...). Respectful, size-capped."""
-    if not available():
+def read_url(url: str, *, source_id: str = "", title: str = "",
+             ocr_fallback=None) -> PdfText | None:
+    """Read a direct PDF url (arXiv, SSRN download link, ...). Respectful, size-capped.
+
+    ``ocr_fallback(data, filename) -> str|None`` (optional): when pypdf yields no text — a SCANNED
+    PDF, the exact case Joni could not read before — the raw bytes are handed to it (OpenRouter's
+    file-parser) so the scan is still transcribed into the normal reading pipeline."""
+    if not available() and ocr_fallback is None:
         return None
-    text = extract_text(_fetch(url) or b"")
+    data = _fetch(url) or b""
+    text = extract_text(data) if available() else ""
+    if not text.strip() and ocr_fallback is not None and data:
+        text = ocr_fallback(data, (source_id or url).rsplit("/", 1)[-1] or "document.pdf") or ""
     if not text.strip():
         return None
     return PdfText(source_id=source_id or url, url=url, title=title, text=text)
 
 
-def read_arxiv(item) -> PdfText | None:
+def read_arxiv(item, *, ocr_fallback=None) -> PdfText | None:
     """Read the full text of an arXiv item (Item with .url, .key, .title)."""
     url = arxiv_pdf_url(getattr(item, "url", ""), getattr(item, "key", ""))
     if not url:
         return None
-    return read_url(url, source_id=getattr(item, "key", url), title=getattr(item, "title", ""))
+    return read_url(url, source_id=getattr(item, "key", url),
+                    title=getattr(item, "title", ""), ocr_fallback=ocr_fallback)
 
 
 def read_inbox(inbox: Path, processed: set[str], *, limit: int = 3) -> list[PdfText]:
