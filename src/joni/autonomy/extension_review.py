@@ -31,6 +31,7 @@ _REGISTRY: dict[str, tuple[str, bool, tuple[str, ...], int]] = {
     "facet_decomp": ("JONI_FACET_DECOMP", False, ("facet_log",), 60),
     "sproutrag": ("JONI_SPROUTRAG", False, ("sprout_log",), 60),
     "ocr_openrouter": ("JONI_OCR_OPENROUTER", False, ("ocr_log",), 60),
+    "kevin_llm": ("JONI_KEVIN_LLM", True, ("kevin_llm",), 60),
 }
 
 

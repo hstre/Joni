@@ -108,10 +108,15 @@ jobs:
           # _desi checkout via DESI_ROOT. Never affects the cycle or Joni's state.
           JONI_ROUTER_SHADOW: "1"
           KEVIN_USE_REAL_LLM: "1"     # Kevin's trial runner + the strengthen vetting use the real client
-          # Doktores replaces Kevin's creative/orchestrator arm: it reviews the fetched papers and
-          # OpenClaw extensions for a NON-CORE self-improvement and files an Auftrag an Claude.
-          # Kevin's deterministic method-trialing stays. (JONI_KEVIN_ORCHESTRATOR/JONI_KEVIN_LLM are
-          # retired - those steps are no longer in the loop.)
+          # Doktores does the paper/OpenClaw review -> Aufträge an Claude; Kevin's deterministic
+          # method-trialing stays. Kevin's light CREATIVE arm is RE-WIRED (operator: "Kevin muss
+          # wieder rein damit Joni langfristig nicht degeneriert") for endogenous novelty against
+          # stagnation — but guardrailed: empty output is logged as "NO proposal" (the vanished-
+          # output bug that retired it can never pass as work again), it is extension_review-
+          # benefit-reviewed (auto-retired if it earns nothing), non-authoritative, and measured by
+          # the collapse panel. The full JONI_KEVIN_ORCHESTRATOR arm stays retired.
+          JONI_KEVIN_LLM: "1"
+          JONI_KEVIN_EVERY: "3"       # at most one creative proposal every 3 cycles (bounds spend)
           JONI_DOKTORES: "1"
           # Semantic proposal layer ON: the pinned models read sources and *propose* candidate
           # claims through the Layer-9 gate (never authoritative). Granite 4.1 8B for structured

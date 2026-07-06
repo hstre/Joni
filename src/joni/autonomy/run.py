@@ -296,6 +296,17 @@ def one_cycle() -> dict:
     #     auto-confirmed). Joni does not only react to sources.
     invented = invent.invent(cs, extensions, proto, cycle)
 
+    # 4c-kevin. Kevin's creative arm, re-wired (operator: "Kevin muss wieder rein damit Joni
+    #     langfristig nicht degeneriert") — endogenous novelty against stagnation. Divergent /
+    #     far-analogy hypotheses from Joni's OWN state, entering as non-authoritative kevin-origin
+    #     candidates (taint-flagged, requires_review; Kevin never confirms/promotes). Guardrailed:
+    #     an empty/vanished model output is logged as "NO proposal" (never silent — the exact bug
+    #     that got this arm retired), it is extension_review-benefit-reviewed (auto-retired if it
+    #     earns nothing), and the collapse panel measures whether it lifts novelty or adds noise.
+    from . import kevin_llm
+    kevin_out = kevin_llm.propose(cs, extensions, proto, cycle,
+                                  budget=budget, runs_per_week=runs_per_week())
+
     # 4c-desi. DESi predicts the solution-space gaps (blind-spot coverage over the Layer-9 gap
     #     snapshot, now fed by the sealed trial events) - the 'probability islands' where a missing
     #     thinking-move on a real target most likely unlocks progress. Surfaced for the site, and
@@ -476,6 +487,7 @@ def one_cycle() -> dict:
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
             "days_running": days_running, "reviewed": reviewed,
             "developed": developed, "invented": invented, "methods": found_methods,
+            "kevin": kevin_out,
             "trialed": trialed, "emerged": emerged, "read": read, "strategy": strategy_out,
             "strengthened": strengthened, "regulated": regulated, "vitality": vitality,
             "reconsolidated": reconsolidated, "panel": panel, "human_io": human_io,
