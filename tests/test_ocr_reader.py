@@ -89,6 +89,54 @@ def test_broken_backend_fails_closed(tmp_path):
         ocr._reset_for_tests(None)
 
 
+def test_a_transient_backend_error_does_not_burn_the_image(tmp_path):
+    # a backend that raises once then succeeds: the image must NOT be marked processed on the raise,
+    # so the next cycle retries it instead of losing it forever.
+    _img(tmp_path, "a.png")
+    calls = {"n": 0}
+
+    class _Flaky:
+        name = "flaky"
+
+        def transcribe(self, image_path):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise RuntimeError("transient blip")
+            return "The scanned page reports the method improves accuracy in a study."
+
+    ocr._reset_for_tests(_Flaky())
+    try:
+        seen: set[str] = set()
+        assert ocr.read_inbox(tmp_path, seen, limit=2) == []     # raised -> nothing, not processed
+        assert "a.png" not in seen
+        docs = ocr.read_inbox(tmp_path, seen, limit=2)           # retried next cycle -> now read
+        assert docs and "a.png" in seen
+    finally:
+        ocr._reset_for_tests(None)
+
+
+def test_empty_transcription_is_retried_then_given_up(tmp_path):
+    _img(tmp_path, "a.png")
+
+    class _Blank:
+        name = "blank"
+
+        def transcribe(self, image_path):
+            return "   "                                          # reads, but empty
+
+    ocr._reset_for_tests(_Blank())
+    try:
+        seen: set[str] = set()
+        attempts: dict = {}
+        for _ in range(2):
+            assert ocr.read_inbox(tmp_path, seen, limit=2, attempts=attempts, max_attempts=3) == []
+            assert "a.png" not in seen
+        ocr.read_inbox(tmp_path, seen, limit=2, attempts=attempts, max_attempts=3)
+        assert "a.png" in seen                                    # given up after max_attempts
+    finally:
+        ocr._reset_for_tests(None)
+
+
 def test_set_backend_registers_a_real_engine(tmp_path):
     _img(tmp_path, "p.png")
     ocr.set_backend(_StubOCR())             # the seam an operator uses for the Unlimited-OCR model

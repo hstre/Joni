@@ -55,26 +55,17 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
     # pypdf is absent (a clean way to read material offline).
     pdf_ok = pdf.available()
 
-    # OCR fallback (Auftrag #7, OpenRouter file-parser): when a fetched PDF has no text layer (a
-    # SCAN), hand the bytes to OpenRouter so it is transcribed into the normal pipeline. Dormant
-    # unless JONI_OCR_OPENROUTER is on; also becomes the inbox-image OCR backend. Read-layer only.
+    # OCR fallback (Auftrag #7, OpenRouter file-parser): when a fetched/inbox PDF has no text layer
+    # (a SCAN), hand the bytes to OpenRouter so it is transcribed into the normal pipeline. Dormant
+    # unless JONI_OCR_OPENROUTER is on. This is the PDF/scan path ONLY: OpenRouter's file-parser is
+    # PDF-scoped, so raw image files are NOT routed here - they use the local image OCR backend in
+    # ocr.py (step 6). Read-layer only, never lets Joni decide more.
     _ocr = None
     from . import doc_ocr
     if doc_ocr.enabled():
         def _ocr(data, name):
             return doc_ocr.parse(data, name, budget=budget, run_id=f"joni-c{cycle}-ocr",
                                  store_dir=paths.model_calls, runs_per_week=runs_per_week)
-        from pathlib import Path as _Path
-
-        from . import ocr as _ocr_port
-
-        class _ORBackend:
-            name = "openrouter-file-parser"
-
-            def transcribe(self, image_path: str) -> str:
-                p = _Path(image_path)
-                return _ocr(p.read_bytes(), p.name) or ""
-        _ocr_port.set_backend(_ORBackend())
 
     read_keys = set(extensions.get("pdf_read", []))
     url_seen = set(extensions.get("pdf_urls_seen", []))
@@ -82,6 +73,8 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
     md_seen = set(extensions.get("md_inbox_seen", []))
     tex_seen = set(extensions.get("tex_inbox_seen", []))
     ocr_seen = set(extensions.get("ocr_inbox_seen", []))
+    pdf_tries = dict(extensions.get("pdf_inbox_attempts", {}))   # bounded retry: scanned inbox PDF
+    img_tries = dict(extensions.get("ocr_inbox_attempts", {}))  # bounded retry: inbox images
     papers = claims = 0
 
     def ingest(doc, topic: str, label: str) -> None:
@@ -96,8 +89,13 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
                          f"read full text of {label}: {len(sents)} claim(s) "
                          f"[{doc.source_id}]", refs={"url": doc.url, "topic": topic})
 
+    # A pinned PDF can be read either by pypdf (text layer) OR by the OCR fallback (a scan) - so the
+    # PDF steps run whenever EITHER is available, not only when pypdf is (else a pure-OCR env would
+    # never read a paper).
+    pdf_readable = pdf_ok or _ocr is not None
+
     # 1. arXiv full text for relevant hits.
-    if pdf_ok and online:
+    if pdf_readable and online:
         for item, rel in judged:
             if papers >= max_papers:
                 break
@@ -109,7 +107,7 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
                 ingest(doc, rel.topic or "unsorted", item.title[:60])
 
     # 2. a queue of direct PDF urls (incl. SSRN download links).
-    if pdf_ok and online:
+    if pdf_readable and online:
         for url in _load_urls(paths.pdf_urls):
             if papers >= max_papers + max_urls or url in url_seen:
                 continue
@@ -119,9 +117,11 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
                 topic = (cs.topics() or ["unsorted"])[0]
                 ingest(doc, topic, url.rsplit("/", 1)[-1][:60])
 
-    # 3. local PDF inbox (works offline too).
-    if pdf_ok:
-        for doc in pdf.read_inbox(paths.pdf_inbox, inbox_seen, limit=max_urls):
+    # 3. local PDF inbox (works offline too). A SCANNED inbox PDF - the likeliest way a human hands
+    # Joni a scan - is read via the OCR fallback, not silently dropped.
+    if pdf_readable:
+        for doc in pdf.read_inbox(paths.pdf_inbox, inbox_seen, limit=max_urls,
+                                  ocr_fallback=_ocr, attempts=pdf_tries):
             topic = (cs.topics() or ["unsorted"])[0]
             ingest(doc, topic, doc.title[:60])
 
@@ -134,8 +134,10 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
         ingest(doc, (cs.topics() or ["unsorted"])[0], doc.title[:60])
 
     # 6. local image/scanned inbox via OCR (Auftrag #161). Optional, fail-closed: with no OCR
-    # backend installed this reads nothing and the cycle is unchanged.
-    for doc in ocr.read_inbox(paths.pdf_inbox, ocr_seen, limit=max_urls):
+    # backend installed this reads nothing and the cycle is unchanged. This is the IMAGE path (png/
+    # jpg/...); it uses the local image backend (pytesseract or an operator-registered engine), NOT
+    # the OpenRouter file-parser, which is PDF-scoped.
+    for doc in ocr.read_inbox(paths.pdf_inbox, ocr_seen, limit=max_urls, attempts=img_tries):
         ingest(doc, (cs.topics() or ["unsorted"])[0], doc.title[:60])
 
     extensions["pdf_read"] = sorted(read_keys)[-2000:]
@@ -144,4 +146,6 @@ def read_papers(cs, judged, extensions: dict, proto, cycle: int, paths, *, onlin
     extensions["md_inbox_seen"] = sorted(md_seen)[-2000:]
     extensions["tex_inbox_seen"] = sorted(tex_seen)[-2000:]
     extensions["ocr_inbox_seen"] = sorted(ocr_seen)[-2000:]
+    extensions["pdf_inbox_attempts"] = {k: v for k, v in pdf_tries.items() if v > 0}
+    extensions["ocr_inbox_attempts"] = {k: v for k, v in img_tries.items() if v > 0}
     return {"papers": papers, "claims": claims, "available": pdf_ok, "ocr": ocr.available()}

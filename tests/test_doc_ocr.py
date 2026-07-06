@@ -30,6 +30,34 @@ def test_doc_ocr_parses_via_file_parser_and_is_capture_stable(tmp_path, monkeypa
     assert calls["n"] == 2
 
 
+def test_ocr_uses_a_large_transcription_budget_not_the_768_proposal_cap(monkeypatch):
+    from joni.autonomy import model_profile
+    # the proposal profile caps completions at 768 tokens - which would truncate a scan at ~2 pages
+    assert model_profile.profile("joni-semantic").sampling.max_tokens == 768
+    # OCR pins its own, much larger echo budget so a full document is not cut off
+    assert doc_ocr._ocr_profile().sampling.max_tokens >= 8000
+    monkeypatch.setenv("JONI_OCR_MAX_TOKENS", "20000")
+    assert doc_ocr._ocr_profile().sampling.max_tokens == 20000
+    # ...but never below the floor, even if misconfigured low
+    monkeypatch.setenv("JONI_OCR_MAX_TOKENS", "10")
+    assert doc_ocr._ocr_profile().sampling.max_tokens == 768
+
+
+def test_ocr_attachment_is_always_pdf_scoped(tmp_path, monkeypatch):
+    # OpenRouter's file-parser is PDF-scoped; parse must send application/pdf, never an image mime
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_OCR_OPENROUTER", "1")
+    seen = {}
+
+    def fake_complete(profile, system, user, attachment=None):
+        seen["file_data"] = attachment["file_data"]
+        return "TEXT"
+
+    monkeypatch.setattr(model_call, "_complete", fake_complete)
+    doc_ocr.parse(b"%PDF-bytes", "scan.png", store_dir=tmp_path)   # even a .png name
+    assert seen["file_data"].startswith("data:application/pdf;base64,")
+
+
 def test_pdf_read_url_uses_ocr_fallback_only_on_a_scanned_pdf(monkeypatch):
     monkeypatch.setattr(pdf, "available", lambda: True)
     monkeypatch.setattr(pdf, "_fetch", lambda url: b"scanned-image-bytes")
@@ -45,6 +73,45 @@ def test_pdf_read_url_uses_ocr_fallback_only_on_a_scanned_pdf(monkeypatch):
     assert seen["args"][0] == b"scanned-image-bytes"    # the raw bytes were handed over
     # unchanged behaviour without a fallback: a scanned PDF stays unreadable (None)
     assert pdf.read_url("http://x/paper.pdf") is None
+
+
+def test_scanned_inbox_pdf_is_ocred_not_silently_dropped(tmp_path, monkeypatch):
+    # a scanned PDF dropped in the inbox: pypdf yields no text, so without a fallback it used to be
+    # marked processed and lost. With the fallback it is transcribed instead.
+    monkeypatch.setattr(pdf, "available", lambda: True)
+    monkeypatch.setattr(pdf, "extract_text", lambda data, **k: "")     # no text layer = a scan
+    (tmp_path / "scan.pdf").write_bytes(b"%PDF-scan")
+    seen: set[str] = set()
+    docs = pdf.read_inbox(tmp_path, seen, ocr_fallback=lambda data, name: "OCR OF THE SCAN")
+    assert [d.text for d in docs] == ["OCR OF THE SCAN"]
+    assert "scan.pdf" in seen                                          # read -> now processed
+
+
+def test_inbox_scan_is_retried_on_a_transient_ocr_miss_then_given_up(tmp_path, monkeypatch):
+    monkeypatch.setattr(pdf, "available", lambda: True)
+    monkeypatch.setattr(pdf, "extract_text", lambda data, **k: "")
+    (tmp_path / "scan.pdf").write_bytes(b"%PDF-scan")
+    seen: set[str] = set()
+    attempts: dict = {}
+    # OCR keeps returning nothing (a transient backend miss): the file is NOT marked processed yet
+    for _ in range(2):
+        assert pdf.read_inbox(tmp_path, seen, ocr_fallback=lambda d, n: None,
+                              attempts=attempts, max_attempts=3) == []
+        assert "scan.pdf" not in seen
+    # ...but after max_attempts empty tries it is given up (so it can't loop / re-charge forever)
+    pdf.read_inbox(tmp_path, seen, ocr_fallback=lambda d, n: None, attempts=attempts,
+                   max_attempts=3)
+    assert "scan.pdf" in seen
+
+
+def test_inbox_pdf_without_ocr_and_no_text_is_marked_processed(tmp_path, monkeypatch):
+    # no OCR path and no text layer -> nothing to do, so mark processed (don't retry forever)
+    monkeypatch.setattr(pdf, "available", lambda: True)
+    monkeypatch.setattr(pdf, "extract_text", lambda data, **k: "")
+    (tmp_path / "empty.pdf").write_bytes(b"%PDF")
+    seen: set[str] = set()
+    assert pdf.read_inbox(tmp_path, seen) == []
+    assert "empty.pdf" in seen
 
 
 def test_pdf_read_url_keeps_the_text_layer_when_present(monkeypatch):

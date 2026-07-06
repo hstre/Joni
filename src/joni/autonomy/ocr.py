@@ -98,7 +98,12 @@ class OcrReader:
 
     backend: OcrBackend
 
-    def read_inbox(self, inbox: Path, processed: set[str], *, limit: int = 2) -> list[Doc]:
+    def read_inbox(self, inbox: Path, processed: set[str], *, limit: int = 2,
+                   attempts: dict | None = None, max_attempts: int = 3) -> list[Doc]:
+        """Transcribe new image files into ``Doc``s. A file is marked *processed* (never retried)
+        once it yielded text, or after ``max_attempts`` empty results - and NOT at all when the
+        backend *raised* (a transient engine/network failure), so a blip does not permanently burn
+        the image. ``attempts`` is a name->count map the caller persists across cycles."""
         if not inbox.exists():
             return []
         files: set[Path] = set()
@@ -110,21 +115,31 @@ class OcrReader:
                 break
             if path.name in processed:
                 continue
-            processed.add(path.name)
             try:
                 text = self.backend.transcribe(str(path)) or ""
-            except Exception:  # noqa: BLE001 - a broken engine fails closed, never breaks the cycle
+            except Exception:  # noqa: BLE001 - a broken/transient engine: don't mark processed, retry
                 continue
             if text.strip():
+                if attempts is not None:
+                    attempts.pop(path.name, None)
+                processed.add(path.name)
                 out.append(Doc(source_id=f"ocr:{path.name}", url=str(path),
                                title=path.stem, text=text))
+            elif attempts is not None:     # read, but empty: retry a few times, then give up
+                attempts[path.name] = attempts.get(path.name, 0) + 1
+                if attempts[path.name] >= max_attempts:
+                    processed.add(path.name)
+            else:
+                processed.add(path.name)          # no retry bookkeeping -> don't loop
         return out
 
 
-def read_inbox(inbox: Path, processed: set[str], *, limit: int = 2) -> list[Doc]:
+def read_inbox(inbox: Path, processed: set[str], *, limit: int = 2, attempts: dict | None = None,
+               max_attempts: int = 3) -> list[Doc]:
     """New image files from the inbox -> transcribed ``Doc``s, deduped by name, bounded by
     ``limit``; ``[]`` when no OCR backend is available (the cycle then reads exactly as before)."""
     backend = _load()
     if backend is None:
         return []
-    return OcrReader(backend).read_inbox(inbox, processed, limit=limit)
+    return OcrReader(backend).read_inbox(inbox, processed, limit=limit, attempts=attempts,
+                                         max_attempts=max_attempts)
