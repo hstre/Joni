@@ -40,6 +40,7 @@ from . import (
     introspect,
     invent,
     layer9_view,
+    method_ledger,
     methods,
     model_call,
     personal_intake,
@@ -361,6 +362,10 @@ def one_cycle() -> dict:
     # warns; never repairs Layer 9). Fail-open. Runs after vitality so it can read that record.
     collapse_panel.run_panel(cs, extensions, proto, cycle, run=window["runs"], paths=p,
                              load_seconds=_load_seconds)
+
+    # Method Zustandsbuch: a READ-ONLY per-method state ledger (Auftrag #5) that projects the
+    # sealed trial records into one auditable lifecycle view. Never writes Layer 9. Fail-open.
+    method_ledger.run_ledger(cs, proto, cycle, paths=p)
 
     # 4g-introspect. Self-diagnostic: from his measured state Joni asks 'what isn't working so I can
     #     function optimally, and how to improve it?' The findings feed the topic search (their
