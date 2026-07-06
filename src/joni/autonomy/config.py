@@ -92,6 +92,16 @@ class Paths:
         return self.root / "state" / "collapse_panel.md"
 
     @property
+    def method_ledger(self) -> Path:
+        # Method Zustandsbuch: the current per-method state table (rewritten each cycle).
+        return self.root / "state" / "method_ledger.md"
+
+    @property
+    def method_ledger_series(self) -> Path:
+        # Method Zustandsbuch: append-only per-method state-transition events.
+        return self.root / "state" / "method_ledger.jsonl"
+
+    @property
     def protocol(self) -> Path:
         return self.root / "protocol" / "protocol.jsonl"
 
