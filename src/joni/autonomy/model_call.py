@@ -79,24 +79,40 @@ def _sha(text: str) -> str:
     return hashlib.sha256((text or "").encode("utf-8")).hexdigest()
 
 
-def _complete(profile: ModelProfile, system: str, user: str) -> Raw:
+def _complete(profile: ModelProfile, system: str, user: str, attachment: dict | None = None) -> Raw:
     """The one network seam: a single OpenAI-compatible call to the profile's pinned provider.
     No fallback. Raises on any error - the caller decides what to do, but never switches model.
-    Returns the full evidence (``Raw``); tests may monkeypatch this to return a plain ``str``."""
+    Returns the full evidence (``Raw``); tests may monkeypatch this to return a plain ``str``.
+
+    ``attachment`` (optional): a document to parse via OpenRouter's file-parser plugin -
+    ``{filename, file_data (data-URI/url), engine}``. When present the user turn carries a ``file``
+    content part and the request enables ``plugins:[{id:'file-parser', pdf:{engine}}]`` so a PDF or
+    scan is transcribed by the provider (cloudflare-ai free, mistral-ocr for scans). Still one call,
+    same pinned config, no fallback."""
     import os
 
     from openai import OpenAI
     key = os.getenv(profile.key_env) if profile.key_env else "local"
     if not key:
         raise RuntimeError(f"no key in {profile.key_env} for profile {profile.name}")
-    client = OpenAI(api_key=key, base_url=profile.base_url, timeout=30)
+    client = OpenAI(api_key=key, base_url=profile.base_url, timeout=90 if attachment else 30)
+    if attachment:
+        user_content = [
+            {"type": "text", "text": user},
+            {"type": "file", "file": {"filename": attachment["filename"],
+                                      "file_data": attachment["file_data"]}}]
+        extra = {"plugins": [{"id": "file-parser",
+                              "pdf": {"engine": attachment.get("engine", "cloudflare-ai")}}]}
+    else:
+        user_content, extra = user, None
     resp = client.chat.completions.create(
         model=profile.served_slug,
         temperature=profile.sampling.temperature,
         max_tokens=profile.sampling.max_tokens,
         seed=profile.sampling.seed,
         messages=[{"role": "system", "content": system},
-                  {"role": "user", "content": user}])
+                  {"role": "user", "content": user_content}],
+        extra_body=extra)
     return _to_raw(resp)
 
 
@@ -130,10 +146,14 @@ def _store(store_dir: Path) -> tuple[Path, Path]:
 
 
 def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_dir: Path,
-         escalation_reason: str | None = None, budget=None,
-         runs_per_week: int = 0) -> tuple[str | None, Capture | None]:
+         escalation_reason: str | None = None, budget=None, runs_per_week: int = 0,
+         attachment: dict | None = None) -> tuple[str | None, Capture | None]:
     """Run (or replay) one pinned call. Returns ``(output, capture)``; ``(None, None)`` if the
     live call failed (best-effort: no proposal this cycle, never a silent fallback).
+
+    ``attachment`` (optional): a document (its ``sha`` is folded into the replay key, so the same
+    file+prompt replays from cache and is never re-parsed/re-charged) sent through the file-parser
+    plugin (see ``_complete``). This is how OCR/PDF parsing stays capture-stable like every call.
 
     ``escalation_reason`` is recorded in the capture: it names *why* an escalation model (DeepSeek)
     was invoked - a primary Granite call leaves it ``None``. It is metadata only and is NOT part of
@@ -143,7 +163,8 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_di
     A *live* call is only made if ``budget.can_spend(est)`` allows it; otherwise it returns
     ``(None, None)`` (cap reached -> no proposal this cycle, never a fallback). Replays are free and
     never charged. With ``budget=None`` the call is ungoverned (tests / standalone)."""
-    prompt = f"<<SYSTEM>>\n{system}\n<<USER>>\n{user}"
+    att_key = f"\n<<FILE:{attachment['sha']}:{attachment.get('engine', '')}>>" if attachment else ""
+    prompt = f"<<SYSTEM>>\n{system}\n<<USER>>\n{user}{att_key}"
     prompt_sha = _sha(prompt)
     key = _sha(f"{profile.config_sha()}|{prompt_sha}")
     out_dir, log = _store(store_dir)
@@ -181,7 +202,10 @@ def call(profile: ModelProfile, system: str, user: str, *, run_id: str, store_di
         return None, None
 
     try:
-        res = _complete(profile, system, user)
+        # keep the 3-arg seam for the (many) callers/tests that monkeypatch it; only the OCR path
+        # (attachment set) uses the 4-arg form.
+        res = _complete(profile, system, user, attachment) if attachment \
+            else _complete(profile, system, user)
     except Exception:  # noqa: BLE001 - a failed pinned call is "no proposal", never a fallback
         return None, None
     if budget is not None and est > 0:

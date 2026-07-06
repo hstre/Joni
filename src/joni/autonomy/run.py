@@ -208,7 +208,8 @@ def one_cycle() -> dict:
         # Joni reads more full text when his own strategy found his inputs under-framed.
         max_papers = 3 if extensions.get("read_fulltext_priority") else 2
         read = reader.read_papers(cs, judged, extensions, proto, cycle, p,
-                                  online=online(), max_papers=max_papers)
+                                  online=online(), max_papers=max_papers,
+                                  budget=budget, runs_per_week=runs_per_week())
 
     for conflict_id in cs.detect_and_open_conflicts():
         proto.record(cycle, "conflict_open",
