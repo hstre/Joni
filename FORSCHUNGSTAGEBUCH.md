@@ -3050,3 +3050,42 @@ Der Betreiber wählte den **harten Stopp**: Moltbook-Autoposts eskalieren ab jet
 **Plus ein Robustheits-Hinweis:** der Cold-Replay eines vollen Kernels hing lokal >5 min (Tage zuvor ~17s). Der Live-Loop umgeht das per Fast-Load-Sidecar, aber wachsende Cold-Replay-Kosten sind die Wurzel des Juni-Wedge (Eintrag IV/V) — latentes Risiko, kein akutes.
 
 **[Offen]** Der eigentliche Punkt, wie der Betreiber ihn setzte: **Joni trackt keine dieser 7 Metriken als Trend** — ich musste sie ad hoc aus dem Protokoll ziehen. Die Liste ist ein sauberes Spec für ein deterministisches **Collapse-Resistance-Panel**, das der Loop pro Zyklus mitschreibt (wie `vitality`, nur mit diesen Metriken + Schwellen als Frühwarnung). Noch nicht gebaut; der nächste Schritt, sobald der Betreiber es freigibt.
+
+
+
+### Eintrag 2026-07-06 (XXXIX) — Das Collapse-Resistance-Panel gebaut: aus der Ad-hoc-Diagnose ein stehendes, read-only Frühwarnsystem — plus zwei Betreiber-Korrekturen
+
+**[Eingriff]** Der offene Punkt aus Eintrag XXXVIII eingelöst. Der Betreiber gab ein präzises Spec: „Baue ein deterministisches Collapse-Resistance-Panel, **strikt read-only gegenüber Layer 9** — es darf messen, loggen, warnen, aber keine Claims reparieren, keine Topics umsortieren, keine Autoritätsentscheidungen treffen. Keine LLM-Judges in der Metrikberechnung. Keine Selbstdiagnose-Prosa als Datenquelle." Genau so gebaut (`autonomy/collapse_panel.py`).
+
+**Zwei Korrekturen des Betreibers, beide eingearbeitet:**
+- **Die 84%-Forum-Senke nicht relativieren.** Metrik #1 misst die Top-***Bucket***-Dominanz (nicht nur Top-Topic) und **flaggt Sink-Buckets** (forum/misc/unknown) explizit — ein dominierender Sink ist der strukturelle Blindmacher, nicht ein harmloser Fakt. Metrik #2 rechnet Entropy **brutto UND netto** (ohne Sink), damit die Sammelkategorie nichts verschleiert.
+- **Terminologie sauber trennen.** `cycle` (protokoll-kumulativer Zähler) ≠ `run` (`window["runs"]`, Reset pro Fenster) ≠ `self-review` (alle 10 Runs/stündlich). Jede Zeitreihen-Zeile trägt `cycle` **und** `run` — die „434 vs. run 91"-Verwechslung ist damit strukturell ausgeschlossen.
+
+**Die 8 Metriken**, je mit ok/warn/alarm-Schwellen: Top-Bucket-Dominanz (>65/>80%), Entropy netto/brutto, Weak-Claim-Ratio **nach Status** (Level reitet auf active+confirmed — schwache Kandidaten sind okay, schwache „starke" nicht), Degen/undecidable als echte **Counts** (nicht der 0–3-Score allein), Conflict-Graph-**Form** (Tangle-Größe, zyklische Komponenten, worst topic — flache 246 ≠ tiefe Verkettung), Novelty (7-/30-Run-Mittel), Repetition (dup-dev + Self-Model-Re-Mint als historischer Testfall), Cold-Replay-Zeit (Juni-Wedge-Indikator).
+
+**Output:** `state/collapse_series.jsonl` (Zeitreihe) + `state/collapse_panel.md` (Report) + eine `collapse`-Protokollzeile. Verdrahtet read-only in `run.py` nach `vitality`, fail-open. **Das Panel wird nie zur Autorität** — es sagt „hier ist eine Drift-Warnung", nicht „ich repariere den Graphen"; Reparaturen laufen weiter über die bestehenden Gates. Und auf Wunsch aufs Dashboard gebracht (`site.py`-Widget: Gesamtstatus + ein Ampel-Punkt je Metrik).
+
+**[Was das bedeutet]** Aus der spontanen Kritik am HF-„Critical-Collapse"-Muster ist ein echter Mess-Mechanismus geworden: statt die Metriken einmal ad hoc aus dem Protokoll zu ziehen (Eintrag XXXVIII), schreibt der Loop sie jetzt pro Zyklus mit — mit Schwellen als Frühwarnung. Der Vertrag (read-only, kein Layer-9-Write) ist getestet: Objekt-Count vorher == nachher.
+
+### Eintrag 2026-07-06 (XL) — Auftrag #4 war schon gebaut: „erst Feasibility" verhindert den Duplikat-Bau (wie Eintrag XI)
+
+**[Eingriff]** Der Betreiber hat begonnen, Jonis eigene **Aufträge an Claude** abzuarbeiten. Auftrag #4: „Integriere abfragebasierte Literatursynthese ins Lesemodul." Anweisung: „Mach #4, aber erst Feasibility prüfen und designen." Genau diese Regel hat sich sofort bezahlt gemacht.
+
+**[Befund]** `synthesis.py` **ist** bereits die abfragebasierte Literatursynthese (Docstring: „Query-based literature synthesis for the reading layer, IRIS, arXiv:2504.16728"): sie kondensiert die ≥2 Papers, die Joni zu einem rotierenden Topic gefetcht hat, zu **einer** synthetisierten SOURCE-Claim (candidate, conflict-checked, nie confirmed), budget-gemetert, captured, dedupliziert. Verdrahtet in `run.py` (4f-synth), getestet, grün. Es war nur **ausgeschaltet**.
+
+„#4 machen" = ein **Flip, kein Bau** — exakt die Lektion aus Eintrag XI („ein Auftrag, der schon fast erfüllt war"). Ohne den Feasibility-Schritt hätte ich ein vorhandenes, sauberes Modul nachgebaut. Umgesetzt als reiner Schalter: `JONI_LITERATURE_SYNTHESIS=1` (+ `JONI_SYNTHESIS_EVERY=6`).
+
+**[Ehrlicher Scope]** Es vertieft die **Nutzung** des gefetchten Materials (Multi-Source-Synthese statt isolierter Titel), holt aber **keine** neuen Papers — es mildert die Input-Starvation (Eintrag XXXVIII), kehrt sie nicht allein um. Auto-retired von `extension_review`, falls es in einem Fenster keinen Wert bringt.
+
+### Eintrag 2026-07-06 (XLI) — Auftrag #5, das Methoden-Zustandsbuch: diesmal ein echter (kleiner) Bau — ein read-only Projektor über das versiegelte Trial-Ledger
+
+**[Eingriff]** Auftrag #5: „Führe ein Zustandsbuch für die Methoden-Ausmusterung ein." Wieder erst Feasibility — und diesmal ist es **kein** Flip.
+
+**[Befund]** Der Methoden-Lebenszyklus war **auditierbar vorhanden**, aber verstreut: der `METHOD`-Status, die versiegelten `METHOD_TRIAL_EVENT`-Records im append-only Ledger, die Zähler, das Retirement (`retire_junk_methods`). **Was fehlte** = ein konsolidiertes **Pro-Methode-Zustandsbuch**, das diese Signale zu *einer* auditierbaren Historie zusammenzieht. Das ist ein echter, aber kleiner Bau — ein **Projektor, kein neuer Mechanismus**.
+
+**[Bau]** `autonomy/method_ledger.py`, exakt im Muster des Collapse-Panels: read-only, deterministisch, **kein Write nach Layer 9**. Je Methode ein kanonischer Zustand aus Status + Trial-Verdikten:
+`proposed → trialed → ready` (success/partial_success) `| shelved` (no_benefit/harmful — die ehrliche Decken-Null aus den Method-Trial-Einträgen XIV–XXXI) ; `active` (promoted) ; `retired` (rejected). Verdikte kanonisch gelesen: `cs.core.method_trial_events()` → `payload['method_id']`, `payload['decision']['verdict']`.
+
+**Output:** `state/method_ledger.md` (aktuelle Tabelle) + `state/method_ledger.jsonl` (append-only **Übergangs**-Events — nur bei echtem Zustandswechsel, kein Bloat) + eine `method_ledger`-Protokollzeile. Verdrahtet read-only nach dem Collapse-Panel.
+
+**[Prinzip]** Das Zustandsbuch ist ein **View auf das bestehende Ledger, keine neue Quelle der Wahrheit** — die versiegelten Trial-Records bleiben autoritativ; es projiziert sie, entscheidet keine Verdikte, erfindet keine Provenance. Dieselbe Linie wie überall: messen und zeigen, nie sich selbst zur Autorität machen.
