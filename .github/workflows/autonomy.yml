@@ -115,6 +115,18 @@ jobs:
           # and auto-retired by extension_review if it earns no value in a window.
           JONI_LITERATURE_SYNTHESIS: "1"
           JONI_SYNTHESIS_EVERY: "6"          # at most one synthesis every 6 cycles (spend-paced)
+          # SproutRAG candidate extraction ON (Joni's Auftrag #6 · semantics-measurement; module
+          # sprout.py built, wired in projection.py where facets plugs in, tested — a flip). It
+          # builds a hierarchical tree over long sources with the EXISTING embedding projector and
+          # returns coherent multi-sentence candidate spans — EMBEDDINGS ONLY, no model budget.
+          # Benefit-reviewed (sprout_log); auto-retired by extension_review if it earns no value.
+          JONI_SPROUTRAG: "1"
+          # Reconstruction-trick plausibility ranker ON (Joni's Auftrag #2 · conflict-qualifier;
+          # module plausibility.py + qualify.py built, wired in strengthen.py, tested — a flip). It
+          # refines an ambiguous conflict's KIND (flat contradiction vs softer scope-tension) by
+          # ranking a "fit" vs "clash" reconstruction with the captured joni-hard model. Bounded to
+          # a few rankings/cycle, budget-metered; only sets a conflict-kind marker, never resolves.
+          JONI_PLAUSIBILITY_QUALIFIER: "1"
           # Plateau-breaker (deliberately a little into the risk; reflectable + reversible): clock
           # the expensive arms faster so more development happens per cycle, and let a Doktores-
           # COHERENT idea mature on >=1 independent support (not >=2). Nothing is auto-confirmed;
