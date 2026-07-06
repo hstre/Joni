@@ -24,6 +24,7 @@ from pathlib import Path
 
 from .. import desi_link, guard
 from . import (
+    collapse_panel,
     commission,
     core_state,
     desi_semantics,
@@ -114,7 +115,9 @@ def one_cycle() -> dict:
         # Joni picks back up instead of staying stood-down on the old, shorter window.
         window["retired"] = False
 
+    _t_load = datetime.now(UTC)
     cs = core_state.load_or_migrate(p)
+    _load_seconds = (datetime.now(UTC) - _t_load).total_seconds()   # cold-replay early-warning
     cs.set_day(days_running)
     budget = load_budget(p.budget, cap_eur=weekly_budget_eur())
     extensions = _load_json(p.extensions, {})
@@ -353,6 +356,11 @@ def one_cycle() -> dict:
     homeostasis.retire_junk_methods(cs, extensions, proto, cycle)      # drain off-domain methods
     homeostasis.review_numeric_duplicate_conflicts(cs, proto, cycle)   # defuse legacy numeric hards
     vitality = homeostasis.vitality(cs, extensions, proto, cycle)
+
+    # Collapse-Resistance-Panel: a READ-ONLY early-warning over the trajectory (measures, logs,
+    # warns; never repairs Layer 9). Fail-open. Runs after vitality so it can read that record.
+    collapse_panel.run_panel(cs, extensions, proto, cycle, run=window["runs"], paths=p,
+                             load_seconds=_load_seconds)
 
     # 4g-introspect. Self-diagnostic: from his measured state Joni asks 'what isn't working so I can
     #     function optimally, and how to improve it?' The findings feed the topic search (their

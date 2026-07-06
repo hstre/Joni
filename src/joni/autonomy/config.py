@@ -82,6 +82,16 @@ class Paths:
         return self.root / "state" / "personal_reconfirm.md"
 
     @property
+    def collapse_series(self) -> Path:
+        # Collapse-Resistance-Panel: append-only machine-readable time series (one row per cycle).
+        return self.root / "state" / "collapse_series.jsonl"
+
+    @property
+    def collapse_panel(self) -> Path:
+        # Collapse-Resistance-Panel: the short human/site summary of the latest row.
+        return self.root / "state" / "collapse_panel.md"
+
+    @property
     def protocol(self) -> Path:
         return self.root / "protocol" / "protocol.jsonl"
 
