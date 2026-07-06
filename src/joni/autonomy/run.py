@@ -95,6 +95,15 @@ def _save_json(path: Path, data) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _last_collapse(p) -> dict:
+    """The latest Collapse-Resistance-Panel row for the dashboard. Fail-open (read-only)."""
+    try:
+        lines = p.collapse_series.read_text(encoding="utf-8").splitlines()
+        return json.loads(lines[-1]) if lines else {}
+    except Exception:  # noqa: BLE001 - the dashboard must render even without a panel row
+        return {}
+
+
 def one_cycle() -> dict:
     p = paths()
     # 0. Fail-safe governance check: never proceed on a tampered core.
@@ -615,6 +624,7 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
         "telemetry": tele,
         "commissions_done": commissions_done if isinstance(commissions_done, list) else [],
         "ideas": _ideas(cs, extensions),
+        "collapse": _last_collapse(p),
     })
     # The human-facing Layer-9 map (living map, not a logfile).
     layer9_view.render(p.docs_layer9, {

@@ -293,6 +293,27 @@ def build(data: dict) -> str:
         f"unsupported idea(s) · epistemically-usable {eu_pct} · stagnation "
         f"{esc(vit.get('stagnation_cycles',0))} cycle(s)</div>" if vit else "")
 
+    # Collapse-Resistance-Panel: a compact read-only status widget (overall + per-metric dots).
+    cp = data.get("collapse") or {}
+    collapse_html = ""
+    if cp.get("metrics"):
+        _lc = {"ok": "var(--good)", "warn": "var(--warn)", "alarm": "var(--rej)"}
+        _labels = {"top_bucket_dominance": "Bucket", "topic_entropy": "Entropy",
+                   "weak_claim_ratio": "Weak", "degeneracy": "Degen",
+                   "conflict_depth": "Conflict", "novelty": "Novelty",
+                   "repetition": "Repeat", "cold_replay": "Replay"}
+        _m = cp["metrics"]
+        _dots = "".join(
+            f"<span class=chip style='border-color:{_lc.get(_m[k].get('level'),'var(--warn)')}'>"
+            f"{lab}</span>"
+            for k, lab in _labels.items() if k in _m)
+        _oc = _lc.get(cp.get("overall"), "var(--warn)")
+        collapse_html = (
+            f"<div class=note style='margin-top:8px'>Collapse-Resistance "
+            f"<b style='color:{_oc}'>{esc(str(cp.get('overall','—')).upper())}</b> "
+            f"<span class=src>(read-only Frühwarnung — misst &amp; warnt, repariert nichts)</span>"
+            f"<div style='margin-top:4px'>{_dots}</div></div>")
+
     def _movements(entry) -> str:
         return "".join(
             f"<div class=movement><h3>{esc(sec.get('title',''))}</h3>"
@@ -442,6 +463,7 @@ what is uncertain, what contradicts, and what changed.</p>
     <div class=note>Routing engine: <b>{esc(s.get('routing_engine','?'))}</b>
       · day {esc(s.get('days_running','?'))} of the week{route_line}</div>
     {vit_line}
+    {collapse_html}
     <div style=margin-top:12px><b>topics tracked</b><br>{topics}</div>
     <div style=margin-top:10px><b>self-added topics</b><br>{added}</div>
   </div>

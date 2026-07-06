@@ -53,3 +53,17 @@ def test_site_panel_card_is_empty_until_a_round_happens():
     html = site.build(_data({}))
     assert "Expertenrunde" in html
     assert "Noch keine Runde" in html
+
+
+def test_site_shows_collapse_resistance_widget():
+    data = _data({})
+    data["collapse"] = {"overall": "warn", "metrics": {
+        "top_bucket_dominance": {"level": "alarm"}, "novelty": {"level": "warn"},
+        "degeneracy": {"level": "ok"}, "conflict_depth": {"level": "ok"},
+        "topic_entropy": {"level": "ok"}, "weak_claim_ratio": {"level": "ok"},
+        "repetition": {"level": "ok"}, "cold_replay": {"level": "ok"}}}
+    html = site.build(data)
+    assert "Collapse-Resistance" in html and "WARN" in html
+    assert "Bucket" in html and "Novelty" in html            # per-metric dots render
+    # backward-compatible: without a collapse row, no widget and no crash
+    assert "Collapse-Resistance" not in site.build(_data({}))
