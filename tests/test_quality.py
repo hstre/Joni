@@ -93,3 +93,23 @@ def test_hypothesis_admissible_holds_off_domain_subjects(monkeypatch):
         "Across my routing claims, 'cotton' recurs as a through-line.") is False
     assert quality.hypothesis_admissible(
         "Across my routing claims, 'retrieval' recurs as a through-line.") is True
+
+
+def test_substantive_reply_drops_pure_chatter():
+    # agreement / emoji / filler carry no content words -> not worth minting as a claim
+    for t in ("you're right", "lol +1", "👍", "agreed", "thanks!", "same here", "", "haha :)"):
+        assert not quality.substantive_reply(t), t
+
+
+def test_substantive_reply_keeps_real_content():
+    # anything with a couple of meaningful content words passes (even terse critique)
+    for t in ("your drift metric ignores seasonality",
+              "routing hurts latency under load",
+              "retrieval calibration matters"):
+        assert quality.substantive_reply(t), t
+
+
+def test_content_terms_strips_non_words():
+    assert quality.content_terms("lol +1 👍 the model") == []      # all filler/stopwords/digits
+    assert quality.content_terms("drift ignores seasonality") == [
+        "drift", "ignores", "seasonality"]

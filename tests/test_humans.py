@@ -73,6 +73,44 @@ def test_inbox_ingestion_is_deduped(tmp_path):
     assert first["heard"] == 1 and second["heard"] == 0   # the same reply is not re-heard
 
 
+def test_forum_chatter_in_a_sink_bucket_is_heard_but_not_minted(tmp_path):
+    """Substance gate: agreement/emoji/filler that also failed to route to a real topic is heard
+    once (deduped) but not minted as a candidate claim - so it stops flooding the sink bucket."""
+    cs = CoreState(seed_core())
+    inbox = [
+        {"platform": "hacker_news", "handle": "a", "text": "you're right"},
+        {"platform": "reddit", "handle": "b", "text": "lol +1"},
+        {"platform": "moltbook", "handle": "c", "text": "👍"},
+        {"platform": "hacker_news", "handle": "d", "text": "agreed"},
+    ]
+    (tmp_path / "forum_inbox.json").write_text(json.dumps(inbox))
+    out = humans.ingest_inbox(cs, {}, _Proto(), 1, tmp_path / "forum_inbox.json")
+    assert out["heard"] == 0                          # nothing minted as a claim
+    assert out["dropped"] == 4                        # all four gated as chatter
+
+
+def test_substantive_forum_reply_is_still_minted(tmp_path):
+    """A reply that carries real content passes the bar even when it lands in the sink bucket -
+    the gate is conservative and never drops genuine (even terse) critique."""
+    cs = CoreState(seed_core())
+    inbox = [{"platform": "reddit", "handle": "critic",
+              "text": "your drift metric ignores seasonality"}]
+    (tmp_path / "forum_inbox.json").write_text(json.dumps(inbox))
+    out = humans.ingest_inbox(cs, {}, _Proto(), 1, tmp_path / "forum_inbox.json")
+    assert out["heard"] == 1 and out["dropped"] == 0
+
+
+def test_on_topic_reply_passes_the_gate_regardless_of_length(tmp_path):
+    """A reply routed to a real topic (explicit topic here) is kept even if it is terse - the
+    substance bar only bites replies that ALSO fell into a sink bucket."""
+    cs = CoreState(seed_core())
+    cs.learn("routing reduces latency", "routing")
+    inbox = [{"platform": "reddit", "handle": "u", "topic": "routing", "text": "no"}]
+    (tmp_path / "forum_inbox.json").write_text(json.dumps(inbox))
+    out = humans.ingest_inbox(cs, {}, _Proto(), 1, tmp_path / "forum_inbox.json")
+    assert out["heard"] == 1 and out["dropped"] == 0
+
+
 def test_a_predecessor_thread_reaction_is_marked_in_provenance():
     # a reaction to a legacy (willy-era) post is still a plain SOURCE, but carries an extra,
     # auditable origin id so Joni can tell it apart from a reaction to his own post
