@@ -81,12 +81,13 @@ def ingest_inbox(cs, extensions: dict, proto, cycle: int, inbox_path: Path) -> d
 
     Returns what was heard and how it was treated - including any contradiction it opened
     (which is *not* resolved in the human's favour)."""
+    from . import quality
     inbox = _load(inbox_path, [])
     if not isinstance(inbox, list):
         return {"heard": 0, "conflicts": 0}
     seen = set(extensions.setdefault("forum_inbox_seen", []))
     log = extensions.setdefault("forum_heard", [])
-    heard = 0
+    heard = dropped = 0
     before = len(cs.core.open_conflicts())
 
     for msg in inbox:
@@ -101,6 +102,16 @@ def ingest_inbox(cs, extensions: dict, proto, cycle: int, inbox_path: Path) -> d
         if fp in seen:
             continue
         topic = str(msg.get("topic") or _topic_for(cs, text))
+        # Substance gate: a reply that did not route to a real topic (it fell into the 'forum'
+        # sink or a reserved label) AND carries no real content is conversational chatter - heard
+        # once (deduped) but *not minted* as a candidate claim, so agreement/emoji/filler no longer
+        # floods the sink bucket. On-topic or substantive replies pass untouched. Deterministic, no
+        # LLM, non-destructive - existing claims are never affected.
+        is_sink = topic == "forum" or quality.is_reserved_topic(topic)
+        if is_sink and not quality.substantive_reply(text):
+            seen.add(fp)
+            dropped += 1
+            continue
         origin = str(msg.get("origin", "forum"))
         cid = cs.hear(text, topic, handle=handle, platform=platform, origin=origin)
         seen.add(fp)
@@ -121,10 +132,17 @@ def ingest_inbox(cs, extensions: dict, proto, cycle: int, inbox_path: Path) -> d
                      f"{conflict_id} - a human input contradicts a held claim; held open, "
                      "not decided in the human's favour")
 
+    if dropped:
+        extensions["forum_dropped"] = int(extensions.get("forum_dropped", 0) or 0) + dropped
+        proto.record(cycle, "note",
+                     f"forum substance-gate: {dropped} chatter reply(ies) heard but not minted "
+                     "(sink bucket, below substance bar) - keeps the graph from filling with "
+                     "conversational noise")
+
     extensions["forum_inbox_seen"] = sorted(seen)[-3000:]
     extensions["forum_heard"] = log[-200:]
     after = len(cs.core.open_conflicts())
-    return {"heard": heard, "conflicts": max(0, after - before)}
+    return {"heard": heard, "conflicts": max(0, after - before), "dropped": dropped}
 
 
 def ingest_replies_text(text: str) -> list[dict]:
@@ -522,6 +540,7 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths, platforms, live:
     _save(paths.forum_outbox, extensions.get("forum_outbox", []))
     _write_post_sheet(paths, extensions.get("forum_outbox", []))
     return {"heard": heard["heard"], "conflicts": heard["conflicts"],
+            "dropped": heard.get("dropped", 0),
             "drafted": len(drafted), "posted": posted, "folded": folded,
             "pulled": pulled, "registry": registry, "live": live}
 

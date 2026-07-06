@@ -140,6 +140,32 @@ def is_substantive_hypothesis(text: str) -> bool:
     return all(is_meaningful_term(s) for s in subs) if subs else True
 
 
+# A forum reply must clear a low substance bar before it is minted as a candidate claim, so pure
+# conversational chatter ('you're right', 'lol', '+1', a thumbs-up) does not flood the graph. The
+# bar is deliberately *conservative* - it only drops replies with almost no content words, so real
+# (even terse) critique is always kept. The caller applies it ONLY to replies that also fell into a
+# sink bucket, so an on-topic reply passes regardless (see ``humans.ingest_inbox``).
+_MIN_REPLY_CONTENT_WORDS = 2
+_WORD = re.compile(r"[A-Za-z][A-Za-z-]*")
+
+
+def content_terms(text: str) -> list[str]:
+    """The meaningful (non-stopword, non-artifact) content words in free text - digits, ``+1``,
+    emoji and punctuation drop out, so ``'lol +1 👍'`` yields ``[]``."""
+    return [w for w in _WORD.findall(text or "") if is_meaningful_term(w)]
+
+
+def substantive_reply(text: str) -> bool:
+    """Does a forum reply carry enough content to be worth minting as a candidate claim?
+
+    Conservative and deterministic (no LLM): True unless the reply has fewer than a couple of
+    meaningful content words - which is what pure agreement/emoji/filler ('you're right', 'lol',
+    '+1', a thumbs-up) looks like. Anything with real content words passes, so a terse-but-real
+    critique is never dropped. The caller only applies this bar to a reply that *also* fell into a
+    sink bucket, so an on-topic reply is kept regardless."""
+    return len(content_terms(text)) >= _MIN_REPLY_CONTENT_WORDS
+
+
 def _contrastive_on_domain(probe: str, margin: float | None) -> bool:
     """True unless ``probe`` is *clearly* closer to an off-domain anchor than to any in-domain
     one. **Fail-open** without an embedder - a measurement is never replaced by a lexical guess."""
