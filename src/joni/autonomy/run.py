@@ -43,6 +43,7 @@ from . import (
     method_ledger,
     methods,
     model_call,
+    persona,
     personal_intake,
     projection,
     reader,
@@ -441,6 +442,13 @@ def one_cycle() -> dict:
                                         "invented": invented, "emerged": emerged,
                                         "personal": guard.usable_personal(personal_store.all())})
         reviewed = True
+
+    # 5b. Persona projection: Joni's identity as the *verdichtete Geschichte korrigierter Irrtümer*,
+    #     read-only from the immutable ledger (no new fact, nothing deleted). The deterministic core
+    #     runs every cycle; the LLM phrasing (if enabled) only in the self-review window, to bound
+    #     cost.
+    persona.project(cs, paths=p, self_review=reviewed, budget=budget,
+                    runs_per_week=runs_per_week())
 
     # 6. Reflect through DESi: its real routing table + deterministic tools (free).
     reflect = _reflect(cs, window, budget, judged, proto, cycle)
