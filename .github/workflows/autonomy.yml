@@ -123,6 +123,11 @@ jobs:
           # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard, also used
           # by the Doktores review). Capped per cycle; budget is the hard ceiling. No fallbacks.
           JONI_SEMANTIC_PROPOSALS: "1"
+          # Persona: Joni's identity as the verdichtete Geschichte korrigierter Irrtümer. The
+          # deterministic projection (read-only from the ledger) runs regardless; this flag turns on
+          # the LLM *phrasing* pass that only rephrases each already-fixed lesson (language, not
+          # logic), and only in the self-review window. joni-semantic (prepaid, est €0).
+          JONI_PERSONA_LLM: "1"
           # Query-based literature synthesis ON (Joni's own Auftrag · reader-sources; module built,
           # wired and tested — this only flips its switch). Every JONI_SYNTHESIS_EVERY cycles it
           # condenses the >=2 papers fetched on one rotating topic into ONE synthesised SOURCE claim
