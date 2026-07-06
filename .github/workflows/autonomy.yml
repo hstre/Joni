@@ -56,6 +56,17 @@ jobs:
       - name: Install the local embedding model (the general semantic projector; optional)
         continue-on-error: true
         run: python -m pip install -e ".[embed]"
+      - name: Install a light OCR backend (Joni's Auftrag #7/#161 — the OCR input port, ocr.py)
+        # ocr.py is built and wired into the reader but stays DORMANT (fail-closed) until a backend
+        # is present. The heavy Unlimited-OCR / DeepSeek-OCR model is not CPU/CI-hostable, so — like
+        # facets/sprout landed the fitting part of their papers — this lands the fitting light engine
+        # (tesseract). Then Joni can read scanned/image files dropped in the inbox through the SAME
+        # governed pipeline (candidate claims, gate decides relations). Optional; a failure leaves
+        # the port dormant, never breaks the job.
+        continue-on-error: true
+        run: |
+          sudo apt-get update && sudo apt-get install -y tesseract-ocr
+          python -m pip install pytesseract pillow
       - name: Install Kevin (so he can trial the methods Joni shelves; optional)
         continue-on-error: true
         # Pinned to an IMMUTABLE commit (not the moving branch name) so future Kevin work - on the
