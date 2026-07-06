@@ -138,9 +138,20 @@ def read_arxiv(item, *, ocr_fallback=None) -> PdfText | None:
                     title=getattr(item, "title", ""), ocr_fallback=ocr_fallback)
 
 
-def read_inbox(inbox: Path, processed: set[str], *, limit: int = 3) -> list[PdfText]:
-    """Read new PDFs dropped into a local inbox folder. ``processed`` dedups by filename."""
-    if not available() or not inbox.exists():
+def read_inbox(inbox: Path, processed: set[str], *, limit: int = 3, ocr_fallback=None,
+               attempts: dict | None = None, max_attempts: int = 3) -> list[PdfText]:
+    """Read new PDFs dropped into a local inbox folder. ``processed`` dedups by filename.
+
+    ``ocr_fallback(data, filename) -> str|None`` (optional): a SCANNED inbox PDF (no text layer) is
+    the case a human is most likely to feed Joni, yet pypdf yields nothing for it. When a fallback
+    is given, such a PDF's raw bytes are handed to it (OpenRouter's file-parser) so the scan is
+    still read - the same treatment ``read_url``/``read_arxiv`` already get.
+
+    ``attempts`` (optional): a name->count map for bounded retry. A file is only marked *processed*
+    (never retried) once it yielded text, or once no reader is applicable, or after ``max_attempts``
+    empty tries - so a *transient* OCR failure (a network blip on the OpenRouter backend) does not
+    permanently burn the document."""
+    if (not available() and ocr_fallback is None) or not inbox.exists():
         return []
     out: list[PdfText] = []
     for path in sorted(inbox.glob("*.pdf")):
@@ -148,9 +159,24 @@ def read_inbox(inbox: Path, processed: set[str], *, limit: int = 3) -> list[PdfT
             break
         if path.name in processed:
             continue
-        text = extract_text(path.read_bytes())
-        processed.add(path.name)
+        data = path.read_bytes()
+        text = extract_text(data) if available() else ""
+        ocr_tried = False
+        if not text.strip() and ocr_fallback is not None and data:
+            ocr_tried = True
+            text = ocr_fallback(data, path.name) or ""
         if text.strip():
+            processed.add(path.name)
+            if attempts is not None:
+                attempts.pop(path.name, None)
             out.append(PdfText(source_id=f"inbox:{path.name}", url=str(path),
                                title=path.stem, text=text))
+        elif not ocr_tried:
+            processed.add(path.name)          # no OCR path to try -> nothing more we can do
+        elif attempts is not None:            # OCR was tried and yielded nothing - retry, bounded
+            attempts[path.name] = attempts.get(path.name, 0) + 1
+            if attempts[path.name] >= max_attempts:
+                processed.add(path.name)      # give up after a few tries (don't loop forever)
+        else:
+            processed.add(path.name)          # no retry bookkeeping available -> don't loop
     return out
