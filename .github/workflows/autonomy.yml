@@ -107,6 +107,14 @@ jobs:
           # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard, also used
           # by the Doktores review). Capped per cycle; budget is the hard ceiling. No fallbacks.
           JONI_SEMANTIC_PROPOSALS: "1"
+          # Query-based literature synthesis ON (Joni's own Auftrag · reader-sources; module built,
+          # wired and tested — this only flips its switch). Every JONI_SYNTHESIS_EVERY cycles it
+          # condenses the >=2 papers fetched on one rotating topic into ONE synthesised SOURCE claim
+          # (candidate, conflict-checked, NEVER confirmed) via the captured joni-hard model — a
+          # depth improvement to intake. Budget-metered, capped, deduped per (topic, source-set),
+          # and auto-retired by extension_review if it earns no value in a window.
+          JONI_LITERATURE_SYNTHESIS: "1"
+          JONI_SYNTHESIS_EVERY: "6"          # at most one synthesis every 6 cycles (spend-paced)
           # Plateau-breaker (deliberately a little into the risk; reflectable + reversible): clock
           # the expensive arms faster so more development happens per cycle, and let a Doktores-
           # COHERENT idea mature on >=1 independent support (not >=2). Nothing is auto-confirmed;
