@@ -87,10 +87,11 @@ def test_a_revised_self_model_claim_is_a_persona_correction():
 
 # --- crystallisation (the three triggers) ------------------------------------ #
 
-def _corr(theme, kind="superseded", *, via_conflict=False, tick=0, after="y", oid="o"):
-    return persona.Correction(obj_id=oid, theme=theme, kind=kind, before="x", trigger="t",
+def _corr(theme, kind="superseded", *, via_conflict=False, tick=0, after="y", oid="o",
+          has_reason=False, trigger="t"):
+    return persona.Correction(obj_id=oid, theme=theme, kind=kind, before="x", trigger=trigger,
                               after=after, tick=tick, via_conflict=via_conflict,
-                              trail_refs=("E-1",))
+                              has_reason=has_reason, trail_refs=("E-1",))
 
 
 def test_threshold_trigger_needs_two_errors_on_a_theme():
@@ -112,6 +113,21 @@ def test_self_review_window_crystallises_the_rest():
     assert persona.crystallize(c, self_review=False) == []
     lessons = persona.crystallize(c, self_review=True)
     assert lessons and lessons[0].trigger_kind == "self_review"
+
+
+def test_anchors_pick_the_most_instructive_not_the_most_recent():
+    # a shallow but very recent rejection must NOT out-anchor an older, instructive correction that
+    # resolved a contradiction with a recorded reason - date plays no role in the choice.
+    shallow_recent = _corr("routing", kind="rejected", oid="a", tick=999, after="",
+                           trigger="verworfen")
+    plain = _corr("routing", oid="b", tick=2)                       # has an 'after' only
+    instructive = _corr("routing", oid="c", tick=1, via_conflict=True, has_reason=True,
+                        trigger="measured: local-first lost under load")
+    lessons = persona.crystallize([shallow_recent, plain, instructive], self_review=False)
+    anchors = {a.obj_id for a in lessons[0].anchors}
+    assert "c" in anchors                       # the most instructive is kept...
+    assert "a" not in anchors                   # ...and recency does not save the shallow one
+    assert lessons[0].anchors[0].obj_id == "c"  # most instructive leads
 
 
 def test_lesson_abstracts_to_two_anchors_but_keeps_the_full_trail():

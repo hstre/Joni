@@ -53,13 +53,14 @@ class Correction:
     after: str                # the belief that replaced it ("" if rejected / unknown - never faked)
     tick: int
     via_conflict: bool        # a resolved conflict drove this correction
+    has_reason: bool = False  # a real reason was recorded (not the fallback naming of the move)
     trail_refs: tuple[str, ...] = ()
 
     def to_dict(self) -> dict:
         return {"obj_id": self.obj_id, "theme": self.theme, "kind": self.kind,
                 "before": self.before[:240], "trigger": self.trigger[:240],
                 "after": self.after[:240], "tick": self.tick, "via_conflict": self.via_conflict,
-                "trail_refs": list(self.trail_refs)}
+                "has_reason": self.has_reason, "trail_refs": list(self.trail_refs)}
 
 
 @dataclass(frozen=True)
@@ -146,15 +147,26 @@ def extract_corrections(cs) -> list[Correction]:
                 before=(getattr(o, "text", "") or "").strip(),
                 trigger=_trigger_text(reason, conflicts, st), after=after,
                 tick=int(getattr(o, "last_changed_tick", 0) or 0),
-                via_conflict=bool(conflicts), trail_refs=trail))
+                via_conflict=bool(conflicts), has_reason=bool(reason or conflicts),
+                trail_refs=trail))
     return out
 
 
+def _instructiveness(c: Correction) -> int:
+    """How much an error *teaches* - not how recent it is. A correction that resolved a real
+    contradiction, carries a recorded reason, and replaced (not merely dropped) a belief is the most
+    instructive; a richer explanation adds a little. Deterministic, integer, date-free."""
+    return (2 * int(c.via_conflict)          # it resolved a genuine contradiction
+            + int(c.has_reason)              # a real reason was recorded (not the fallback)
+            + int(bool(c.after))             # it *revised* a belief, not just discarded one
+            + min(len(c.trigger) // 40, 2))  # a richer explanation, capped so it can't dominate
+
+
 def _rank_anchors(corrections: list[Correction]) -> list[Correction]:
-    """Deterministically pick which errors anchor a lesson: prefer ones that actually revised (have
-    an ``after``), then the richest trigger, then the most recent - stable, no randomness."""
-    return sorted(corrections,
-                  key=lambda c: (bool(c.after), len(c.trigger), c.tick, c.obj_id), reverse=True)
+    """Deterministically pick which errors anchor a lesson: the **most instructive** first (see
+    ``_instructiveness``), NOT the most recent - the lesson keeps the errors that teach most. Ties
+    break on ``obj_id`` for stability; date deliberately plays no role."""
+    return sorted(corrections, key=lambda c: (_instructiveness(c), c.obj_id), reverse=True)
 
 
 def _heuristic(theme: str, corrections: list[Correction], anchors: list[Correction]) -> str:
