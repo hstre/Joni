@@ -46,12 +46,15 @@ _SERIES_CAP = 2000            # keep state/persona.jsonl bounded (it is appended
 
 
 def _substantive_reason(reason: str, obj_id: str) -> bool:
-    """True only for a reason richer than the generic auto-text a bare rejection records
-    (``'C-5 rejected'``). Keeps that boilerplate from lifting the instructiveness score or posing as
-    an explanation - only a real recorded reason (or a resolved conflict) counts as one."""
+    """True only for a reason richer than the generic auto-text the kernel records for a bare
+    transition (``'C-5 rejected'``, ``'C-5 -> superseded'``). Keeps that boilerplate from lifting
+    the instructiveness score or posing as an explanation - only a real recorded reason (or a
+    resolved conflict) counts as one."""
     r = (reason or "").strip().lower()
     oid = (obj_id or "").lower()
-    return bool(r) and r not in {f"{oid} rejected", f"{oid} superseded", "rejected", "superseded"}
+    if not r or r in {f"{oid} rejected", f"{oid} superseded", "rejected", "superseded"}:
+        return False
+    return not r.startswith(f"{oid} ->")          # the CLAIM_REVISE transition message '<id> -> x'
 
 
 @dataclass(frozen=True)
@@ -157,15 +160,21 @@ def extract_corrections(cs) -> list[Correction]:
             # id keeps a real supersede's new claim and yields no 'after' for a bare rejection.
             successors = tuple(sid for sid in (getattr(ev, "output_refs", ()) or ())
                                if sid and sid != o.id) if ev else ()
-            after = next((t for t in (_text_of(s, sid) for sid in successors) if t), "")
             conflicts = resolved_by_claim.get(o.id, [])
+            # Successor = the belief that replaced this one. Prefer the winning claim named in a
+            # resolved conflict's ``resolution`` field (an operator-resolved supersede, the real
+            # 'X → Y'); fall back to a distinct ledger output_ref. A bare rejection has neither.
+            win_id = next((r for cf in conflicts
+                           if (r := getattr(cf, "resolution", None)) and r != o.id), "")
+            after = ((_text_of(s, win_id) if win_id else "")
+                     or next((t for t in (_text_of(s, sid) for sid in successors) if t), ""))
             # A generic auto-reason ('C-5 rejected') is not a real explanation: it neither displays
             # as a trigger nor lifts the instructiveness score. Only a substantive reason (or a
             # resolved conflict) counts.
             substantive = _substantive_reason(reason, o.id)
             trail = tuple(dict.fromkeys(
-                x for x in (getattr(o, "ledger_event", ""), *[c.id for c in conflicts], *successors)
-                if x))
+                x for x in (getattr(o, "ledger_event", ""), win_id,
+                            *[c.id for c in conflicts], *successors) if x))
             out.append(Correction(
                 obj_id=o.id, theme=theme_of(o), kind=st,
                 before=(getattr(o, "text", "") or "").strip(),

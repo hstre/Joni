@@ -26,6 +26,7 @@ from .. import desi_link, guard
 from . import (
     collapse_panel,
     commission,
+    conflict_resolution,
     core_state,
     desi_semantics,
     develop,
@@ -406,6 +407,12 @@ def one_cycle() -> dict:
     #     never auto-confirmed); polite questions are drafted to an outbox; posting stays gated.
     human_io = humans.interact(cs, extensions, proto, cycle, paths=p,
                                platforms=forum_platforms(), live=forum_live())
+
+    # 4i-a2. Operator-in-the-loop conflict resolution: apply any decisions the operator pasted
+    #        (the ONLY path that settles a contradiction - the loop never force-resolves), then
+    #        surface the currently-decidable conflicts. This is what fills the persona's real
+    #        "X -> Y, weil Z" revisions instead of bare rejections.
+    conflict_resolution.interact(cs, extensions, proto, cycle, paths=p)
 
     # 4i-b. Personal Store (docs/PERSONAL_STATE.md): the operator's own statements enter as
     #       CONFIRMED self-claims (the operator is the trusted HUMAN, not a forum SOURCE), the
