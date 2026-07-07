@@ -653,6 +653,8 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
         "commissions_done": commissions_done if isinstance(commissions_done, list) else [],
         "ideas": _ideas(cs, extensions),
         "collapse": _last_collapse(p),
+        "persona": persona.site_lessons(cs),
+        "resolve": conflict_resolution.decidable_conflicts(cs),
     })
     # The human-facing Layer-9 map (living map, not a logfile).
     layer9_view.render(p.docs_layer9, {

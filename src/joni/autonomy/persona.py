@@ -312,6 +312,16 @@ def _out_paths(root: Path) -> _Paths:
     return _Paths(md=state / "persona.md", jsonl=state / "persona.jsonl")
 
 
+def site_lessons(cs, *, max_items: int = 8) -> list[dict]:
+    """The persona lessons as JSON-ready dicts for the public site (read-only, deterministic - no
+    LLM). Fail-open: any error yields an empty list so the dashboard still renders."""
+    try:
+        lessons = crystallize(extract_corrections(cs))
+        return [ls.to_dict() for ls in lessons[:max_items]]
+    except Exception:  # noqa: BLE001 - the site must render even if the projection hiccups
+        return []
+
+
 def render_md(lessons: list[Lesson], corrections: list[Correction], tick: int) -> str:
     lines = [
         "# Jonis Persona — verdichtete Geschichte korrigierter Irrtümer",
