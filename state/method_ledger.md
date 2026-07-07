@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 451 · 204 Methoden** — proposed 203 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 1  
+**Cycle 452 · 206 Methoden** — proposed 205 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 1  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -123,6 +123,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | hacking-as-a-lens | **proposed** | candidate | 0 | — |
 | GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation | **proposed** | candidate | 0 | — |
 | ResearchStudio-Reel: Automate the Last Mile of Research from Paper to Poster, Vi | **proposed** | candidate | 0 | — |
+| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **proposed** | candidate | 0 | — |
+| REDDIT: Correcting Model-Generated Timestamp Drift in ASR without Forgetting via | **proposed** | candidate | 0 | — |
 | Major-project-list | **proposed** | candidate | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
