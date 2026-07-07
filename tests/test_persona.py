@@ -72,6 +72,25 @@ def test_extract_marks_a_rejection_with_no_successor():
     assert "verworfen" in c.trigger                        # falls back to naming the move
 
 
+def test_a_rejections_own_id_in_output_refs_is_not_read_as_a_successor():
+    # regression: a rejection's ledger event lists the rejected claim ITSELF in output_refs
+    # (input==output). The 'after' must stay empty, not echo the claim's own before-text.
+    dead = _claim("C-3", "attention is free", "attention", "rejected", ledger_event="E-1")
+    core = _FakeCore(claims=[dead], ledger=[_event("E-1", "C-3 rejected", output_refs=("C-3",))])
+    c = persona.extract_corrections(_cs(core))[0]
+    assert c.after == ""                                   # own id is not a successor
+    assert bool(c.after) is False
+
+
+def test_a_real_supersede_successor_is_still_read():
+    old = _claim("C-1", "local-first always", "routing", "superseded", ledger_event="E-9")
+    new = _claim("C-2", "load-dependent", "routing", "active")
+    core = _FakeCore(claims=[old, new],
+                     ledger=[_event("E-9", "replaced", output_refs=("C-1", "C-2"))])
+    c = persona.extract_corrections(_cs(core))[0]
+    assert c.after == "load-dependent"                     # the DIFFERENT object is the successor
+
+
 def test_active_and_candidate_claims_are_not_corrections():
     core = _FakeCore(claims=[_claim("C-4", "x", "t", "active"),
                              _claim("C-5", "y", "t", "candidate")])
@@ -210,6 +229,9 @@ def test_real_core_rejected_claims_become_a_lesson():
     themes = {c.theme for c in cor}
     assert "routing" in themes
     assert {a, b} <= {c.obj_id for c in cor}                 # both rejections surfaced
+    # real ledger events list the rejected claim itself in output_refs - it must NOT be read as a
+    # successor (the regression this guards): a real rejection has no 'after'.
+    assert all(c.after == "" for c in cor if c.obj_id in {a, b})
     lessons = persona.crystallize(cor, self_review=False)
     routing = [ls for ls in lessons if ls.theme == "routing"]
     assert routing and routing[0].depth >= 2 and set(routing[0].trail) >= {a, b}
