@@ -287,7 +287,11 @@ def validate(ev: MethodTrialRecorded) -> list[str]:
                         "estimand.decision_rule_id")
 
     # -- legacy: a success needs a VERIFIED artifact, never a run-id ----------------------------- #
-    if ev.legacy and ev.epistemic_result in _REAL_RESULTS:
+    # Gate on "anything but not_evaluated": a legacy event may only carry 'success' (with proof) or
+    # 'not_evaluated'. Testing membership in _REAL_RESULTS (which omits 'inconclusive') let a legacy
+    # 'inconclusive' slip past the contract - harmless downstream, but the check should enforce what
+    # its own message states.
+    if ev.legacy and ev.epistemic_result != "not_evaluated":
         if ev.epistemic_result != "success":
             errs.append("a legacy event may only carry 'success' (with proof) or 'not_evaluated'")
         elif ev.legacy_validation is None or not ev.legacy_validation.is_verified():
