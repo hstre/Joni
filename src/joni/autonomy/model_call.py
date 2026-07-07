@@ -280,7 +280,9 @@ def telemetry(store_dir: Path) -> dict:
         if ts > out["last_call"]:
             out["last_call"] = ts
         is_deepseek = provider == "deepseek"
-        if r.get("escalation_reason") and is_deepseek:
+        # Count each escalation once, on its LIVE record - a replay re-appends the same line and
+        # would otherwise double-count (while est_cost_eur below correctly excludes replays).
+        if r.get("escalation_reason") and is_deepseek and not replayed:
             out["deepseek_escalations"] += 1
         if "granite" in served.lower():
             out["granite_calls"] += 1

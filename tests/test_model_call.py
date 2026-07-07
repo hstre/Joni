@@ -138,6 +138,21 @@ def test_telemetry_reads_real_capture_records(monkeypatch, tmp_path):
     assert model_call.telemetry(tmp_path / "nope")["llm_calls"] == 0
 
 
+def test_replayed_escalation_is_not_double_counted(monkeypatch, tmp_path):
+    # an escalation that happened once and is later replayed from cache must count as ONE
+    # escalation (the replay re-appends a calls.jsonl line), consistent with est_cost_eur which
+    # excludes replays.
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u: "out")
+    hard = model_profile.profile("joni-hard")
+    model_call.call(hard, "sys", "x", run_id="r1", store_dir=tmp_path,
+                    escalation_reason="conflict")
+    model_call.call(hard, "sys", "x", run_id="r2", store_dir=tmp_path,   # same prompt -> replay
+                    escalation_reason="conflict")
+    t = model_call.telemetry(tmp_path)
+    assert t["deepseek_escalations"] == 1                     # counted once, not twice
+    assert t["live_calls"] == 1 and t["cached_calls"] == 1
+
+
 def test_a_failed_call_is_no_proposal_not_a_fallback(monkeypatch, tmp_path):
     def boom(profile, system, user):
         raise RuntimeError("model unavailable")

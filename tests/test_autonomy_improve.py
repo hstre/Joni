@@ -36,6 +36,30 @@ def test_derive_splits_peripheral_and_core():
     assert not core.autonomous           # must not be self-applied
 
 
+def test_routing_note_matches_whole_words_not_the_substring_rout():
+    # 'routine' and 'SproutRAG' contain the substring 'rout' but are NOT about routing - they must
+    # not auto-form a 'frugal model routing' preference.
+    s = seed_identity()
+    for title, summary in [("A routine clinical workflow", "routine handling of sprout samples"),
+                           ("SproutRAG multi-granular retrieval", "sprout candidate extraction")]:
+        item = Item("arxiv", "9", title, "http://x", summary)
+        imps = derive(s, [(item, judge(s, item))])
+        assert not any(i.kind == "note_capability" for i in imps), title
+    # a genuine routing paper DOES form the note
+    item = Item("arxiv", "10", "Model routing for local agents", "http://x", "router selection")
+    assert any(i.kind == "note_capability" for i in derive(s, [(item, judge(s, item))]))
+
+
+def test_core_target_is_the_deterministic_longest_match():
+    # 'operators' contains 'operator' as a substring; the picked target must be the longest (most
+    # specific) match, deterministically, not a hash-order-dependent flip that splits the streak.
+    s = seed_identity()
+    item = Item("arxiv", "11", "New operators for the write path", "http://x",
+                "a study of operators")
+    core = [i for i in derive(s, [(item, judge(s, item))]) if i.kind == "core_change"]
+    assert core and core[0].target == "operators"
+
+
 def test_apply_peripheral_tracks_a_new_topic():
     s = seed_identity()
     ext = {}

@@ -112,7 +112,13 @@ def derive(state: Layer9, judged: list[tuple[Item, Relevance]]) -> list[Improvem
         # match is not enough: the source must use the term in Joni's *core sense*, else it is a
         # coincidence ('operator' in model reduction) and no core-ask is raised.
         if any(trigger in blob for trigger in CORE_TRIGGERS):
-            target = next((t for t in CORE_TRIGGERS if t in blob), "core")
+            # Pick the target DETERMINISTICALLY: the most specific (longest) matching trigger,
+            # broken alphabetically. Iterating the frozenset directly returned a hash-order-
+            # dependent match, so across cycles (each a fresh process, PYTHONHASHSEED unset) the
+            # same paper flipped between 'operator' and 'operators' - splitting the streak in
+            # gate_core_asks so a genuine, recurring core signal never reached a human.
+            target = next((t for t in sorted(CORE_TRIGGERS, key=lambda s: (-len(s), s))
+                           if t in blob), "core")
             refs = _CORE_SENSE.get(target)
             if refs and not quality.is_core_sense(blob, refs[0], refs[1]):
                 continue                        # the keyword is used in an unrelated sense
@@ -129,8 +135,13 @@ def derive(state: Layer9, judged: list[tuple[Item, Relevance]]) -> list[Improvem
                 item.key, item.url))
             seen_kinds.add("track_topic")
 
-    # One capability note per run if any HN/routing-flavoured item showed up.
-    routing = next((i for i, r in judged if "rout" in (i.title + i.summary).lower()), None)
+    # One capability note per run if any routing-flavoured item showed up. Match whole tokens, not
+    # the substring "rout" - that false-matched "routine" and "SproutRAG" (which Joni literally
+    # works on), silently auto-forming a bogus 'frugal model routing' preference from an unrelated
+    # paper.
+    _ROUTING_WORDS = {"routing", "router", "routers", "routes", "route"}
+    routing = next((i for i, r in judged
+                    if _content(i.title + " " + i.summary) & _ROUTING_WORDS), None)
     if routing is not None:
         out.append(Improvement(
             "note_capability", "frugal model routing", "router-note",

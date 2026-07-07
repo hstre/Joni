@@ -43,9 +43,13 @@ def test_review_records_protocol_and_narrative():
 
 def test_review_is_a_detailed_first_person_report():
     cs = _cs()
-    cs.learn("cheap local routing beats a remote call for short tasks", "routing")
-    h = cs.hypothesize("Hypothesis: routing discipline transfers to memory", "routing",
-                       parents=[cs.active_claims()[0].id])
+    a = cs.learn("cheap local routing beats a remote call for short tasks", "routing")
+    b = cs.learn("continuity needs an external memory across sessions", "memory")
+    # a genuine invent()-style cross-topic bridge: a compound 'routing+memory' topic - only this
+    # earns the "I bridged it across two of my own topics" narrative (a single-topic hypothesis
+    # must NOT be described as a self-bridge).
+    h = cs.hypothesize("Hypothesis: routing discipline transfers to memory", "routing+memory",
+                       parents=[a, b])
     review = self_review.run_review(
         cs, {"topics_added": ["calibration"]}, _Proto(), 1, days=2, spend=0.0,
         context={"invented": {"hypotheses": 1}, "developed": {"links": 1},

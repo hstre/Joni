@@ -184,6 +184,14 @@ class CoreState:
 
     def open_conflict(self, claim_ids, *, severity: str = "soft",
                       conflict_kind: str = "unqualified") -> str:
+        # Idempotent: one conflict object per claim pair. Both detect_and_open_conflicts and the
+        # semantic develop step can flag the same pair (a lexical clash that is also a semantic
+        # contradiction); without this guard that opened two Conflict nodes for one contradiction,
+        # double-counting it downstream. If a conflict for this pair already exists, reuse it.
+        pair = frozenset(claim_ids)
+        for x in self.core.all(l9.ObjectType.CONFLICT):
+            if frozenset(x.claim_ids[:2]) == pair:
+                return x.id
         self._op(ProposalType.STATE_REVISION_PROPOSAL, Operator.CONFLICT_OPEN,
                  {"claim_ids": list(claim_ids), "severity": severity,
                   "conflict_kind": conflict_kind}, targets=tuple(claim_ids))
@@ -211,7 +219,17 @@ class CoreState:
         Honest self-organisation: it builds the evidence web but does NOT review or
         confirm anything - confirmation still needs an independent human reviewer.
         ``relation`` is ``supports`` for strong overlap, else ``contextualizes``.
-        """
+
+        **Idempotent**: an identical link (same claim, same supporter, same relation) is not
+        attached twice - so a pair re-encountered after a bounded dedup-set truncation cannot
+        inflate the raw support count with duplicate links. Returns the existing link's id."""
+        marker = f"{relation} via {by_claim.id}:"
+        ev_by_id = {e.id: e for e in self.core.all(l9.ObjectType.EVIDENCE)}
+        for el in self.core.all(l9.ObjectType.EVIDENCE_LINK):
+            if el.claim_id == claim_id and el.relation.value == relation:
+                ev = ev_by_id.get(el.evidence_id)
+                if ev is not None and (getattr(ev, "content", "") or "").startswith(marker):
+                    return el.id                  # already corroborated by this supporter+relation
         self.core.submit(make_proposal(
             ProposalType.CLAIM_PROPOSAL, Operator.EVIDENCE_ATTACH,
             payload={"content": f"{relation} via {by_claim.id}: {by_claim.text}",

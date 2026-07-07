@@ -93,3 +93,30 @@ def test_cycle_reports_development(monkeypatch, tmp_path):
     summary = one_cycle()
     assert "developed" in summary
     assert "evidence links" in (tmp_path / "docs" / "index.html").read_text()
+
+
+def test_corroborate_is_idempotent():
+    # a re-encountered pair (e.g. after a bounded dedup-set truncation) must not attach a second
+    # identical support link and inflate the raw support count.
+    cs = CoreState(l9.Layer9())
+    a = cs.learn("routing reduces latency", "routing")
+    b = cs.learn("routing helps on short tasks", "routing")
+    id1 = cs.corroborate(a, cs.core.objects[b], relation="supports")
+    id2 = cs.corroborate(a, cs.core.objects[b], relation="supports")
+    assert id1 == id2                                        # same link returned, not a new one
+    links = [el for el in cs.core.all(l9.ObjectType.EVIDENCE_LINK) if el.claim_id == a]
+    assert len(links) == 1                                   # exactly one support link
+
+
+def test_open_conflict_is_deduped_per_pair():
+    # detect + the semantic develop step can both flag the same pair; only ONE conflict object
+    # should exist for it (no double-counting a single contradiction).
+    cs = CoreState(l9.Layer9())
+    a = cs.learn("routing is always local-first", "routing")
+    b = cs.learn("routing is never local-first", "routing")
+    c1 = cs.open_conflict((a, b), severity="hard")
+    c2 = cs.open_conflict((a, b), severity="soft")          # same pair again
+    assert c1 == c2
+    conflicts = [x for x in cs.core.all(l9.ObjectType.CONFLICT)
+                 if frozenset(x.claim_ids[:2]) == frozenset((a, b))]
+    assert len(conflicts) == 1

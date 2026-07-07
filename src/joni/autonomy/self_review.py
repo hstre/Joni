@@ -162,8 +162,13 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
     if emerged.get("method"):
         interest.append(f"I also noticed “{emerged['method']}” works as a lens across more than "
                         "one of my topics, so I abstracted it into a method for Kevin to try.")
-    if invented.get("hypotheses") and hyps:
-        h = max(hyps, key=lambda c: int(c.id.split("-")[-1]))
+    # Only claim "a guess I made myself, bridged across two of my own topics" about an actual
+    # invent() hypothesis - those carry a compound 'topicA+topicB' topic. Picking the globally
+    # newest hypothesis instead attributed Kevin's (model-origin) or emerge's (single-topic) claims
+    # to Joni's own invention - a false first-person statement.
+    bridges = [c for c in hyps if "+" in (getattr(c, "topic", "") or "")]
+    if invented.get("hypotheses") and bridges:
+        h = max(bridges, key=lambda c: int(c.id.split("-")[-1]))
         interest.append("What I am most pleased with is a guess I made myself: "
                         f"“{h.text}”. Nobody handed me that — I bridged it across "
                         "two of my own topics, and I am holding it only as a candidate until it "
