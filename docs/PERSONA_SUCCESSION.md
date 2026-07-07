@@ -56,3 +56,26 @@ im selben „you post, Joni writes"-Muster wie das Forum.
   bleiben offen — richtig so, sie sind (noch) nicht entscheidbar.
 - **v2b (nicht gebaut):** Präzisions-/Dekompositions-Supersede — ein *verfeinerter* Claim ersetzt beide
   groben Originale. Mintet Claims, gehört durchs Gate; ein eigener Entwurf, nach v2a.
+
+## v3 — Vorwärts-Bindung: die Fehlergeschichte verschärft künftige Übergänge
+
+Das Manifest fordert wörtlich: *„Deshalb darf ein ähnlicher Übergang künftig nicht ohne
+zusätzliche Prüfung akzeptiert werden."* Bis v2 war die Persona eine read-only **Anzeige** der
+korrigierten Irrtümer; ab v3 **bindet** sie — deterministisch, gedeckelt, fail-open, nie ein Block:
+
+1. **Wiedergänger-Guard** (`core_state.corrected_twin` + `_mint_revenant`): ein Text, der einen
+   bereits korrigierten (`REJECTED`/`SUPERSEDED`) Claim nahezu dupliziert (Jaccard ≥
+   `JONI_REVENANT_OVERLAP`, Default 0.75, oder eine Nur-Zahlen-Paraphrase), wird von `learn`/`hear`
+   **nicht mehr auto-aktiviert**. Er kommt als CANDIDATE zurück, abgeleitet von seinem korrigierten
+   Vorgänger (auditierbare Lineage, Provenienz `revenant-of:<id>`) — und läuft damit automatisch
+   durch die adversariale `strengthen`-Leiter: erst frische, unabhängige Stützung aktiviert ihn
+   wieder. Nie geblockt (Epistemik bleibt revidierbar), nur neu zu verdienen.
+2. **Verbrannte Themen** (`persona.burned_themes` → `strengthen`): ein Thema mit ≥
+   `JONI_BURNED_THEME_DEPTH` (Default 3) metabolisierten Irrtümern hebt die Promotions-Schwelle:
+   eine unabhängige Quellen-Familie **mehr**, eine einzelne externe Karte genügt nicht mehr, und
+   der Kohärenz-Shortcut (Doktores-coherent ohne Stützung) gilt dort **nicht** — genau der
+   plausibel-aber-unverdiente Übergang, vor dem die Korrektur-Geschichte warnt. Ein gehaltener
+   Kandidat wird protokolliert, nie still.
+
+Damit ist die Fehlergeschichte nicht mehr nur Urteil über die Vergangenheit, sondern Prüfstruktur
+für die Zukunft — „Fehlergeschichte als Architektur", nicht als Log.

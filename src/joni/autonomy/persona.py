@@ -322,6 +322,28 @@ def site_lessons(cs, *, max_items: int = 8) -> list[dict]:
         return []
 
 
+def burned_themes(cs, *, min_depth: int | None = None) -> dict[str, int]:
+    """Themes whose correction history is deep enough that a similar transition must not be
+    accepted without ADDITIONAL scrutiny - the manifesto's forward-binding demand ("Fehlergeschichte
+    als Architektur", not a display). Returns ``{theme: depth}`` for every non-sink theme with at
+    least ``min_depth`` metabolised errors (env ``JONI_BURNED_THEME_DEPTH``, default 3).
+
+    Consumers (``strengthen``) RAISE their promotion bar on these themes; nothing is ever blocked
+    outright - epistemics stays revisable, the burned theme just has to earn more. Deterministic and
+    fail-open: any projection error yields ``{}`` (normal behaviour, never a broken cycle)."""
+    try:
+        depth = min_depth if min_depth is not None else int(
+            os.getenv("JONI_BURNED_THEME_DEPTH", "3"))
+        by_theme: dict[str, int] = {}
+        for c in extract_corrections(cs):
+            if c.theme.strip().lower() in _SINK_THEMES:
+                continue                        # no lesson on an undifferentiated sink (see above)
+            by_theme[c.theme] = by_theme.get(c.theme, 0) + 1
+        return {t: n for t, n in by_theme.items() if n >= depth}
+    except Exception:  # noqa: BLE001 - a binding hint must never break the loop; no hint = no bind
+        return {}
+
+
 def render_md(lessons: list[Lesson], corrections: list[Correction], tick: int) -> str:
     lines = [
         "# Jonis Persona — verdichtete Geschichte korrigierter Irrtümer",

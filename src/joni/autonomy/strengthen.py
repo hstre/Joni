@@ -140,6 +140,11 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     # Plateau lever: ideas Doktores judged internally COHERENT may mature on thinner evidence.
     coherent_ids = {e.get("hypothesis") for e in extensions.get("doktores_hyp_log", [])
                     if isinstance(e, dict) and e.get("coherent") and e.get("hypothesis")}
+    # Forward-binding of the corrected-error history (the persona manifesto: "ein ähnlicher
+    # Übergang darf nicht ohne zusätzliche Prüfung akzeptiert werden"): themes with a deep
+    # correction history RAISE the promotion bar below. Fail-open ({} = normal behaviour).
+    from . import persona
+    burned = persona.burned_themes(cs)
     hyps = cs.hypotheses()
     out = {"tested": 0, "supported": 0, "challenged": 0, "survived": 0,
            "promoted": 0, "rejected": 0, "insufficient": 0}
@@ -279,18 +284,37 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
         # hypotheses attended per cycle, so it promotes the coherent shelf gradually, not at once.
         families, external = cs.supporter_families(h.id)
         sup = _supports_on(cs, h.id)
-        independent = len(families) >= _INDEP_SOURCES_FOR_ACTIVE or external >= 1
+        # Burned theme (deep correction history): the bar RISES - one independent family more, a
+        # single external card no longer suffices, and coherence alone may NOT mature the idea
+        # (coherence-on-a-burned-theme is exactly the plausible-but-unearned transition the
+        # correction history warns about). Nothing is blocked; the theme just has to earn more.
+        theme_parts = [p for p in (getattr(h, "topic", "") or "").split("+") if p]
+        is_burned = any(p in burned for p in theme_parts)
+        need_fams = _INDEP_SOURCES_FOR_ACTIVE + (1 if is_burned else 0)
+        independent = len(families) >= need_fams or external >= (2 if is_burned else 1)
         standard = sup >= _SUPPORTS_FOR_ACTIVE and independent
-        coherent = os.getenv("JONI_PROMOTE_ON_COHERENCE", "1") != "0" and h.id in coherent_ids
+        coherent = (os.getenv("JONI_PROMOTE_ON_COHERENCE", "1") != "0"
+                    and h.id in coherent_ids and not is_burned)
         if not _hard_conflict_on(cs, h.id) and (standard or coherent):
             cs.activate_claim(h.id)
             out["promoted"] += 1
-            how = ("earned >=2 independent supports" if standard
+            how = (f"earned >={need_fams} independent supports" if standard
                    else "Doktores-coherent, no hard contradiction (coherence-matured)")
             aside = " (Kevin flagged it thin - advisory)" if h.id in hollow else ""
+            burned_note = " [burned theme: raised bar met]" if is_burned else ""
             proto.record(cycle, "strengthen",
                          f"idea {h.id} promoted candidate -> active ({how}, unchallenged) - "
-                         f"a working idea, not confirmed{aside}")
+                         f"a working idea, not confirmed{aside}{burned_note}")
+        elif is_burned and not _hard_conflict_on(cs, h.id) and (
+                (sup >= _SUPPORTS_FOR_ACTIVE
+                 and (len(families) >= _INDEP_SOURCES_FOR_ACTIVE or external >= 1))
+                or h.id in coherent_ids):
+            # it WOULD have promoted at the normal bar - the correction history held it. Visible,
+            # never silent: this is the lesson binding a transition, the point of the persona.
+            proto.record(cycle, "strengthen",
+                         f"idea {h.id} held by the burned-theme bar ({h.topic}: "
+                         f"{max(burned.get(p, 0) for p in theme_parts)} corrected error(s)) - "
+                         f"needs >={need_fams} independent families, has {len(families)}")
 
     extensions["hyp_tested"] = sorted(tested)[-4000:]
     extensions["hyp_insufficient"] = dict(sorted(insufficient.items())[-4000:])

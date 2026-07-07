@@ -123,11 +123,54 @@ class CoreState:
             ptype, op, payload=payload, proposer="joni",
             provenance=Provenance.from_operator(), target_objects=tuple(targets)), actor="joni")
 
+    def corrected_twin(self, text: str) -> str | None:
+        """The id of a REJECTED/SUPERSEDED claim this text near-duplicates, else ``None``.
+
+        The revenant check (the manifesto's forward-binding demand): a belief Joni already
+        corrected must not re-enter unexamined just because a source repeats it. Near-duplicate =
+        high Jaccard overlap (env ``JONI_REVENANT_OVERLAP``, default 0.75) or a numeric-only
+        paraphrase. Deterministic and conservative - only near-identical texts count."""
+        import os
+        t = (text or "").strip()
+        if not t:
+            return None
+        thr = float(os.getenv("JONI_REVENANT_OVERLAP", "0.75"))
+        for c in self.core.all(l9.ObjectType.CLAIM):
+            if c.status not in (Status.REJECTED, Status.SUPERSEDED):
+                continue
+            if _overlap(t, c.text) >= thr or _numeric_only_difference(t, c.text):
+                return c.id
+        return None
+
+    def _mint_revenant(self, text: str, topic: str, twin: str, sources: list[str],
+                       proposer: str) -> str:
+        """Mint a claim that near-duplicates a corrected error - as a CANDIDATE, never auto-active.
+
+        The revenant is not blocked (epistemics stays revisable - a corrected belief may yet turn
+        out right), but it must EARN its way back: it enters derived from its corrected predecessor
+        (auditable lineage, and thereby into the ``strengthen`` ladder, where it is adversarially
+        challenged and needs independent support to activate). Provenance carries an explicit
+        ``revenant-of:<id>`` marker."""
+        self.core.submit(make_proposal(
+            ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
+            payload={"text": text, "topic": topic, "support": 0.4}, proposer=proposer,
+            provenance=Provenance.from_source(*sources, f"revenant-of:{twin}"),
+            target_objects=(twin,)), actor="joni")
+        return self._newest(l9.ObjectType.CLAIM).id
+
     def learn(self, text: str, topic: str, *, source_id: str | None = None) -> str:
         """A source (paper) creates a candidate claim; the operator activates it.
 
         ``source_id`` anchors the claim to where it came from (a paper id / PDF url), so
-        provenance is real and source-diversity is measurable downstream."""
+        provenance is real and source-diversity is measurable downstream.
+
+        **Revenant guard**: a text near-duplicating an already-corrected (REJECTED/SUPERSEDED)
+        claim is NOT auto-activated - it re-enters as a candidate that must earn fresh, independent
+        support ("ein ähnlicher Übergang darf nicht ohne zusätzliche Prüfung akzeptiert werden")."""
+        twin = self.corrected_twin(text)
+        if twin:
+            return self._mint_revenant(text, topic, twin,
+                                       [source_id] if source_id else [], "source")
         prov = Provenance.from_source(source_id) if source_id else Provenance.from_source()
         self.core.submit(make_proposal(
             ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
@@ -159,6 +202,11 @@ class CoreState:
         sources = [sid]
         if origin and origin not in ("forum", "own-post"):
             sources.append(f"origin:{origin}")
+        # Revenant guard, exactly as in ``learn``: a forum voice repeating an already-corrected
+        # belief does not get it re-activated - it re-enters as a candidate that must earn support.
+        twin = self.corrected_twin(text)
+        if twin:
+            return self._mint_revenant(text, topic, twin, sources, f"forum:{platform}")
         self.core.submit(make_proposal(
             ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
             payload={"text": text, "topic": topic}, proposer=f"forum:{platform}",
