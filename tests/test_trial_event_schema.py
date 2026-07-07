@@ -180,6 +180,17 @@ def test_unverified_artifact_is_rejected_for_legacy_success():
     assert any("requires a VERIFIED legacy_validation" in e for e in validate(bad))
 
 
+def test_legacy_may_only_carry_success_or_not_evaluated():
+    # the contract is "success (with proof) or not_evaluated" - a legacy 'inconclusive' (or any
+    # other result) must be rejected, not slip past because it is not in _REAL_RESULTS.
+    for res in ("inconclusive", "harmful", "no_benefit"):
+        bad = _ev(legacy=True, protocol_status="unknown", epistemic_result=res, note="x")
+        assert any("may only carry 'success'" in e for e in validate(bad)), res
+    # not_evaluated is still allowed on a legacy event
+    ok = _ev(legacy=True, epistemic_result="not_evaluated", note="nothing to evaluate")
+    assert not any("may only carry 'success'" in e for e in validate(ok))
+
+
 # -- aggregation: scope separation, technical, harmful ------------------------------------------- #
 def test_outcomes_are_separated_by_variant_scope():
     # a no_benefit in scope 'qtt' and a success in scope 'other' stay SEPARATE cells - a result in
