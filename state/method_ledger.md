@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 453 · 208 Methoden** — proposed 207 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 1  
+**Cycle 454 · 210 Methoden** — proposed 208 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -127,6 +127,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | REDDIT: Correcting Model-Generated Timestamp Drift in ASR without Forgetting via | **proposed** | candidate | 0 | — |
 | MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **proposed** | candidate | 0 | — |
 | OmniOpt: Taxonomy, Geometry, and Benchmarking of Modern Optimizers | **proposed** | candidate | 0 | — |
+| KVpop -- Key-Value Cache Compression with Predictive Online Pruning | **proposed** | candidate | 0 | — |
 | Major-project-list | **proposed** | candidate | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
@@ -214,3 +215,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Shared Tradition, Local Network: An Interaction Model for the Lake District in L | **proposed** | candidate | 0 | — |
 | COSMOLOGICAL EQUATIONS AND EMERGENT SPACETIME FROM A COMPRESSIBLE VORTON VACUUM | **proposed** | candidate | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
+| The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
