@@ -112,7 +112,9 @@ def cache_size() -> int:
 
 def _reset_for_tests(embed_fn=None, *, name="test-embed", revision="t", dim=3,
                      normalized=False) -> None:
-    """Inject a deterministic embedder in tests (or reset to 'unavailable')."""
+    """Inject a deterministic embedder in tests, or reset to 'untried' (``None``) so the next
+    ``available()`` re-probes. NOTE: this does NOT force 'unavailable' - if a real embedding package
+    is installed, a later probe will find it."""
     global _EMBED, _NAME, _REVISION, _DIM, _NORMALIZED, _CACHE
     _EMBED = embed_fn if embed_fn is not None else None
     _NAME, _REVISION, _DIM, _NORMALIZED, _CACHE = name, revision, dim, normalized, {}

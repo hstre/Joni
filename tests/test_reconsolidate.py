@@ -47,3 +47,18 @@ def test_reconsolidate_is_a_noop_without_a_multi_topic_lens():
     cs.learn("calibration improves drift detection under load", "drift")
     out = reconsolidate.reconsolidate(cs, {}, _Proto(), cycle=12, layer=StubSemanticLayer())
     assert out["ran"] is False                     # no Kevin lens to borrow yet
+
+
+def test_lens_rotation_does_not_repeat_when_a_new_lens_appears():
+    # rotation is by lens IDENTITY, not a positional index into a re-sorted list; a lens minted
+    # between passes must not make the rotation repeat the just-used lens or skip the newest.
+    cs = _cs_with_a_kevin_lens()                          # one multi-topic lens
+    cs.propose_method(name="second-lens", summary="another transferable lens",
+                      applicable_to=("routing", "drift"), origin="joni:emergent")
+    ext: dict = {}
+    r1 = reconsolidate.reconsolidate(cs, ext, _Proto(), cycle=1, every=1, layer=StubSemanticLayer())
+    cs.propose_method(name="third-lens", summary="a third transferable lens",
+                      applicable_to=("routing", "drift"), origin="joni:emergent")
+    r2 = reconsolidate.reconsolidate(cs, ext, _Proto(), cycle=2, every=1, layer=StubSemanticLayer())
+    assert r1["ran"] and r2["ran"]
+    assert r1["lens"] != r2["lens"]                      # advanced to a different lens, no repeat

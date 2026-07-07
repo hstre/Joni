@@ -45,10 +45,13 @@ def reconsolidate(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     if not lenses:
         return out
 
-    # rotate through the available lenses over successive passes
-    idx = int(extensions.get("reconsolidate_lens_idx", 0)) % len(lenses)
-    method, topics = lenses[idx]
-    extensions["reconsolidate_lens_idx"] = (idx + 1) % len(lenses)
+    # Rotate through the lenses by the last-used lens IDENTITY, not by a positional index: the lens
+    # list is re-sorted every pass, so a newly-minted lens shifting it made a stored index repeat a
+    # lens and skip the newest. Ordering by ascending method-id is stable under insertions.
+    order = sorted(lenses, key=lambda mt: int(mt[0].id.split("-")[-1]))
+    last = int(extensions.get("reconsolidate_last_lens", -1))
+    method, topics = next((mt for mt in order if int(mt[0].id.split("-")[-1]) > last), order[0])
+    extensions["reconsolidate_last_lens"] = int(method.id.split("-")[-1])
     out["ran"] = True
     out["lens"] = getattr(method, "name", None) or method.id
 

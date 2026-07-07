@@ -106,6 +106,13 @@ def _last_collapse(p) -> dict:
         return {}
 
 
+def _kevin_capability() -> str:
+    """Whether Kevin is importable, computed live for the dashboard (the extensions flag is only
+    written later in _finish, so reading it during the same cycle lagged by one cycle)."""
+    import importlib.util
+    return "live" if importlib.util.find_spec("kevin") is not None else "absent"
+
+
 def one_cycle() -> dict:
     p = paths()
     # 0. Fail-safe governance check: never proceed on a tampered core.
@@ -160,7 +167,8 @@ def one_cycle() -> dict:
     if starved:
         queries = starved + [q for q in queries if q not in starved]
     queries = queries[:8]
-    seen = set(extensions["seen"])
+    seen_list = list(extensions["seen"])
+    seen = set(seen_list)
     fetched: list = []
     fetch_errors = []
     for fetcher in get_fetchers(online=online()):
@@ -183,8 +191,11 @@ def one_cycle() -> dict:
     # 3. Judge and learn (claims via the gate); contradictions OPEN, never force-resolved.
     judged: list = []
     for item in new_items:
+        if item.key in seen:                 # intra-cycle duplicate (two sources, same key)
+            continue
         rel = judge(cs, item)
         seen.add(item.key)
+        seen_list.append(item.key)           # insertion order -> recency-bounded dedup set
         proto.record(cycle, "judged",
                      f"{'relevant' if rel.relevant else 'skip'}: {item.title[:80]}",
                      refs={"source": item.key, "topic": rel.topic, "new_topic": rel.new_topic,
@@ -284,7 +295,13 @@ def one_cycle() -> dict:
         proto.record(cycle, "note",
                      f"core observation(s) held (not yet sustained): {held_list}")
 
-    extensions["seen"] = sorted(seen)[-2000:]   # bound the dedup set
+    # Bound the item-dedup set to the most-recent 2000 keys, but ALWAYS retain the keys fetched
+    # THIS cycle - else the old sorted()[-2000:] cap evicted the lowest-ASCII keys first (arXiv
+    # numeric ids), which recur in every fetch and were then re-judged and re-learned into duplicate
+    # claims each cycle. Order-preserving (recency), not lexical.
+    present = {it.key for it in fetched}
+    recent = list(dict.fromkeys(seen_list))[-2000:]
+    extensions["seen"] = list(dict.fromkeys([*recent, *(k for k in seen_list if k in present)]))
 
     # The DESi Semantic Layer (real frames/logic/tension) governs whether claims relate;
     # lexical overlap is only a trigger. Absent DESi -> a fail-closed null layer.
@@ -489,7 +506,9 @@ def one_cycle() -> dict:
         "embeddings": "live" if embeddings.available() else "inert",
         "pdf_reader": "live" if read.get("available") else "absent",
         "semantic_proposals": "on" if projection.enabled() else "off",
-        "kevin": "live" if extensions.get("kevin_installed") else "absent",
+        # computed live (not read from extensions) - the extensions flag is written later in
+        # _finish, so reading it here reported the PREVIOUS cycle's kevin state.
+        "kevin": _kevin_capability(),
         "sources_degraded": list(extensions.get("fetch_errors", [])),
     }
 

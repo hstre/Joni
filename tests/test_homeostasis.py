@@ -214,3 +214,34 @@ def test_offdomain_topic_drain_is_fail_open_and_spares_research(monkeypatch):
     homeostasis.retire_offdomain_topics(cs2, {}, _Proto(), 1)
     assert "routing" in cs2.research_topics()                 # a research direction is never shed
     embeddings._reset_for_tests(None)
+
+
+def test_a_rejected_supporter_no_longer_counts_as_support():
+    # the kernel's reject only flips status and leaves the evidence link behind; counting that
+    # phantom support would shield junk from pruning and could promote on support that is gone.
+    cs = CoreState(seed_core())
+    h = cs.learn("hypothesis about routing", "routing")
+    s = cs.learn("supporting evidence for routing", "routing")
+    cs.corroborate(h, cs.core.objects[s], relation="supports")
+    assert homeostasis._supports_on(cs, h) == 1 and cs.independent_source_count(h) == 1
+    cs.reject_claim(s)
+    assert homeostasis._supports_on(cs, h) == 0        # phantom support voided
+    assert cs.independent_source_count(h) == 0
+
+
+def test_backlog_cap_sheds_unsupported_even_when_the_oldest_are_supported():
+    # the cap must select shed-able (0-support) hypotheses FIRST; slicing the oldest survivors and
+    # then skipping the supported ones let the cap silently fail when the oldest carried support.
+    cs = CoreState(seed_core())
+    supported = []
+    for i in range(2):                                  # two OLDER supported hypotheses
+        h = _hyp(cs, text=f"Hypothesis: supported idea {i}")
+        s = cs.learn(f"evidence {i} for the idea", "routing")
+        cs.corroborate(h, cs.core.objects[s], relation="supports")
+        supported.append(h)
+    weak = [_hyp(cs, text=f"Hypothesis: weak idea {i}") for i in range(2)]   # two NEWER 0-support
+    out = homeostasis.regulate(cs, {}, _Proto(), max_live_hypotheses=2)
+    assert out["over_cap"] == 2                         # the cap actually capped (was 0 before)
+    live = {c.id for c in cs.hypotheses()}
+    assert all(h not in live for h in weak)            # the 0-support ones were shed
+    assert all(h in live for h in supported)           # supported ones kept

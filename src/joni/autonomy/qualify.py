@@ -15,22 +15,38 @@ contradiction - so the system does not over-state opposition.
 
 from __future__ import annotations
 
+import re
+
 from desi_layer9 import ConflictKind
 
 _SCOPE_NORMAL = ("most", "usually", "typically", "generally", "in general", "commonly",
                  "mostly", "often", "many", "for most", "meist", "meisten", "in der regel")
-_SCOPE_NOVEL = ("novel", "new ", "unseen", "unfamiliar", "rare", "edge case", "edge-case",
+_SCOPE_NOVEL = ("novel", "new", "unseen", "unfamiliar", "rare", "edge case", "edge-case",
                 "out of distribution", "out-of-distribution", "ood", "never seen",
                 "uncommon", "exceptional", "without a pretrained", "without pretrained",
                 "no pretrained", "neuartig", "unbekannt", "selten")
 _EXCEPTION = ("unless", "except", "but not", "does not hold", "apart from", "other than",
               "fails when", "breaks down", "no longer holds", "außer", "ausgenommen")
-_CONDITIONAL = ("if ", "when ", "whenever", "provided", "depends on", "as long as",
-                "given that", "in cases where", "conditional", "falls", "sofern", "wenn ")
+_CONDITIONAL = ("if", "when", "whenever", "provided", "depends on", "as long as",
+                "given that", "in cases where", "conditional", "falls", "sofern", "wenn")
 
 
-def _has(markers, text: str) -> bool:
-    return any(m in text for m in markers)
+def _compile(markers) -> re.Pattern:
+    # Match markers on WORD BOUNDARIES, not as substrings: 'ood' (the OOD acronym) must not fire on
+    # good/food/blood/understood, nor 'many' on Germany/humanity - which mis-classified a genuine
+    # A/not-A contradiction as a scope tension before the contradiction check was ever reached.
+    return re.compile(r"\b(?:" + "|".join(re.escape(m.strip()) for m in markers if m.strip())
+                      + r")\b")
+
+
+_SCOPE_NORMAL_RE = _compile(_SCOPE_NORMAL)
+_SCOPE_NOVEL_RE = _compile(_SCOPE_NOVEL)
+_EXCEPTION_RE = _compile(_EXCEPTION)
+_CONDITIONAL_RE = _compile(_CONDITIONAL)
+
+
+def _has(rx: re.Pattern, text: str) -> bool:
+    return bool(rx.search(text))
 
 
 def qualify_conflict(a_text: str, b_text: str, *, severity: str = "soft",
@@ -45,15 +61,15 @@ def qualify_conflict(a_text: str, b_text: str, *, severity: str = "soft",
     both = ta + " || " + tb
 
     normal_vs_novel = (
-        (_has(_SCOPE_NORMAL, ta) and _has(_SCOPE_NOVEL, tb))
-        or (_has(_SCOPE_NORMAL, tb) and _has(_SCOPE_NOVEL, ta))
-        or (_has(_SCOPE_NORMAL, both) and _has(_SCOPE_NOVEL, both))
+        (_has(_SCOPE_NORMAL_RE, ta) and _has(_SCOPE_NOVEL_RE, tb))
+        or (_has(_SCOPE_NORMAL_RE, tb) and _has(_SCOPE_NOVEL_RE, ta))
+        or (_has(_SCOPE_NORMAL_RE, both) and _has(_SCOPE_NOVEL_RE, both))
     )
     if normal_vs_novel:
         return ConflictKind.SCOPE_TENSION.value
-    if _has(_EXCEPTION, both):
+    if _has(_EXCEPTION_RE, both):
         return ConflictKind.EXCEPTION.value
-    if _has(_CONDITIONAL, both):
+    if _has(_CONDITIONAL_RE, both):
         return ConflictKind.CONDITIONAL_COMPATIBILITY.value
     if contradictory or severity == "hard":
         return ConflictKind.CONTRADICTION.value

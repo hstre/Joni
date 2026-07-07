@@ -17,13 +17,32 @@ Two autonomous jobs, both deterministic, gate-mediated and bounded:
 
 from __future__ import annotations
 
+import re
+
 import desi_layer9 as l9
 from desi_layer9 import Status
 
+_VIA = re.compile(r"\bvia\s+([A-Za-z]+-\d+)")          # 'supports via C-5: ...' -> the supporter id
+_DEAD_SUPPORT = frozenset({"rejected", "superseded"})
+
 
 def _supports_on(cs, claim_id: str) -> int:
-    return sum(1 for el in cs.core.all(l9.ObjectType.EVIDENCE_LINK)
-               if el.claim_id == claim_id and el.relation.value in ("supports", "contextualizes"))
+    """Count support/contextualizes links on a claim - but only from a LIVE supporter. The kernel's
+    claim-reject only flips status; it leaves the EVIDENCE_LINK behind. Counting that phantom
+    would keep junk alive (regulate refuses to prune a claim with support) and could promote a claim
+    on support that no longer exists (strengthen's family gate). External evidence always counts."""
+    ev_by_id = {e.id: e for e in cs.core.all(l9.ObjectType.EVIDENCE)}
+    status = {c.id: c.status.value for c in cs.core.all(l9.ObjectType.CLAIM)}
+    n = 0
+    for el in cs.core.all(l9.ObjectType.EVIDENCE_LINK):
+        if el.claim_id != claim_id or el.relation.value not in ("supports", "contextualizes"):
+            continue
+        ev = ev_by_id.get(el.evidence_id)
+        m = _VIA.search(getattr(ev, "content", "") or "") if ev is not None else None
+        if m is not None and status.get(m.group(1)) in _DEAD_SUPPORT:
+            continue                                   # supporter was rejected/superseded - void
+        n += 1
+    return n
 
 
 def review_numeric_duplicate_conflicts(cs, proto, cycle: int = 0, *, max_review: int = 5) -> int:
@@ -144,13 +163,19 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
             proto.record(cycle, "regulate",
                          f"shed {h.id}: {reason} (0 support) - a guess that did not pan out")
 
-    # 2. cap the backlog: beyond the cap, reject the weakest (0-support, oldest) survivors.
+    # 2. cap the backlog: beyond the cap, reject the weakest (0-support) survivors, OLDEST first.
+    # The shed-able set (0-support) must be selected BEFORE the cap slice - slicing the oldest N of
+    # ALL survivors first and then skipping the supported ones let the cap silently fail if the
+    # oldest excess-count hypotheses happened to carry support (zero got pruned). Supported
+    # hypotheses are never shed to enforce the cap.
     remaining = [h for h in hyps if h.id not in pruned_ids]
-    if len(remaining) > max_live_hypotheses:
-        excess = sorted(remaining, key=lambda c: int(c.id.split("-")[-1]))
-        for h in excess[: len(remaining) - max_live_hypotheses]:
-            if out["pruned"] >= max_prune + max_live_hypotheses or _supports_on(cs, h.id) > 0:
-                continue
+    need = len(remaining) - max_live_hypotheses
+    if need > 0:
+        shed_able = sorted((h for h in remaining if _supports_on(cs, h.id) == 0),
+                           key=lambda c: int(c.id.split("-")[-1]))
+        for h in shed_able[:need]:
+            if out["pruned"] >= max_prune + max_live_hypotheses:
+                break
             cs.reject_claim(h.id)
             out["pruned"] += 1
             out["over_cap"] += 1

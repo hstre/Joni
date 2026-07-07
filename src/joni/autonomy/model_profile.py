@@ -74,10 +74,15 @@ class ModelProfile:
     state_k: int              # DESi state-slice density (0 = not a semantic projector)
 
     def config_sha(self) -> str:
-        """A hash over the whole pinned config - part of a capture's replay key."""
+        """A hash over the whole pinned config - part of a capture's replay key. ``base_url`` is
+        included because it *routes* the request (an env-overridable endpoint/proxy): two configs
+        with the same served_slug but different base_url are materially different, and a cached
+        capture from one must not be replayed for the other. ``key_env``/``name`` are excluded -
+        they do not affect the output."""
         blob = json.dumps(
             {"model_id": self.model_id, "provider": self.provider, "served": self.served_slug,
-             "sampling": self.sampling.sha256(), "state_k": self.state_k}, sort_keys=True).encode()
+             "base_url": self.base_url, "sampling": self.sampling.sha256(),
+             "state_k": self.state_k}, sort_keys=True).encode()
         return hashlib.sha256(blob).hexdigest()
 
 

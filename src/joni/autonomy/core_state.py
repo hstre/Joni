@@ -378,6 +378,10 @@ class CoreState:
             m = _VIA.search(getattr(ev, "content", "") or "")
             supporter = claim_by_id.get(m.group(1)) if m else None
             if supporter is not None:
+                # A supporter later rejected/superseded leaves its link behind (the kernel's
+                # reject only flips status) - void support, must not count toward promotion.
+                if supporter.status.value in ("rejected", "superseded"):
+                    continue
                 families.add(_source_family(supporter))
             else:
                 external += 1
