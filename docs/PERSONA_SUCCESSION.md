@@ -79,3 +79,23 @@ korrigierten Irrtümer; ab v3 **bindet** sie — deterministisch, gedeckelt, fai
 
 Damit ist die Fehlergeschichte nicht mehr nur Urteil über die Vergangenheit, sondern Prüfstruktur
 für die Zukunft — „Fehlergeschichte als Architektur", nicht als Log.
+
+## Remonstration — die Hinterfragung der Betreiber-Entscheidungen
+
+Das Manifest fordert das **begründete Nein**. Gegenüber Quellen, Modellen und sich selbst hatte
+Joni es; gegenüber dem Betreiber war die Prüfung nur prozedural. Die Remonstration schließt das —
+nach dem beamtenrechtlichen Modell: Gehorsam ja, aber erst nach protokolliertem Einspruch.
+
+1. **Prüfung**: Vor dem Verbuchen einer Konflikt-Entscheidung misst Joni deterministisch die
+   Evidenzlage (dieselbe `_supports_on`-Metrik wie die Konflikt-Mappe).
+2. **Einspruch**: Wählt der Betreiber die Seite mit *strikt weniger* unabhängiger Stützung, wird
+   die Entscheidung **eine Runde aufgeschoben**: Joni protokolliert einen begründeten Einspruch
+   (Protokoll-Event `einspruch`, sichtbar in der Mappe unter „Einsprüche") und wendet nichts an.
+3. **Bestätigung**: Der Betreiber bleibt die Autorität — dieselbe Entscheidung erneut eintragen
+   bestätigt sie. Sie wird angewendet, aber der Einspruch wandert **unlöschbar** in die
+   `resolution_reason` („über protokollierten Einspruch entschieden, Evidenz X vs Y"). Stellt sich
+   die Entscheidung später als Irrtum heraus, trägt die Persona-Lehre die volle Geschichte:
+   *ich habe widersprochen, wurde überstimmt.*
+4. Eine evidenz-konforme oder symmetrische Entscheidung wird sofort angewendet wie zuvor.
+
+Kein Veto, keine Blockade — aber ein Widerspruch, der nicht still übergangen werden kann.

@@ -89,9 +89,19 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
     """Apply the operator's decisions (bounded, fail-open per item). For each: resolve the conflict
     in the winner's favour, supersede the loser(s), and revive the winner if it had no other open
     conflict. A decision naming a claim not in the conflict, or an already-closed conflict, is
-    skipped with a note. Every mutation is a gate-recorded op; the loop transcribes, not decides."""
+    skipped with a note. Every mutation is a gate-recorded op; the loop transcribes, not decides.
+
+    **Remonstration** (the manifesto's reasoned No, without breaking the HUMAN anchor): a decision
+    that contradicts the measured evidence balance (the chosen winner has strictly LESS independent
+    support than the losing side) is NOT applied immediately. Joni records a reasoned objection
+    (protocolled, shown on the decision sheet) and the decision rests ONE round. Re-entering the
+    same decision confirms it: it is then applied - the operator stays the final authority - but the
+    objection is preserved immutably in the conflict's ``resolution_reason``, so a later correction
+    carries the full story ("ich habe widersprochen, wurde überstimmt")."""
+    from .homeostasis import _supports_on
     applied = 0
     done = set(extensions.setdefault("conflict_resolved", []))
+    objections: dict = extensions.setdefault("conflict_objections", {})
     by_id = {c.id: c for c in cs.core.all(l9.ObjectType.CLAIM)}
     open_by_id = {cf.id: cf for cf in cs.core.open_conflicts()}
     for d in decisions:
@@ -109,9 +119,29 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
                          f"conflict {cid}: winner {win} is not a claim in this conflict - skipped")
             continue
         losers = [i for i in ids if i != win and i in by_id]
+
+        # Remonstration check: measure the evidence balance the way the decision sheet does.
+        sup_win = _supports_on(cs, win)
+        sup_other = max((_supports_on(cs, x) for x in losers), default=0)
+        pend = objections.get(cid)
+        confirmed = isinstance(pend, dict) and pend.get("winner_id") == win
+        if sup_win < sup_other and not confirmed:
+            objections[cid] = {"winner_id": win, "cycle": cycle,
+                               "sup_win": sup_win, "sup_other": sup_other,
+                               "decision_reason": reason[:200]}
+            proto.record(cycle, "einspruch",
+                         f"{cid}: Einspruch - die Entscheidung für {win} widerspricht der "
+                         f"Evidenzlage ({sup_win} vs {sup_other} unabhängige Belege). Eine Runde "
+                         "aufgeschoben; erneutes Eintragen bestätigt und wird angewendet, der "
+                         "Einspruch bleibt protokolliert.")
+            continue                                 # held one round - the operator must confirm
+
+        reason_txt = f"operator: {reason}" if reason else "operator decision"
+        if confirmed:
+            reason_txt += (f" · über protokollierten Einspruch entschieden (Evidenz {win}: "
+                           f"{pend['sup_win']} vs Gegenseite: {pend['sup_other']})")
         try:
-            cs.resolve_conflict(cid, winner_id=win,
-                                reason=f"operator: {reason}" if reason else "operator decision")
+            cs.resolve_conflict(cid, winner_id=win, reason=reason_txt)
             for loser in losers:
                 cs.supersede_claim(loser)
             if (getattr(getattr(by_id[win], "status", None), "value", "") == "contested"
@@ -122,15 +152,23 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
             continue
         applied += 1
         done.add(cid)
+        objections.pop(cid, None)                    # settled - the ledger holds the record now
         proto.record(cycle, "resolved",
                      f"{cid} settled by operator -> {win} wins, {', '.join(losers) or '-'} "
-                     f"superseded · {reason[:80]}")
+                     f"superseded · {reason[:80]}"
+                     + (" · over recorded objection" if confirmed else ""))
     extensions["conflict_resolved"] = sorted(done)[-500:]
+    # prune objections whose conflict is no longer open (settled some other way) + bound the dict
+    still_open = {cf.id for cf in cs.core.open_conflicts()}
+    extensions["conflict_objections"] = dict(sorted(
+        ((k, v) for k, v in objections.items() if k in still_open),
+        key=lambda kv: kv[1].get("cycle", 0))[-100:])
     return applied
 
 
-def render_sheet(items: list[dict]) -> str:
-    """Render the decidable conflicts as a copy-paste decision sheet for the operator."""
+def render_sheet(items: list[dict], objections: dict | None = None) -> str:
+    """Render the decidable conflicts as a copy-paste decision sheet for the operator - plus any
+    pending remonstrations (Joni's reasoned objections awaiting the operator's confirmation)."""
     lines = [
         "# Joni's Konflikt-Mappe",
         "",
@@ -143,6 +181,23 @@ def render_sheet(items: list[dict]) -> str:
         f"_{len(items)} entscheidbare(r) Konflikt(e)._",
         "",
     ]
+    if objections:
+        lines += [
+            "## Einsprüche — von dir zu bestätigen",
+            "",
+            "Diese Entscheidungen widersprechen der gemessenen Evidenzlage; Joni hat begründet",
+            "Einspruch erhoben und sie **eine Runde aufgeschoben**. Du bleibst die Autorität:",
+            "dieselbe Zeile erneut eintragen = bestätigen (wird angewendet, der Einspruch bleibt",
+            "unlöschbar protokolliert). Oder anders entscheiden.",
+            "",
+        ]
+        for cid, o in sorted(objections.items()):
+            lines += [
+                f"- **{cid}** · deine Wahl: {o.get('winner_id')} · Einspruch: die Gegenseite hat "
+                f"mehr unabhängige Belege ({o.get('sup_win')} vs {o.get('sup_other')}).",
+                f"  ```\n  {cid} | {o.get('winner_id')} | <dein grund>\n  ```",
+                "",
+            ]
     if not items:
         return "\n".join([*lines, "Gerade nichts zu entscheiden."]) + "\n"
     for it in items:
@@ -183,7 +238,8 @@ def interact(cs, extensions: dict, proto, cycle: int, *, paths) -> dict:
         items = decidable_conflicts(cs)
         sheet = paths.resolve_sheet
         sheet.parent.mkdir(parents=True, exist_ok=True)
-        sheet.write_text(render_sheet(items), encoding="utf-8")
+        sheet.write_text(render_sheet(items, extensions.get("conflict_objections")),
+                         encoding="utf-8")
         if applied:
             proto.record(cycle, "resolved", f"applied {applied} operator conflict decision(s)")
         return {"applied": applied, "surfaced": len(items)}

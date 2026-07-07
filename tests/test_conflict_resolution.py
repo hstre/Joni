@@ -129,3 +129,77 @@ def test_the_full_flow_feeds_the_persona_a_real_revision():
     assert cor.before == "routing is always local-first"
     assert cor.after == "routing is load-dependent"           # a real X -> Y, not a bare rejection
     assert "corroborated under load" in cor.trigger
+
+
+# --- Remonstration: Joni questions the operator's decisions ------------------------------------ #
+
+def test_an_evidence_contradicting_decision_is_held_with_a_reasoned_objection():
+    # the operator picks the side with LESS independent support -> Joni does not apply; he records
+    # a reasoned objection (protocolled) and the decision rests one round. Mündigkeit, kein Veto.
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)                    # a: 0 supports, b: 1 support
+    ext: dict = {}
+    proto = _Proto()
+    n = cr.apply_decisions(cs, ext, proto, 1,
+                           [{"conflict_id": cid, "winner_id": a, "reason": "bauchgefühl"}])
+    assert n == 0                                       # NOT applied
+    assert cs.core.objects[cid].conflict_status.value == "open"     # conflict still open
+    assert any(kind == "einspruch" for kind, _ in proto.events)     # the objection is protocolled
+    assert ext["conflict_objections"][cid]["winner_id"] == a
+
+
+def test_reentering_the_same_decision_confirms_over_the_objection():
+    # the operator stays the authority: re-entering the decision applies it - but the objection is
+    # preserved immutably in the conflict's resolution_reason (the richer persona lesson later).
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)
+    ext: dict = {}
+    cr.apply_decisions(cs, ext, _Proto(), 1,
+                       [{"conflict_id": cid, "winner_id": a, "reason": "bauchgefühl"}])
+    n = cr.apply_decisions(cs, ext, _Proto(), 2,
+                           [{"conflict_id": cid, "winner_id": a, "reason": "bauchgefühl"}])
+    assert n == 1                                       # confirmed -> applied
+    conf = cs.core.objects[cid]
+    assert conf.conflict_status.value == "resolved" and conf.resolution == a
+    assert "Einspruch" in (conf.resolution_reason or "")            # the objection travels along
+    assert cs.core.objects[b].status.value == "superseded"          # the supported side lost
+    assert cid not in ext["conflict_objections"]                    # pending register cleared
+
+
+def test_a_different_winner_after_an_objection_gets_a_fresh_check():
+    # an objection for winner X does not confirm a later decision for winner Y: Y is checked on its
+    # own merits (here evidence-aligned -> applies immediately, no objection).
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)
+    ext: dict = {}
+    cr.apply_decisions(cs, ext, _Proto(), 1,
+                       [{"conflict_id": cid, "winner_id": a, "reason": "x"}])   # objection for a
+    n = cr.apply_decisions(cs, ext, _Proto(), 2,
+                           [{"conflict_id": cid, "winner_id": b, "reason": "y"}])
+    assert n == 1                                       # evidence-aligned -> applied at once
+    assert cs.core.objects[cid].resolution == b
+    assert "Einspruch" not in (cs.core.objects[cid].resolution_reason or "")
+
+
+def test_a_symmetric_decision_applies_immediately_without_objection():
+    # no measured asymmetry -> nothing to object to; the operator's call applies at once.
+    cs = CoreState(seed_core())
+    a = cs.learn("x always holds", "routing")
+    b = cs.learn("x never holds", "routing")
+    cid = _open_conflict(cs, a, b)                      # 0 vs 0 supports
+    proto = _Proto()
+    n = cr.apply_decisions(cs, {}, proto, 1, [{"conflict_id": cid, "winner_id": a, "reason": "r"}])
+    assert n == 1
+    assert not any(kind == "einspruch" for kind, _ in proto.events)
+
+
+def test_the_sheet_lists_pending_objections(tmp_path):
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)
+    paths = SimpleNamespace(conflict_decisions=tmp_path / "decisions.txt",
+                            resolve_sheet=tmp_path / "to_resolve.md")
+    paths.conflict_decisions.write_text(f"{cid} | {a} | bauchgefühl\n")   # the weaker side
+    res = cr.interact(cs, {}, _Proto(), 1, paths=paths)
+    assert res["applied"] == 0                          # held by the objection
+    sheet = paths.resolve_sheet.read_text()
+    assert "Einsprüche" in sheet and cid in sheet       # visible + confirmable on the sheet
