@@ -206,8 +206,13 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
             crec = ledger.get(m.id, {})
             passed_conds = set(crec.get("passed_conditions", []))
             last_cond = crec.get("last_condition")
+            # ...but only for a bounded number of chances: the synthetic control-arm feeds a NEW
+            # task condition every cycle, so an always-fresh never-passed last_condition would hold
+            # the method forever. Once it has had ~2x the trial threshold and still not re-passed, a
+            # condition-specific failure is no longer a fair excuse - let it retire.
             if (passed_conds and last_cond and last_cond not in passed_conds
-                    and not crec.get("last_condition_passed", False)):
+                    and not crec.get("last_condition_passed", False)
+                    and m.trial_count < max(2 * max_trials, 16)):
                 proto.record(cycle, "trialed",
                              f"holding method {m.id} '{getattr(m, 'name', m.id)}' - its recent "
                              f"failure is under a new task set it never passed ({last_cond[:8]}); "
