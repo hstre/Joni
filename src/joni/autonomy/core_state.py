@@ -224,6 +224,23 @@ class CoreState:
         return self._op(ProposalType.STATE_REVISION_PROPOSAL, Operator.CONFLICT_REVIEW,
                         {}, targets=(conflict_id,))
 
+    def resolve_conflict(self, conflict_id: str, *, winner_id: str, reason: str):
+        """Settle a contradiction in favour of ``winner_id`` (recorded in the conflict's
+        ``resolution`` field) with an explicit ``reason``. The loop never decides this itself
+        (``open conflicts, never force-resolve``); it is only ever applied on the trusted operator's
+        instruction (see ``conflict_resolution``), which is the ONE authority that may settle a
+        dispute. Deterministic bookkeeping of a human decision, gate-recorded like every op."""
+        return self._op(ProposalType.STATE_REVISION_PROPOSAL, Operator.CONFLICT_RESOLVE,
+                        {"to": "resolved", "resolution": winner_id, "reason": reason},
+                        targets=(conflict_id,))
+
+    def supersede_claim(self, claim_id: str):
+        """Mark a claim SUPERSEDED - a belief replaced by a later one (the successor is carried by
+        the resolving conflict's ``resolution`` field, not here). Only used when the operator
+        resolves a conflict against this claim; never an autonomous force-resolve."""
+        return self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
+                        {"to_status": "superseded"}, targets=(claim_id,))
+
     def evidence_links(self) -> int:
         return len(self.core.all(l9.ObjectType.EVIDENCE_LINK))
 

@@ -159,6 +159,19 @@ class Paths:
         return self.root / "state" / "research_inbox.json"
 
     @property
+    def conflict_decisions(self) -> Path:
+        # A plain-text drop box: the operator settles a contradiction here (one per line,
+        # "conflict_id | winner_claim_id | reason"); the loop applies it and clears the file.
+        return self.root / "state" / "conflict_decisions.txt"
+
+    @property
+    def resolve_sheet(self) -> Path:
+        # Human-readable "decide these" sheet, regenerated every cycle: the open conflicts Joni
+        # cannot decide himself (he never force-resolves), with both claims + their support, for
+        # the operator to settle. The ONLY path that ever supersedes a claim via a resolution.
+        return self.root / "docs" / "to_resolve.md"
+
+    @property
     def model_calls(self) -> Path:
         # Capture store for pinned semantic model calls: a content-addressed output store
         # (outputs/) + an append-only calls.jsonl audit log. Replay reads outputs from here.

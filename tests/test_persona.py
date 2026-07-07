@@ -20,9 +20,9 @@ def _claim(cid, text, topic, status, *, ledger_event="", tick=0):
                            ledger_event=ledger_event, last_changed_tick=tick)
 
 
-def _conflict(cid, claim_ids, status, reason=""):
+def _conflict(cid, claim_ids, status, reason="", resolution=None):
     return SimpleNamespace(id=cid, claim_ids=tuple(claim_ids), conflict_status=_status(status),
-                           resolution_reason=reason)
+                           resolution_reason=reason, resolution=resolution)
 
 
 def _event(eid, reason, output_refs=()):
@@ -89,6 +89,23 @@ def test_a_real_supersede_successor_is_still_read():
                      ledger=[_event("E-9", "replaced", output_refs=("C-1", "C-2"))])
     c = persona.extract_corrections(_cs(core))[0]
     assert c.after == "load-dependent"                     # the DIFFERENT object is the successor
+
+
+def test_operator_resolved_supersede_reads_the_winner_as_after():
+    # the v2 flow: a resolved conflict names the winning claim in its `resolution` field; the
+    # superseded loser reads that winner as its 'after' -> a real 'X -> Y, because Z' correction.
+    loser = _claim("C-1", "routing is always local-first", "routing", "superseded",
+                   ledger_event="E-1")
+    winner = _claim("C-2", "routing is load-dependent", "routing", "active")
+    conf = _conflict("X-1", ["C-1", "C-2"], "resolved",
+                     reason="operator: C-2 corroborated under load", resolution="C-2")
+    core = _FakeCore(claims=[loser, winner], conflicts=[conf],
+                     ledger=[_event("E-1", "C-1 -> superseded")])
+    c = persona.extract_corrections(_cs(core))[0]
+    assert c.after == "routing is load-dependent"          # winner from the conflict resolution
+    assert c.via_conflict and c.has_reason
+    assert "corroborated under load" in c.trigger
+    assert "C-1 -> superseded" not in c.trigger            # generic transition boilerplate filtered
 
 
 def test_active_and_candidate_claims_are_not_corrections():
