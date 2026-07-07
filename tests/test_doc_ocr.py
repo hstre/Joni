@@ -146,3 +146,44 @@ def test_pdf_read_url_keeps_the_text_layer_when_present(monkeypatch):
     doc = pdf.read_url("http://x/p.pdf", ocr_fallback=ocr)
     # OCR must NOT be called when a text layer is present
     assert doc.text == "real extracted text" and called["ocr"] is False
+
+
+class _StubBudget:
+    def __init__(self, remaining):
+        self.remaining_eur = remaining
+        self.charged = 0.0
+
+    def can_spend(self, amount, *, runs_per_week=0):
+        return amount <= self.remaining_eur
+
+    def charge(self, amount):
+        self.charged += amount
+        self.remaining_eur -= amount
+
+
+def test_paid_ocr_engine_is_budget_gated_and_charged(tmp_path, monkeypatch):
+    # mistral-ocr bills per page; est_call_cost is €0 on the prepaid OpenRouter path, so doc_ocr
+    # must gate + charge it itself, else the paid engine bypasses the weekly cap.
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_OCR_OPENROUTER", "1")
+    monkeypatch.setenv("JONI_OCR_ENGINE", "mistral-ocr")
+    monkeypatch.setenv("JONI_COST_PER_OCR_CALL", "0.02")
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u, attachment=None: "SCAN TEXT")
+    # cap reached -> the paid call is NOT made and nothing is charged
+    poor = _StubBudget(0.0)
+    assert doc_ocr.parse(b"%PDF-a", "x.pdf", store_dir=tmp_path, budget=poor) is None
+    assert poor.charged == 0.0
+    # enough budget -> parses and charges the live call once
+    rich = _StubBudget(1.0)
+    assert doc_ocr.parse(b"%PDF-a", "x.pdf", store_dir=tmp_path, budget=rich) == "SCAN TEXT"
+    assert round(rich.charged, 4) == 0.02
+
+
+def test_free_ocr_engine_is_not_charged(tmp_path, monkeypatch):
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_OCR_OPENROUTER", "1")
+    monkeypatch.delenv("JONI_OCR_ENGINE", raising=False)          # default cloudflare-ai (free)
+    monkeypatch.setattr(model_call, "_complete", lambda p, s, u, attachment=None: "TEXT")
+    b = _StubBudget(0.0)                                          # even at €0 remaining
+    assert doc_ocr.parse(b"%PDF-b", "x.pdf", store_dir=tmp_path, budget=b) == "TEXT"
+    assert b.charged == 0.0                                       # free engine is never charged

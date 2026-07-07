@@ -140,3 +140,16 @@ def test_review_shows_up_on_the_site(monkeypatch, tmp_path):
     assert "Self-review" in html
     ext = json.loads((tmp_path / "state" / "extensions.json").read_text())
     assert ext["last_review"]["assessments"]
+
+
+def test_diary_reports_per_window_model_activity_not_the_cumulative_total():
+    # the model-activity logs are cumulative (lifetime, capped); the diary speaks of "this hour",
+    # so it must report the DELTA since the last review, not the running total.
+    cs = _cs()
+    ext = {"semantic_calls": [1, 2, 3]}                    # 3 cumulative Granite calls so far
+    self_review.run_review(cs, ext, _Proto(), 1, days=1, spend=0.01, runs=10, context={})
+    ext["semantic_calls"] = [1, 2, 3, 4, 5]               # +2 since the last review
+    r2 = self_review.run_review(cs, ext, _Proto(), 11, days=1, spend=0.02, runs=20, context={})
+    blob = " ".join(s["text"] for s in r2["sections"])
+    assert "2 Granite" in blob                            # the window's 2, ...
+    assert "5 Granite" not in blob                        # ...not the cumulative 5

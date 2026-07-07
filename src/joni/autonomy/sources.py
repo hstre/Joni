@@ -127,6 +127,8 @@ class HuggingFaceFetcher:
             data = json.loads(_get("https://huggingface.co/api/daily_papers"))
         except Exception:  # noqa: BLE001
             return []
+        if not isinstance(data, list):        # an error object / dict -> no papers, not a crash
+            return []
         wanted = {q.lower() for q in queries}
         items: list[Item] = []
         for row in data:

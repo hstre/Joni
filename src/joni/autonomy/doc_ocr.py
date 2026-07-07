@@ -38,6 +38,23 @@ def _engine() -> str:
     return os.getenv("JONI_OCR_ENGINE", "cloudflare-ai")
 
 
+# Billable file-parser engines. est_call_cost() is €0 for the prepaid OpenRouter path (right for
+# free Granite/cloudflare-ai), so a PAID engine would otherwise bypass the weekly cap entirely -
+# it is gated and charged here instead, per call.
+_PAID_ENGINES = frozenset({"mistral-ocr"})
+
+
+def _ocr_cost(engine: str) -> float:
+    """Estimated EUR for one paid OCR call (0 for the free engines). Env-tunable; mistral-ocr bills
+    ~$2/1000 pages, so a per-call estimate for a small multi-page scan is the honest default."""
+    if engine not in _PAID_ENGINES:
+        return 0.0
+    try:
+        return max(0.0, float(os.getenv("JONI_COST_PER_OCR_CALL", "0.02")))
+    except ValueError:
+        return 0.02
+
+
 def _max_tokens() -> int:
     """Transcription budget. The 'joni-semantic' profile caps completions at 768 tokens — right for
     a structured proposal, but that would TRUNCATE an OCR transcription at ~2 pages (and the cut
@@ -70,18 +87,27 @@ def parse(data: bytes, filename: str, *, budget=None, run_id: str = "ocr",
     image OCR backend in ``ocr.py``). The mime is always ``application/pdf`` for that reason."""
     if not data or not enabled():
         return None
+    engine = _engine()
+    cost = _ocr_cost(engine)
+    # A paid engine is not covered by est_call_cost (€0 on the prepaid OpenRouter path); gate it
+    # against the weekly cap here so it can't bypass the budget (docstring: None when cap reached).
+    if cost > 0 and budget is not None and not budget.can_spend(cost, runs_per_week=runs_per_week):
+        return None
     attachment = {
         "filename": filename or "document.pdf",
-        "engine": _engine(),
+        "engine": engine,
         "file_data": "data:application/pdf;base64," + base64.b64encode(data).decode(),
         "sha": hashlib.sha256(data).hexdigest(),
     }
     try:
-        text, _cap = model_call.call(
+        text, cap = model_call.call(
             _ocr_profile(), _SYS, _USER,
             run_id=run_id, store_dir=store_dir or paths().model_calls,
             escalation_reason="ocr", budget=budget, runs_per_week=runs_per_week,
             attachment=attachment)
     except Exception:  # noqa: BLE001 - dormant/erroring OCR must never break the reading step
         return None
+    # Charge a paid engine's LIVE call against the cap (a replay is free, already charged once).
+    if cost > 0 and budget is not None and cap is not None and not cap.replayed:
+        budget.charge(cost)
     return (text or "").strip() or None
