@@ -234,3 +234,12 @@ def test_weekly_budget_cap_governs_the_semantic_engine(monkeypatch, tmp_path):
     out3, cap3 = model_call.call(prof, "s", "u", run_id="r3", store_dir=tmp_path,
                                  budget=full, runs_per_week=10)
     assert out3 == "out" and cap3.replayed is True and len(calls) == 1
+
+
+def test_config_sha_distinguishes_base_url():
+    # base_url ROUTES the request (an env-overridable endpoint/proxy); two configs with the same
+    # served_slug but different base_url are materially different and must not share a replay key.
+    import dataclasses
+    p = model_profile.profile("joni-semantic")
+    p2 = dataclasses.replace(p, base_url="https://other.example/v1")
+    assert p.config_sha() != p2.config_sha()

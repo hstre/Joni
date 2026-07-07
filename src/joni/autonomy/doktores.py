@@ -288,7 +288,8 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
     if last is not None and cycle - last < _every():           # cadence bounds spend
         return []
 
-    seen = set(extensions.setdefault("doktores_seen", []))
+    seen_list = list(extensions.setdefault("doktores_seen", []))
+    seen = set(seen_list)
     filed = extensions.setdefault("doktores_filed", {})        # component_key -> last cycle filed
     log = extensions.setdefault("doktores_review", [])         # for the page
 
@@ -327,6 +328,8 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
     new: list[dict] = []
     examined = 0
     for item in reviewable[:_MAX_REVIEW]:
+        if item.key not in seen:
+            seen_list.append(item.key)
         seen.add(item.key)
         prof = model_profile.profile("joni-hard")
         output, cap = model_call.call(
@@ -370,7 +373,7 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
                      f"Doktores-Auftrag an Claude: {order['title']} - {key} (non-core, aus "
                      f"{getattr(item, 'source', '?')}: {getattr(item, 'title', '')[:60]})")
 
-    extensions["doktores_seen"] = sorted(seen)[-3000:]
+    extensions["doktores_seen"] = list(dict.fromkeys(seen_list))[-3000:]   # recency, not lexical
     extensions["doktores_review"] = log[-60:]
     if examined and not new:
         proto.record(cycle, "research",

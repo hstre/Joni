@@ -61,3 +61,15 @@ def test_detect_qualifies_a_negation_as_contradiction():
     cs.detect_and_open_conflicts()
     kinds = [x.conflict_kind for x in cs.core.all(l9.ObjectType.CONFLICT)]
     assert CK.CONTRADICTION in kinds
+
+
+def test_scope_markers_match_whole_words_not_substrings():
+    # 'ood' (the OOD acronym) must NOT fire on good/food/blood, nor 'many' on Germany/humanity -
+    # else a genuine A/not-A negation was mislabelled a scope tension before the contradiction gate.
+    assert qualify_conflict("most outputs are good", "most outputs are not good",
+                            severity="hard", contradictory=True) == CK.CONTRADICTION.value
+    assert qualify_conflict("Germany leads the field", "Germany does not lead the field",
+                            severity="hard", contradictory=True) == CK.CONTRADICTION.value
+    # ...but the OOD acronym as a real standalone word still triggers a novel-scope tension
+    assert qualify_conflict("most inputs are handled well", "ood inputs fail",
+                            severity="soft") == CK.SCOPE_TENSION.value
