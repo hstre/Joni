@@ -282,7 +282,7 @@ def one_cycle() -> dict:
                          refs={**refs, "source": imp.source_key, "url": imp.source_url})
         elif imp.target in allowed_core and imp.target not in raised:
             ask = structured_ask(imp, cycle)
-            extensions["asks"].append(ask)
+            extensions["asks"] = [*extensions["asks"], ask][-500:]   # bounded; core-asks are rare
             asks_new.append(ask)
             raised.add(imp.target)
             proto.record(cycle, "asked",
@@ -542,7 +542,8 @@ def _apply(cs: core_state.CoreState, extensions: dict, imp) -> dict:
     if imp.kind == "note_capability":
         pid = cs.note_preference(imp.target)
         extensions.setdefault("notes", [])
-        extensions["notes"].append({"note": imp.rationale, "source": imp.source_url})
+        extensions["notes"] = [*extensions["notes"],
+                               {"note": imp.rationale, "source": imp.source_url}][-500:]  # bounded
         return {"preference": pid}
     return {}
 
