@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 450 · 202 Methoden** — proposed 201 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 1  
+**Cycle 451 · 204 Methoden** — proposed 203 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 1  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -121,6 +121,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **proposed** | candidate | 0 | — |
 | rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | hacking-as-a-lens | **proposed** | candidate | 0 | — |
+| GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation | **proposed** | candidate | 0 | — |
+| ResearchStudio-Reel: Automate the Last Mile of Research from Paper to Poster, Vi | **proposed** | candidate | 0 | — |
 | Major-project-list | **proposed** | candidate | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
