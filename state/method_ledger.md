@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 456 · 210 Methoden** — proposed 208 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
+**Cycle 457 · 212 Methoden** — proposed 210 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -129,6 +129,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | OmniOpt: Taxonomy, Geometry, and Benchmarking of Modern Optimizers | **proposed** | candidate | 0 | — |
 | KVpop -- Key-Value Cache Compression with Predictive Online Pruning | **proposed** | candidate | 0 | — |
 | Major-project-list | **proposed** | candidate | 0 | — |
+| XIN-Annotations: A Multidimensional Cybercrime Annotation Dataset for a Closed-A | **proposed** | candidate | 0 | — |
+| A Triphasic Sleep-Consolidated Neuro-Symbolic Framework for Lifelong Agent Auton | **proposed** | candidate | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
