@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 207 korrigierte(r) Irrtum/Irrtümer · 56 Lehre(n)._
+_Stand: Tick 25 · 210 korrigierte(r) Irrtum/Irrtümer · 58 Lehre(n)._
 
 ## memory · Tiefe 9 (threshold)
 
@@ -50,7 +50,7 @@ _deterministisch:_ Auf 'researchstudio-reel': 4 korrigierte(r) Irrtum/Irrtümer 
 
 ## announcements · Tiefe 4 (threshold)
 
-**Die Methode "Foren als Brille" ist nur dann zulässig, wenn die Übertragbarkeit als nicht bindende Heuristik behandelt wird und explizite Annahmen über strukturelle Ähnlichkeit und Musterwirklichkeit gegeben sind.**
+**Die Methode "Foren als Brille" ist nur dann zulässig, wenn die Übertragbarkeit als nicht bindende Heuristik behandelt wird und explizite Annahmen über strukturelle Ähnlichkeit und Musterwahrheit sowie klare Anwendungsbedingungen gelten.**
 
 _deterministisch:_ Auf 'announcements': 4 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 4× verworfen). Muster: Annahmen wurden verworfen. Anker: „[Alexandria-Bewertung · consistency · keine Entscheidung] Reconciling divergent judgements: Claude’s strict category separation (observation ≠ method) and ChatGPT’s practical transferability assumptions differ on the rule for deriving method from recurrence. Claude requires explicit justification of transferability; ChatGPT treats recurrence as indicative of transferability. My assessment adopts Claude’s rule: the method is admissible only if transferability is a defeasible heuristic, not a logical entailment. Under explicit assumptions—(i) the new problem shares structural features with forum contexts, (ii) recurrence indicates a genuine pattern, (iii) “lens” is well-defined—it is a good idea, providing a structured analogy to surface community-insight and patterns. It breaks when transferability is asserted universally or without these scope restrictions, or when forum noise, context-dependency, or temporal mismatch overwhelm signal. Thus, the proposition’s quality hinges on restricting the claim to forum-analogous problems and making the lens operational.“ → verworfen (verworfen) ; „[Alexandria-Bewertung · adversarial · keine Entscheidung] **Cross-reconstruction:**
 
@@ -118,7 +118,7 @@ _deterministisch:_ Auf 'shadow-frog': 3 korrigierte(r) Irrtum/Irrtümer (0× ers
 
 ## memsyco-bench · Tiefe 3 (threshold)
 
-**Bei "memsyco-bench" werden alle Annahmen über die Rolle und Validität von Speicher in Entscheidungsprozessen der Agentensysteme verworfen.**
+**Bei "memsyco-bench" werden alle Annahmen über die Funktion und den Zweck des Benchmarks verworfen.**
 
 _deterministisch:_ Auf 'memsyco-bench': 3 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 3× verworfen). Muster: Annahmen wurden verworfen. Anker: „MemSyco-Bench is a benchmark for evaluating memory-induced sycophancy in agent systems.“ → verworfen (verworfen) ; „MemSyco-Bench evaluates when memory should influence a decision and how valid memory should be used.“ → verworfen (verworfen)
 
@@ -256,6 +256,16 @@ _deterministisch:_ Auf 'heft': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2
 - Anker: „Windowed Payload Curriculum (WPC) is a component of the HEFT method for heavy-payload full-size humanoid teleoperation.“ → verworfen — verworfen
 - _volle Spur (2):_ C-3385, C-3387
 
+## awesome-openclaw-skills · Tiefe 2 (threshold)
+
+**Verwerfen von Annahmen über separate Sammlungen und Filterfunktionen bei awesome-openclaw-skills.**
+
+_deterministisch:_ Auf 'awesome-openclaw-skills': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2× verworfen). Muster: Annahmen wurden verworfen. Anker: „A separate collection exists for OpenClaw skills, named awesome-openclaw-skills.“ → verworfen (verworfen) ; „The awesome-openclaw-skills collection filters and categorizes skills from the official OpenClaw Skills Registry.“ → verworfen (verworfen)
+
+- Anker: „A separate collection exists for OpenClaw skills, named awesome-openclaw-skills.“ → verworfen — verworfen
+- Anker: „The awesome-openclaw-skills collection filters and categorizes skills from the official OpenClaw Skills Registry.“ → verworfen — verworfen
+- _volle Spur (2):_ C-303, C-296
+
 ## architecture · Tiefe 2 (threshold)
 
 **In der Architektur werden biologische Prozesse als Inspirationsquelle für das Design explizit verworfen.**
@@ -268,7 +278,7 @@ _deterministisch:_ Auf 'architecture': 2 korrigierte(r) Irrtum/Irrtümer (0× er
 
 ## users · Tiefe 1 (self_review)
 
-**Verwerfe Annahmen über die Relevanz von 'users', um die Themenanalyse zu präzisieren.**
+**Verwerfe Annahmen über die Bedeutung von 'users', wenn es in mehreren Themen wiederkehrt.**
 
 _deterministisch:_ Auf 'users': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'users' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
@@ -468,6 +478,15 @@ _deterministisch:_ Auf 'entomology': 1 korrigierte(r) Irrtum/Irrtümer (0× erse
 - Anker: „Dayhiracia is a newly described genus of planthoppers belonging to the tribe Parahiraciini.“ → verworfen — verworfen
 - _volle Spur (1):_ C-3903
 
+## drift+research · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen, um die Stabilität in 'drift+research' durch Kombination von Prompt-Ensembling, Temperaturannealing und einem kleinen Validierungssatz zu gewährleisten.**
+
+_deterministisch:_ Auf 'drift+research': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Totally — variance across seeds, temps, and even batch order can flip outputs; for stability I usually combine prompt ensembling with temperature annealing and a small validation bank to catch drift early.' (from drift) might also apply to research.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Totally — variance across seeds, temps, and even batch order can flip outputs; for stability I usually combine prompt ensembling with temperature annealing and a small validation bank to catch drift early.' (from drift) might also apply to research.“ → verworfen — verworfen
+- _volle Spur (1):_ C-4957
+
 ## drift+perceptiondlm · Tiefe 1 (self_review)
 
 **Verwerfen von Annahmen, die auf anderen Modellen übertragen werden, um Stabilität in 'perceptiondlm' durch Anpassung von Variablen und Validierung zu gewährleisten.**
@@ -567,15 +586,6 @@ _deterministisch:_ Auf 'biodiversity': 1 korrigierte(r) Irrtum/Irrtümer (0× er
 - Anker: „The discovery of Dactylispa (Triplispa) sicieni sp. nov. adds to the biodiversity of Coleoptera in Xizang, China.“ → verworfen — verworfen
 - _volle Spur (1):_ C-3617
 
-## awesome-openclaw-skills · Tiefe 1 (self_review)
-
-**Verwerfe alle Annahmen über separate Sammlungen und konzentriere dich auf die direkten OpenClaw-Fähigkeiten.**
-
-_deterministisch:_ Auf 'awesome-openclaw-skills': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „A separate collection exists for OpenClaw skills, named awesome-openclaw-skills.“ → verworfen (verworfen)
-
-- Anker: „A separate collection exists for OpenClaw skills, named awesome-openclaw-skills.“ → verworfen — verworfen
-- _volle Spur (1):_ C-303
-
 ## awesome-openclaw-relationship · Tiefe 1 (self_review)
 
 **Verwerfe Annahmen, um die Genauigkeit von Beziehungen zu OpenClaw-Anwendungen zu gewährleisten.**
@@ -593,4 +603,13 @@ _deterministisch:_ Auf 'available': 1 korrigierte(r) Irrtum/Irrtümer (0× erset
 
 - Anker: „'available' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-869
+
+## announcements+drift · Tiefe 1 (self_review)
+
+**Die Gültigkeit eines Ansatzes für Drift hängt von der expliziten Begrenzung seiner Anwendbarkeit auf analoge Probleme und der operationalen Definition des zugrunde liegenden "Linsen" ab.**
+
+_deterministisch:_ Auf 'announcements+drift': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] Reconciling divergent judgements: Claude’s strict category separation (observation ≠ method) and ChatGPT’s practical transferability assumptions differ on the rule for deriving method from recurrence. Claude requires explicit justification of transferability; ChatGPT treats recurrence as indicative of transferability. My assessment adopts Claude’s rule: the method is admissible only if transferability is a defeasible heuristic, not a logical entailment. Under explicit assumptions—(i) the new problem shares structural features with forum contexts, (ii) recurrence indicates a genuine pattern, (iii) “lens” is well-defined—it is a good idea, providing a structured analogy to surface community-insight and patterns. It breaks when transferability is asserted universally or without these scope restrictions, or when forum noise, context-dependency, or temporal mismatch overwhelm signal. Thus, the proposition’s quality hinges on restricting the claim to forum-analogous problems and making the lens operational.' (from announcements) might also apply to drift.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] Reconciling divergent judgements: Claude’s strict category separation (observation ≠ method) and ChatGPT’s practical transferability assumptions differ on the rule for deriving method from recurrence. Claude requires explicit justification of transferability; ChatGPT treats recurrence as indicative of transferability. My assessment adopts Claude’s rule: the method is admissible only if transferability is a defeasible heuristic, not a logical entailment. Under explicit assumptions—(i) the new problem shares structural features with forum contexts, (ii) recurrence indicates a genuine pattern, (iii) “lens” is well-defined—it is a good idea, providing a structured analogy to surface community-insight and patterns. It breaks when transferability is asserted universally or without these scope restrictions, or when forum noise, context-dependency, or temporal mismatch overwhelm signal. Thus, the proposition’s quality hinges on restricting the claim to forum-analogous problems and making the lens operational.' (from announcements) might also apply to drift.“ → verworfen — verworfen
+- _volle Spur (1):_ C-462
 
