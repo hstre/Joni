@@ -48,6 +48,22 @@ def _make_uncertain(cs, pos="routing should be local-first",
     return a, b
 
 
+def test_a_reachable_panel_that_fails_to_answer_is_still_charged_and_throttled(monkeypatch):
+    # >=2 assessors are configured (the panel is reachable, so phase-1 calls ARE billed), but none
+    # answer (flaky endpoint) -> convene() returns None. The round must STILL be charged and the
+    # cadence anchored, else it re-convenes every cycle spending at the provider off-budget.
+    _enable(monkeypatch)
+    monkeypatch.setattr(experts, "_ask", lambda *a, **k: "")   # every assessor returns nothing
+    cs = CoreState(seed_core())
+    _make_uncertain(cs)
+    ext: dict = {}
+    budget = Budget(week_start="t", spent_eur=0.0, runs=0, cap_eur=20.0)
+    out = experts.maybe_convene(cs, ext, _Proto(), budget, cycle=20)
+    assert out["convened"] is False                            # nobody answered
+    assert budget.spent_eur > 0                                # ...but the billed calls charged
+    assert ext.get("panel_last_cycle") == 20                   # ...and the cadence anchored
+
+
 def test_convenes_when_unsure_takes_assessments_as_sources_and_never_decides(monkeypatch):
     _enable(monkeypatch)
     _mock_ask(monkeypatch)

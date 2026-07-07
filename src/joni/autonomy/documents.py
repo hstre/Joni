@@ -90,11 +90,11 @@ def _read_inbox(inbox: Path, processed: set[str], patterns, transform, tag: str,
             break
         if path.name in processed:
             continue
-        processed.add(path.name)
         try:
             raw = path.read_text(encoding="utf-8", errors="ignore")
         except OSError:
-            continue
+            continue                       # transient read error: do NOT mark processed, retry next
+        processed.add(path.name)           # read succeeded -> now it is genuinely handled
         text = transform(raw)
         if text.strip():
             out.append(Doc(source_id=f"{tag}:{path.name}", url=str(path),

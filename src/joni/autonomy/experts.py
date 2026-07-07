@@ -254,14 +254,21 @@ def maybe_convene(cs, extensions: dict, proto, budget, cycle: int, *,
         proto.record(cycle, "panel", "panel deferred - weekly budget has no room")
         return out
 
+    # A REACHABLE panel (>=2 assessors configured) issues billed phase-1 calls even when fewer than
+    # two answer and convene() returns None. Account + anchor the cadence in that case too, else a
+    # flaky endpoint would re-convene every cycle, spending at the provider while Joni's budget is
+    # never decremented and the once-per-cadence throttle never engages.
+    panel_ready = sum(1 for e in _experts() if os.getenv(e["key_env"])) >= 2
     record = convene(question, context=context)
     asked.add(key)
     extensions["panel_asked"] = sorted(asked)[-200:]
+    if panel_ready:
+        budget.charge(cost)
+        extensions["panel_last_cycle"] = cycle  # cooldown anchor (real calls were made)
     if record is None:
         proto.record(cycle, "panel", "panel could not convene (fewer than two reachable assessors)")
         return out
 
-    budget.charge(cost)
     # Take each assessor's cross-reconstructed judgement in as a SOURCE - candidate authority,
     # never confirmed; marked dissent is preserved (a contradiction opens a conflict, held open).
     for name in record["experts"]:
@@ -271,7 +278,6 @@ def maybe_convene(cs, extensions: dict, proto, budget, cycle: int, *,
             cs.hear(f"[Alexandria-Bewertung · {role} · keine Entscheidung] {text}", topic,
                     handle=f"expert:{name}", platform="panel")
     record["cycle"] = cycle
-    extensions["panel_last_cycle"] = cycle      # cooldown anchor for the next uncertainty
     extensions["panel_last"] = {"question": question, "roles": record["roles"],
                                 "phase3": record["phase3"], "cycle": cycle}
     proto.record(cycle, "panel",

@@ -81,3 +81,25 @@ def test_latex_inbox_is_read(monkeypatch, tmp_path):
     new = [c for c in cs.core.all(l9.ObjectType.CLAIM)
            if any("tex:paper.tex" in s for s in (c.provenance.source_ids or ()))]
     assert new
+
+
+def test_a_transient_read_error_does_not_permanently_drop_a_document(tmp_path, monkeypatch):
+    # a transient OSError (a lock / NFS blip) on an otherwise-valid file must NOT mark it processed;
+    # it is retried next cycle instead of being silently lost forever.
+    import pathlib
+    (tmp_path / "a.md").write_text("# real content here worth reading")
+    orig = pathlib.Path.read_text
+    state = {"fail": True}
+
+    def flaky(self, *a, **k):
+        if self.name == "a.md" and state["fail"]:
+            state["fail"] = False
+            raise OSError("transient")
+        return orig(self, *a, **k)
+
+    monkeypatch.setattr(pathlib.Path, "read_text", flaky)
+    processed: set[str] = set()
+    assert documents.read_markdown_inbox(tmp_path, processed) == []   # read failed
+    assert "a.md" not in processed                                    # NOT burned
+    docs = documents.read_markdown_inbox(tmp_path, processed)         # retried -> read
+    assert docs and "a.md" in processed

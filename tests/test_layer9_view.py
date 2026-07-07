@@ -55,6 +55,20 @@ def test_page_renders_the_five_elements(tmp_path):
     assert json.loads(blob)["export"]["claims"]
 
 
+def test_header_open_conflict_count_matches_the_panel_predicate(tmp_path):
+    # the header 'conflicts open' count and the 'never smoothed away' panel must use the SAME
+    # predicate (not resolved / not superseded) - else a 'tolerated' conflict reads as 0-open in
+    # the header while the panel lists it.
+    cs = _rich_cs()
+    out = tmp_path / "layer9.html"
+    layer9_view.render(out, {"export": cs.epistemic_export(),
+                             "budget": {"spent_eur": 0.0, "cap_eur": 20.0},
+                             "window": {"start": "2026-06-13"}})
+    h = out.read_text()
+    assert h.count("x.conflict_status!='resolved'&&x.conflict_status!='superseded'") == 2
+    assert "conflict_status=='open'||x.conflict_status=='under_review'" not in h
+
+
 def test_cycle_writes_the_layer9_map(monkeypatch, tmp_path):
     monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
     monkeypatch.delenv("JONI_ONLINE", raising=False)
