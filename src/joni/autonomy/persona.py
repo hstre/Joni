@@ -136,7 +136,12 @@ def extract_corrections(cs) -> list[Correction]:
                 continue
             ev = ledger_by_id.get(getattr(o, "ledger_event", "") or "")
             reason = (getattr(ev, "reason", "") or "").strip() if ev else ""
-            successors = tuple(getattr(ev, "output_refs", ()) or ()) if ev else ()
+            # A successor is a DIFFERENT object. A rejection's ledger event lists the rejected claim
+            # itself in output_refs (input==output), so without this filter every rejection would
+            # echo its own text as its 'after' - a nonsensical „X" → „X". Excluding the object's own
+            # id keeps a real supersede's new claim and yields no 'after' for a bare rejection.
+            successors = tuple(sid for sid in (getattr(ev, "output_refs", ()) or ())
+                               if sid and sid != o.id) if ev else ()
             after = next((t for t in (_text_of(s, sid) for sid in successors) if t), "")
             conflicts = resolved_by_claim.get(o.id, [])
             trail = tuple(dict.fromkeys(
