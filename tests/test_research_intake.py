@@ -94,6 +94,20 @@ def test_ingestion_is_deduped_by_package_id(tmp_path):
     assert first["candidates"] == 1 and second["candidates"] == 0   # not re-ingested
 
 
+def test_a_package_still_in_the_inbox_is_never_re_ingested_even_if_seen_is_truncated(tmp_path):
+    # the old sorted(seen)[-2000:] cap dropped low-sorting pids; a package still in the inbox that
+    # fell out of 'seen' was then re-ingested every cycle. A present pid must always be retained.
+    cs = CoreState(seed_core())
+    paths = _seed(tmp_path, [_pkg(id="RO-1")])
+    # pre-fill 'seen' with 2000 pids that all sort ABOVE 'RO-1' (so a lexical cap would evict it)
+    ext = {"research_seen": [f"zzz-{i:05d}" for i in range(2000)]}
+    first = research_intake.ingest(cs, ext, _Proto(), 1, paths=paths)
+    assert first["candidates"] == 1                       # ingested once
+    assert "RO-1" in ext["research_seen"]                 # retained (present in the inbox)
+    second = research_intake.ingest(cs, ext, _Proto(), 2, paths=paths)
+    assert second["candidates"] == 0                      # NOT re-ingested
+
+
 def test_a_malformed_package_does_not_crash_the_cycle(tmp_path):
     cs = CoreState(seed_core())
     paths = _seed(tmp_path, ["not a dict", {"id": "RO-ok", "reviewer_verdict": "accept",

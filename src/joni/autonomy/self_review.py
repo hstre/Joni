@@ -114,9 +114,13 @@ def _join_titles(titles: list[str]) -> str:
     return ", ".join(quoted[:-1]) + " and " + quoted[-1]
 
 
-def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) -> list[dict]:
+def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict,
+               model_activity: dict | None = None) -> list[dict]:
     """Joni's first-person report on himself, grounded in real state. Four movements:
-    what I looked at, what caught my interest, where I had doubts, what I took away."""
+    what I looked at, what caught my interest, where I had doubts, what I took away.
+
+    ``spend`` and ``model_activity`` are the **per-review-window** figures (this hour's, not the
+    running weekly/lifetime totals) so the diary's "this hour" wording is honest."""
     snap = cs.snapshot()
     topics = cs.topics()
     live = cs.active_claims()
@@ -233,7 +237,7 @@ def _narrative(cs, extensions: dict, *, days: int, spend: float, context: dict) 
         learned.append(f"And {len(emergent_topics)} topic(s) have emerged from my own "
                        f"recurring patterns rather than from any source: "
                        f"{', '.join(emergent_topics[:5])}.")
-    act = _model_activity(extensions)
+    act = model_activity if model_activity is not None else _model_activity(extensions)
     total = act["granite"] + act["deepseek"] + act["doktores"]
     if total:
         learned.append(
@@ -311,9 +315,19 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
     context = context or {}
     snap = cs.snapshot()
     topics_added = len(extensions.get("topics_added", []))
-    act = _model_activity(extensions)
-    assessments = _assessments(cs, days=days, spend=spend, topics_added=topics_added,
-                               model_calls=act["granite"] + act["deepseek"] + act["doktores"])
+    # Per-review-window figures: the model-activity logs and the spend are cumulative (lifetime /
+    # weekly), but the diary speaks of "this hour". Subtract the last review's baseline so the
+    # reported numbers are the window's, not a running total that only ever grows.
+    act = _model_activity(extensions)                                   # cumulative
+    base = extensions.get("last_review_activity") or {}
+    window_act = {k: max(0, act[k] - int(base.get(k, 0))) for k in act}
+    extensions["last_review_activity"] = act
+    last_spend = float(extensions.get("last_review_spend", 0.0) or 0.0)
+    window_spend = spend - last_spend if spend >= last_spend else spend  # weekly reset -> new total
+    extensions["last_review_spend"] = spend
+    window_calls = window_act["granite"] + window_act["deepseek"] + window_act["doktores"]
+    assessments = _assessments(cs, days=days, spend=window_spend, topics_added=topics_added,
+                               model_calls=window_calls)
     # Joni records, once (sm_seen dedupes), that he understands what an Auftrag to Claude IS:
     # in the first place a program change to himself - to his own non-core modules.
     assessments = [*assessments, {
@@ -325,7 +339,8 @@ def run_review(cs, extensions: dict, proto, cycle: int, *, days: int, spend: flo
         "counterevidence": []}]
 
     # The first-person report (built before we mint, so it can read the prior metrics).
-    sections = _narrative(cs, extensions, days=days, spend=spend, context=context)
+    sections = _narrative(cs, extensions, days=days, spend=window_spend, context=context,
+                          model_activity=window_act)
     # Review #8: lead with what actually CHANGED since the last review, not a re-statement of
     # stable self-descriptions. Only non-zero deltas are reported.
     delta = _delta_section(snap, act, extensions)

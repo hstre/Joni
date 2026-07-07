@@ -151,15 +151,19 @@ def ingest(cs, extensions: dict, proto, cycle: int, *, paths) -> dict:
     if not isinstance(packages, list) or not packages:
         return {"ingested": 0, "candidates": 0, "conflicts": 0, "published": 0}
 
-    seen = set(extensions.setdefault("research_seen", []))
+    seen_list = list(extensions.setdefault("research_seen", []))
+    seen = set(seen_list)
     heard = extensions.setdefault("research_heard", [])
     ingested = candidates = conflicts = published = 0
+    present: set[str] = set()                     # pids of packages currently in the inbox
     for pkg in packages:
         if not isinstance(pkg, dict):
             continue
         pid = str(pkg.get("id") or _slug(pkg.get("theory", "")) or f"RO-{cycle}")
+        present.add(pid)
         if pid in seen:
             continue
+        seen_list.append(pid)
         try:
             r = _ingest_one(cs, pkg, proto, cycle, paths, heard)
         except Exception as exc:                 # one bad package must not stop the cycle
@@ -172,7 +176,12 @@ def ingest(cs, extensions: dict, proto, cycle: int, *, paths) -> dict:
         conflicts += r["conflicts"]
         published += int(r["published"])
 
-    extensions["research_seen"] = sorted(seen)[-2000:]
+    # Bound the dedup memory to the most-recent 2000 pids, but ALWAYS retain the pids of packages
+    # still in the inbox - else a low-sorting one dropped by the old sorted()[-2000:] cap fell out
+    # of 'seen' and got re-ingested every cycle (re-minting its SOURCE claims). Order-preserving.
+    recent = list(dict.fromkeys(seen_list))[-2000:]
+    extensions["research_seen"] = list(dict.fromkeys([*recent, *(p for p in seen_list
+                                                                 if p in present)]))
     extensions["research_heard"] = heard[-200:]
     return {"ingested": ingested, "candidates": candidates,
             "conflicts": conflicts, "published": published}
