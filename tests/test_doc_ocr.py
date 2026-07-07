@@ -87,6 +87,25 @@ def test_scanned_inbox_pdf_is_ocred_not_silently_dropped(tmp_path, monkeypatch):
     assert "scan.pdf" in seen                                          # read -> now processed
 
 
+def test_paid_ocr_calls_are_capped_per_cycle(tmp_path, monkeypatch):
+    # a folder of un-OCR-able scans must NOT fire one paid OCR call per scan every cycle: the
+    # attempts are capped at `limit`, the rest are left for the next cycle (not marked processed).
+    monkeypatch.setattr(pdf, "available", lambda: True)
+    monkeypatch.setattr(pdf, "extract_text", lambda data, **k: "")     # every pdf is a scan
+    for i in range(5):
+        (tmp_path / f"scan{i}.pdf").write_bytes(b"%PDF-scan")
+    calls = {"n": 0}
+
+    def ocr(data, name):
+        calls["n"] += 1
+        return None                                                   # never yields text
+
+    seen: set[str] = set()
+    pdf.read_inbox(tmp_path, seen, limit=2, ocr_fallback=ocr, attempts={})
+    assert calls["n"] == 2                                            # capped, not 5
+    assert seen == set()                                             # nothing burned; retry next
+
+
 def test_inbox_scan_is_retried_on_a_transient_ocr_miss_then_given_up(tmp_path, monkeypatch):
     monkeypatch.setattr(pdf, "available", lambda: True)
     monkeypatch.setattr(pdf, "extract_text", lambda data, **k: "")

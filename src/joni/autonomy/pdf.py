@@ -154,6 +154,7 @@ def read_inbox(inbox: Path, processed: set[str], *, limit: int = 3, ocr_fallback
     if (not available() and ocr_fallback is None) or not inbox.exists():
         return []
     out: list[PdfText] = []
+    ocr_calls = 0
     for path in sorted(inbox.glob("*.pdf")):
         if len(out) >= limit:
             break
@@ -163,7 +164,14 @@ def read_inbox(inbox: Path, processed: set[str], *, limit: int = 3, ocr_fallback
         text = extract_text(data) if available() else ""
         ocr_tried = False
         if not text.strip() and ocr_fallback is not None and data:
+            # OCR is a PAID call. Bound attempts per cycle to `limit`: `out` only grows on a
+            # SUCCESSFUL read, so without this cap a folder of un-OCR-able scans would fire one
+            # paid OpenRouter call PER scan EVERY cycle. Once the cycle's OCR budget is spent, leave
+            # the rest unmarked so they retry next cycle rather than being burned or re-charged.
+            if ocr_calls >= limit:
+                continue
             ocr_tried = True
+            ocr_calls += 1
             text = ocr_fallback(data, path.name) or ""
         if text.strip():
             processed.add(path.name)
