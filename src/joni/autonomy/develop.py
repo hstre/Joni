@@ -40,7 +40,7 @@ def _semantic_rev() -> str:
 
 
 def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
-            max_links: int = 2, max_backfill: int = 3) -> dict:
+            max_links: int = 2, max_backfill: int = 3, max_review: int = 5) -> dict:
     layer = layer or NullSemanticLayer()
     rev = _semantic_rev()
     linked = set(extensions.get("linked", []))
@@ -75,6 +75,8 @@ def develop(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
 
     reviewed = 0
     for x in cs.core.open_conflicts():
+        if reviewed >= max_review:                        # bounded per cycle, like every other step
+            break
         if x.conflict_status.value == "open":
             cs.review_conflict(x.id)
             reviewed += 1
