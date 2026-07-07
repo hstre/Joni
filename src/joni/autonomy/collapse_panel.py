@@ -122,11 +122,15 @@ def degeneracy(vitality_record: dict, undecidable: int, clusters_total: int) -> 
             "decidable_percent": decidable_pct, "level": lvl}
 
 
-def conflict_depth(conflicts) -> dict:
+def conflict_depth(conflicts, topic_of: dict | None = None) -> dict:
     """[5] Not just the count — the *shape*. Build the contradiction graph from each conflict's
     claim_ids and report component count, the largest tangle, whether any component is cyclic
     (more edges than a tree), open/unresolved conflicts, and the worst topic. A flat 246 is far
-    less critical than a few deep, cyclic tangles."""
+    less critical than a few deep, cyclic tangles.
+
+    A ``Conflict`` carries no ``topic`` of its own, so the worst topic is derived from the topics of
+    its claims via ``topic_of`` (claim_id -> topic); without the map it stays ``None``."""
+    topic_of = topic_of or {}
     adj: dict[str, set] = defaultdict(set)
     edges = 0
     per_topic: Counter = Counter()
@@ -136,8 +140,11 @@ def conflict_depth(conflicts) -> dict:
         if status in _CLOSED_CONFLICT:
             continue
         open_conf += 1
-        per_topic[getattr(cf, "topic", None) or "?"] += 1
         ids = [str(x) for x in (getattr(cf, "claim_ids", None) or [])]
+        for cid in ids:                          # the conflict's topic(s) = its claims' topics
+            t = topic_of.get(cid)
+            if t:
+                per_topic[t] += 1
         for i in range(len(ids)):
             for j in range(i + 1, len(ids)):
                 if ids[j] not in adj[ids[i]]:
@@ -244,6 +251,8 @@ def compute(cs, extensions: dict, *, proto_path: Path, load_seconds: float | Non
                       if getattr(o, "semantic_state", None) not in decidable_states)
     vit = extensions.get("vitality", {})
     conflicts = list(core.all(l9.ObjectType.CONFLICT))
+    # a claim_id -> topic map so conflict_depth can name its worst topic (a Conflict has no topic)
+    topic_of = {c.id: c.topic for c in core.all(l9.ObjectType.CLAIM) if getattr(c, "topic", None)}
 
     # novelty + repetition from the protocol (deterministic fields only)
     notes = _read_protocol_tail(proto_path, frozenset({"note"}), 60)
@@ -260,7 +269,7 @@ def compute(cs, extensions: dict, *, proto_path: Path, load_seconds: float | Non
         "topic_entropy": topic_entropy(topics),
         "weak_claim_ratio": weak_claim_ratio(claims, evidence_of),
         "degeneracy": degeneracy(vit, undecidable, len(clusters)),
-        "conflict_depth": conflict_depth(conflicts),
+        "conflict_depth": conflict_depth(conflicts, topic_of),
         "novelty": novelty(new_counts),
         "repetition": repetition(devs, sms),
         "cold_replay": cold_replay(load_seconds),
