@@ -18,6 +18,33 @@ def _data(ext: dict) -> dict:
     }
 
 
+def test_site_shows_the_persona_lessons():
+    data = _data({})
+    data["persona"] = [{
+        "theme": "routing", "depth": 3, "trigger_kind": "resolved_conflict",
+        "heuristic": "3 korrigierte Irrtümer auf 'routing'.", "heuristic_phrased": None,
+        "anchors": [{"before": "local-first always", "after": "load-dependent",
+                     "trigger": "operator: corroborated under load"}], "trail": ["C-1"]}]
+    html = site.build(data)
+    assert "Jonis Persona" in html
+    assert "routing" in html and "load-dependent" in html
+
+
+def test_site_shows_the_conflict_resolution_map():
+    data = _data({})
+    data["resolve"] = [{"conflict_id": "X-7", "topic": "routing",
+                        "a": {"id": "C-1", "text": "local-first always", "support": 0},
+                        "b": {"id": "C-2", "text": "load-dependent", "support": 2}}]
+    html = site.build(data)
+    assert "Konflikt-Mappe" in html and "X-7" in html
+    assert "conflict_decisions.txt" in html         # tells the operator where to decide
+
+
+def test_site_persona_and_resolve_are_empty_by_default():
+    html = site.build(_data({}))
+    assert "Noch keine Lehre" in html and "Gerade nichts zu entscheiden" in html
+
+
 def test_site_keeps_auftraege_but_drops_the_retired_ask_and_forum_surfaces():
     # 'Aufträge an Claude' (Joni's programming suggestions) stay on the site; the core-asks card and
     # the forum post-mappe were retired.

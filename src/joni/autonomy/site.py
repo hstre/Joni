@@ -314,6 +314,33 @@ def build(data: dict) -> str:
             f"<span class=src>(read-only Frühwarnung — misst &amp; warnt, repariert nichts)</span>"
             f"<div style='margin-top:4px'>{_dots}</div></div>")
 
+    # Persona: the corrected-error lessons (read-only projection of the ledger).
+    def _lesson(ls) -> str:
+        head = esc(ls.get("heuristic_phrased") or ls.get("heuristic", ""))
+        anchors = "".join(
+            f"<li>„{esc(a.get('before',''))}“ → "
+            f"{('„'+esc(a.get('after',''))+'“') if a.get('after') else 'verworfen'} "
+            f"<span class=src>— {esc(a.get('trigger',''))}</span></li>"
+            for a in ls.get("anchors", []))
+        return (f"<div class=movement><h3>{esc(ls.get('theme',''))} "
+                f"<span class=src>· Tiefe {esc(ls.get('depth',0))} · "
+                f"{esc(ls.get('trigger_kind',''))}</span></h3>"
+                f"<p>{head}</p><ul>{anchors}</ul></div>")
+    persona_html = "".join(_lesson(x) for x in (data.get("persona") or [])) \
+        or "<p class=empty>Noch keine Lehre — zu wenig Irrtümer metabolisiert.</p>"
+
+    # Konflikt-Mappe: open conflicts Joni surfaces for the operator to decide (he never decides).
+    def _decidable(it) -> str:
+        a, b = it.get("a", {}), it.get("b", {})
+        return (f"<div class=movement><h3>{esc(it.get('conflict_id',''))} "
+                f"<span class=src>· {esc(it.get('topic',''))}</span></h3><ul>"
+                f"<li><b>{esc(a.get('id',''))}</b> ({esc(a.get('support',0))} Belege): "
+                f"{esc(a.get('text',''))}</li>"
+                f"<li><b>{esc(b.get('id',''))}</b> ({esc(b.get('support',0))} Belege): "
+                f"{esc(b.get('text',''))}</li></ul></div>")
+    resolve_html = "".join(_decidable(x) for x in (data.get("resolve") or [])) \
+        or "<p class=empty>Gerade nichts zu entscheiden.</p>"
+
     def _movements(entry) -> str:
         return "".join(
             f"<div class=movement><h3>{esc(sec.get('title',''))}</h3>"
@@ -476,6 +503,21 @@ what is uncertain, what contradicts, and what changed.</p>
     <ul>{hyp_items}</ul>
     <div style=margin-top:10px><b>cross-topic-Verknüpfungen (erfunden)</b><br>{inv_html}</div>
     <div style=margin-top:10px><b>emergente Topics (aus Wiederholung)</b><br>{emt_html}</div>
+  </div>
+  <div class="card full">
+    <h2>Jonis Persona — verdichtete Geschichte korrigierter Irrtümer</h2>
+    <p class=note>Expertise = die verdichtete Geschichte korrigierter Irrtümer. Read-only aus dem
+      <b>unveränderlichen Ledger</b> abgeleitet — kein neuer Fakt, nichts gelöscht; der Irrtum
+      bleibt in der Kette, hier steht er nur abstrahiert, mit ein, zwei Ankern. Tiefe = Dichte
+      metabolisierter Fehler = gemessene Expertise.</p>
+    {persona_html}
+    <h2 style=margin-top:16px>Konflikt-Mappe — was <b>du</b> entscheiden kannst</h2>
+    <p class=note>Joni entscheidet <b>nie</b> selbst, welcher Claim recht hat (<code>open
+      conflicts, never force-resolve</code>). Offene Widersprüche mit klarer Evidenz-Asymmetrie
+      legt er hier vor; du entscheidest in <code>state/conflict_decisions.txt</code>
+      (<code>konflikt_id | gewinner | grund</code>). Dann wird der Verlierer SUPERSEDED und die
+      Persona lernt „X → Y".</p>
+    {resolve_html}
   </div>
   <div class=card>
     <h2>Budget (frugal · cheapest model that suffices)</h2>
