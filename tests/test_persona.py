@@ -134,6 +134,42 @@ def test_self_review_window_crystallises_the_rest():
     assert lessons and lessons[0].trigger_kind == "self_review"
 
 
+def test_sink_themes_earn_no_persona_lesson():
+    # no expertise on an undifferentiated sink; corrections on 'unsorted'/'forum' earn no lesson
+    for sink in ("unsorted", "forum", "misc"):
+        c = [_corr(sink, oid="a", via_conflict=True), _corr(sink, oid="b")]
+        assert persona.crystallize(c, self_review=True) == []
+    # a real theme with the same shape still crystallises
+    real = [_corr("routing", oid="a", via_conflict=True)]
+    assert persona.crystallize(real, self_review=False)
+
+
+def test_generic_auto_reason_does_not_count_as_a_reason(tmp_path):
+    # reject_claim records a generic 'C-5 rejected'; it must not lift has_reason or pose as trigger
+    gen = _claim("C-5", "x", "routing", "rejected", ledger_event="E-1")
+    core = _FakeCore(claims=[gen], ledger=[_event("E-1", "C-5 rejected")])
+    c = persona.extract_corrections(_cs(core))[0]
+    assert c.has_reason is False                            # generic boilerplate is not a reason
+    assert "verworfen" in c.trigger and "C-5 rejected" not in c.trigger
+    # a substantive reason DOES count
+    sub = _claim("C-6", "x", "routing", "rejected", ledger_event="E-2")
+    core2 = _FakeCore(claims=[sub], ledger=[_event("E-2", "measured: it broke under load")])
+    c2 = persona.extract_corrections(_cs(core2))[0]
+    assert c2.has_reason is True and "broke under load" in c2.trigger
+
+
+def test_persona_jsonl_is_capped(tmp_path, monkeypatch):
+    monkeypatch.setattr(persona, "_SERIES_CAP", 3)
+    paths = SimpleNamespace(root=tmp_path, model_calls=tmp_path / "mc")
+    core = _FakeCore(claims=[_claim("C-1", "x", "routing", "rejected", ledger_event="E-1"),
+                             _claim("C-2", "y", "routing", "rejected", ledger_event="E-1")],
+                     ledger=[_event("E-1", "")])
+    for _ in range(6):
+        persona.project(_cs(core), paths=paths, self_review=True, phrase=False)
+    lines = (tmp_path / "state" / "persona.jsonl").read_text().splitlines()
+    assert len(lines) == 3                                  # bounded, not 6
+
+
 def test_anchors_pick_the_most_instructive_not_the_most_recent():
     # a shallow but very recent rejection must NOT out-anchor an older, instructive correction that
     # resolved a contradiction with a recorded reason - date plays no role in the choice.

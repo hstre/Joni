@@ -51,6 +51,16 @@ def test_conflict_depth_detects_tangle_and_cycle():
     assert d["max_component"] == 3 and d["cyclic_components"] == 1
 
 
+def test_conflict_depth_names_the_worst_topic_from_claim_topics():
+    # a Conflict has no topic of its own; the worst topic is derived from its claims' topics
+    conflicts = [_cf(["C1", "C2"]), _cf(["C3", "C4"])]
+    topic_of = {"C1": "routing", "C2": "routing", "C3": "memory", "C4": "routing"}
+    d = cp.conflict_depth(conflicts, topic_of)
+    assert d["worst_topic"] == "routing"                 # 3 routing vs 1 memory
+    # without the map it stays honest (None), never a bogus "?"
+    assert cp.conflict_depth(conflicts)["worst_topic"] is None
+
+
 def test_conflict_depth_excludes_resolved_conflicts():
     # resolved/superseded conflicts are no longer live contradictions -> excluded from count + graph
     conflicts = [_cf(["C1", "C2"]), _cf(["C2", "C3"], status="resolved"),

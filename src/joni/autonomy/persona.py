@@ -38,6 +38,21 @@ _CORRECTION_STATUSES = frozenset({"rejected", "superseded"})
 _DEFAULT_THRESHOLD = 2        # N corrected errors on one theme -> the theme has earned a lesson
 _MAX_ANCHORS = 2              # "abstrahiert mit ein, zwei Beispielen" - never more up front
 
+# Themes that are semantic sinks / undifferentiated labels: there is no *expertise* on 'unsorted'
+# or 'forum', so a correction there earns no persona lesson. 'self-model' is a real theme, kept.
+_SINK_THEMES = frozenset({"forum", "misc", "unknown", "unsorted", "gatemem", "assess",
+                          "other", "general", "uncategorized", "untitled"})
+_SERIES_CAP = 2000            # keep state/persona.jsonl bounded (it is appended once per cycle)
+
+
+def _substantive_reason(reason: str, obj_id: str) -> bool:
+    """True only for a reason richer than the generic auto-text a bare rejection records
+    (``'C-5 rejected'``). Keeps that boilerplate from lifting the instructiveness score or posing as
+    an explanation - only a real recorded reason (or a resolved conflict) counts as one."""
+    r = (reason or "").strip().lower()
+    oid = (obj_id or "").lower()
+    return bool(r) and r not in {f"{oid} rejected", f"{oid} superseded", "rejected", "superseded"}
+
 
 @dataclass(frozen=True)
 class Correction:
@@ -144,15 +159,19 @@ def extract_corrections(cs) -> list[Correction]:
                                if sid and sid != o.id) if ev else ()
             after = next((t for t in (_text_of(s, sid) for sid in successors) if t), "")
             conflicts = resolved_by_claim.get(o.id, [])
+            # A generic auto-reason ('C-5 rejected') is not a real explanation: it neither displays
+            # as a trigger nor lifts the instructiveness score. Only a substantive reason (or a
+            # resolved conflict) counts.
+            substantive = _substantive_reason(reason, o.id)
             trail = tuple(dict.fromkeys(
                 x for x in (getattr(o, "ledger_event", ""), *[c.id for c in conflicts], *successors)
                 if x))
             out.append(Correction(
                 obj_id=o.id, theme=theme_of(o), kind=st,
                 before=(getattr(o, "text", "") or "").strip(),
-                trigger=_trigger_text(reason, conflicts, st), after=after,
+                trigger=_trigger_text(reason if substantive else "", conflicts, st), after=after,
                 tick=int(getattr(o, "last_changed_tick", 0) or 0),
-                via_conflict=bool(conflicts), has_reason=bool(reason or conflicts),
+                via_conflict=bool(conflicts), has_reason=substantive or bool(conflicts),
                 trail_refs=trail))
     return out
 
@@ -202,6 +221,8 @@ def crystallize(corrections: list[Correction], *, self_review: bool = False,
 
     lessons: list[Lesson] = []
     for theme, cs_ in sorted(by_theme.items()):
+        if theme.strip().lower() in _SINK_THEMES:
+            continue                                   # no expertise on an undifferentiated sink
         via_conflict = any(c.via_conflict for c in cs_)
         if via_conflict:
             trigger_kind = "resolved_conflict"
@@ -325,6 +346,14 @@ def _write(root: Path, lessons: list[Lesson], corrections: list[Correction], tic
            "themes": {ls.theme: ls.depth for ls in lessons}}
     with p.jsonl.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+    # The series is appended once per cycle; keep it bounded so it can never grow without limit
+    # (the state/ bloat that once broke persistence). Cheap: the file stays small by construction.
+    try:
+        existing = p.jsonl.read_text(encoding="utf-8").splitlines()
+        if len(existing) > _SERIES_CAP:
+            p.jsonl.write_text("\n".join(existing[-_SERIES_CAP:]) + "\n", encoding="utf-8")
+    except OSError:
+        pass
 
 
 def project(cs, *, paths=None, self_review: bool = False, budget=None, runs_per_week: int = 0,
