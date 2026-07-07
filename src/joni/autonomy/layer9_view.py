@@ -208,7 +208,7 @@ function overview(){
  const C=X.counts, b=DATA.budget||{}, w=DATA.window||{};
  c.innerHTML+="<div class=stat>"+
   stcell("day", X.tick)+stcell("claims", C.claims)+stcell("evidence", C.evidence_links)+
-  stcell("conflicts open", (X.conflicts||[]).filter(x=>x.conflict_status=='open'||x.conflict_status=='under_review').length)+
+  stcell("conflicts open", (X.conflicts||[]).filter(x=>x.conflict_status!='resolved'&&x.conflict_status!='superseded').length)+
   stcell("methods", C.methods)+stcell("self-model", C.self_model)+stcell("memory", C.memory)+
   stcell("semantic notes", C.semantic_clusters)+stcell("ledger", C.ledger)+
   stcell("spend", "€"+(b.spent_eur!=null?b.spent_eur.toFixed(4):"0"))+"</div>";
