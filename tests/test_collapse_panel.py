@@ -38,16 +38,26 @@ def test_weak_claim_ratio_rides_on_strong_claims():
     assert r["strong_claims"] == 4 and r["strong_weak_ratio"] == 0.75 and r["level"] == cp.WARN
 
 
+def _cf(claim_ids, status="open"):
+    return SimpleNamespace(claim_ids=claim_ids, conflict_status=SimpleNamespace(value=status),
+                           topic="t")
+
+
 def test_conflict_depth_detects_tangle_and_cycle():
     # a 3-claim cycle C1-C2-C3-C1 → one component, cyclic
-    conflicts = [
-        SimpleNamespace(claim_ids=["C1", "C2"], status=None, topic="t"),
-        SimpleNamespace(claim_ids=["C2", "C3"], status=None, topic="t"),
-        SimpleNamespace(claim_ids=["C3", "C1"], status=None, topic="t"),
-    ]
+    conflicts = [_cf(["C1", "C2"]), _cf(["C2", "C3"]), _cf(["C3", "C1"])]
     d = cp.conflict_depth(conflicts)
     assert d["open_conflicts"] == 3 and d["components"] == 1
     assert d["max_component"] == 3 and d["cyclic_components"] == 1
+
+
+def test_conflict_depth_excludes_resolved_conflicts():
+    # resolved/superseded conflicts are no longer live contradictions -> excluded from count + graph
+    conflicts = [_cf(["C1", "C2"]), _cf(["C2", "C3"], status="resolved"),
+                 _cf(["C4", "C5"], status="superseded")]
+    d = cp.conflict_depth(conflicts)
+    assert d["open_conflicts"] == 1                     # only the one open conflict
+    assert d["max_component"] == 2                      # resolved edges are absent from the graph
 
 
 def test_novelty_windows_and_starvation_alarm():

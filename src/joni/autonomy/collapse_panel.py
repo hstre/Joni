@@ -30,12 +30,17 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 import desi_layer9 as l9
-from desi_layer9 import Status
 
 # Buckets that are semantic *sinks*, not real research directions — a claim landing here is
 # undifferentiated. Netto entropy and the "real topics" views exclude them so the sink cannot
 # fog the picture (the 84%-forum case: formally many topics, semantically one drain).
 _SINK_BUCKETS = frozenset({"forum", "misc", "unknown", "unsorted", "gatemem", "assess"})
+
+# Conflict statuses that are no longer a live contradiction — excluded from the "open" depth metric.
+# (A conflict's status field is ``conflict_status`` (a ``ConflictStatus``); RESOLVED/SUPERSEDED live
+# on THAT enum, not the claim ``Status`` — an earlier version tested the wrong attribute/enum and so
+# counted resolved conflicts as open.)
+_CLOSED_CONFLICT = frozenset({"resolved", "superseded"})
 
 OK, WARN, ALARM = "ok", "warn", "alarm"
 _RANK = {OK: 0, WARN: 1, ALARM: 2}
@@ -127,7 +132,8 @@ def conflict_depth(conflicts) -> dict:
     per_topic: Counter = Counter()
     open_conf = 0
     for cf in conflicts:
-        if getattr(cf, "status", None) in (Status.RESOLVED if hasattr(Status, "RESOLVED") else (),):
+        status = getattr(getattr(cf, "conflict_status", None), "value", "") or ""
+        if status in _CLOSED_CONFLICT:
             continue
         open_conf += 1
         per_topic[getattr(cf, "topic", None) or "?"] += 1
