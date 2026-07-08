@@ -60,6 +60,36 @@ def _parse_verdict(output: str) -> bool | None:
     return None
 
 
+def judge_term(term: str, sample_texts, *, extensions: dict, cycle: int = 0,
+               budget=None, runs_per_week: int = 0) -> bool | None:
+    """One cached Granite verdict for a single candidate term: ``True`` (a real, on-domain
+    concept) / ``False`` (junk) / ``None`` (no verdict - gate disabled, call failed, or the
+    output did not parse; the caller must treat that as 'not judged', never as a guess).
+
+    Verdicts land in the same ``topic_llm_seen`` cache the post-hoc review uses, so a term is
+    judged exactly once whether it arrives here at mint time (``emerge``) or later as a grown
+    topic (``review_topics``)."""
+    seen = dict(extensions.get("topic_llm_seen", {}))
+    if term in seen:
+        return seen[term] == "valid"
+    if not enabled():
+        return None
+    body = "\n".join(f"- {t}" for t in list(sample_texts)[:4]) or "(no claims)"
+    user = f"CANDIDATE TOPIC: {term}\n\nCLAIMS TAGGED '{term}':\n{body}"
+    prof = model_profile.profile("joni-semantic")
+    output, cap = model_call.call(prof, _SYS, user, run_id=f"topicrev-c{cycle}",
+                                  store_dir=paths().model_calls, budget=budget,
+                                  runs_per_week=runs_per_week)
+    if output is None or cap is None:
+        return None                             # a failed call is no verdict, not a guess
+    valid = _parse_verdict(output)
+    if valid is None:
+        return None
+    seen[term] = "valid" if valid else "invalid"
+    extensions["topic_llm_seen"] = dict(sorted(seen.items())[-2000:])
+    return valid
+
+
 def _candidate_topics(cs, seen: set) -> list[str]:
     """Topics worth the (bounded) LLM judgment: lexically good, not yet judged, and carrying enough
     claims to be a real cluster - so we never spend a call on a one-off or an obvious stopword."""
@@ -79,27 +109,18 @@ def review_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retire: in
     out = {"reviewed": 0, "rejected_topics": 0, "retired_claims": 0}
     if not enabled():
         return out
-    seen = dict(extensions.get("topic_llm_seen", {}))   # topic -> "valid" | "invalid"
+    seen = extensions.get("topic_llm_seen", {})         # topic -> "valid" | "invalid"
     pending = _candidate_topics(cs, set(seen))[: _max_calls()]
     if not pending:
         return out
-    store_dir = paths().model_calls
-    prof = model_profile.profile("joni-semantic")
     rejected: list[str] = []
     for topic in pending:
-        sample = [c for c in cs.claims_on(topic)][:4]
-        body = "\n".join(f"- {c.text}" for c in sample) or "(no claims)"
-        user = f"CANDIDATE TOPIC: {topic}\n\nCLAIMS TAGGED '{topic}':\n{body}"
-        output, cap = model_call.call(prof, _SYS, user, run_id=f"topicrev-c{cycle}",
-                                      store_dir=store_dir, budget=budget,
-                                      runs_per_week=runs_per_week)
-        if output is None or cap is None:
+        sample = [c.text for c in cs.claims_on(topic)][:4]
+        valid = judge_term(topic, sample, extensions=extensions, cycle=cycle,
+                           budget=budget, runs_per_week=runs_per_week)
+        if valid is None:
             continue                                    # a failed call is no verdict, not a guess
         out["reviewed"] += 1
-        valid = _parse_verdict(output)
-        if valid is None:
-            continue
-        seen[topic] = "valid" if valid else "invalid"
         if not valid:
             rejected.append(topic)
     # act on the rejections: shed the 0-support claims of a topic the model judged junk
@@ -115,7 +136,6 @@ def review_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retire: in
                 continue
             out["retired_claims"] += 1
     out["rejected_topics"] = len(rejected)
-    extensions["topic_llm_seen"] = dict(sorted(seen.items())[-2000:])
     if rejected:
         proto.record(cycle, "regulate",
                      f"Granite topic-review rejected {len(rejected)} topic(s) as junk/off-domain "

@@ -217,6 +217,65 @@ def retire_junk_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retir
     return {"retired_claims": retired, "topics": topics}
 
 
+# The exact bookkeeping text ``emerge`` mints for an emergent topic - and ONLY that. The seed
+# claims of operator-tracked topics ('alignment is worth tracking as a topic') never match.
+_EMERGENT_TRACKER = "keeps recurring across"
+
+
+def retire_orphan_topic_trackers(cs, extensions: dict, proto, cycle: int = 0, *,
+                                 max_retire: int | None = None,
+                                 grace: int | None = None) -> int:
+    """Drain the one-claim emergent-topic graveyard the other passes cannot see.
+
+    Before the mint-time topic gate, ``emerge`` minted one topic per cycle from bare lexical
+    recurrence ('against', 'allowing', ...). Each mint is a single self-generated tracker claim
+    that stays the ONLY claim on its topic forever - lexically fine (a real word), not clearly
+    off-domain (function words have no domain), and forever below the >=2-claim bar of the post-hoc
+    Granite review. This pass rejects exactly those trackers, through the gate, bounded per
+    cycle. Protected: a claim with support, a topic with any second active claim, a research
+    topic, a topic Granite judged *valid*, and a fresh mint still inside its grace window
+    (``emerged_topic_cycle``; legacy mints without a recorded cycle are immediately eligible).
+    No information is lost - the claims that mentioned the term keep it in their text, on their
+    original topics; only Joni's own bookkeeping drains."""
+    import os
+    if max_retire is None:
+        max_retire = max(0, int(os.getenv("JONI_ORPHAN_RETIRE_MAX", "10")))
+    if grace is None:
+        grace = max(0, int(os.getenv("JONI_ORPHAN_TOPIC_GRACE", "50")))
+    seen = extensions.get("topic_llm_seen", {})
+    minted = extensions.get("emerged_topic_cycle", {})
+    research = set(cs.research_topics())
+    by_topic: dict[str, list] = {}
+    for c in cs.active_claims():
+        t = getattr(c, "topic", None)
+        if t:
+            by_topic.setdefault(t, []).append(c)
+    retired = 0
+    drained: list[str] = []
+    for t, claims in sorted(by_topic.items()):
+        if retired >= max_retire:
+            break
+        if len(claims) != 1 or t in research or seen.get(t) == "valid":
+            continue
+        c = claims[0]
+        if _EMERGENT_TRACKER not in c.text:
+            continue                            # not emerge's bookkeeping: a real claim, keep it
+        if t in minted and cycle - int(minted[t]) < grace:
+            continue                            # a fresh, gate-approved mint: let it try to grow
+        if _supports_on(cs, c.id) > 0:
+            continue                            # it earned something - its topic is real enough
+        try:
+            cs.reject_claim(c.id)
+        except Exception:  # noqa: BLE001 - a stubborn claim must never break the cycle
+            continue
+        retired += 1
+        drained.append(t)
+    if drained:
+        proto.record(cycle, "regulate",
+                     f"retired {retired} orphan emergent-topic tracker(s): {', '.join(drained)}")
+    return retired
+
+
 def retire_junk_hypotheses(cs, extensions: dict, proto, cycle: int = 0,
                            *, max_retire: int = 5) -> dict:
     """Shed leftover junk-subject hypotheses - the pre-gate 'X recurs as a through-line'
