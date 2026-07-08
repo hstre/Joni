@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 467 · 224 Methoden** — proposed 219 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 5  
+**Cycle 468 · 226 Methoden** — proposed 220 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 6  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -144,6 +144,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | claude-mem | **proposed** | candidate | 0 | — |
 | Shape matching and object recognition using shape contexts | **proposed** | candidate | 0 | — |
 | HunyuanOCR-1.5: Making Lightweight OCR VLMs Faster and Better | **proposed** | candidate | 0 | — |
+| SiamJEPA: On the Role of Siamese Student Encoders in JEPA | **proposed** | candidate | 0 | — |
+| recoverr: A Python package for estimating within-person recovery dynamics from b | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
@@ -192,7 +194,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | reads-as-a-lens | **proposed** | candidate | 0 | — |
 | Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detecti | **proposed** | candidate | 0 | — |
 | long-term-as-a-lens | **proposed** | candidate | 0 | — |
-| Optimal Deterministic Multicalibration and Omniprediction | **proposed** | candidate | 0 | — |
 | loss-as-a-lens | **proposed** | candidate | 0 | — |
 | $\Theta$-Control: Memory as a Control Resource | **proposed** | candidate | 0 | — |
 | redesign-as-a-lens | **proposed** | candidate | 0 | — |
@@ -230,3 +231,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
 | flarum | **retired** | rejected | 0 | — |
+| Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
