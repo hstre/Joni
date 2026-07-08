@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 223 korrigierte(r) Irrtum/Irrtümer · 69 Lehre(n)._
+_Stand: Tick 25 · 233 korrigierte(r) Irrtum/Irrtümer · 79 Lehre(n)._
 
 ## memory · Tiefe 9 (threshold)
 
@@ -622,6 +622,96 @@ _deterministisch:_ Auf 'announcements+drift': 1 korrigierte(r) Irrtum/Irrtümer 
 
 - Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] Reconciling divergent judgements: Claude’s strict category separation (observation ≠ method) and ChatGPT’s practical transferability assumptions differ on the rule for deriving method from recurrence. Claude requires explicit justification of transferability; ChatGPT treats recurrence as indicative of transferability. My assessment adopts Claude’s rule: the method is admissible only if transferability is a defeasible heuristic, not a logical entailment. Under explicit assumptions—(i) the new problem shares structural features with forum contexts, (ii) recurrence indicates a genuine pattern, (iii) “lens” is well-defined—it is a good idea, providing a structured analogy to surface community-insight and patterns. It breaks when transferability is asserted universally or without these scope restrictions, or when forum noise, context-dependency, or temporal mismatch overwhelm signal. Thus, the proposition’s quality hinges on restricting the claim to forum-analogous problems and making the lens operational.' (from announcements) might also apply to drift.“ → verworfen — verworfen
 - _volle Spur (1):_ C-462
+
+## amnesia · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen über die Relevanz von "Amnesie", um genaue Themenverfolgung zu gewährleisten.**
+
+_deterministisch:_ Auf 'amnesia': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'amnesia' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'amnesia' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-1284
+
+## alongside · Tiefe 1 (self_review)
+
+**Beobachte 'alongside' sorgfältig, um veraltete Annahmen zu verwerfen und es als eigenständiges Thema zu behandeln.**
+
+_deterministisch:_ Auf 'alongside': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'alongside' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'alongside' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-3405
+
+## along · Tiefe 1 (self_review)
+
+**Beobachte 'along' sorgfältig, um vermeintliche Muster zu verwerfen und nur korrekte Verwendungen zu verfolgen.**
+
+_deterministisch:_ Auf 'along': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'along' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'along' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-2783
+
+## allows · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen, wenn "allows" in mehreren Themen wiederkehrt.**
+
+_deterministisch:_ Auf 'allows': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'allows' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'allows' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-3483
+
+## allowing · Tiefe 1 (self_review)
+
+**Beobachte und hinterfrage Annahmen, um 'allowing' als eigenständiges Thema zu validieren.**
+
+_deterministisch:_ Auf 'allowing': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'allowing' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'allowing' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-4089
+
+## aims · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen über die Bedeutung von 'aims' bei der Themenverfolgung.**
+
+_deterministisch:_ Auf 'aims': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'aims' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'aims' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-928
+
+## aimed · Tiefe 1 (self_review)
+
+**Beobachte und verwerfe Annahmen, um 'aimed' als eigenständiges Thema zu behandeln.**
+
+_deterministisch:_ Auf 'aimed': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'aimed' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'aimed' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-2167
+
+## agents · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen über die Relevanz von 'agents' als eigenständiges Thema, wenn es lediglich in zwei Themen wiederkehrt.**
+
+_deterministisch:_ Auf 'agents': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'agents' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'agents' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-816
+
+## agent · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen, wenn ein Begriff wie 'agent' in mehreren Themen wiederholt auftritt.**
+
+_deterministisch:_ Auf 'agent': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'agent' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'agent' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-2996
+
+## against · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen, die 'against' als eigenständiges Thema rechtfertigen.**
+
+_deterministisch:_ Auf 'against': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'against' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'against' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-794
 
 ## admissible · Tiefe 1 (self_review)
 
