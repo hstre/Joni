@@ -82,7 +82,7 @@ def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None,
 _DECISIONS_TEMPLATE = (
     "# Konflikt entscheiden - eine pro Zeile, Format:\n"
     "#   konflikt_id | gewinner_claim_id | grund\n"
-    "#   konflikt_id | keiner | grund        <- kein Widerspruch: Paarung war unecht, beide bleiben\n"
+    "#   konflikt_id | keiner | grund   <- kein Widerspruch: Paarung unecht, beide bleiben\n"
     "# Beispiel:\n"
     "#   X-12 | C-88 | C-88 ist unter Last unabhängig bestätigt, C-40 nur eine Forumsmeinung.\n"
     "# Joni wendet das im nächsten Zyklus an: der Konflikt wird zugunsten des Gewinners gelöst,\n"
@@ -205,7 +205,8 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
             proto.record(cycle, "note", f"conflict {cid}: not an open conflict - skipped")
             continue
         ids = list(getattr(cf, "claim_ids", None) or ())
-        if win.strip().lower() not in ("keiner", "none", "-") and (win not in ids or win not in by_id):
+        no_contra = win.strip().lower() in ("keiner", "none", "-")
+        if not no_contra and (win not in ids or win not in by_id):
             proto.record(cycle, "note",
                          f"conflict {cid}: winner {win} is not a claim in this conflict - skipped")
             continue
