@@ -31,15 +31,23 @@ import desi_layer9 as l9
 _EXTERNAL_PREFIXES = ("arxiv", "zenodo", "openalex", "github", "huggingface", "wikipedia",
                       "openclaw", "doi", "http", "https")
 _INTERNAL_MARKERS = ("revenant-of", "refile-of", "origin")
+# A model-extraction marker ("deepseek:joni-c250:...", "granite:...") is NOT a forum voice: a
+# model is the least authoritative source class (Quelle != Autoritaet) - weight 0, like
+# self-generated, and labeled as such on the sheet.
+_MODEL_PREFIXES = ("deepseek", "granite", "openai", "openrouter", "kevin", "joni", "llm",
+                   "model", "mistral", "qwen", "llama")
 
 
 def _prov_weight(claim) -> int:
-    """2 = external research source, 1 = named forum voice, 0 = no source (self-generated)."""
+    """2 = external research source, 1 = named human forum voice, 0 = model-extracted or
+    self-generated (no independent origin)."""
     for sid in (getattr(getattr(claim, "provenance", None), "source_ids", None) or ()):
         head = str(sid).split(":", 1)[0].lower()
         if head in _INTERNAL_MARKERS:
             continue                            # lineage/origin markers say nothing about weight
-        return 2 if head in _EXTERNAL_PREFIXES else 1
+        if head in _EXTERNAL_PREFIXES:
+            return 2
+        return 0 if head in _MODEL_PREFIXES else 1
     return 0
 
 
@@ -110,6 +118,32 @@ def decidable_conflicts(cs, *, max_items: int | None = None) -> list[dict]:
     by_id = {c.id: c for c in cs.core.all(l9.ObjectType.CLAIM)}
     smap = supports_map(cs)
     fams = cs.supporter_families_map()          # per-claim scans here were O(conflicts x links)
+    # the operator can only ASSESS what he can read: per claim, the live supporting evidence
+    # texts and the claim's own sources go onto the sheet - '3 Belege' is a count, not evidence.
+    ev_by_id = {e.id: e for e in cs.core.all(l9.ObjectType.EVIDENCE)}
+    status = {c.id: c.status.value for c in by_id.values()}
+    from .homeostasis import _VIA
+    ev_texts: dict[str, list[tuple[str, str]]] = {}
+    for el in cs.core.all(l9.ObjectType.EVIDENCE_LINK):
+        if el.relation.value not in ("supports", "contextualizes"):
+            continue
+        content = (getattr(ev_by_id.get(el.evidence_id), "content", "") or "").strip()
+        m = _VIA.search(content)
+        if m is not None and status.get(m.group(1)) in ("rejected", "superseded"):
+            continue                            # a dead supporter's leftover link is void
+        ev_texts.setdefault(el.claim_id, []).append((el.relation.value, content[:200]))
+
+    def _side(cid: str, support: int) -> dict:
+        c = by_id[cid]
+        sids = [s for s in (getattr(c.provenance, "source_ids", ()) or ())
+                if not str(s).startswith(("revenant-of", "refile-of", "origin:"))][:3]
+        evs = ev_texts.get(cid, [])
+        # the operator must see the difference: 'supports' backs the claim; 'contextualizes'
+        # only relates to it (and may even argue against it) - the count alone hid that.
+        return {"id": cid, "text": c.text, "support": support, "sources": sids,
+                "supports": [t for r, t in evs if r == "supports"][:3],
+                "context": [t for r, t in evs if r == "contextualizes"][:3]}
+
     out: list[dict] = []
     for cf in cs.core.open_conflicts():
         if getattr(getattr(cf, "conflict_status", None), "value", "") not in _DECIDABLE_STATES:
@@ -128,15 +162,14 @@ def decidable_conflicts(cs, *, max_items: int | None = None) -> list[dict]:
         sa, sb = lean["support"]
         out.append({"conflict_id": cf.id, "topic": by_id[a].topic or by_id[b].topic or "?",
                     "axes": lean["axes"], "lean": lean,
-                    "a": {"id": a, "text": by_id[a].text, "support": sa},
-                    "b": {"id": b, "text": by_id[b].text, "support": sb}})
+                    "a": _side(a, sa), "b": _side(b, sb)})
     out.sort(key=lambda d: (d["axes"], abs(d["a"]["support"] - d["b"]["support"]),
                             max(d["a"]["support"], d["b"]["support"]), d["conflict_id"]),
              reverse=True)
     return out[:max_items]
 
 
-_PROV_LABEL = {2: "extern", 1: "Forum", 0: "selbst"}
+_PROV_LABEL = {2: "extern", 1: "Forum", 0: "Modell/selbst"}
 
 
 def _axes_text(lean: dict) -> str:
@@ -330,12 +363,18 @@ def render_sheet(items: list[dict], objections: dict | None = None) -> str:
         return "\n".join([*lines, "Gerade nichts zu entscheiden."]) + "\n"
     for it in items:
         a, b = it["a"], it["b"]
-        lines += [
-            f"## {it['conflict_id']} · Thema: {it['topic']}",
-            "",
-            f"- **{a['id']}** ({a['support']} Belege): {a['text']}",
-            f"- **{b['id']}** ({b['support']} Belege): {b['text']}",
-        ]
+        lines += [f"## {it['conflict_id']} · Thema: {it['topic']}", ""]
+        for side in (a, b):
+            n_sup = len(side.get("supports", []))
+            n_ctx = len(side.get("context", []))
+            lines.append(f"- **{side['id']}** ({n_sup} stützend · {n_ctx} Kontext): "
+                         f"{side['text']}")
+            if side.get("sources"):
+                lines.append(f"  - _Quelle:_ {', '.join(str(x) for x in side['sources'])}")
+            for ev in side.get("supports", []):
+                lines.append(f"  - _stützt:_ {ev}")
+            for ev in side.get("context", []):
+                lines.append(f"  - _Kontext (kann auch dagegen sprechen):_ {ev}")
         if it.get("lean"):
             lines.append(f"- _Evidenzlage ({a['id']} vs {b['id']}): {_axes_text(it['lean'])}_")
         lines += [

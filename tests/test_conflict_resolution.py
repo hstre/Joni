@@ -320,3 +320,27 @@ def test_keiner_is_never_remonstrated_even_against_the_evidence():
                            [{"conflict_id": cid, "winner_id": "keiner", "reason": "unecht"}])
     assert n == 1
     assert not any(kind == "einspruch" for kind, _ in proto.events)
+
+
+def test_the_sheet_separates_supporting_from_contextualizing_evidence():
+    # X-89 in production: '3 Belege' were three model CONTEXTUALIZATIONS, one arguing against
+    # its own side. The operator must see texts and relations, not a bare count.
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)
+    ctx = cs.learn("a note that merely relates to the topic", "routing", source_id="arxiv:x")
+    cs.corroborate(b, cs.core.objects[ctx], relation="contextualizes")
+    sheet = cr.render_sheet(cr.decidable_conflicts(cs), {})
+    assert "stützend" in sheet and "_stützt:_" in sheet
+    assert "Kontext (kann auch dagegen sprechen)" in sheet
+    assert "_Quelle:_" in sheet                          # provenance visible per side
+
+
+def test_a_model_extraction_marker_is_not_a_forum_voice():
+    from types import SimpleNamespace
+    model = SimpleNamespace(provenance=SimpleNamespace(
+        source_ids=("deepseek:joni-c250:a74cc83ae851",)))
+    human = SimpleNamespace(provenance=SimpleNamespace(source_ids=("hn:alice",)))
+    paper = SimpleNamespace(provenance=SimpleNamespace(source_ids=("arxiv:2401.1",)))
+    assert cr._prov_weight(model) == 0                   # least authoritative source class
+    assert cr._prov_weight(human) == 1
+    assert cr._prov_weight(paper) == 2
