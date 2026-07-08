@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 471 · 227 Methoden** — proposed 217 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 10  
+**Cycle 472 · 227 Methoden** — proposed 217 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 10  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
