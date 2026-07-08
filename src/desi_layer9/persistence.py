@@ -57,6 +57,81 @@ def _sidecar_path(path: Path) -> Path:
     return path.with_name(path.stem + ".snapshot.json")
 
 
+# ---- chunked journal on disk ------------------------------------------------------------------ #
+# The journal is append-only, but storing it as ONE ever-growing file made every commit re-store
+# a multi-MB blob (git's delta chains cap out and periodically store near-full copies): the state
+# file alone accounted for the bulk of the repository's growth. On disk the journal is therefore
+# split into SEALED chunks (a full chunk never changes again -> git stores it exactly once) plus
+# one small active tail chunk. The in-memory contract is unchanged: ``to_doc``/``from_doc`` still
+# speak a single journal list, and load verifies the reassembled journal against the recorded
+# ``snapshot_hash`` and the ledger chain - a missing, truncated or tampered chunk cannot load.
+
+def _chunk_size() -> int:
+    """Entries per chunk. ``JONI_JOURNAL_CHUNK=0`` disables chunking (legacy inline journal)."""
+    return max(0, int(os.getenv("JONI_JOURNAL_CHUNK", "2000")))
+
+
+def _chunk_dir(path: Path) -> Path:
+    return path.with_name(path.stem + ".journal")
+
+
+def _write_chunks(entries: list[dict], path: Path) -> list[dict]:
+    """Write the journal as chunk files next to ``path``; return the head's file manifest.
+    A sealed (full) chunk whose recorded entry count matches the previous head is NOT rewritten -
+    append-only means its content cannot have changed; only the active tail chunk churns."""
+    n = _chunk_size()
+    cdir = _chunk_dir(path)
+    cdir.mkdir(parents=True, exist_ok=True)
+    prior: dict[str, int] = {}
+    if path.exists():
+        try:
+            old = json.loads(path.read_text(encoding="utf-8"))
+            for f in (old.get("journal_chunks") or {}).get("files", []):
+                prior[str(f.get("name"))] = int(f.get("entries", -1))
+        except Exception:  # noqa: BLE001 - an unreadable old head just means we rewrite everything
+            prior = {}
+    files: list[dict] = []
+    for idx in range(max(1, -(-len(entries) // n))):
+        chunk = entries[idx * n:(idx + 1) * n]
+        name = f"chunk-{idx + 1:06d}.jsonl"
+        sealed = len(chunk) == n
+        fp = cdir / name
+        if not (sealed and prior.get(name) == n and fp.exists()):
+            fp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in chunk),
+                          encoding="utf-8")
+        files.append({"name": name, "entries": len(chunk)})
+    keep = {f["name"] for f in files}
+    for fp in cdir.glob("chunk-*.jsonl"):
+        if fp.name not in keep:                       # a compaction shrank the journal: drop stale
+            fp.unlink()
+    return files
+
+
+def _read_doc(path: Path) -> dict | None:
+    """Read a state doc in either on-disk format: legacy (inline ``journal``) or chunked
+    (``journal_chunks`` manifest + JSONL chunk files). Returns the doc with ``journal`` inlined.
+    A chunk whose entry count disagrees with the head manifest refuses to load - the snapshot-hash
+    and chain verification downstream would catch content tampering; this catches truncation with
+    a message that names the file."""
+    if not path.exists():
+        return None
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    jc = doc.get("journal_chunks")
+    if jc and "journal" not in doc:
+        cdir = _chunk_dir(path)
+        entries: list[dict] = []
+        for f in jc.get("files", []):
+            fp = cdir / str(f.get("name"))
+            got = [json.loads(line) for line in fp.read_text(encoding="utf-8").splitlines()
+                   if line.strip()]
+            if len(got) != int(f.get("entries", -1)):
+                raise ValueError(f"journal chunk {fp.name}: {len(got)} entries on disk, head "
+                                 f"records {f.get('entries')} - refusing to load")
+            entries.extend(got)
+        doc["journal"] = entries
+    return doc
+
+
 def to_doc(state: Layer9) -> dict:
     # Journal-only, ALWAYS. The snapshot never goes in here - it is written to the sidecar by
     # ``save``. This keeps the committed state file small regardless of fast-load.
@@ -98,7 +173,12 @@ def from_doc(doc: dict, *, verify: bool = True, sidecar: dict | None = None) -> 
 def save(state: Layer9, path: str | Path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(to_doc(state), ensure_ascii=False, indent=2), encoding="utf-8")
+    doc = to_doc(state)
+    if _chunk_size():
+        # Chunked on-disk format: sealed immutable chunk files + a small head. The head carries
+        # the same tick/snapshot_hash contract; only WHERE the journal lives changes.
+        doc["journal_chunks"] = {"files": _write_chunks(doc.pop("journal"), path)}
+    path.write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")
     sidecar = _sidecar_path(path)
     if _fast_load_enabled():
         # Write the verified fast-load cache alongside (git-ignored). It carries the same hash the
@@ -113,7 +193,8 @@ def save(state: Layer9, path: str | Path) -> Path:
 
 def load(path: str | Path, *, verify: bool = True) -> Layer9 | None:
     path = Path(path)
-    if not path.exists():
+    doc = _read_doc(path)
+    if doc is None:
         return None
     sidecar = None
     sc_path = _sidecar_path(path)
@@ -122,7 +203,7 @@ def load(path: str | Path, *, verify: bool = True) -> Layer9 | None:
             sidecar = json.loads(sc_path.read_text(encoding="utf-8"))
         except Exception:  # noqa: BLE001 - a garbled sidecar just means we replay
             sidecar = None
-    return from_doc(json.loads(path.read_text(encoding="utf-8")), verify=verify, sidecar=sidecar)
+    return from_doc(doc, verify=verify, sidecar=sidecar)
 
 
 # Journal payload fields that are DERIVED detail - stored for audit but never read by any state
@@ -143,7 +224,7 @@ def compact(path: str | Path, *, out: str | Path | None = None) -> dict:
     fully-replayable, chain-valid file. The audit history (every entry, its decision and members)
     is preserved. Returns a small summary; raises if the slimmed journal does not load cleanly."""
     path = Path(path)
-    doc = json.loads(path.read_text(encoding="utf-8"))
+    doc = _read_doc(path)
     before_entries = len(doc.get("journal", []))
     stripped = 0
     for e in doc.get("journal", []):
@@ -176,7 +257,7 @@ def repair(path: str | Path) -> bool:
     path = Path(path)
     if not path.exists():
         return False
-    doc = json.loads(path.read_text(encoding="utf-8"))
+    doc = _read_doc(path)
     try:
         from_doc(doc, verify=True)
         return False                                  # already loads cleanly - nothing to do
@@ -193,5 +274,5 @@ def repair(path: str | Path) -> bool:
         # not understand - do not paper over it.
         raise ValueError("repair: verify failed but chain intact and snapshot matches - refusing")
     save(state, path)                                 # the one safe case: re-seal the snapshot hash
-    from_doc(json.loads(path.read_text(encoding="utf-8")), verify=True)  # must load cleanly now
+    from_doc(_read_doc(path), verify=True)            # must load cleanly now
     return True

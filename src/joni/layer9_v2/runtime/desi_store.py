@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from desi_layer9 import snapshot
+from desi_layer9 import persistence, snapshot
 from desi_layer9.core import JournalEntry
 from desi_layer9.hashing import snapshot_hash, verify_chain
 
@@ -65,7 +65,7 @@ def load_via_checkpoint(core_json_path: str | Path, checkpoint_path: str | Path)
     if not checkpoint_path.exists() or not core_json_path.exists():
         return None
     try:
-        doc = json.loads(core_json_path.read_text(encoding="utf-8"))
+        doc = persistence._read_doc(core_json_path)   # legacy inline OR chunked journal
         recorded = doc.get("snapshot_hash")
         ck = json.loads(checkpoint_path.read_text(encoding="utf-8"))
         if not recorded or ck.get("snapshot_hash") != recorded:

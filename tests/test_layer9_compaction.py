@@ -2,7 +2,6 @@
 the semantic adapter used to store but no logic ever reads), re-derive and re-seal. The file and the
 replay shrink; the claim graph and every decision are preserved; the result loads + verifies."""
 
-import json
 
 import desi_layer9 as l9
 from desi_layer9 import Operator as OP
@@ -38,17 +37,22 @@ def _core_with_fat_semantic(n_claims=4, blow=200):
 def test_compaction_shrinks_file_preserves_graph_and_reseals(tmp_path):
     core, cids = _core_with_fat_semantic()
     p = tmp_path / "l9.json"
+
+    def _size() -> int:                                    # head + journal chunks together
+        return p.stat().st_size + sum(f.stat().st_size
+                                      for f in (tmp_path / "l9.journal").glob("chunk-*.jsonl"))
+
     persistence.save(core, p)
-    big = p.stat().st_size
+    big = _size()
     before_claims = sorted(c.id for c in core.all(l9.ObjectType.CLAIM))
     cluster = core.all(l9.ObjectType.SEMANTIC_CLUSTER)[0]
     before_decision = cluster.decision
 
     info = persistence.compact(p)
     assert info["fields_stripped"] == 1
-    assert p.stat().st_size < big                          # the dead blob is gone -> file shrank
+    assert _size() < big                                   # the dead blob is gone -> state shrank
 
-    doc = json.loads(p.read_text())
+    doc = persistence._read_doc(p)
     assert all("pairs" not in (e.get("payload") or {}).get("measurement", {})
                for e in doc["journal"])                    # no pairs anywhere in the slim journal
 

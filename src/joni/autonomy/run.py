@@ -673,7 +673,10 @@ def _finish(p, cs: core_state.CoreState, budget, window, extensions,
         "budget": budget_d,
         "window": window,
         "extensions": extensions,
-        "protocol": proto.all(),
+        # a recent window: the full protocol lives in protocol/protocol.jsonl; the site's own
+        # views slice far less than this, and re-committing 18k historical events per cycle was
+        # one of the repo's biggest growth drivers.
+        "protocol": proto.all()[-2000:],
         "telemetry": tele,
         "commissions_done": commissions_done if isinstance(commissions_done, list) else [],
         "ideas": _ideas(cs, extensions),
