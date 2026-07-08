@@ -1,6 +1,6 @@
 # Joni — Collapse-Resistance-Panel
 
-**Cycle 466 · Run 123 · 4241 aktive Claims**  
+**Cycle 467 · Run 124 · 4216 aktive Claims**  
 **Gesamtstatus: 🔴 ALARM**  
 
 _Read-only Frühwarnung. Das Panel misst und warnt — es repariert nichts; Korrekturen laufen weiter über die bestehenden Gates._
@@ -8,12 +8,12 @@ _Read-only Frühwarnung. Das Panel misst und warnt — es repariert nichts; Korr
 | Metrik | Wert | Status |
 |---|---|---|
 | 1 Top-Bucket-Dominanz | forum 86% (Sink!) | 🔴 |
-| 2 Entropy brutto/netto | 0.19 / 0.90 (449 echte) | 🟢 |
-| 3 Weak-Claim (strong) | 97% von 4241 | 🔴 |
+| 2 Entropy brutto/netto | 0.19 / 0.89 (439 echte) | 🟢 |
+| 3 Weak-Claim (strong) | 97% von 4216 | 🔴 |
 | 4 Degen/undecidable | degen 0, decidable 91%, 0 unsupp. | 🟢 |
 | 5 Conflict-Tiefe | 269 offen, max Tangle 22, 8 zyklisch | 🟡 |
-| 6 Novelty (7/30) | 5.14 / 3.80, 7% leer | 🟢 |
+| 6 Novelty (7/30) | 5.86 / 4.10, 3% leer | 🟢 |
 | 7 Repetition | dup-dev 82%, self-model 97% | 🔴 |
-| 8 Cold-Replay | 10.2s | 🟢 |
+| 8 Cold-Replay | 26.1s | 🟢 |
 | 9 Guard-Liveness | alle Wächter messen | 🟢 |
 
