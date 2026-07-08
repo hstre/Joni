@@ -282,3 +282,10 @@ def test_an_under_review_conflict_is_decidable_and_the_decision_applies():
     assert n == 1                                       # and the operator's decision settles it
     assert cs.core.objects[cid].conflict_status.value == "resolved"
     assert cs.core.objects[a].status.value == "superseded"
+
+
+def test_a_conflict_with_a_dead_side_is_moot_and_not_surfaced():
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)
+    cs.reject_claim(a)                                  # e.g. retired by the reclassification
+    assert cr.decidable_conflicts(cs) == []             # nothing left to decide

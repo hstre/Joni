@@ -318,7 +318,7 @@ class CoreState:
         chain forever; the successor just stands where the content says it belongs. Category
         purity in action: 'forum' is a *provenance*, not a *topic* - platform/handle stay in the
         provenance, the topic becomes what the claim is about."""
-        old = self.core.objects[claim_id]
+        old = self.core.get(claim_id)          # objects-property deep-copies the whole store
         sids = list(getattr(old.provenance, "source_ids", ()) or ())
         self.core.submit(make_proposal(
             ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,

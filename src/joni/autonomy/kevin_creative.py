@@ -48,7 +48,7 @@ def _problem_from(cs):
     from . import kevin_trial_bridge as kb
 
     def _claims(ids):
-        return [c for c in (cs.core.objects.get(i) for i in ids) if c is not None]
+        return [c for c in (cs.core.get(i) for i in ids) if c is not None]
 
     known = _known_approaches(cs)
     for isl in kb.blind_spots(cs, top_k=3):              # 1. the highest-value DESi gap

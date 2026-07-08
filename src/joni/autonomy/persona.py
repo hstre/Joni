@@ -114,7 +114,13 @@ def _all(s, name: str) -> list:
 
 
 def _text_of(s, obj_id: str) -> str:
-    o = s.objects.get(obj_id) if hasattr(s, "objects") else None
+    # core.get is a single-object copy; the ``objects`` property deep-copies the whole store per
+    # access - per-correction that turns the persona pass into minutes on the production state.
+    getter = getattr(s, "get", None)
+    if callable(getter):
+        o = getter(obj_id)
+    else:
+        o = s.objects.get(obj_id) if hasattr(s, "objects") else None
     return (getattr(o, "text", "") or "").strip() if o is not None else ""
 
 

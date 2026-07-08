@@ -57,7 +57,6 @@ def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None,
     conflict is genuinely ambiguous and is neither surfaced as decidable nor objected to. This
     measures; it never decides."""
     from .homeostasis import _supports_on
-    by_id = cs.core.objects
     sa = smap.get(a_id, 0) if smap is not None else _supports_on(cs, a_id)
     sb = smap.get(b_id, 0) if smap is not None else _supports_on(cs, b_id)
     if fams is not None:                        # bulk map: one pass for a whole sheet
@@ -65,7 +64,9 @@ def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None,
     else:
         fa, _ = cs.supporter_families(a_id)
         fb, _ = cs.supporter_families(b_id)
-    wa, wb = _prov_weight(by_id.get(a_id)), _prov_weight(by_id.get(b_id))
+    # single-object reads: ``core.objects`` deep-copies the WHOLE 65k-object store per access
+    # (3.7s on the production state) - per-conflict that was 267 x 3.7s = the entire cycle.
+    wa, wb = _prov_weight(cs.core.get(a_id)), _prov_weight(cs.core.get(b_id))
     signs = [_sign(sa, sb), _sign(len(fa), len(fb)), _sign(wa, wb)]
     nonzero = [s for s in signs if s]
     lean: int | None
@@ -116,6 +117,10 @@ def decidable_conflicts(cs, *, max_items: int | None = None) -> list[dict]:
         if len(ids) != 2:
             continue
         a, b = ids
+        # moot check: a conflict whose side is already rejected/superseded (e.g. by the forum
+        # drain) has nothing left to decide - the correction happened elsewhere. Not surfaced.
+        if any(by_id[i].status.value in ("rejected", "superseded") for i in ids):
+            continue
         lean = evidence_lean(cs, a, b, smap=smap, fams=fams)
         if not lean["lean"]:                   # symmetric (0) or ambiguous (None) -> not surfaced
             continue

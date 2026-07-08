@@ -174,7 +174,7 @@ def blind_spots(cs, *, top_k: int = 4) -> list[dict]:
     out: list[dict] = []
     for p in props[:top_k]:
         kind, _, tid = str(p.target).partition(":")     # e.g. "conflict:X-1" / "claim:C-7"
-        obj = cs.core.objects.get(tid)
+        obj = cs.core.get(tid)
         claim_ids = list(getattr(obj, "claim_ids", ())) if obj is not None else (
             [tid] if kind == "claim" else [])
         out.append({"target": p.target, "target_kind": kind, "target_id": tid,

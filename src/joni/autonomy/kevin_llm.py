@@ -82,7 +82,7 @@ def _desi_blind_spot_input(cs):
     ``(input_type, label, seeds)`` or ``None`` (no DESi, no island, or no resolvable claims)."""
     from . import kevin_trial_bridge as bridge
     for isl in bridge.blind_spots(cs, top_k=4):
-        seeds = [cs.core.objects.get(cid) for cid in isl.get("claim_ids", [])]
+        seeds = [cs.core.get(cid) for cid in isl.get("claim_ids", [])]
         seeds = [c for c in seeds if c is not None and not _is_synthetic(getattr(c, "text", ""))]
         if seeds:
             label = (f"{isl['target']} · missing '{isl['missing_affinity']}' thinking-move"
@@ -107,7 +107,7 @@ def _select_input(cs):
     conflicts = [x for x in cs.core.open_conflicts()]
     if conflicts:                                  # an open conflict = rich creative material
         x = conflicts[0]
-        seeds = [cs.core.objects.get(cid) for cid in x.claim_ids]
+        seeds = [cs.core.get(cid) for cid in x.claim_ids]
         seeds = [c for c in seeds if c is not None]
         if seeds:
             return "open_conflict", f"conflict {x.id}", seeds[:4]
