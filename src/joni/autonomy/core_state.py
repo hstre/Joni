@@ -307,6 +307,46 @@ class CoreState:
         return self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
                         {"to_status": "superseded"}, targets=(claim_id,))
 
+    def refile_claim(self, claim_id: str, new_topic: str) -> str:
+        """Move a claim to the topic its CONTENT names - the Layer-9 way, without mutation.
+
+        The kernel has no topic-revision operator, and rightly so: the honest move is to mint a
+        successor with the same text and the same source provenance (plus an explicit
+        ``refile-of:<id>`` marker and derived_from lineage), carry the original's LIVE support
+        links, then supersede the original. Nothing is lost - the mis-filed claim stays in the
+        chain forever; the successor just stands where the content says it belongs. Category
+        purity in action: 'forum' is a *provenance*, not a *topic* - platform/handle stay in the
+        provenance, the topic becomes what the claim is about."""
+        old = self.core.objects[claim_id]
+        sids = list(getattr(old.provenance, "source_ids", ()) or ())
+        self.core.submit(make_proposal(
+            ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_CREATE,
+            payload={"text": old.text, "topic": new_topic}, proposer="joni:refile",
+            provenance=Provenance.from_source(*sids, f"refile-of:{claim_id}"),
+            target_objects=(claim_id,)), actor="joni")
+        new = self._newest(l9.ObjectType.CLAIM)
+        self._op(ProposalType.CLAIM_PROPOSAL, Operator.CLAIM_REVISE,
+                 {"to_status": "active"}, targets=(new.id,))
+        # carry the LIVE support (same content -> the 'via C-x' supporter families and external
+        # cards keep their meaning); a void link from a dead supporter is deliberately left behind
+        ev_by_id = {e.id: e for e in self.core.all(l9.ObjectType.EVIDENCE)}
+        status = {c.id: c.status.value for c in self.core.all(l9.ObjectType.CLAIM)}
+        for el in list(self.core.all(l9.ObjectType.EVIDENCE_LINK)):
+            if el.claim_id != claim_id or el.relation.value not in ("supports", "contextualizes"):
+                continue
+            content = getattr(ev_by_id.get(el.evidence_id), "content", "") or ""
+            m = _VIA.search(content)
+            if m is not None and status.get(m.group(1)) in ("rejected", "superseded"):
+                continue
+            self.core.submit(make_proposal(
+                ProposalType.CLAIM_PROPOSAL, Operator.EVIDENCE_ATTACH,
+                payload={"content": content, "relation": el.relation.value,
+                         "review_status": getattr(el, "review_status", "unreviewed")},
+                proposer="joni:refile", provenance=Provenance.from_operator(),
+                target_objects=(new.id,)), actor="joni")
+        self.supersede_claim(claim_id)
+        return new.id
+
     def evidence_links(self) -> int:
         return len(self.core.all(l9.ObjectType.EVIDENCE_LINK))
 

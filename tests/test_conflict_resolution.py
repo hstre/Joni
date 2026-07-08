@@ -193,6 +193,68 @@ def test_a_symmetric_decision_applies_immediately_without_objection():
     assert not any(kind == "einspruch" for kind, _ in proto.events)
 
 
+# --- the three-axis decidability (support · families · provenance) ----------------------------- #
+
+def test_a_paper_vs_a_forum_voice_is_decidable_even_without_corroboration():
+    # 0-vs-0 supports, but one side is an external research source and the other a pseudonymous
+    # forum voice: the provenance axis leans - surfaced for the operator (still never decided).
+    cs = CoreState(seed_core())
+    a = cs.hear("routing is always local-first", "routing", handle="bob", platform="hn")
+    b = cs.learn("routing is load-dependent", "routing", source_id="arxiv:b")
+    cid = _open_conflict(cs, a, b)
+    items = cr.decidable_conflicts(cs)
+    assert [it["conflict_id"] for it in items] == [cid]
+    assert "winner" not in items[0]                     # presenting, not deciding
+
+
+def test_axes_pointing_in_opposite_directions_stay_unsurfaced():
+    # a: forum voice WITH independent support; b: paper with none. Support leans to a, provenance
+    # leans to b -> genuinely ambiguous, exactly what the operator sheet must NOT pre-frame.
+    cs = CoreState(seed_core())
+    a = cs.hear("routing is always local-first", "routing", handle="bob", platform="hn")
+    b = cs.learn("routing is load-dependent", "routing", source_id="arxiv:b")
+    sup = cs.learn("a note backing local-first", "routing", source_id="arxiv:s")
+    cs.corroborate(a, cs.core.objects[sup])
+    _open_conflict(cs, a, b)
+    assert cr.decidable_conflicts(cs) == []
+
+
+def test_the_sheet_shows_the_measured_axes():
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)
+    sheet = cr.render_sheet(cr.decidable_conflicts(cs), {})
+    assert "Evidenzlage" in sheet and "Quellfamilien" in sheet and "Provenienz" in sheet
+
+
+def test_an_ambiguous_balance_is_the_operators_call_no_objection():
+    # the operator decides an axes-disagree conflict: Joni applies at once - remonstration is
+    # only for a decision the measured lean STRICTLY contradicts, never for ambiguity.
+    cs = CoreState(seed_core())
+    a = cs.hear("routing is always local-first", "routing", handle="bob", platform="hn")
+    b = cs.learn("routing is load-dependent", "routing", source_id="arxiv:b")
+    sup = cs.learn("a note backing local-first", "routing", source_id="arxiv:s")
+    cs.corroborate(a, cs.core.objects[sup])
+    cid = _open_conflict(cs, a, b)
+    proto = _Proto()
+    n = cr.apply_decisions(cs, {}, proto, 1, [{"conflict_id": cid, "winner_id": b, "reason": "r"}])
+    assert n == 1
+    assert not any(kind == "einspruch" for kind, _ in proto.events)
+
+
+def test_deciding_against_a_paper_for_a_bare_forum_voice_draws_an_objection():
+    cs = CoreState(seed_core())
+    a = cs.hear("routing is always local-first", "routing", handle="bob", platform="hn")
+    b = cs.learn("routing is load-dependent", "routing", source_id="arxiv:b")
+    cid = _open_conflict(cs, a, b)
+    ext: dict = {}
+    proto = _Proto()
+    n = cr.apply_decisions(cs, ext, proto, 1,
+                           [{"conflict_id": cid, "winner_id": a, "reason": "gefaellt mir"}])
+    assert n == 0                                       # held: provenance leans to the paper
+    assert any(kind == "einspruch" for kind, _ in proto.events)
+    assert "Provenienz" in ext["conflict_objections"][cid]["axes"]
+
+
 def test_the_sheet_lists_pending_objections(tmp_path):
     cs = CoreState(seed_core())
     a, b, cid = _asymmetric_pair(cs)

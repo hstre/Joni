@@ -65,15 +65,13 @@ def _fingerprint(platform: str, handle: str, text: str) -> str:
 
 
 def _topic_for(cs, text: str) -> str:
-    """Attach a forum utterance to the topic it most overlaps with, else a generic bucket."""
-    words = {w.strip(".,;:!?'\"()").lower() for w in text.split() if len(w) > 3}
-    best, score = "forum", 0
-    for topic in cs.topics():
-        overlap = len(words & {w.lower() for w in topic.split()}
-                      | (words & {topic.lower()}))
-        if overlap > score:
-            best, score = topic, overlap
-    return best
+    """Attach a forum utterance to the CONTENT topic it clearly names, else the 'forum' sink.
+
+    Shares the deterministic router with the stock-reclassification pass (``reclassify``), so
+    the inflow and the drain apply one rule: provenance is not a topic - platform/handle live in
+    the provenance; the topic is what the utterance is about, whenever that is clear."""
+    from . import reclassify
+    return reclassify.route_topic(text, reclassify.real_topics(cs)) or "forum"
 
 
 def ingest_inbox(cs, extensions: dict, proto, cycle: int, inbox_path: Path) -> dict:

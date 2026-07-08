@@ -20,7 +20,59 @@ correction, provenance = the operator. Nothing here decides; it transcribes a hu
 
 from __future__ import annotations
 
+import os
+
 import desi_layer9 as l9
+
+# Provenance weight classes for the decidability axes: where a claim ITSELF comes from carries
+# deterministic information even when nothing corroborates either side yet. External research
+# hubs outrank a pseudonymous forum voice; a claim with no source at all (self-generated) ranks
+# below both. This never decides - it is one of three axes the operator sees.
+_EXTERNAL_PREFIXES = ("arxiv", "zenodo", "openalex", "github", "huggingface", "wikipedia",
+                      "openclaw", "doi", "http", "https")
+_INTERNAL_MARKERS = ("revenant-of", "refile-of", "origin")
+
+
+def _prov_weight(claim) -> int:
+    """2 = external research source, 1 = named forum voice, 0 = no source (self-generated)."""
+    for sid in (getattr(getattr(claim, "provenance", None), "source_ids", None) or ()):
+        head = str(sid).split(":", 1)[0].lower()
+        if head in _INTERNAL_MARKERS:
+            continue                            # lineage/origin markers say nothing about weight
+        return 2 if head in _EXTERNAL_PREFIXES else 1
+    return 0
+
+
+def _sign(a: float, b: float) -> int:
+    return (a > b) - (a < b)
+
+
+def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None) -> dict:
+    """Measure, on three deterministic axes, which side of a conflict the evidence leans toward.
+
+    Axes: independent live support count, independent supporter FAMILIES (two claims from one
+    paper/thread count once), and the claims' own provenance weight. ``lean`` is +1 (toward a),
+    -1 (toward b), 0 (symmetric) - or ``None`` when the axes point in OPPOSITE directions: that
+    conflict is genuinely ambiguous and is neither surfaced as decidable nor objected to. This
+    measures; it never decides."""
+    from .homeostasis import _supports_on
+    by_id = cs.core.objects
+    sa = smap.get(a_id, 0) if smap is not None else _supports_on(cs, a_id)
+    sb = smap.get(b_id, 0) if smap is not None else _supports_on(cs, b_id)
+    fa, _ = cs.supporter_families(a_id)
+    fb, _ = cs.supporter_families(b_id)
+    wa, wb = _prov_weight(by_id.get(a_id)), _prov_weight(by_id.get(b_id))
+    signs = [_sign(sa, sb), _sign(len(fa), len(fb)), _sign(wa, wb)]
+    nonzero = [s for s in signs if s]
+    lean: int | None
+    if not nonzero:
+        lean = 0
+    elif len(set(nonzero)) > 1:
+        lean = None                             # axes disagree -> genuinely ambiguous
+    else:
+        lean = nonzero[0]
+    return {"support": (sa, sb), "families": (len(fa), len(fb)), "provenance": (wa, wb),
+            "axes": len(nonzero), "lean": lean}
 
 _DECISIONS_TEMPLATE = (
     "# Konflikt entscheiden - eine pro Zeile, Format:\n"
@@ -33,12 +85,17 @@ _DECISIONS_TEMPLATE = (
 )
 
 
-def decidable_conflicts(cs, *, max_items: int = 3) -> list[dict]:
-    """Open conflicts worth the operator's decision: two claims, with a clear evidence asymmetry
-    (one side has more independent support than the other). Deterministic and read-only - it ranks
-    and presents, it NEVER picks a winner. Bounded so the operator is never flooded."""
-    from .homeostasis import _supports_on
+def decidable_conflicts(cs, *, max_items: int | None = None) -> list[dict]:
+    """Open conflicts worth the operator's decision: two claims where the evidence clearly leans
+    to one side on at least one axis - independent support, supporter families, or the claims' own
+    provenance weight (a paper vs. a forum voice is decidable even at 0-vs-0 corroboration) - and
+    NO axis points the other way. Deterministic and read-only - it ranks and presents, it NEVER
+    picks a winner. Bounded so the operator is never flooded."""
+    from .homeostasis import supports_map
+    if max_items is None:
+        max_items = max(1, int(os.getenv("JONI_RESOLVE_MAX_ITEMS", "5")))
     by_id = {c.id: c for c in cs.core.all(l9.ObjectType.CLAIM)}
+    smap = supports_map(cs)
     out: list[dict] = []
     for cf in cs.core.open_conflicts():
         if getattr(getattr(cf, "conflict_status", None), "value", "") != "open":
@@ -47,15 +104,30 @@ def decidable_conflicts(cs, *, max_items: int = 3) -> list[dict]:
         if len(ids) != 2:
             continue
         a, b = ids
-        sa, sb = _supports_on(cs, a), _supports_on(cs, b)
-        if max(sa, sb) < 1 or sa == sb:
-            continue                       # nothing to lean on, or symmetric -> not surfaced
+        lean = evidence_lean(cs, a, b, smap=smap)
+        if not lean["lean"]:                   # symmetric (0) or ambiguous (None) -> not surfaced
+            continue
+        sa, sb = lean["support"]
         out.append({"conflict_id": cf.id, "topic": by_id[a].topic or by_id[b].topic or "?",
+                    "axes": lean["axes"], "lean": lean,
                     "a": {"id": a, "text": by_id[a].text, "support": sa},
                     "b": {"id": b, "text": by_id[b].text, "support": sb}})
-    out.sort(key=lambda d: (abs(d["a"]["support"] - d["b"]["support"]),
-                            max(d["a"]["support"], d["b"]["support"])), reverse=True)
+    out.sort(key=lambda d: (d["axes"], abs(d["a"]["support"] - d["b"]["support"]),
+                            max(d["a"]["support"], d["b"]["support"]), d["conflict_id"]),
+             reverse=True)
     return out[:max_items]
+
+
+_PROV_LABEL = {2: "extern", 1: "Forum", 0: "selbst"}
+
+
+def _axes_text(lean: dict) -> str:
+    """Render the three measured axes for the sheet/protocol - '<a> vs <b>' per axis."""
+    sa, sb = lean["support"]
+    fa, fb = lean["families"]
+    wa, wb = lean["provenance"]
+    return (f"Belege {sa} vs {sb} · Quellfamilien {fa} vs {fb} · "
+            f"Provenienz {_PROV_LABEL.get(wa, wa)} vs {_PROV_LABEL.get(wb, wb)}")
 
 
 def parse_decisions(text: str) -> list[dict]:
@@ -92,13 +164,13 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
     skipped with a note. Every mutation is a gate-recorded op; the loop transcribes, not decides.
 
     **Remonstration** (the manifesto's reasoned No, without breaking the HUMAN anchor): a decision
-    that contradicts the measured evidence balance (the chosen winner has strictly LESS independent
-    support than the losing side) is NOT applied immediately. Joni records a reasoned objection
-    (protocolled, shown on the decision sheet) and the decision rests ONE round. Re-entering the
-    same decision confirms it: it is then applied - the operator stays the final authority - but the
-    objection is preserved immutably in the conflict's ``resolution_reason``, so a later correction
-    carries the full story ("ich habe widersprochen, wurde überstimmt")."""
-    from .homeostasis import _supports_on
+    that contradicts the measured evidence balance - the same three-axis lean the decision sheet
+    shows (support, supporter families, provenance weight), pointing strictly toward the losing
+    side - is NOT applied immediately. Joni records a reasoned objection (protocolled, shown on
+    the decision sheet) and the decision rests ONE round. Re-entering the same decision confirms
+    it: it is then applied - the operator stays the final authority - but the objection is
+    preserved immutably in the conflict's ``resolution_reason``, so a later correction carries
+    the full story ("ich habe widersprochen, wurde überstimmt")."""
     applied = 0
     done = set(extensions.setdefault("conflict_resolved", []))
     objections: dict = extensions.setdefault("conflict_objections", {})
@@ -120,18 +192,27 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
             continue
         losers = [i for i in ids if i != win and i in by_id]
 
-        # Remonstration check: measure the evidence balance the way the decision sheet does.
-        sup_win = _supports_on(cs, win)
-        sup_other = max((_supports_on(cs, x) for x in losers), default=0)
+        # Remonstration check: measure the evidence balance the way the decision sheet does -
+        # the same three axes; an objection is raised only when the lean points STRICTLY toward
+        # a losing side (an ambiguous, axes-disagree balance is the operator's call to make).
+        against = None
+        for x in losers:
+            le = evidence_lean(cs, win, x)
+            if le["lean"] == -1:
+                against = le
+                break
+        sup_win = against["support"][0] if against else 0
+        sup_other = against["support"][1] if against else 0
         pend = objections.get(cid)
         confirmed = isinstance(pend, dict) and pend.get("winner_id") == win
-        if sup_win < sup_other and not confirmed:
+        if against is not None and not confirmed:
             objections[cid] = {"winner_id": win, "cycle": cycle,
                                "sup_win": sup_win, "sup_other": sup_other,
+                               "axes": _axes_text(against),
                                "decision_reason": reason[:200]}
             proto.record(cycle, "einspruch",
                          f"{cid}: Einspruch - die Entscheidung für {win} widerspricht der "
-                         f"Evidenzlage ({sup_win} vs {sup_other} unabhängige Belege). Eine Runde "
+                         f"Evidenzlage ({_axes_text(against)}). Eine Runde "
                          "aufgeschoben; erneutes Eintragen bestätigt und wird angewendet, der "
                          "Einspruch bleibt protokolliert.")
             continue                                 # held one round - the operator must confirm
@@ -192,9 +273,10 @@ def render_sheet(items: list[dict], objections: dict | None = None) -> str:
             "",
         ]
         for cid, o in sorted(objections.items()):
+            balance = o.get("axes") or (f"Belege {o.get('sup_win')} vs {o.get('sup_other')}")
             lines += [
-                f"- **{cid}** · deine Wahl: {o.get('winner_id')} · Einspruch: die Gegenseite hat "
-                f"mehr unabhängige Belege ({o.get('sup_win')} vs {o.get('sup_other')}).",
+                f"- **{cid}** · deine Wahl: {o.get('winner_id')} · Einspruch: die Evidenz lehnt "
+                f"zur Gegenseite ({balance}).",
                 f"  ```\n  {cid} | {o.get('winner_id')} | <dein grund>\n  ```",
                 "",
             ]
@@ -207,6 +289,10 @@ def render_sheet(items: list[dict], objections: dict | None = None) -> str:
             "",
             f"- **{a['id']}** ({a['support']} Belege): {a['text']}",
             f"- **{b['id']}** ({b['support']} Belege): {b['text']}",
+        ]
+        if it.get("lean"):
+            lines.append(f"- _Evidenzlage ({a['id']} vs {b['id']}): {_axes_text(it['lean'])}_")
+        lines += [
             "",
             f"```\n{it['conflict_id']} | <gewinner: {a['id']} oder {b['id']}> | <grund>\n```",
             "",
