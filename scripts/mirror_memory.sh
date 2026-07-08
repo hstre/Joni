@@ -46,6 +46,9 @@ mkdir -p "\${d}"
 for f in state/layer9.json state/extensions.json state/joni_state.json protocol/protocol.jsonl; do
   [ -f "\${MIRROR}/\${f}" ] && cp -f "\${MIRROR}/\${f}" "\${d}/\$(basename "\${f}")" || true
 done
+# the journal lives in sealed chunk files next to the head (layer9.json is just the manifest)
+[ -d "\${MIRROR}/state/layer9.journal" ] \\
+  && cp -rf "\${MIRROR}/state/layer9.journal" "\${d}/layer9.journal" || true
 # keep the 30 most recent days
 ls -1dt "\${SNAPS}"/*/ 2>/dev/null | tail -n +31 | xargs -r rm -rf
 EOF

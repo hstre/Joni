@@ -584,8 +584,22 @@ what is uncertain, what contradicts, and what changed.</p>
 """
 
 
+def _slim_for_dump(data: dict, *, list_tail: int = 200) -> dict:
+    """The dumped data.json is a WINDOW, not the archive: protocol/protocol.jsonl and the state
+    files keep everything. Long top-level lists inside ``extensions`` are cut to a recent tail so
+    the committed projection stops re-storing megabytes of already-persisted history each cycle."""
+    slim = dict(data)
+    ext = slim.get("extensions")
+    if isinstance(ext, dict):
+        slim["extensions"] = {
+            k: (v[-list_tail:] if isinstance(v, list) and len(v) > list_tail else v)
+            for k, v in ext.items()}
+    return slim
+
+
 def render(index_path: Path, data_path: Path, data: dict) -> None:
     data = {**data, "generated": datetime.now(UTC).isoformat(timespec="seconds")}
     index_path.parent.mkdir(parents=True, exist_ok=True)
-    index_path.write_text(build(data), encoding="utf-8")
-    data_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    index_path.write_text(build(data), encoding="utf-8")   # the page renders from the FULL dict
+    data_path.write_text(json.dumps(_slim_for_dump(data), ensure_ascii=False, indent=2),
+                         encoding="utf-8")

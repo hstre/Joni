@@ -50,7 +50,7 @@ def test_fast_load_reproduces_replay_byte_identically(monkeypatch, tmp_path):
     assert "state_snapshot" in sidecar
     fast = persistence.load(p, verify=True)             # fast path via sidecar
     replayed = persistence.replay(
-        [l9.JournalEntry.from_dict(e) for e in json.loads(p.read_text())["journal"]])
+        [l9.JournalEntry.from_dict(e) for e in persistence._read_doc(p)["journal"]])
     assert hashing.snapshot_hash(fast) == hashing.snapshot_hash(core)
     assert hashing.snapshot_hash(fast) == hashing.snapshot_hash(replayed)
     assert hashing.verify_chain(fast)[0]

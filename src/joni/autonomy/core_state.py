@@ -13,6 +13,7 @@ the wall clock each cycle. There are no artificial per-cycle time jumps.
 from __future__ import annotations
 
 import json
+import os
 import re
 from collections import Counter
 from pathlib import Path
@@ -481,6 +482,30 @@ class CoreState:
         fams, _ = self.supporter_families(claim_id)
         return len(fams)
 
+    def supporter_families_map(self) -> dict[str, set[str]]:
+        """Independent supporter families for ALL claims in one pass - the same semantics as
+        ``supporter_families`` (dead supporters void, one family per paper/run/thread), but built
+        once. The per-claim helper rebuilds the full evidence index per call, which turns any
+        pass that asks about every claim (the export, the site) into O(claims x links)."""
+        ev_by_id = {e.id: e for e in self.core.all(l9.ObjectType.EVIDENCE)}
+        claim_by_id = {c.id: c for c in self.core.all(l9.ObjectType.CLAIM)}
+        out: dict[str, set[str]] = {}
+        for el in self.core.all(l9.ObjectType.EVIDENCE_LINK):
+            if el.relation.value not in ("supports", "contextualizes"):
+                continue
+            ev = ev_by_id.get(el.evidence_id)
+            m = _VIA.search(getattr(ev, "content", "") or "")
+            supporter = claim_by_id.get(m.group(1)) if m else None
+            fams = out.setdefault(el.claim_id, set())
+            if supporter is not None:
+                if supporter.status.value in ("rejected", "superseded"):
+                    continue
+                fams.add(_source_family(supporter))
+            else:
+                sid = getattr(ev, "source_id", None)
+                fams.add(f"src:{sid}" if sid else f"ext:{el.id}")
+        return out
+
     def accepted_call_ids(self) -> set[str]:
         """The set of model call_ids that produced at least one STILL-ACTIVE claim - so a true
         per-call yield (<=1) can be computed, instead of dividing a cumulative claim count by a
@@ -596,9 +621,25 @@ class CoreState:
             d = o.taint.to_dict()
             return [k for k in _CONTAMINATION_FIELDS if d.get(k)]
 
+        # The export is the site's living map, not a logfile: every LIVE claim is included, dead
+        # ones (rejected/superseded) only as a recent tail - the full record stays in the journal
+        # and the persona trail. This is also what keeps the rendered page from growing without
+        # bound as housekeeping (reclassification, drains) retires thousands of claims.
+        dead_tail = int(os.getenv("JONI_EXPORT_DEAD_TAIL", "400"))
+        all_claims = list(s.all(l9.ObjectType.CLAIM))
+        dead = [c for c in all_claims if c.status.value in ("rejected", "superseded")]
+        dead_kept = set(
+            c.id for c in sorted(dead, key=lambda c: int(c.id.split("-")[-1]))[-dead_tail:])
+        included = [c for c in all_claims
+                    if c.status.value not in ("rejected", "superseded") or c.id in dead_kept]
+        # bulk indexes: the per-claim scans made this O(claims x links) every cycle
+        links_by_claim: dict[str, list] = {}
+        for el in s.all(l9.ObjectType.EVIDENCE_LINK):
+            links_by_claim.setdefault(el.claim_id, []).append(el)
+        fams_map = self.supporter_families_map()
         claims = []
-        for c in s.all(l9.ObjectType.CLAIM):
-            links = [el for el in s.all(l9.ObjectType.EVIDENCE_LINK) if el.claim_id == c.id]
+        for c in included:
+            links = links_by_claim.get(c.id, [])
             claims.append({
                 "id": c.id, "text": c.text, "topic": c.topic,
                 "status": c.status.value, "authority": c.authority.value,
@@ -609,7 +650,7 @@ class CoreState:
                 # review #5: count *independent* backing, not raw evidence_count (three claims
                 # from one Moltbook thread are not three evidences), plus how deep the derivation
                 # chain runs and the originating model family/provider where known.
-                "independent_source_count": self.independent_source_count(c.id),
+                "independent_source_count": len(fams_map.get(c.id, ())),
                 "derivation_depth": self.derivation_depth(c),
                 "origin_family": _source_family(c),
                 "model_family": getattr(c.provenance, "model_id", "") or "",
@@ -617,6 +658,7 @@ class CoreState:
                 "taint": taint_flags(c), "derived_from": list(c.derived_from),
                 "ledger_event": c.ledger_event, "tick": c.last_changed_tick,
             })
+        included_ids = {c.id for c in included}
 
         def simple(o, **extra) -> dict:
             base = {"id": o.id, "status": o.status.value, "authority": o.authority.value,
@@ -628,7 +670,8 @@ class CoreState:
             {"id": el.id, "claim_id": el.claim_id, "evidence_id": el.evidence_id,
              "relation": el.relation.value, "strength": round(el.strength, 3),
              "review_status": el.review_status, "status": el.status.value}
-            for el in s.all(l9.ObjectType.EVIDENCE_LINK)]
+            for el in s.all(l9.ObjectType.EVIDENCE_LINK)
+            if el.claim_id in included_ids]              # links of omitted dead claims are noise
         conflicts = [
             simple(x, claim_ids=list(x.claim_ids), conflict_status=x.conflict_status.value,
                    kind=x.kind, conflict_kind=x.conflict_kind.value, severity=x.severity,
@@ -692,6 +735,10 @@ class CoreState:
                 "self_model": len(self_model), "memory": len(memory),
                 "semantic_clusters": len(semantic), "preferences": len(preferences),
                 "ledger": len(s.ledger),
+                # honesty about the window: how many dead claims the map does NOT show (they
+                # remain fully addressable in the journal and the persona trail).
+                "claims_total": len(all_claims),
+                "claims_omitted_dead": len(dead) - len(dead_kept),
             },
             "taint_summary": taint_summary, "authority_summary": authority_summary,
             "tainted_authoritative": tainted_authoritative,
