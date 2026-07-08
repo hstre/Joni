@@ -80,12 +80,12 @@ def test_save_load_and_restore_rebuild_the_running_hash(tmp_path):
 def test_real_journal_replay_stays_consistent():
     """Guarded: replay the first slice of the REAL journal and assert the running hash equals a full
     recompute throughout — real conflict/evidence/method operator sequences, not synthetic ones."""
-    import json
+    from desi_layer9 import persistence
     real = Path(__file__).resolve().parent.parent / "state" / "layer9.json"
     if not real.exists():
         import pytest
         pytest.skip("real journal not present")
-    entries = json.loads(real.read_text())["journal"][:2000]
+    entries = persistence._read_doc(real)["journal"][:2000]   # legacy inline OR chunked on disk
     core = Layer9()
     for i, e in enumerate(entries):
         je = JournalEntry.from_dict(e)

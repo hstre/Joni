@@ -47,7 +47,8 @@ def _sign(a: float, b: float) -> int:
     return (a > b) - (a < b)
 
 
-def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None) -> dict:
+def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None,
+                  fams: dict | None = None) -> dict:
     """Measure, on three deterministic axes, which side of a conflict the evidence leans toward.
 
     Axes: independent live support count, independent supporter FAMILIES (two claims from one
@@ -56,12 +57,16 @@ def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None) -> dict
     conflict is genuinely ambiguous and is neither surfaced as decidable nor objected to. This
     measures; it never decides."""
     from .homeostasis import _supports_on
-    by_id = cs.core.objects
     sa = smap.get(a_id, 0) if smap is not None else _supports_on(cs, a_id)
     sb = smap.get(b_id, 0) if smap is not None else _supports_on(cs, b_id)
-    fa, _ = cs.supporter_families(a_id)
-    fb, _ = cs.supporter_families(b_id)
-    wa, wb = _prov_weight(by_id.get(a_id)), _prov_weight(by_id.get(b_id))
+    if fams is not None:                        # bulk map: one pass for a whole sheet
+        fa, fb = fams.get(a_id, set()), fams.get(b_id, set())
+    else:
+        fa, _ = cs.supporter_families(a_id)
+        fb, _ = cs.supporter_families(b_id)
+    # single-object reads: ``core.objects`` deep-copies the WHOLE 65k-object store per access
+    # (3.7s on the production state) - per-conflict that was 267 x 3.7s = the entire cycle.
+    wa, wb = _prov_weight(cs.core.get(a_id)), _prov_weight(cs.core.get(b_id))
     signs = [_sign(sa, sb), _sign(len(fa), len(fb)), _sign(wa, wb)]
     nonzero = [s for s in signs if s]
     lean: int | None
@@ -85,6 +90,13 @@ _DECISIONS_TEMPLATE = (
 )
 
 
+# A conflict is the operator's to decide while it is OPEN or UNDER_REVIEW. The develop pass has
+# moved every long-lived contradiction to under_review ("opened review of contradiction ...") -
+# and this sheet IS the operator's review surface, so filtering it to bare "open" starved the
+# Mappe to zero for the entire run. UNDER_REVIEW -> RESOLVED is a legal kernel transition.
+_DECIDABLE_STATES = ("open", "under_review")
+
+
 def decidable_conflicts(cs, *, max_items: int | None = None) -> list[dict]:
     """Open conflicts worth the operator's decision: two claims where the evidence clearly leans
     to one side on at least one axis - independent support, supporter families, or the claims' own
@@ -96,15 +108,20 @@ def decidable_conflicts(cs, *, max_items: int | None = None) -> list[dict]:
         max_items = max(1, int(os.getenv("JONI_RESOLVE_MAX_ITEMS", "5")))
     by_id = {c.id: c for c in cs.core.all(l9.ObjectType.CLAIM)}
     smap = supports_map(cs)
+    fams = cs.supporter_families_map()          # per-claim scans here were O(conflicts x links)
     out: list[dict] = []
     for cf in cs.core.open_conflicts():
-        if getattr(getattr(cf, "conflict_status", None), "value", "") != "open":
+        if getattr(getattr(cf, "conflict_status", None), "value", "") not in _DECIDABLE_STATES:
             continue
         ids = [i for i in (getattr(cf, "claim_ids", None) or ()) if i in by_id][:2]
         if len(ids) != 2:
             continue
         a, b = ids
-        lean = evidence_lean(cs, a, b, smap=smap)
+        # moot check: a conflict whose side is already rejected/superseded (e.g. by the forum
+        # drain) has nothing left to decide - the correction happened elsewhere. Not surfaced.
+        if any(by_id[i].status.value in ("rejected", "superseded") for i in ids):
+            continue
+        lean = evidence_lean(cs, a, b, smap=smap, fams=fams)
         if not lean["lean"]:                   # symmetric (0) or ambiguous (None) -> not surfaced
             continue
         sa, sb = lean["support"]
@@ -146,10 +163,10 @@ def parse_decisions(text: str) -> list[dict]:
 
 
 def _other_open(cs, claim_id: str, exclude_cid: str) -> bool:
-    """Is the claim still contested by some OTHER open conflict (so it must stay contested)?"""
+    """Is the claim still contested by some OTHER live conflict (so it must stay contested)?"""
     for cf in cs.core.open_conflicts():
         status = getattr(getattr(cf, "conflict_status", None), "value", "")
-        if cf.id == exclude_cid or status != "open":
+        if cf.id == exclude_cid or status not in _DECIDABLE_STATES:
             continue
         if claim_id in (getattr(cf, "claim_ids", None) or ()):
             return True
@@ -182,7 +199,8 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
         cid, win = d.get("conflict_id"), d.get("winner_id")
         reason = (d.get("reason") or "").strip()
         cf = open_by_id.get(cid)
-        if cf is None or getattr(getattr(cf, "conflict_status", None), "value", "") != "open":
+        state = getattr(getattr(cf, "conflict_status", None), "value", "") if cf else ""
+        if cf is None or state not in _DECIDABLE_STATES:
             proto.record(cycle, "note", f"conflict {cid}: not an open conflict - skipped")
             continue
         ids = list(getattr(cf, "claim_ids", None) or ())
@@ -240,7 +258,9 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
                      + (" · over recorded objection" if confirmed else ""))
     extensions["conflict_resolved"] = sorted(done)[-500:]
     # prune objections whose conflict is no longer open (settled some other way) + bound the dict
-    still_open = {cf.id for cf in cs.core.open_conflicts()}
+    still_open = {cf.id for cf in cs.core.open_conflicts()
+                  if getattr(getattr(cf, "conflict_status", None), "value", "")
+                  in _DECIDABLE_STATES}
     extensions["conflict_objections"] = dict(sorted(
         ((k, v) for k, v in objections.items() if k in still_open),
         key=lambda kv: kv[1].get("cycle", 0))[-100:])
