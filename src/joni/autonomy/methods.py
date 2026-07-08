@@ -25,8 +25,9 @@ def _looks_like_method(item) -> bool:
     return any(h in blob for h in _METHOD_HINTS)
 
 
-def harvest(cs, judged, extensions: dict, proto, cycle: int = 0, *, max_methods: int = 2) -> dict:
-    from . import quality
+def harvest(cs, judged, extensions: dict, proto, cycle: int = 0, *, max_methods: int = 2,
+            budget=None, runs_per_week: int = 0) -> dict:
+    from . import method_review, quality
     seen = set(extensions.get("methods_seen", []))
     found = 0
     for item, rel in judged:
@@ -39,6 +40,21 @@ def harvest(cs, judged, extensions: dict, proto, cycle: int = 0, *, max_methods:
         if not quality.on_domain_text(f"{item.title} {item.summary}"):
             seen.add(item.key)                 # judged once, off-domain - don't reconsider
             continue
+        # Granite gatekeeper BEFORE the shelf (the embedding gate above is fail-open without an
+        # embedder, i.e. dead in the production runner; the hint words match every second paper
+        # abstract). Invalid -> never shelved, finalised; no verdict -> unburned, retried later;
+        # gate disabled -> the legacy lexical harvest stands alone.
+        if method_review.enabled():
+            verdict = method_review.judge_method(
+                item.title[:80], item.summary or item.title, extensions=extensions,
+                cycle=cycle, budget=budget, runs_per_week=runs_per_week)
+            if verdict is None:
+                continue
+            if verdict is False:
+                seen.add(item.key)             # a real verdict: not a method, never re-asked
+                proto.record(cycle, "method",
+                             f"method candidate rejected by the gate: {item.title[:70]}")
+                continue
         cs.propose_method(
             name=item.title[:80],
             summary=(item.summary or item.title)[:240],
