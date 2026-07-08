@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 460 · 215 Methoden** — proposed 213 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
+**Cycle 461 · 217 Methoden** — proposed 215 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -134,6 +134,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Deform360: A Massive Multi-view Visuotactile Dataset for Deformable World Models | **proposed** | candidate | 0 | — |
 | InFlux++: Real and Synthetic Data for Estimating Dynamic Camera Intrinsics | **proposed** | candidate | 0 | — |
 | rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
+| Andha-Dhun: A First Look at Audio Descriptions in Hindi | **proposed** | candidate | 0 | — |
+| Sparse space-time spectral methods can time-step by peel and pass | **proposed** | candidate | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
