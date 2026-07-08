@@ -121,3 +121,40 @@ def test_run_panel_is_read_only_and_writes_its_artifacts(tmp_path):
     assert "Collapse-Resistance-Panel" in (tmp_path / "collapse_panel.md").read_text()
     # THE contract: the panel wrote nothing to Layer 9
     assert len(cs.core.objects) == before
+
+
+def test_guard_liveness_names_the_dark_guards(monkeypatch):
+    # the finding that motivated the metric: on_domain is fail-open without an embedder, so three
+    # passes silently wave everything through - the panel must SAY so, not let silence read as ok.
+    from joni.autonomy import embeddings
+    monkeypatch.setattr(embeddings, "available", lambda: False)
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)
+    g = cp.guard_liveness()
+    assert g["level"] == "alarm"                      # only lexical filters left
+    assert "embedding_domain_gate" in g["dark"] and "granite_topic_gate" in g["dark"]
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    g2 = cp.guard_liveness()
+    assert g2["level"] == "warn"                      # Granite judges, embeddings still dark
+    monkeypatch.setattr(embeddings, "available", lambda: True)
+    assert cp.guard_liveness()["level"] == "ok"
+
+
+def test_the_summary_renders_the_guard_row(monkeypatch):
+    from joni.autonomy import embeddings
+    monkeypatch.setattr(embeddings, "available", lambda: False)
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)
+    rec = {"cycle": 1, "run": 1, "active_claims": 0, "overall": "alarm", "metrics": {
+        "top_bucket_dominance": {"top_bucket": "-", "share": 0, "is_sink": False, "level": "ok"},
+        "topic_entropy": {"entropy_brutto": 0, "entropy_netto": 0, "real_topics": 0, "level": "ok"},
+        "weak_claim_ratio": {"strong_weak_ratio": 0, "strong_claims": 0, "level": "ok"},
+        "degeneracy": {"degeneration_score": 0, "decidable_percent": 0,
+                       "unsupported_hypotheses": 0, "level": "ok"},
+        "conflict_depth": {"open_conflicts": 0, "max_component": 0, "cyclic_components": 0,
+                           "level": "ok"},
+        "novelty": {"new_mean_7": 0, "new_mean_30": 0, "zero_new_share_30": 0, "level": "ok"},
+        "repetition": {"duplicate_dev_share": 0, "selfmodel_repeat_ratio": 0, "level": "ok"},
+        "cold_replay": {"load_seconds": 0, "level": "ok"},
+        "guard_liveness": cp.guard_liveness(),
+    }}
+    md = cp.render_summary(rec)
+    assert "Guard-Liveness" in md and "dunkel:" in md and "embedding_domain_gate" in md

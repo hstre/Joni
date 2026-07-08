@@ -42,6 +42,7 @@ from . import (
     invent,
     layer9_view,
     method_ledger,
+    method_review,
     methods,
     model_call,
     persona,
@@ -247,8 +248,10 @@ def one_cycle() -> dict:
     escalated = escalation.escalate_if_needed(cs, extensions, proto, cycle,
                                               budget=budget, runs_per_week=runs_per_week())
 
-    # 3b. Store methods Joni found, as candidates in the Layer 9 core - for Kevin.
-    found_methods = methods.harvest(cs, judged, extensions, proto, cycle)
+    # 3b. Store methods Joni found, as candidates in the Layer 9 core - for Kevin. The Granite
+    #     method gate judges a candidate BEFORE it is shelved (budget-metered, cached).
+    found_methods = methods.harvest(cs, judged, extensions, proto, cycle,
+                                    budget=budget, runs_per_week=runs_per_week())
 
     # 3c. Kevin trials the shelf in-process: candidate/provisional methods get a
     #     deterministic transfer trial (recorded, never promoted). No-op without Kevin.
@@ -400,6 +403,8 @@ def one_cycle() -> dict:
                                budget=budget, runs_per_week=runs_per_week())
     homeostasis.retire_junk_hypotheses(cs, extensions, proto, cycle)   # drain junk-subject ideas
     homeostasis.retire_junk_methods(cs, extensions, proto, cycle)      # drain off-domain methods
+    method_review.review_methods(cs, extensions, proto, cycle,          # LLM 'is it a method?' gate
+                                 budget=budget, runs_per_week=runs_per_week())
     homeostasis.review_numeric_duplicate_conflicts(cs, proto, cycle)   # defuse legacy numeric hards
     vitality = homeostasis.vitality(cs, extensions, proto, cycle)
 

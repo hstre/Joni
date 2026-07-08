@@ -206,6 +206,29 @@ def repetition(dev_summaries: list[str], selfmodel_texts: list[str]) -> dict:
             "selfmodel_repeat_ratio": sm_repeat, "level": lvl}
 
 
+def guard_liveness() -> dict:
+    """Which quality guards actually MEASURE in this deployment - and which silently fail open.
+
+    A guard that cannot run is worse than none while nothing shows it: every downstream pass
+    believes the check happened. The embedding domain gate (``quality.on_domain``) is fail-open
+    by design - correct per decision, but as a standing condition it means three passes
+    (retire_offdomain, emerge's domain gate, the method harvest's text gate) wave everything
+    through. The Granite gates (topic/method) and the semantic layer say whether the LLM-judged
+    checks are configured at all. Levels: OK = the embedding gate measures; WARN = it is dark
+    but the Granite gates still judge; ALARM = lexical filters are the only line left."""
+    from . import embeddings, method_review, projection, topic_review
+    emb = embeddings.available()
+    guards = {
+        "embedding_domain_gate": "live" if emb else "fail-open",
+        "granite_topic_gate": "live" if topic_review.enabled() else "off",
+        "granite_method_gate": "live" if method_review.enabled() else "off",
+        "semantic_layer": "live" if projection.enabled() else "off",
+    }
+    dark = sorted(k for k, v in guards.items() if v != "live")
+    level = OK if emb else (WARN if projection.enabled() else ALARM)
+    return {"level": level, "guards": guards, "dark": dark, "dark_count": len(dark)}
+
+
 def cold_replay(load_seconds: float | None) -> dict:
     """[8] Not a semantic collapse — a *system* collapse early indicator. The kernel cold-load time
     (the O(n²)-replay incident's root). Baseline ~17s; warn >45s, alarm >180s. None = not measured
@@ -273,6 +296,7 @@ def compute(cs, extensions: dict, *, proto_path: Path, load_seconds: float | Non
         "novelty": novelty(new_counts),
         "repetition": repetition(devs, sms),
         "cold_replay": cold_replay(load_seconds),
+        "guard_liveness": guard_liveness(),
     }
     overall = max((m["level"] for m in metrics.values()), key=_RANK.get, default=OK)
     return {"cycle": cycle, "run": run, "active_claims": len(claims),
@@ -320,9 +344,16 @@ def render_summary(rec: dict) -> str:
         f"| {icon[m['repetition']['level']]} |",
         f"| 8 Cold-Replay | {m['cold_replay']['load_seconds']}s "
         f"| {icon[m['cold_replay']['level']]} |",
+        f"| 9 Guard-Liveness | {_guards_cell(m['guard_liveness'])} "
+        f"| {icon[m['guard_liveness']['level']]} |",
         "",
     ]
     return "\n".join(lines) + "\n"
+
+
+def _guards_cell(g: dict) -> str:
+    return ("alle Wächter messen" if not g["dark"]
+            else "dunkel: " + ", ".join(g["dark"]))
 
 
 def run_panel(cs, extensions: dict, proto, cycle: int, *, run: int, paths,
