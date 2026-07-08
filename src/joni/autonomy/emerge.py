@@ -29,7 +29,7 @@ from desi_layer9.semantics import adapter
 from desi_layer9.semantics.ports import NullSemanticLayer
 
 from ..conflict import _content
-from . import quality
+from . import quality, topic_review
 
 # Structural / meta words from Joni's own generated text - never a real emergent topic.
 _META = frozenset({
@@ -41,7 +41,10 @@ _META = frozenset({
 })
 
 _MIN_CLAIMS = 3          # a term must recur across at least this many claims
-_MIN_TOPICS_FOR_TOPIC = 2    # ...spanning at least this many topics to become a topic
+# ...spanning at least this many topics to become a topic. Was 2 - which minted one generic
+# word per cycle ('against', 'allowing', 'aimed'): virtually the entire junk-topic graveyard
+# was born at exactly 2. A real concept recurs wider before it deserves tracking.
+_MIN_TOPICS_FOR_TOPIC = 3
 _MIN_TOPICS_FOR_METHOD = 2   # ...or to be a transferable lens (an emergent method)
 _MAX_INSUFFICIENT_RETRIES = 3   # a layer-absent non-judgment is retried this often, not burned
 
@@ -81,7 +84,8 @@ def _eligible_cluster(cs, proto, cycle, claims, *, layer, surface_term):
     return sc
 
 
-def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
+def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
+           budget=None, runs_per_week: int = 0) -> dict:
     layer = layer or NullSemanticLayer()
     live = cs.active_claims()
     idx = _term_index(live)
@@ -100,13 +104,32 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None) -> dict:
     cands = [(t, e) for t, e in cands if quality.on_domain(t)]   # domain-consistency gate
     if cands:
         term, e = cands[0]
-        cs.learn(f"'{term}' keeps recurring across {len(e['topics'])} of my topics, "
-                 f"so I am tracking it as its own topic.", term)
-        done_topics.add(term)
-        out["topic"] = term
-        proto.record(cycle, "emerged",
-                     f"new topic '{term}' precipitated from a recurrence across "
-                     f"{', '.join(sorted(e['topics']))}")
+        # Symmetry with moves 2 and 3: no structure without a semantic judgment. Lexical
+        # recurrence + on_domain cannot tell a concept ('calibration') from a generic word
+        # ('against') - the Granite topic gatekeeper can, and it judges BEFORE the mint, not
+        # after ('against' at 1 claim never reached the post-hoc review). Non-authoritative:
+        # an invalid verdict only withholds the mint; a no-verdict (gate off mid-run, call
+        # failed) leaves the candidate unburned for a later cycle. Gate disabled -> the
+        # lexical-only mode mints as before.
+        verdict = (topic_review.judge_term(term, [c.text for c in e["claims"]],
+                                           extensions=extensions, cycle=cycle,
+                                           budget=budget, runs_per_week=runs_per_week)
+                   if topic_review.enabled() else True)
+        if verdict is False:
+            done_topics.add(term)               # a real verdict: not a concept, never re-asked
+            proto.record(cycle, "emerged",
+                         f"topic candidate '{term}' rejected by the topic gate - not minted")
+        elif verdict is True:
+            cs.learn(f"'{term}' keeps recurring across {len(e['topics'])} of my topics, "
+                     f"so I am tracking it as its own topic.", term)
+            done_topics.add(term)
+            minted = dict(extensions.get("emerged_topic_cycle", {}))
+            minted[term] = cycle                # mint age: the orphan drain's grace period
+            extensions["emerged_topic_cycle"] = dict(sorted(minted.items())[-2000:])
+            out["topic"] = term
+            proto.record(cycle, "emerged",
+                         f"new topic '{term}' precipitated from a recurrence across "
+                         f"{', '.join(sorted(e['topics']))}")
     extensions["emerged_topics"] = sorted(done_topics)
 
     # -- 2. emergent synthesis: a within-topic cluster -> a higher-order candidate ------ #

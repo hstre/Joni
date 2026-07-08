@@ -115,6 +115,72 @@ def test_retire_keeps_a_junk_topic_claim_that_earned_support():
     assert cs.core.get(a).status.value == "active"     # ugly topic, but a real idea -> kept
 
 
+def _tracker(cs, term: str) -> str:
+    """Mint exactly what emerge's step 1 mints - a one-claim emergent-topic tracker."""
+    return cs.learn(f"'{term}' keeps recurring across 2 of my topics, "
+                    "so I am tracking it as its own topic.", term)
+
+
+def test_orphan_trackers_drain_the_pre_gate_graveyard():
+    cs = CoreState(seed_core())
+    a = _tracker(cs, "against")                       # legacy junk mints: real words, 1 claim,
+    b = _tracker(cs, "allowing")                      # forever under the >=2-claim review bar
+    proto = _Proto()
+    n = homeostasis.retire_orphan_topic_trackers(cs, {}, proto, 10)
+    assert n == 2
+    assert cs.core.get(a).status.value == "rejected"
+    assert cs.core.get(b).status.value == "rejected"
+    assert "against" not in cs.topics() and "allowing" not in cs.topics()
+    assert any("orphan emergent-topic tracker" in s for _, s in proto.events)
+
+
+def test_the_drain_only_touches_emerges_own_bookkeeping():
+    cs = CoreState(seed_core())
+    # a real one-claim topic (a normal claim, however narrow) is NOT the drain's business,
+    # and neither is an operator seed ('privacy is a topic I track' from seed_core).
+    real = cs.learn("the redesign meets accessibility requirements", "accessibility")
+    seeds = [c.id for c in cs.active_claims() if "topic I track" in c.text]
+    homeostasis.retire_orphan_topic_trackers(cs, {}, _Proto(), 10)
+    assert cs.core.get(real).status.value == "active"
+    assert all(cs.core.get(s).status.value == "active" for s in seeds)
+
+
+def test_a_second_claim_or_support_or_a_valid_verdict_protects_a_tracker():
+    cs = CoreState(seed_core())
+    grown = _tracker(cs, "distillation")
+    cs.learn("distillation transfers capability to smaller models", "distillation")  # 2nd claim
+    supported = _tracker(cs, "quantization")
+    ev = cs.learn("independent evidence on quantization", "routing")
+    cs.corroborate(supported, cs.core.get(ev), relation="supports")           # earned support
+    judged = _tracker(cs, "calibration")                                      # Granite said valid
+    ext = {"topic_llm_seen": {"calibration": "valid"}}
+    n = homeostasis.retire_orphan_topic_trackers(cs, ext, _Proto(), 10)
+    assert n == 0
+    for cid in (grown, supported, judged):
+        assert cs.core.get(cid).status.value == "active"
+
+
+def test_a_fresh_gate_approved_mint_gets_its_grace_window():
+    cs = CoreState(seed_core())
+    fresh = _tracker(cs, "calibration")
+    legacy = _tracker(cs, "against")                  # no recorded mint cycle -> eligible now
+    ext = {"emerged_topic_cycle": {"calibration": 100}}
+    n = homeostasis.retire_orphan_topic_trackers(cs, ext, _Proto(), 110)      # inside grace (50)
+    assert n == 1
+    assert cs.core.get(fresh).status.value == "active"                        # still growing
+    assert cs.core.get(legacy).status.value == "rejected"
+    n2 = homeostasis.retire_orphan_topic_trackers(cs, ext, _Proto(), 160)     # grace elapsed
+    assert n2 == 1 and cs.core.get(fresh).status.value == "rejected"
+
+
+def test_the_drain_is_bounded_per_cycle():
+    cs = CoreState(seed_core())
+    for i in range(6):
+        _tracker(cs, f"junkword{chr(97 + i)}ea")
+    n = homeostasis.retire_orphan_topic_trackers(cs, {}, _Proto(), 10, max_retire=4)
+    assert n == 4                                     # capped; the rest drains next cycle
+
+
 def test_retire_junk_methods_sheds_off_domain_candidates(monkeypatch):
     from joni.autonomy import embeddings
     monkeypatch.setattr(embeddings, "available", lambda: True)

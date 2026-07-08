@@ -356,9 +356,11 @@ def one_cycle() -> dict:
     doktores.assess_hypotheses(cs, extensions, proto, cycle,
                                budget=budget, runs_per_week=runs_per_week())
 
-    # 4d. Emergent self-development: a synthesis / a Kevin method only when Layer 9 marks
-    #     the semantic cluster eligible - lexical recurrence is just the candidate trigger.
-    emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer)
+    # 4d. Emergent self-development: a topic only past the Granite topic gate, a synthesis /
+    #     a Kevin method only when Layer 9 marks the semantic cluster eligible - lexical
+    #     recurrence is just the candidate trigger.
+    emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer,
+                            budget=budget, runs_per_week=runs_per_week())
 
     # 4d-bis. Reconsolidation: now and then (every ~12 cycles), re-read memory across one of
     #     Kevin's lenses for cross-topic links the within-topic develop pass would miss.
@@ -390,6 +392,7 @@ def one_cycle() -> dict:
     #     then grade Joni's own trajectory (developing / steady / degenerating).
     regulated = homeostasis.regulate(cs, extensions, proto, cycle)
     homeostasis.retire_junk_topics(cs, extensions, proto, cycle)       # drain pre-gate junk topics
+    homeostasis.retire_orphan_topic_trackers(cs, extensions, proto, cycle)  # drain 1-claim mints
     homeostasis.retire_offdomain_topics(cs, extensions, proto, cycle)  # drain laxiflora-type topics
     topic_review.review_topics(cs, extensions, proto, cycle,           # LLM 'does it belong?' gate
                                budget=budget, runs_per_week=runs_per_week())

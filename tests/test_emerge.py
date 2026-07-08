@@ -1,7 +1,7 @@
 """Emergent self-development: new structure precipitates from Joni's own recurring net."""
 
 import desi_layer9 as l9
-from joni.autonomy import emerge
+from joni.autonomy import emerge, model_call
 from joni.autonomy.core_state import CoreState
 from semantic_stub import StubSemanticLayer
 
@@ -23,7 +23,8 @@ def _cs_with_recurrence():
     return cs
 
 
-def test_a_recurring_cross_topic_term_becomes_a_tracked_topic():
+def test_a_recurring_cross_topic_term_becomes_a_tracked_topic(monkeypatch):
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)   # lexical-only mode: no gate
     cs = _cs_with_recurrence()
     ext: dict = {}
     out = emerge.emerge(cs, ext, _Proto())
@@ -32,7 +33,8 @@ def test_a_recurring_cross_topic_term_becomes_a_tracked_topic():
     assert "calibration" in ext["emerged_topics"]
 
 
-def test_emergent_topic_is_not_re_emitted():
+def test_emergent_topic_is_not_re_emitted(monkeypatch):
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)
     cs = _cs_with_recurrence()
     ext: dict = {}
     emerge.emerge(cs, ext, _Proto())
@@ -40,6 +42,67 @@ def test_emergent_topic_is_not_re_emitted():
     out2 = emerge.emerge(cs, ext, _Proto())        # same recurrence -> not re-added
     assert out2["topic"] is None
     assert len(cs.topics()) == before
+
+
+def test_a_term_recurring_across_too_few_topics_is_not_a_topic(monkeypatch):
+    # the entire junk graveyard was minted at exactly 2 topics - that bar is gone.
+    monkeypatch.delenv("JONI_SEMANTIC_PROPOSALS", raising=False)
+    cs = CoreState(l9.Layer9())
+    cs.learn("calibration improves routing decisions", "routing")
+    cs.learn("calibration matters for privacy budgets", "privacy")
+    cs.learn("better calibration helps routing again", "routing")   # 3 claims, only 2 topics
+    out = emerge.emerge(cs, {}, _Proto())
+    assert out["topic"] is None
+
+
+def test_the_topic_gate_judges_a_candidate_before_it_is_minted(monkeypatch, tmp_path):
+    # with the semantic layer on, a generic recurring word is judged by the Granite topic
+    # gatekeeper BEFORE the mint: invalid -> never minted, finalised, and protocolled.
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    monkeypatch.setattr(model_call, "_complete",
+                        lambda p, s, u: '{"valid": false, "reason": "generic word"}')
+    cs = _cs_with_recurrence()
+    ext: dict = {}
+    proto = _Proto()
+    out = emerge.emerge(cs, ext, proto)
+    assert out["topic"] is None
+    assert "calibration" not in cs.topics()
+    assert "calibration" in ext["emerged_topics"]              # a real verdict: never re-asked
+    assert ext["topic_llm_seen"]["calibration"] == "invalid"   # shared cache with the review
+    assert any("rejected by the topic gate" in s for k, s in proto.events if k == "emerged")
+
+
+def test_a_gate_approved_candidate_mints_and_records_its_mint_cycle(monkeypatch, tmp_path):
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    monkeypatch.setattr(model_call, "_complete",
+                        lambda p, s, u: '{"valid": true, "reason": "a real concept"}')
+    cs = _cs_with_recurrence()
+    ext: dict = {}
+    out = emerge.emerge(cs, ext, _Proto(), cycle=7)
+    assert out["topic"] == "calibration"
+    assert ext["emerged_topic_cycle"]["calibration"] == 7      # the orphan drain's grace anchor
+    assert ext["topic_llm_seen"]["calibration"] == "valid"
+
+
+def test_a_failed_gate_call_burns_nothing_the_candidate_is_retried(monkeypatch, tmp_path):
+    # no verdict is not a verdict: the mint is withheld, but the term stays un-finalised so a
+    # later cycle (with the model back) can still judge it.
+    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    def _down(p, s, u):
+        raise RuntimeError("model unavailable")
+    monkeypatch.setattr(model_call, "_complete", _down)
+    cs = _cs_with_recurrence()
+    ext: dict = {}
+    out = emerge.emerge(cs, ext, _Proto())
+    assert out["topic"] is None
+    assert "calibration" not in ext.get("emerged_topics", [])  # not burned
+    monkeypatch.setattr(model_call, "_complete",
+                        lambda p, s, u: '{"valid": true, "reason": "ok"}')
+    out2 = emerge.emerge(cs, ext, _Proto())                    # the model is back
+    assert out2["topic"] == "calibration"
 
 
 def test_a_cross_topic_lens_is_stored_as_a_candidate_method_only_when_eligible():
