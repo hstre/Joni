@@ -289,3 +289,34 @@ def test_a_conflict_with_a_dead_side_is_moot_and_not_surfaced():
     a, b, cid = _asymmetric_pair(cs)
     cs.reject_claim(a)                                  # e.g. retired by the reclassification
     assert cr.decidable_conflicts(cs) == []             # nothing left to decide
+
+
+def test_keiner_closes_a_spurious_conflict_without_superseding_anyone():
+    # the trap the first real Mappe exposed: X-91/92/94 pair UNRELATED claims. Picking a winner
+    # would supersede a perfectly fine claim and feed the persona a false 'X -> Y'. 'keiner'
+    # closes the conflict as TOLERATED: both claims stand, nothing is replaced.
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)
+    proto = _Proto()
+    n = cr.apply_decisions(cs, {}, proto, 1,
+                           [{"conflict_id": cid, "winner_id": "keiner",
+                             "reason": "unverwandte Claims, Paarung war unecht"}])
+    assert n == 1
+    conf = cs.core.objects[cid]
+    assert conf.conflict_status.value == "tolerated"
+    assert "kein Widerspruch" in (conf.resolution_reason or "")
+    assert cs.core.objects[a].status.value == "active"      # both revive - nothing superseded
+    assert cs.core.objects[b].status.value == "active"
+    assert cr.decidable_conflicts(cs) == []                 # closed: never resurfaced
+    assert not [c for c in persona.extract_corrections(cs) if c.obj_id in (a, b)]
+
+
+def test_keiner_is_never_remonstrated_even_against_the_evidence():
+    # refusing to kill a claim is the conservative move - no objection, whatever the lean says.
+    cs = CoreState(seed_core())
+    a, b, cid = _asymmetric_pair(cs)                        # evidence leans to b
+    proto = _Proto()
+    n = cr.apply_decisions(cs, {}, proto, 1,
+                           [{"conflict_id": cid, "winner_id": "keiner", "reason": "unecht"}])
+    assert n == 1
+    assert not any(kind == "einspruch" for kind, _ in proto.events)
