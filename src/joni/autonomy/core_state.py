@@ -301,6 +301,13 @@ class CoreState:
                         {"to": "resolved", "resolution": winner_id, "reason": reason},
                         targets=(conflict_id,))
 
+    def tolerate_conflict(self, conflict_id: str, *, reason: str):
+        """Close a conflict as TOLERATED - the operator's 'kein Widerspruch' call: the pairing was
+        spurious (unrelated or compatible claims), so NO claim is superseded and no false 'X -> Y'
+        ever reaches the persona. Kernel-legal (OPEN/UNDER_REVIEW -> TOLERATED), gate-recorded."""
+        return self._op(ProposalType.STATE_REVISION_PROPOSAL, Operator.CONFLICT_RESOLVE,
+                        {"to": "tolerated", "reason": reason}, targets=(conflict_id,))
+
     def supersede_claim(self, claim_id: str):
         """Mark a claim SUPERSEDED - a belief replaced by a later one (the successor is carried by
         the resolving conflict's ``resolution`` field, not here). Only used when the operator

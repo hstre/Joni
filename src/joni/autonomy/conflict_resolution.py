@@ -82,6 +82,7 @@ def evidence_lean(cs, a_id: str, b_id: str, *, smap: dict | None = None,
 _DECISIONS_TEMPLATE = (
     "# Konflikt entscheiden - eine pro Zeile, Format:\n"
     "#   konflikt_id | gewinner_claim_id | grund\n"
+    "#   konflikt_id | keiner | grund        <- kein Widerspruch: Paarung war unecht, beide bleiben\n"
     "# Beispiel:\n"
     "#   X-12 | C-88 | C-88 ist unter Last unabhängig bestätigt, C-40 nur eine Forumsmeinung.\n"
     "# Joni wendet das im nächsten Zyklus an: der Konflikt wird zugunsten des Gewinners gelöst,\n"
@@ -204,9 +205,33 @@ def apply_decisions(cs, extensions: dict, proto, cycle: int, decisions: list[dic
             proto.record(cycle, "note", f"conflict {cid}: not an open conflict - skipped")
             continue
         ids = list(getattr(cf, "claim_ids", None) or ())
-        if win not in ids or win not in by_id:
+        if win.strip().lower() not in ("keiner", "none", "-") and (win not in ids or win not in by_id):
             proto.record(cycle, "note",
                          f"conflict {cid}: winner {win} is not a claim in this conflict - skipped")
+            continue
+        # 'keiner': the operator declares the pairing spurious - no contradiction, no winner, no
+        # superseded claim, no false 'X -> Y' for the persona. The conflict closes as TOLERATED
+        # and both sides revive if this was their only live contest. Never remonstrated: refusing
+        # to kill a claim is the conservative move.
+        if win.strip().lower() in ("keiner", "none", "-"):
+            try:
+                cs.tolerate_conflict(cid, reason="operator: kein Widerspruch"
+                                                 + (f" - {reason}" if reason else ""))
+                for side in ids:
+                    if (side in by_id
+                            and getattr(getattr(by_id[side], "status", None), "value", "")
+                            == "contested" and not _other_open(cs, side, cid)):
+                        cs.activate_claim(side)
+            except Exception as exc:  # noqa: BLE001
+                proto.record(cycle, "note",
+                             f"conflict {cid}: tolerate failed ({type(exc).__name__})")
+                continue
+            applied += 1
+            done.add(cid)
+            objections.pop(cid, None)
+            proto.record(cycle, "resolved",
+                         f"{cid} closed by operator as NO contradiction (tolerated) - "
+                         f"both claims stand · {reason[:80]}")
             continue
         losers = [i for i in ids if i != win and i in by_id]
 
