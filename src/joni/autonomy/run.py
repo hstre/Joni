@@ -48,6 +48,7 @@ from . import (
     personal_intake,
     projection,
     reader,
+    reclassify,
     reconsolidate,
     research_intake,
     self_review,
@@ -394,6 +395,7 @@ def one_cycle() -> dict:
     homeostasis.retire_junk_topics(cs, extensions, proto, cycle)       # drain pre-gate junk topics
     homeostasis.retire_orphan_topic_trackers(cs, extensions, proto, cycle)  # drain 1-claim mints
     homeostasis.retire_offdomain_topics(cs, extensions, proto, cycle)  # drain laxiflora-type topics
+    reclassify.reclassify_forum(cs, extensions, proto, cycle)          # provenance is not a topic
     topic_review.review_topics(cs, extensions, proto, cycle,           # LLM 'does it belong?' gate
                                budget=budget, runs_per_week=runs_per_week())
     homeostasis.retire_junk_hypotheses(cs, extensions, proto, cycle)   # drain junk-subject ideas

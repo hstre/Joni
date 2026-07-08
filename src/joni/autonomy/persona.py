@@ -354,8 +354,15 @@ def render_md(lessons: list[Lesson], corrections: list[Correction], tick: int) -
         "> ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)",
         "> schärft nur die Sprache, nie die Auswahl.",
         "",
-        f"_Stand: Tick {tick} · {len(corrections)} korrigierte(r) Irrtum/Irrtümer · "
-        f"{len(lessons)} Lehre(n)._",
+        # A correction on a sink theme ('forum', 'unsorted', ...) is housekeeping - a re-filed or
+        # drained mis-classification, not a metabolised error. It stays in the chain but must not
+        # inflate the headline: expertise is counted on real themes only.
+        f"_Stand: Tick {tick} · "
+        f"{sum(1 for c in corrections if c.theme not in _SINK_THEMES)} korrigierte(r) "
+        f"Irrtum/Irrtümer"
+        + (f" (+{n_sink} Housekeeping in Sink-Themen)"
+           if (n_sink := sum(1 for c in corrections if c.theme in _SINK_THEMES)) else "")
+        + f" · {len(lessons)} Lehre(n)._",
         "",
     ]
     if not lessons:

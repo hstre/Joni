@@ -26,6 +26,25 @@ _VIA = re.compile(r"\bvia\s+([A-Za-z]+-\d+)")          # 'supports via C-5: ...'
 _DEAD_SUPPORT = frozenset({"rejected", "superseded"})
 
 
+def supports_map(cs) -> dict[str, int]:
+    """Live-support counts for ALL claims in one pass - same semantics as ``_supports_on`` (a
+    rejected/superseded supporter's leftover link is void; external evidence always counts).
+    ``_supports_on`` rebuilds the full evidence index per call, which is fine for a single claim
+    but quadratic when a pass asks about hundreds - bulk passes use this map instead."""
+    ev_by_id = {e.id: e for e in cs.core.all(l9.ObjectType.EVIDENCE)}
+    status = {c.id: c.status.value for c in cs.core.all(l9.ObjectType.CLAIM)}
+    out: dict[str, int] = {}
+    for el in cs.core.all(l9.ObjectType.EVIDENCE_LINK):
+        if el.relation.value not in ("supports", "contextualizes"):
+            continue
+        ev = ev_by_id.get(el.evidence_id)
+        m = _VIA.search(getattr(ev, "content", "") or "") if ev is not None else None
+        if m is not None and status.get(m.group(1)) in _DEAD_SUPPORT:
+            continue                                   # supporter was rejected/superseded - void
+        out[el.claim_id] = out.get(el.claim_id, 0) + 1
+    return out
+
+
 def _supports_on(cs, claim_id: str) -> int:
     """Count support/contextualizes links on a claim - but only from a LIVE supporter. The kernel's
     claim-reject only flips status; it leaves the EVIDENCE_LINK behind. Counting that phantom
