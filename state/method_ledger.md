@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 462 · 219 Methoden** — proposed 217 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
+**Cycle 463 · 220 Methoden** — proposed 218 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -139,6 +139,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | ELSA3D: Elastic Semantic Anchoring for Unified 3D Understanding and Generation | **proposed** | candidate | 0 | — |
 | Hierarchical Sparse Attention Done Right: Toward Infinite Context Modeling | **proposed** | candidate | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
+| Fractional action hamiltonian neural networks: Long-term memory, sequential lear | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
