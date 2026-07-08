@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 468 · 226 Methoden** — proposed 220 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 6  
+**Cycle 469 · 227 Methoden** — proposed 219 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 8  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -29,7 +29,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | LingxiDiagBench: A Multi-Agent Framework for Benchmarking LLMs in Chinese Psychi | **proposed** | candidate | 0 | — |
 | The Nexus Recursive Harmonic Framework: A Meta-Computational Ontology of Univers | **proposed** | candidate | 0 | — |
 | The Ontology of the Ground State - Pure Reflection, Shape, and Base-Free Symmetr | **proposed** | candidate | 0 | — |
-| Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **proposed** | candidate | 0 | — |
 | EventVLA: Event-Driven Visual Evidence Memory for Long-Horizon Vision-Language-A | **proposed** | candidate | 0 | — |
 | ESFRI's contribution to the planned Charter of Access for Industrial Users to Re | **proposed** | candidate | 0 | — |
 | ChartWalker: Benchmarking the Cross-Chart RAG Task | **proposed** | candidate | 0 | — |
@@ -72,7 +71,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents | **proposed** | candidate | 0 | — |
 | From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **proposed** | candidate | 0 | — |
 | The Static and Dynamic Geographical Distribution and the Spatial Construction of | **proposed** | candidate | 0 | — |
-| How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **proposed** | candidate | 0 | — |
 | Memory Models And Information Processing As Foundations Of Artificial Intelligen | **proposed** | candidate | 0 | — |
 | ResNet Architectures and Applications: A Practical Guide From Theoretical Optimi | **proposed** | candidate | 0 | — |
 | ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning | **proposed** | candidate | 0 | — |
@@ -146,6 +144,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | HunyuanOCR-1.5: Making Lightweight OCR VLMs Faster and Better | **proposed** | candidate | 0 | — |
 | SiamJEPA: On the Role of Siamese Student Encoders in JEPA | **proposed** | candidate | 0 | — |
 | recoverr: A Python package for estimating within-person recovery dynamics from b | **proposed** | candidate | 0 | — |
+| SWE-Review: Closing the Loop on Issue Resolution with Agentic Code Review | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
@@ -226,7 +225,9 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Vera: A Layered Diffusion Model for Content-Preserving Video Editing | **proposed** | candidate | 0 | — |
 | Shared Tradition, Local Network: An Interaction Model for the Lake District in L | **proposed** | candidate | 0 | — |
 | COSMOLOGICAL EQUATIONS AND EMERGENT SPACETIME FROM A COMPRESSIBLE VORTON VACUUM | **proposed** | candidate | 0 | — |
+| Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
+| How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
