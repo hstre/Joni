@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 210 korrigierte(r) Irrtum/Irrtümer · 58 Lehre(n)._
+_Stand: Tick 25 · 213 korrigierte(r) Irrtum/Irrtümer · 59 Lehre(n)._
 
 ## memory · Tiefe 9 (threshold)
 
@@ -195,6 +195,16 @@ _deterministisch:_ Auf 'sproutrag': 2 korrigierte(r) Irrtum/Irrtümer (0× erset
 - Anker: „SproutRAG organizes sentence-level chunks into progressively larger but semantically coherent units using a learned inter-sentence attention mechanism.“ → verworfen — verworfen
 - Anker: „SproutRAG utilizes hierarchical beam search to retrieve candidates at multiple granularities, enhancing relevance capture beyond flat retrieval methods.“ → verworfen — verworfen
 - _volle Spur (2):_ C-2551, C-3652
+
+## sociolugares · Tiefe 2 (threshold)
+
+**In der Theorie der sociolugares werden angenommene Annahmen über den kulturellen und sozialen Einfluss urbaner Räume verworfen.**
+
+_deterministisch:_ Auf 'sociolugares': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2× verworfen). Muster: Annahmen wurden verworfen. Anker: „Sociolugares son espacios urbanos que adquieren significado a través de prácticas sociales y dimensiones culturales.“ → verworfen (verworfen) ; „Los sociolugares son espacios urbanos que adquieren significado a través de prácticas sociales y dimensiones culturales, afectando su habitabilidad urbana.“ → verworfen (verworfen)
+
+- Anker: „Sociolugares son espacios urbanos que adquieren significado a través de prácticas sociales y dimensiones culturales.“ → verworfen — verworfen
+- Anker: „Los sociolugares son espacios urbanos que adquieren significado a través de prácticas sociales y dimensiones culturales, afectando su habitabilidad urbana.“ → verworfen — verworfen
+- _volle Spur (2):_ C-4963, C-4967
 
 ## secure-openclaw · Tiefe 2 (threshold)
 
