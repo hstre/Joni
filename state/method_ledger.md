@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 469 · 227 Methoden** — proposed 219 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 8  
+**Cycle 470 · 227 Methoden** — proposed 217 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 10  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -115,7 +115,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | A Multidimensional Cybercrime Annotation Dataset for a Closed-Access Russian–Eng | **proposed** | candidate | 0 | — |
 | Trust and Performance Data | **proposed** | candidate | 0 | — |
 | From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **proposed** | candidate | 0 | — |
-| FTC-Skystone-Dark-Angels-Romania-2020 | **proposed** | candidate | 0 | — |
 | From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **proposed** | candidate | 0 | — |
 | rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | hacking-as-a-lens | **proposed** | candidate | 0 | — |
@@ -126,7 +125,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **proposed** | candidate | 0 | — |
 | OmniOpt: Taxonomy, Geometry, and Benchmarking of Modern Optimizers | **proposed** | candidate | 0 | — |
 | KVpop -- Key-Value Cache Compression with Predictive Online Pruning | **proposed** | candidate | 0 | — |
-| Major-project-list | **proposed** | candidate | 0 | — |
 | XIN-Annotations: A Multidimensional Cybercrime Annotation Dataset for a Closed-A | **proposed** | candidate | 0 | — |
 | A Triphasic Sleep-Consolidated Neuro-Symbolic Framework for Lifelong Agent Auton | **proposed** | candidate | 0 | — |
 | Deform360: A Massive Multi-view Visuotactile Dataset for Deformable World Models | **proposed** | candidate | 0 | — |
@@ -228,6 +226,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
+| FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |
+| Major-project-list | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
