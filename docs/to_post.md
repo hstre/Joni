@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_15 offene(r) Entwurf/Entwürfe._
+_17 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -123,6 +123,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'context'? Ich sammle dazu Material 
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'context'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-466-869a32 · Vorschlag: lesswrong
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'gatemem'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-466-470c76 · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'gatemem'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________

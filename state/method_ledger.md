@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 465 · 221 Methoden** — proposed 219 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 2  
+**Cycle 466 · 223 Methoden** — proposed 218 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 5  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -141,6 +141,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
 | Fractional action hamiltonian neural networks: Long-term memory, sequential lear | **proposed** | candidate | 0 | — |
 | When Classic Cache Policies Fail: Learning-Augmented Replacement for Semantic Re | **proposed** | candidate | 0 | — |
+| claude-mem | **proposed** | candidate | 0 | — |
+| Shape matching and object recognition using shape contexts | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
@@ -159,7 +161,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agent Debate f | **proposed** | candidate | 0 | — |
 | relevant-as-a-lens | **proposed** | candidate | 0 | — |
 | RON-27 - Rete di Osservazione di Riferimento - Costruzione, Convergenza e Congel | **proposed** | candidate | 0 | — |
-| How Transparent is DiffusionGemma? | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
 | The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **proposed** | candidate | 0 | — |
 | Design and Implementation of a Multi-Protocol IoT Gateway Using PIC18 Controller | **proposed** | candidate | 0 | — |
@@ -170,7 +171,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | short-term-as-a-lens | **proposed** | candidate | 0 | — |
 | spatial-as-a-lens | **proposed** | candidate | 0 | — |
 | METHODOLOGY FOR COMPREHENSIVE DIAGNOSTICS OF MILITARY EQUIPMENT ELECTRICAL SYSTE | **proposed** | candidate | 0 | — |
-| Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **proposed** | candidate | 0 | — |
 | Usai ChromoChess: An End-to-End Pipeline for Training a Visual Chess AI | **proposed** | candidate | 0 | — |
 | Coevolutionary AI Infrastructure: Integrating Behavioral Specification and Struc | **proposed** | candidate | 0 | — |
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **proposed** | candidate | 0 | — |
@@ -181,7 +181,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Quotient-Defect Generators for Physical Field Equations: A Reduction-Quotient Fr | **proposed** | candidate | 0 | — |
 | coding-as-a-lens | **proposed** | candidate | 0 | — |
 | PREDICTIVE LEARNING ANALYTICS IN AI-BASED ADAPTIVE DIGITAL EDUCATION: A METHODOL | **proposed** | candidate | 0 | — |
-| flarum | **proposed** | candidate | 0 | — |
 | STUDYING THE TOPIC OF RESEARCHING SELECTION METHODS USING SWOT ANALYSIS | **proposed** | candidate | 0 | — |
 | Reproduction Package for the CAV 2026 submission: "SvLibChecker: A Light-Weight  | **proposed** | candidate | 0 | — |
 | Magic Realism and the Representation of Trauma and Identity in Selected Novels o | **proposed** | candidate | 0 | — |
@@ -227,3 +226,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | COSMOLOGICAL EQUATIONS AND EMERGENT SPACETIME FROM A COMPRESSIBLE VORTON VACUUM | **proposed** | candidate | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
+| How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
+| Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
+| flarum | **retired** | rejected | 0 | — |
