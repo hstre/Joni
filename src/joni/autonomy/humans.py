@@ -32,8 +32,6 @@ import hashlib
 import json
 from pathlib import Path
 
-from .homeostasis import _supports_on
-
 # The standing stance, shown on the page so the rule is visible, not buried in code.
 STANCE = ("Menschen sind eine Quelle, keine Autorität: höflich im Ton, aber genau so streng "
           "geprüft wie jede andere Quelle - aufgenommen als Kandidat, widerlegbar, nie allein "
@@ -201,11 +199,16 @@ def _open_need(cs, asked: set, *, tested: frozenset = frozenset()) -> tuple[str,
     about), and Joni must have *challenged it himself at least once* (it appears in ``tested``)
     - no carrying an unexamined token-artifact to outsiders."""
     from . import quality
+    from .homeostasis import supports_map
+    # ONE bulk pass for support counts. The per-claim helper rebuilds the full evidence index on
+    # every call; with thousands of claims this single function was measured at ~44 MINUTES per
+    # cycle on the production state - and it runs in the forum step AND the Gesprächskreis.
+    smap = supports_map(cs)
     # 1. an unsupported hypothesis - ask for evidence or a counter-argument, but only one that
     #    passed the internal adversarial pre-check (tested) and genuinely bridges claims.
     for h in sorted(cs.hypotheses(), key=lambda c: int(c.id.split("-")[-1]), reverse=True):
         derived = tuple(getattr(h, "derived_from", ()) or ())
-        if (_supports_on(cs, h.id) == 0 and h.id not in asked
+        if (smap.get(h.id, 0) == 0 and h.id not in asked
                 and quality.hypothesis_admissible(h.text)
                 and len(derived) >= 2 and h.id in tested):
             q = (f"Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente "
@@ -221,7 +224,7 @@ def _open_need(cs, asked: set, *, tested: frozenset = frozenset()) -> tuple[str,
         if key in asked or not quality.admissible_term(topic):
             continue
         claims = cs.claims_on(topic)
-        if len(claims) >= 2 and sum(_supports_on(cs, c.id) for c in claims) == 0:
+        if len(claims) >= 2 and sum(smap.get(c.id, 0) for c in claims) == 0:
             q = (f"Hat jemand gute Quellen oder Erfahrungen zu '{topic}'? Ich sammle dazu "
                  "Material und pruefe es kritisch - Widerspruch ist willkommen.")
             return key, q

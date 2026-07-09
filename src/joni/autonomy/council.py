@@ -129,16 +129,28 @@ def converse(cs, extensions: dict, proto, cycle: int = 0, *, budget=None,
     worth asking."""
     out = {"heard": 0, "conflicts": 0, "models": 0, "topic": None, "rounds": 0}
     if not enabled():
-        return out
+        return out                    # operator switched it off - deliberate, silent
     last = int(extensions.get("council_last_cycle", -10**9))
     if cycle - last < _every():
-        return out
+        return out                    # off-cadence - expected, silent
+    # From here the circle is DUE. A due circle that does not sit must SAY why - silence that
+    # looks identical to "ran fine" is the guard-liveness failure mode (panel metric 9's lesson).
+    # Either way the sitting counts against the cadence: the circle convened and adjourned.
     if _over_budget(budget):
+        extensions["council_last_cycle"] = cycle
+        proto.record(cycle, "note",
+                     "Gesprächskreis fällig, aber ausgefallen: Wochenbudget erschöpft - "
+                     f"nächster Versuch in ~{_every()} Zyklen")
         return out
     ask = ask or experts.ask_model
     asked = set(extensions.get("council_asked", []))
     need = humans._open_need(cs, asked, tested=humans._tested_set(extensions))
     if need is None:
+        extensions["council_last_cycle"] = cycle
+        proto.record(cycle, "note",
+                     "Gesprächskreis erwogen - nichts zu fragen (keine getestete ungestützte "
+                     "Hypothese, kein ausgehungertes Forschungsthema) - vertagt, nächste "
+                     f"Sitzung in ~{_every()} Zyklen")
         return out
     need_key, question = need
     topic = _topic_of(cs, need_key)
