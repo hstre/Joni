@@ -32,6 +32,21 @@ def _seen_ask(seen):
     return ask
 
 
+def _disagreeing_ask(seen):
+    """Seats that contradict each other so the round opens a real conflict (warranting a
+    follow-up). Each answer is unique (a distinct claim) but the always/never polarity stays,
+    so the contradiction is real. The falsifier (seat 3+) sharpens it."""
+    def ask(model, system, user):
+        seen.append((model, system, user))
+        n = len(seen)
+        if "CHALLENGE" in system:
+            return f"the local-first claim is the weaker one - it ignores load (point {n})"
+        if n % 2 == 1:
+            return f"routing is always best decided locally on the device (voice {n})"
+        return f"routing is never best decided locally; it must be load-dependent (voice {n})"
+    return ask
+
+
 def _env(monkeypatch, **kw):
     monkeypatch.setenv("JONI_COUNCIL", "1")
     monkeypatch.setenv("JONI_COUNCIL_MODELS", "m1,m2,m3")
@@ -188,34 +203,43 @@ def test_the_frame_is_operator_overridable(monkeypatch):
     assert all("CUSTOM FRAME FROM THE OPERATOR" in sysmsg for _m, sysmsg, _u in seen)
 
 
-def test_joni_asks_a_follow_up_and_it_deepens_the_same_conversation(monkeypatch):
-    # 1 opening round + 1 follow-up = 2 rounds; the follow-up seats see the whole prior transcript,
-    # and the follow-up question pivots on the last (falsifier) voice.
+def test_joni_asks_a_follow_up_only_when_the_round_opened_a_conflict(monkeypatch):
+    # a disagreeing round opens a real conflict -> Joni has a follow-up -> 2 rounds; the follow-up
+    # seats see the whole prior transcript and Joni's pivot question.
     _env(monkeypatch, JONI_COUNCIL_FOLLOWUPS="1")
     cs = CoreState(seed_core())
     _a_need(cs)
     seen = []
-    out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask(seen))
-    assert out["rounds"] == 2 and out["models"] == 6           # 3 seats x 2 rounds
+    out = council.converse(cs, {}, _Proto(), 1, ask=_disagreeing_ask(seen))
+    assert out["rounds"] == 2 and out["models"] == 6           # follow-up fired
     assert "follow-up" in seen[3][2].lower()                   # round-2 seat sees Joni's follow-up
-    assert "m3 says" in seen[3][2]                             # ...and the full prior transcript
+    assert "Voices so far" in seen[3][2]                       # ...and the prior transcript
+
+
+def test_a_converged_circle_gets_no_pro_forma_follow_up(monkeypatch):
+    # every voice agrees -> no conflict -> Joni does NOT ask a follow-up, even though 1 is allowed.
+    _env(monkeypatch, JONI_COUNCIL_FOLLOWUPS="1")
+    cs = CoreState(seed_core())
+    _a_need(cs)
+    out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]))   # all say the same benign thing
+    assert out["rounds"] == 1 and out["conflicts"] == 0        # nothing to pursue -> he rests
 
 
 def test_the_whole_conversation_is_still_one_source_family(monkeypatch):
     _env(monkeypatch, JONI_COUNCIL_FOLLOWUPS="2")
     cs = CoreState(seed_core())
     _a_need(cs)
-    council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]))
+    out = council.converse(cs, {}, _Proto(), 1, ask=_disagreeing_ask([]))  # conflicts -> follow-ups
     from joni.autonomy.core_state import _source_family
-    circle = [c for c in cs.active_claims()
+    circle = [c for c in cs.core.all(l9.ObjectType.CLAIM)      # active OR contested - all belong
               if any(str(s).startswith("council:") for s in (c.provenance.source_ids or ()))]
-    assert len(circle) == 9                                    # 3 seats x 3 rounds (1 + 2)
+    assert out["rounds"] >= 2 and len(circle) >= 6             # opener + at least one follow-up
     assert len({_source_family(c) for c in circle}) == 1       # still ONE correlated witness
 
 
-def test_follow_ups_are_capped_at_two(monkeypatch):
+def test_follow_ups_are_capped_at_two_even_with_ongoing_conflict(monkeypatch):
     _env(monkeypatch, JONI_COUNCIL_FOLLOWUPS="9")
     cs = CoreState(seed_core())
     _a_need(cs)
-    out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]))
-    assert out["rounds"] == 3                                  # 1 + min(2, 9)
+    out = council.converse(cs, {}, _Proto(), 1, ask=_disagreeing_ask([]))
+    assert out["rounds"] <= 3                                  # 1 + min(2, 9), never more

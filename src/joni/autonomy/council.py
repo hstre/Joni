@@ -145,28 +145,27 @@ def converse(cs, extensions: dict, proto, cycle: int = 0, *, budget=None,
     models = _models()
     out["topic"] = topic
 
-    # One CONVERSATION: an opening round plus 1-2 of Joni's own follow-ups. The whole thing is a
-    # single deliberation - every seat, every round, sees the full transcript so far, so it is one
-    # correlated witness (one source family), never independent voices. Which follow-up gets asked
-    # is a deterministic rule (pivot on the sharpest challenge), not a model's choice: rules for
-    # logic, LLM for language.
+    # One CONVERSATION: an opening round, then Joni asks a follow-up ONLY when that round left him
+    # with a real question - a contradiction it opened (unresolved tension he now holds). If the
+    # circle converged (no conflict), he lets it rest; no pro-forma "ask one more". Every seat in
+    # every round sees the full transcript, so the whole conversation stays ONE correlated witness
+    # (one source family), never independent voices. All answers share the round handle; the model
+    # id rides along as provenance. Which follow-up is asked is a deterministic pivot on the
+    # sharpest challenge - rules for logic, LLM for language; Joni never lets a model choose it.
     transcript: list[tuple[str, str]] = []   # (model, answer), across all rounds
-    stop = False
+    handle = f"r{cycle}"
+    current_q = question
     for r in range(1 + _followups()):
-        if stop:
-            break
-        current_q = question if r == 0 else _followup_question(transcript)
-        if current_q is None:
-            break
-        got_this_round = False
+        round_answers: list[tuple[str, str]] = []
         for i, model in enumerate(models):
             if _over_budget(budget):
-                stop = True
                 break
             is_last = i == len(models) - 1 and len(models) >= 3
             system = _frame() + (_FALSIFIER if is_last else _BUILDER)
+            # a seat sees the FULL conversation so far - prior rounds AND the voices already
+            # spoken in this round (the sequential relay Joni asked for).
             prior = "\n\n".join(f"[Stimme {j + 1} · {m}] {a}"
-                                for j, (m, a) in enumerate(transcript))
+                                for j, (m, a) in enumerate(transcript + round_answers))
             user = f"Question the circle is thinking about:\n{question}"
             if r > 0:
                 user += f"\n\nJoni's follow-up now:\n{current_q}"
@@ -177,25 +176,28 @@ def converse(cs, extensions: dict, proto, cycle: int = 0, *, budget=None,
                 budget.charge(_cost_per_call())
             out["models"] += 1
             if answer:
-                transcript.append((model, answer[:500]))
-                got_this_round = True
-        if got_this_round:
-            out["rounds"] += 1
+                round_answers.append((model, answer[:500]))
+        if not round_answers:
+            break
+        # persist this round's voices (one shared family), then see what tension it opened
+        for model, answer in round_answers:
+            cid = cs.hear(answer, topic, handle=handle, platform="council", origin=model)
+            out["heard"] += 1
+            proto.record(cycle, "heard",
+                         f"Gesprächskreis · {model} - heard as a source ({cid}), not an authority")
+        transcript.extend(round_answers)
+        out["rounds"] += 1
+        opened = cs.detect_and_open_conflicts()
+        out["conflicts"] += len(opened)
+        # Joni follows up ONLY if this round gave him a real question: a contradiction to pursue.
+        if not opened:
+            break
+        current_q = _followup_question(transcript)
+        if current_q is None or _over_budget(budget):
+            break
 
     if not transcript:
         return out
-
-    # All answers of THIS round share one source family (platform:handle) so the deliberation
-    # counts as one correlated witness, never N independent ones; the model id rides along as
-    # provenance for the audit trail. Entered as plain SOURCEs through the normal gate.
-    handle = f"r{cycle}"
-    for model, answer in transcript:
-        cid = cs.hear(answer, topic, handle=handle, platform="council", origin=model)
-        out["heard"] += 1
-        proto.record(cycle, "heard",
-                     f"Gesprächskreis · {model} - heard as a source ({cid}), not an authority")
-    opened = cs.detect_and_open_conflicts()
-    out["conflicts"] = len(opened)
 
     asked.add(need_key)
     extensions["council_asked"] = sorted(asked)[-500:]
