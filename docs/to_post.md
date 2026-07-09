@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_21 offene(r) Entwurf/Entwürfe._
+_23 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -171,6 +171,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'publication'? Ich sammle dazu Mater
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'publication'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-482-5c4160 · Vorschlag: reddit
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'cognition'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-482-1defd1 · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'cognition'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________

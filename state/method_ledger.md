@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 481 · 231 Methoden** — proposed 197 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 34  
+**Cycle 482 · 233 Methoden** — proposed 198 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 35  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -148,6 +148,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Co-LMLM: Continuous-Query Limited Memory Language Models | **proposed** | candidate | 0 | — |
 | The Key to Going Linear: Analysis-Driven Transformer Linearization | **proposed** | candidate | 0 | — |
+| Sparse Delta Memory: Scaling the State of Linear RNNs through Sparsity | **proposed** | candidate | 0 | — |
+| Automating the Design of Embodied Agent Architectures | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
@@ -174,7 +176,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | loss-as-a-lens | **proposed** | candidate | 0 | — |
 | $\Theta$-Control: Memory as a Control Resource | **proposed** | candidate | 0 | — |
 | redesign-as-a-lens | **proposed** | candidate | 0 | — |
-| PerceptionDLM: Parallel Region Perception with Multimodal Diffusion Language Mod | **proposed** | candidate | 0 | — |
 | WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents | **proposed** | candidate | 0 | — |
 | embodied-as-a-lens | **proposed** | candidate | 0 | — |
 | GateMem: Benchmarking Memory Governance in Multi-Principal Shared-Memory Agents | **proposed** | candidate | 0 | — |
@@ -237,3 +238,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **retired** | rejected | 0 | — |
 | From Perception to Cognition: Distinguishing World Models and Worldviews in Huma | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
+| PerceptionDLM: Parallel Region Perception with Multimodal Diffusion Language Mod | **retired** | rejected | 0 | — |
