@@ -35,6 +35,7 @@ def _seen_ask(seen):
 def _env(monkeypatch, **kw):
     monkeypatch.setenv("JONI_COUNCIL", "1")
     monkeypatch.setenv("JONI_COUNCIL_MODELS", "m1,m2,m3")
+    monkeypatch.setenv("JONI_COUNCIL_FOLLOWUPS", "0")   # tests opt into follow-ups explicitly
     for k, v in kw.items():
         monkeypatch.setenv(k, v)
 
@@ -44,7 +45,7 @@ def test_disabled_is_a_no_op(monkeypatch):
     cs = CoreState(seed_core())
     _a_need(cs)
     out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]))
-    assert out == {"heard": 0, "conflicts": 0, "models": 0, "topic": None}
+    assert out == {"heard": 0, "conflicts": 0, "models": 0, "topic": None, "rounds": 0}
 
 
 def test_the_relay_shows_each_seat_the_prior_answers(monkeypatch):
@@ -161,3 +162,60 @@ def test_answers_enter_as_candidate_sources_never_authoritative(monkeypatch):
     assert circle
     for c in circle:
         assert c.authority.value != "authoritative"          # a source, never an authority
+
+
+def test_every_seat_is_told_who_joni_is(monkeypatch):
+    # a cheap model must be given the frame - who is asking and why - not just its role.
+    _env(monkeypatch)
+    cs = CoreState(seed_core())
+    _a_need(cs)
+    seen = []
+    council.converse(cs, {}, _Proto(), 1, ask=_seen_ask(seen))
+    for _model, system, _user in seen:
+        assert "JONI" in system                              # who is asking
+        assert "Alexandria" in system or "Layer-9" in system  # what is behind him
+        assert "source, never an authority" in system        # the stance
+    # the role still follows the frame
+    assert "ADD" in seen[0][1] and "CHALLENGE" in seen[-1][1]
+
+
+def test_the_frame_is_operator_overridable(monkeypatch):
+    _env(monkeypatch, JONI_COUNCIL_FRAME="CUSTOM FRAME FROM THE OPERATOR. ")
+    cs = CoreState(seed_core())
+    _a_need(cs)
+    seen = []
+    council.converse(cs, {}, _Proto(), 1, ask=_seen_ask(seen))
+    assert all("CUSTOM FRAME FROM THE OPERATOR" in sysmsg for _m, sysmsg, _u in seen)
+
+
+def test_joni_asks_a_follow_up_and_it_deepens_the_same_conversation(monkeypatch):
+    # 1 opening round + 1 follow-up = 2 rounds; the follow-up seats see the whole prior transcript,
+    # and the follow-up question pivots on the last (falsifier) voice.
+    _env(monkeypatch, JONI_COUNCIL_FOLLOWUPS="1")
+    cs = CoreState(seed_core())
+    _a_need(cs)
+    seen = []
+    out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask(seen))
+    assert out["rounds"] == 2 and out["models"] == 6           # 3 seats x 2 rounds
+    assert "follow-up" in seen[3][2].lower()                   # round-2 seat sees Joni's follow-up
+    assert "m3 says" in seen[3][2]                             # ...and the full prior transcript
+
+
+def test_the_whole_conversation_is_still_one_source_family(monkeypatch):
+    _env(monkeypatch, JONI_COUNCIL_FOLLOWUPS="2")
+    cs = CoreState(seed_core())
+    _a_need(cs)
+    council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]))
+    from joni.autonomy.core_state import _source_family
+    circle = [c for c in cs.active_claims()
+              if any(str(s).startswith("council:") for s in (c.provenance.source_ids or ()))]
+    assert len(circle) == 9                                    # 3 seats x 3 rounds (1 + 2)
+    assert len({_source_family(c) for c in circle}) == 1       # still ONE correlated witness
+
+
+def test_follow_ups_are_capped_at_two(monkeypatch):
+    _env(monkeypatch, JONI_COUNCIL_FOLLOWUPS="9")
+    cs = CoreState(seed_core())
+    _a_need(cs)
+    out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]))
+    assert out["rounds"] == 3                                  # 1 + min(2, 9)
