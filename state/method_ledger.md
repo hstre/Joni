@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 473 · 227 Methoden** — proposed 214 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 13  
+**Cycle 474 · 227 Methoden** — proposed 212 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 15  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -149,8 +149,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
-| Configurable Clinical Information Extraction with Agentic RAG: What Works, What  | **proposed** | candidate | 0 | — |
-| High-Resolution Daily PM2.5 Dataset for the Contiguous US (2005–2021) | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
@@ -229,6 +227,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | JURI | **retired** | rejected | 0 | — |
 | JanusMesh: Fast and Zero-Shot 3D Visual Illusion Generation via Cross-Space Deno | **retired** | rejected | 0 | — |
 | Context-Aware RL for Agentic and Multimodal LLMs | **retired** | rejected | 0 | — |
+| Configurable Clinical Information Extraction with Agentic RAG: What Works, What  | **retired** | rejected | 0 | — |
+| High-Resolution Daily PM2.5 Dataset for the Contiguous US (2005–2021) | **retired** | rejected | 0 | — |
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
 | flarum | **retired** | rejected | 0 | — |
