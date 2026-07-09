@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 480 · 231 Methoden** — proposed 201 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 30  
+**Cycle 481 · 231 Methoden** — proposed 197 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 34  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -167,10 +167,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | spatial-as-a-lens | **proposed** | candidate | 0 | — |
 | Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detecti | **proposed** | candidate | 0 | — |
 | coding-as-a-lens | **proposed** | candidate | 0 | — |
-| Magic Realism and the Representation of Trauma and Identity in Selected Novels o | **proposed** | candidate | 0 | — |
-| Anywhere and here: zcreative a toolkit for distributed control | **proposed** | candidate | 0 | — |
-| The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **proposed** | candidate | 0 | — |
-| From Perception to Cognition: Distinguishing World Models and Worldviews in Huma | **proposed** | candidate | 0 | — |
 | usage-as-a-lens | **proposed** | candidate | 0 | — |
 | reads-as-a-lens | **proposed** | candidate | 0 | — |
 | Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detecti | **proposed** | candidate | 0 | — |
@@ -236,4 +232,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | flarum | **retired** | rejected | 0 | — |
 | STUDYING THE TOPIC OF RESEARCHING SELECTION METHODS USING SWOT ANALYSIS | **retired** | rejected | 0 | — |
 | Reproduction Package for the CAV 2026 submission: "SvLibChecker: A Light-Weight  | **retired** | rejected | 0 | — |
+| Magic Realism and the Representation of Trauma and Identity in Selected Novels o | **retired** | rejected | 0 | — |
+| Anywhere and here: zcreative a toolkit for distributed control | **retired** | rejected | 0 | — |
+| The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **retired** | rejected | 0 | — |
+| From Perception to Cognition: Distinguishing World Models and Worldviews in Huma | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
