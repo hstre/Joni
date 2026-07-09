@@ -28,6 +28,7 @@ from . import (
     commission,
     conflict_resolution,
     core_state,
+    council,
     desi_semantics,
     develop,
     doktores,
@@ -428,6 +429,13 @@ def one_cycle() -> dict:
     #     core, never self-applied - for a human-gated Claude session to implement. Doktores' own
     #     orders (from the 4c-doktores literature/tool review) are filed through the same channel.
     commissions_new = commission.assess(cs, extensions, proto, cycle) + doktores_new
+
+    # 4i-council. Der Gesprächskreis: a small sequential circle of LLMs in place of the public
+    #     forum - each seat sees the prior answers, the last one falsifies (Popper). A
+    #     developmental stage BEFORE the open forum: a controlled peer circle, gated and cheap.
+    #     Answers enter as SOURCEs sharing one correlated family (never N independent voices).
+    council.converse(cs, extensions, proto, cycle,
+                     budget=budget, runs_per_week=runs_per_week())
 
     # 4i. Humans & forums: Joni may talk to people and register on forums - but a person is a
     #     SOURCE, not an authority. Replies come in through cs.hear (candidate, conflict-checked,
