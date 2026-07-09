@@ -118,6 +118,14 @@ jobs:
           JONI_KEVIN_LLM: "1"
           JONI_KEVIN_EVERY: "3"       # at most one creative proposal every 3 cycles (bounds spend)
           JONI_DOKTORES: "1"
+          # Der Gesprächskreis: a small sequential circle of cheap LLMs in place of the public
+          # forum - a developmental stage before the open crowd. Each seat sees the prior answers,
+          # the last one falsifies (Popper). Answers enter as ONE correlated source family, never
+          # independent corroboration. Opt-in; cadence + budget bounded; routed via the broker.
+          JONI_COUNCIL: "1"
+          JONI_COUNCIL_EVERY: "6"     # one circle every ~6 cycles
+          # cheap, heterogeneous seats via OpenRouter (need not be high-end for a young mind)
+          JONI_COUNCIL_MODELS: "meta-llama/llama-3.1-8b-instruct,qwen/qwen-2.5-7b-instruct,google/gemma-2-9b-it"
           # Semantic proposal layer ON: the pinned models read sources and *propose* candidate
           # claims through the Layer-9 gate (never authoritative). Granite 4.1 8B for structured
           # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard, also used

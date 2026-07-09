@@ -91,6 +91,30 @@ def _experts() -> list[dict]:
     ]
 
 
+def ask_model(model: str, system: str, user: str, *, temperature: float = 0.4,
+              base_url: str = "https://openrouter.ai/api/v1",
+              key_env: str = "OPENROUTER_API_KEY", timeout: int = 25) -> str | None:
+    """A generic OpenAI-compatible call for an arbitrary model slug, through THIS broker.
+
+    The Gesprächskreis (``council``) needs to talk to configurable cheap models, but the egress
+    gate (docs/EGRESS_GATE.md) allows a raw ``openai`` import only in a broker module. Rather than
+    add a second raw egress path, the circle routes its calls through here. Best-effort: None on
+    any failure (a silent voice simply abstains), so a broken model never breaks the loop."""
+    key = os.getenv(key_env)
+    if not key:
+        return None
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=key, base_url=base_url, timeout=timeout)
+        resp = client.chat.completions.create(
+            model=model, temperature=temperature,
+            messages=[{"role": "system", "content": system},
+                      {"role": "user", "content": user}])
+        return (resp.choices[0].message.content or "").strip() or None
+    except Exception:  # noqa: BLE001 - best-effort; an unreachable voice abstains
+        return None
+
+
 def _ask(expert: dict, system: str, user: str, *, temperature: float = 0.3) -> str | None:
     """One OpenAI-compatible call. The single network seam (tests monkeypatch this). Returns the
     text, or None on any error - a panel is best-effort; an unreachable voice simply abstains."""
