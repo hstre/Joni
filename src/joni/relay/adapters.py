@@ -119,6 +119,13 @@ class MoltbookAdapter(ForumAdapter):
             raise NotReady(f"moltbook: HTTP {e.code} {body}".strip()) from e
         except urllib.error.URLError as e:          # network error -> not posted, retry later
             raise NotReady(f"moltbook: {e.reason}") from e
+        except (TimeoutError, OSError, ValueError) as e:
+            # A read timeout surfaces as TimeoutError/OSError (NOT URLError) from r.read(), and a
+            # 200 with a non-JSON body makes json.loads raise JSONDecodeError (a ValueError).
+            # Neither is a URLError, so without this they would propagate out of the cycle -
+            # _post_live only catches NotReady - and kill an otherwise good cycle before _finish.
+            # Treat both as "not posted, retry later", exactly like any other transient failure.
+            raise NotReady(f"moltbook: {type(e).__name__}: {e}"[:180]) from e
         # Success body nests the created post: {"success": true, "post": {"id": "...", ...}}.
         # Fall back to a flat id for forward-compat. The public web post-view URL pattern isn't
         # documented, so the post id is the durable reference we can always capture.

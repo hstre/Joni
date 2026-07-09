@@ -45,6 +45,27 @@ def supports_map(cs) -> dict[str, int]:
     return out
 
 
+class _SupportView:
+    """A live-support view for a pass that reads many claims and may reject some as it goes.
+
+    It holds one bulk ``supports_map`` and rebuilds it only after a mutation (``invalidate``),
+    instead of the old ``_supports_on``-per-claim (which rebuilt the whole evidence index on every
+    single read - the quadratic sink measured at minutes per cycle). Results are identical to the
+    per-call version: between two rejects the state - and therefore every claim's support - is
+    unchanged, so a cached read equals a fresh one; after a reject the map is rebuilt, so a voided
+    supporter is reflected exactly as ``_supports_on`` would have seen it."""
+
+    def __init__(self, cs):
+        self._cs = cs
+        self._map = supports_map(cs)
+
+    def get(self, claim_id: str) -> int:
+        return self._map.get(claim_id, 0)
+
+    def invalidate(self) -> None:
+        self._map = supports_map(self._cs)
+
+
 def _supports_on(cs, claim_id: str) -> int:
     """Count support/contextualizes links on a claim - but only from a LIVE supporter. The kernel's
     claim-reject only flips status; it leaves the EVIDENCE_LINK behind. Counting that phantom
@@ -113,6 +134,7 @@ def retire_offdomain_topics(cs, extensions: dict, proto, cycle: int = 0, *,
     seen: set[str] = set()
     checked = retired = 0
     drained: list[str] = []
+    sup = _SupportView(cs)
     for c in cs.active_claims():
         if retired >= max_retire:
             break
@@ -127,12 +149,13 @@ def retire_offdomain_topics(cs, extensions: dict, proto, cycle: int = 0, *,
             if quality.on_domain(t):           # on-domain: cache so we never re-embed it
                 cache.add(t)
                 continue
-        if _supports_on(cs, c.id) > 0:          # off-domain, but a supported idea is kept
+        if sup.get(c.id) > 0:                    # off-domain, but a supported idea is kept
             continue
         try:
             cs.reject_claim(c.id)
         except Exception:  # noqa: BLE001
             continue
+        sup.invalidate()                         # a reject can void another claim's support
         retired += 1
         if t not in drained:
             drained.append(t)
@@ -159,6 +182,7 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
 
     out = {"pruned": 0, "contradicted": 0, "barren": 0, "over_cap": 0}
     pruned_ids: set[str] = set()
+    sup = _SupportView(cs)
 
     # 1. shed genuinely dead ideas - only on *objective* grounds (no support AND a real reason
     #    to give up). Kevin's "thin" verdict is advisory and deliberately NOT a reason here: an
@@ -167,7 +191,7 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
     for h in sorted(hyps, key=lambda c: int(c.id.split("-")[-1])):
         if out["pruned"] >= max_prune:
             break
-        if _supports_on(cs, h.id) > 0:
+        if sup.get(h.id) > 0:
             continue                                   # it earned something - keep it
         reason = None
         if _hard_conflicted(cs, h.id):
@@ -176,6 +200,7 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
             reason = "barren"                          # had many chances, earned nothing
         if reason:
             cs.reject_claim(h.id)
+            sup.invalidate()                           # a reject can void another claim's support
             pruned_ids.add(h.id)
             out["pruned"] += 1
             out[reason] += 1
@@ -190,7 +215,9 @@ def regulate(cs, extensions: dict, proto, cycle: int = 0, *, max_live_hypotheses
     remaining = [h for h in hyps if h.id not in pruned_ids]
     need = len(remaining) - max_live_hypotheses
     if need > 0:
-        shed_able = sorted((h for h in remaining if _supports_on(cs, h.id) == 0),
+        if pruned_ids:
+            sup.invalidate()                           # phase 1 may have shed supporters
+        shed_able = sorted((h for h in remaining if sup.get(h.id) == 0),
                            key=lambda c: int(c.id.split("-")[-1]))
         for h in shed_able[:need]:
             if out["pruned"] >= max_prune + max_live_hypotheses:
@@ -213,16 +240,18 @@ def retire_junk_topics(cs, extensions: dict, proto, cycle: int = 0, *, max_retir
     from . import quality
     retired = 0
     topics: list[str] = []
+    sup = _SupportView(cs)
     for c in cs.active_claims():
         if retired >= max_retire:
             break
         t = getattr(c, "topic", None)
-        if not t or quality.is_good_topic(t) or _supports_on(cs, c.id) > 0:
+        if not t or quality.is_good_topic(t) or sup.get(c.id) > 0:
             continue
         try:
             cs.reject_claim(c.id)
         except Exception:  # noqa: BLE001 - a stubborn claim must never break the cycle
             continue
+        sup.invalidate()                             # a reject can void another claim's support
         retired += 1
         if t not in topics:
             topics.append(t)
@@ -271,6 +300,7 @@ def retire_orphan_topic_trackers(cs, extensions: dict, proto, cycle: int = 0, *,
             by_topic.setdefault(t, []).append(c)
     retired = 0
     drained: list[str] = []
+    sup = _SupportView(cs)
     for t, claims in sorted(by_topic.items()):
         if retired >= max_retire:
             break
@@ -281,12 +311,13 @@ def retire_orphan_topic_trackers(cs, extensions: dict, proto, cycle: int = 0, *,
             continue                            # not emerge's bookkeeping: a real claim, keep it
         if t in minted and cycle - int(minted[t]) < grace:
             continue                            # a fresh, gate-approved mint: let it try to grow
-        if _supports_on(cs, c.id) > 0:
+        if sup.get(c.id) > 0:
             continue                            # it earned something - its topic is real enough
         try:
             cs.reject_claim(c.id)
         except Exception:  # noqa: BLE001 - a stubborn claim must never break the cycle
             continue
+        sup.invalidate()                        # a reject can void another claim's support
         retired += 1
         drained.append(t)
     if drained:
@@ -306,10 +337,11 @@ def retire_junk_hypotheses(cs, extensions: dict, proto, cycle: int = 0,
     ok = set(extensions.get("hyp_domain_ok", []))
     retired = 0
     ids: list[str] = []
+    sup = _SupportView(cs)
     for h in cs.hypotheses():
         if retired >= max_retire:
             break
-        if h.id in ok or _supports_on(cs, h.id) > 0:
+        if h.id in ok or sup.get(h.id) > 0:
             continue
         if quality.hypothesis_admissible(h.text):
             ok.add(h.id)                       # substantive + on-domain: keep, don't re-check
@@ -319,6 +351,7 @@ def retire_junk_hypotheses(cs, extensions: dict, proto, cycle: int = 0,
         except Exception:  # noqa: BLE001 - a stubborn hypothesis must never break the cycle
             ok.add(h.id)
             continue
+        sup.invalidate()                       # a reject can void another claim's support
         retired += 1
         ids.append(h.id)
     extensions["hyp_domain_ok"] = sorted(ok)[-4000:]
@@ -404,7 +437,8 @@ def vitality(cs, extensions: dict, proto, cycle: int = 0) -> dict:
 
     # degeneration signals: a swelling unsupported backlog, or a long stagnation, or bloat
     # with no development.
-    unsupported = sum(1 for h in cs.hypotheses() if _supports_on(cs, h.id) == 0)
+    smap = supports_map(cs)   # one bulk pass, not _supports_on per hypothesis (read-only here)
+    unsupported = sum(1 for h in cs.hypotheses() if smap.get(h.id, 0) == 0)
     degeneration = (1 if unsupported > 25 else 0) + (1 if stagnation >= 12 else 0) + \
         (1 if (d_objects > 30 and development == 0) else 0)
 

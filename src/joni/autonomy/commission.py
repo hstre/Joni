@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import desi_layer9 as l9
 
-from .homeostasis import _supports_on
+from .homeostasis import supports_map
 
 # Modules Claude may extend *without* touching protected logic: (description, risk note).
 # This map is the non-core boundary - a commission can only target a key that lives here.
@@ -147,6 +147,7 @@ def _unqualified_conflicts(cs, vit: dict, cycle: int) -> dict | None:
 def _starved_topic(cs, vit: dict, cycle: int) -> dict | None:
     """A topic Joni keeps hypothesising on but for which his sources return nothing usable -
     ask to extend the reading layer so the ideas can be tested instead of going barren."""
+    smap = supports_map(cs)   # one bulk pass, not _supports_on per hypothesis (read-only here)
     by_topic: dict[str, list] = {}
     for h in cs.hypotheses():                           # candidate claims, not in claims_on()
         topic = getattr(h, "topic", None)
@@ -156,7 +157,7 @@ def _starved_topic(cs, vit: dict, cycle: int) -> dict | None:
         topic_hyps = by_topic[topic]
         if len(topic_hyps) < _STARVED_MIN_HYPS:
             continue
-        if sum(_supports_on(cs, h.id) for h in topic_hyps) > 0:
+        if sum(smap.get(h.id, 0) for h in topic_hyps) > 0:
             continue                                    # something fed it - not starved
         return _commission(
             "starved_topic", "reader-sources", cycle=cycle,

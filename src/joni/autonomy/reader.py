@@ -25,7 +25,11 @@ def starved_topics(cs, *, min_hyps: int = 1) -> list[str]:
     These are exactly the ideas that go barren (the ``starved_topic`` commission). Surfacing
     them lets the cycle put them at the front of the query list so their material is actually
     fetched, instead of falling off the capped query set."""
-    from .homeostasis import _supports_on  # local import: avoid an import cycle
+    from .homeostasis import supports_map  # local import: avoid an import cycle
+    # One bulk support pass instead of _supports_on per hypothesis: this runs every cycle over
+    # every hypothesis and was the single biggest per-cycle CPU sink (~200s on the production
+    # state - the same quadratic _supports_on-in-a-loop pattern fixed in humans._open_need).
+    smap = supports_map(cs)
     by_topic: dict[str, list] = {}
     for h in cs.hypotheses():
         topic = getattr(h, "topic", None)
@@ -33,7 +37,7 @@ def starved_topics(cs, *, min_hyps: int = 1) -> list[str]:
             by_topic.setdefault(topic, []).append(h)
     starved = []
     for topic, hyps in by_topic.items():
-        if len(hyps) >= min_hyps and sum(_supports_on(cs, h.id) for h in hyps) == 0:
+        if len(hyps) >= min_hyps and sum(smap.get(h.id, 0) for h in hyps) == 0:
             starved.append(topic)
     return starved
 
