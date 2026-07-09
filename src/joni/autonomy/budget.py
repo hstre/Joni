@@ -9,6 +9,7 @@ one run cannot burn the whole week.
 
 from __future__ import annotations
 
+import contextlib
 import json
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
@@ -35,6 +36,15 @@ class Budget:
 
     def charge(self, amount: float) -> None:
         self.spent_eur = round(self.spent_eur + amount, 6)
+        # Persist the spend IMMEDIATELY, not only at end-of-cycle _finish: a cycle that pays a
+        # provider (DeepSeek/panel/council) and then crashes before _finish used to lose the
+        # charge, so repeated crashes-after-spend could silently overrun the weekly cap. Writing
+        # spent_eur through at charge time closes that hole. Best-effort: a write error must never
+        # break the network seam that just spent the money (the end-of-cycle save still runs).
+        path = getattr(self, "_persist_path", None)
+        if path is not None:
+            with contextlib.suppress(OSError):
+                save(self, path)
 
 
 def _now() -> datetime:
@@ -52,6 +62,7 @@ def load(path: Path, *, cap_eur: float) -> Budget:
     start = datetime.fromisoformat(b.week_start)
     if _now() - start > timedelta(days=7):
         b = Budget(week_start=_now().isoformat(), spent_eur=0.0, runs=0, cap_eur=cap_eur)
+    b._persist_path = path   # so charge() can write the spend through immediately (see charge)
     return b
 
 
