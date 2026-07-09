@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 475 · 227 Methoden** — proposed 209 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 18  
+**Cycle 476 · 228 Methoden** — proposed 209 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 19  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -143,6 +143,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | SiamJEPA: On the Role of Siamese Student Encoders in JEPA | **proposed** | candidate | 0 | — |
 | recoverr: A Python package for estimating within-person recovery dynamics from b | **proposed** | candidate | 0 | — |
 | SWE-Review: Closing the Loop on Issue Resolution with Agentic Code Review | **proposed** | candidate | 0 | — |
+| Dual Latent Memory in Vision-Language-Action Models for Robotic Manipulation | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
@@ -155,7 +156,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
 | relevant-as-a-lens | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
-| Design and Implementation of a Multi-Protocol IoT Gateway Using PIC18 Controller | **proposed** | candidate | 0 | — |
 | Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **proposed** | candidate | 0 | — |
 | A Formal C-Based Simulation Framework for Comparative Analysis of Paging and Seg | **proposed** | candidate | 0 | — |
 | One to Three-Day Lead Streamflow Forecast Using Multi-Head Attention with Long S | **proposed** | candidate | 0 | — |
@@ -230,6 +230,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | RON-27 - Rete di Osservazione di Riferimento - Costruzione, Convergenza e Congel | **retired** | rejected | 0 | — |
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **retired** | rejected | 0 | — |
+| Design and Implementation of a Multi-Protocol IoT Gateway Using PIC18 Controller | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
 | flarum | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
