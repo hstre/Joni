@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 476 · 228 Methoden** — proposed 209 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 19  
+**Cycle 477 · 229 Methoden** — proposed 208 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 21  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -144,6 +144,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | recoverr: A Python package for estimating within-person recovery dynamics from b | **proposed** | candidate | 0 | — |
 | SWE-Review: Closing the Loop on Issue Resolution with Agentic Code Review | **proposed** | candidate | 0 | — |
 | Dual Latent Memory in Vision-Language-Action Models for Robotic Manipulation | **proposed** | candidate | 0 | — |
+| RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Gener | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
@@ -162,8 +163,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | retrieval-as-a-lens | **proposed** | candidate | 0 | — |
 | short-term-as-a-lens | **proposed** | candidate | 0 | — |
 | spatial-as-a-lens | **proposed** | candidate | 0 | — |
-| METHODOLOGY FOR COMPREHENSIVE DIAGNOSTICS OF MILITARY EQUIPMENT ELECTRICAL SYSTE | **proposed** | candidate | 0 | — |
-| Usai ChromoChess: An End-to-End Pipeline for Training a Visual Chess AI | **proposed** | candidate | 0 | — |
 | Coevolutionary AI Infrastructure: Integrating Behavioral Specification and Struc | **proposed** | candidate | 0 | — |
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **proposed** | candidate | 0 | — |
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **proposed** | candidate | 0 | — |
@@ -231,6 +230,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **retired** | rejected | 0 | — |
 | Design and Implementation of a Multi-Protocol IoT Gateway Using PIC18 Controller | **retired** | rejected | 0 | — |
+| METHODOLOGY FOR COMPREHENSIVE DIAGNOSTICS OF MILITARY EQUIPMENT ELECTRICAL SYSTE | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
+| Usai ChromoChess: An End-to-End Pipeline for Training a Visual Chess AI | **retired** | rejected | 0 | — |
 | flarum | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |

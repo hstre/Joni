@@ -8,19 +8,6 @@ als SUPERSEDED (Nachfolger = Gewinner) und die Persona lernt „X → Y, weil �
 
 _5 entscheidbare(r) Konflikt(e)._
 
-## X-49 · Thema: forum
-
-- **C-857** (0 stützend · 1 Kontext): FORMAL INTERVALS, MODAL BOUNDARIES, AND THE DISCIPLINE OF SUBTYPING: a critical–propositional analysis of A Theory of Higher-Order Subtyping with Type Intervals, by Sandro Stucki and Paolo G. Giarrusso, in confrontation with the Theory of Objectivity
-  - _Quelle:_ zenodo:20775617
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-862: The analysis examines how formal intervals and modal boundaries are treated within the discipline of subtyping.
-- **C-859** (0 stützend · 0 Kontext): Sandro Stucki and Paolo G. Giarrusso published a Theory of Higher-Order Subtyping with Type Intervals in 2021 in the Proceedings of the ACM on Programming Languages.
-  - _Quelle:_ granite:joni-c138:372c05e06d58
-- _Evidenzlage (C-857 vs C-859): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-49 | <gewinner: C-857 oder C-859> | <grund>
-```
-
 ## X-89 · Thema: forum
 
 - **C-1586** (0 stützend · 3 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
@@ -73,5 +60,18 @@ X-122 | <gewinner: C-1776 oder C-1778> | <grund>
 
 ```
 X-121 | <gewinner: C-1775 oder C-1778> | <grund>
+```
+
+## X-113 · Thema: forum
+
+- **C-1701** (0 stützend · 1 Kontext): No section of the WorldLines paper presents memory-to-plan translation as an independently necessary challenge for embodied agents outside the context of its partial observability framework.
+  - _Quelle:_ deepseek:joni-c260:cfa603e81868
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2096: The WorldLines paper introduces memory-to-plan translation exclusively within its framework for handling partial observability, never as a standalone challenge for all embod
+- **C-2335** (0 stützend · 0 Kontext): Memory-to-plan translation is treated in the WorldLines paper as an engineered solution specific to handling partial observability and overwritten states, rather than a universal challenge for all embodied agents.
+  - _Quelle:_ granite:joni-c307:a10e2dd209cc
+- _Evidenzlage (C-1701 vs C-2335): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-113 | <gewinner: C-1701 oder C-2335> | <grund>
 ```
 
