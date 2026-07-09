@@ -1,0 +1,24 @@
+```json
+[
+  {
+    "text": "The DocKG v0.4.6 release, dated 2026-07-09, lowers the default embedding batch size to prevent memory exhaustion on Apple Silicon and CPU for large knowledge graph builds.",
+    "topic": "DocKG v0.4.6 release"
+  },
+  {
+    "text": "The per-call encode batch used inside Embedder.embed_texts, SentenceTransformerEmbedder.embed_texts, and related functions is now bounded by default to manage memory usage.",
+    "topic": "Embedding batch size change"
+  },
+  {
+    "text": "Knowledge graph builds over corpora with long text chunks will now complete instead of stalling or being killed by the operating system due to the reduced batch size.",
+    "topic": "Impact on long text corpora"
+  },
+  {
+    "text": "The patch addresses memory issues specifically on Apple Silicon and CPU platforms, which were causing large builds to exhaust available memory.",
+    "topic": "Platform-specific memory improvements"
+  },
+  {
+    "text": "The release notes indicate that this change is crucial for users building knowledge graphs with extensive text data on the mentioned hardware.",
+    "topic": "User impact and relevance"
+  }
+]
+```

@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 371 korrigierte(r) Irrtum/Irrtümer (+826 Housekeeping in Sink-Themen) · 321 Lehre(n)._
+_Stand: Tick 25 · 385 korrigierte(r) Irrtum/Irrtümer (+861 Housekeeping in Sink-Themen) · 332 Lehre(n)._
 
 ## memory · Tiefe 9 (threshold)
 
@@ -47,6 +47,16 @@ _deterministisch:_ Auf 'researchstudio-reel': 4 korrigierte(r) Irrtum/Irrtümer 
 - Anker: „ResearchStudio-Reel extracts the source paper into a shared bundle that can be utilized by multiple downstream processing skills.“ → verworfen — verworfen
 - Anker: „ResearchStudio-Reel integrates generated poster, video, and blog content into a single HTML viewer with clickable sections that navigate to corresponding parts of each artifact.“ → verworfen — verworfen
 - _volle Spur (4):_ C-4699, C-4700, C-4701, C-4702
+
+## experiments · Tiefe 4 (threshold)
+
+**Systematische Experimente ersetzen Intuition bei der Gestaltung von agierenden Architekturen und verbessern die Handhabung temporärer Abhängigkeiten in Roboter-Manipulation.**
+
+_deterministisch:_ Auf 'experiments': 4 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 4× verworfen). Muster: Annahmen wurden verworfen. Anker: „Agents perform experiments on less-explored parts of the codebase during discovery sessions.“ → verworfen (verworfen) ; „Recent literature observes that embodied agent architectures are typically hand-designed, with researchers relying on intuition rather than systematic experimentation to determine how information is stored and observations processed. Mainstream VLA models for robotic manipulation assume a Markovian process, using only the current observation to predict actions, which leads to difficulties with long-horizon, temporally dependent tasks. Existing memory-augmented VLA methods either expand the observation window or retrieve history from an external memory bank.“ → verworfen (verworfen)
+
+- Anker: „Agents perform experiments on less-explored parts of the codebase during discovery sessions.“ → verworfen — verworfen
+- Anker: „Recent literature observes that embodied agent architectures are typically hand-designed, with researchers relying on intuition rather than systematic experimentation to determine how information is stored and observations processed. Mainstream VLA models for robotic manipulation assume a Markovian process, using only the current observation to predict actions, which leads to difficulties with long-horizon, temporally dependent tasks. Existing memory-augmented VLA methods either expand the observation window or retrieve history from an external memory bank.“ → verworfen — verworfen
+- _volle Spur (4):_ C-527, C-5383, C-5704, C-5705
 
 ## announcements · Tiefe 4 (threshold)
 
@@ -351,6 +361,15 @@ _deterministisch:_ Auf 'relevant': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetz
 - Anker: „'relevant' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-583
 
+## process · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen, um den Prozess korrekt zu verfolgen.**
+
+_deterministisch:_ Auf 'process': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'process' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'process' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-5745
+
 ## potential · Tiefe 1 (self_review)
 
 **Identifiziere und verwende nur die tatsächlichen Belege für 'potential', verwerfe anekdotische Annahmen.**
@@ -378,9 +397,101 @@ _deterministisch:_ Auf 'openclaw': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetz
 - Anker: „'openclaw' keeps recurring across 7 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-305
 
+## nature · Tiefe 1 (self_review)
+
+**Nehmen Sie Annahmen über die Wiederkehr von "nature" in Ihren Themen kritisch zur Kenntnis und verwerfen Sie sie, um ein klareres Verständnis zu gewährleisten.**
+
+_deterministisch:_ Auf 'nature': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'nature' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'nature' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-4038
+
+## multi-turn · Tiefe 1 (self_review)
+
+**Bei wiederkehrenden Themen sollten angenommene Annahmen überprüft und gegebenenfalls verworfen werden.**
+
+_deterministisch:_ Auf 'multi-turn': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'multi-turn' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'multi-turn' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-1547
+
+## multi-objective · Tiefe 1 (self_review)
+
+**Bei der Behandlung mehrerer Ziele sollten angenommene Annahmen verworfen werden, um die Genauigkeit zu gewährleisten.**
+
+_deterministisch:_ Auf 'multi-objective': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'multi-objective' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'multi-objective' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-1150
+
+## moments · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen, wenn "moments" in mehreren Themen wiederkehrt, um es als eigenständiges Thema zu behandeln.**
+
+_deterministisch:_ Auf 'moments': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'moments' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'moments' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-4234
+
+## modules · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen über die Wiederkehr von 'modules' als eigenständiges Thema, um die Genauigkeit zu gewährleisten.**
+
+_deterministisch:_ Auf 'modules': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'modules' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'modules' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-1187
+
+## module · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen über das wiederkehrende Thema 'module' und behandle es als eigenständiges Thema.**
+
+_deterministisch:_ Auf 'module': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'module' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'module' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-515
+
+## modeling · Tiefe 1 (self_review)
+
+**Belege konkrete Irrtümer durch das Zurückweisen von Annahmen, um das Thema 'modeling' klar zu definieren.**
+
+_deterministisch:_ Auf 'modeling': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'modeling' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'modeling' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-431
+
+## mind · Tiefe 1 (self_review)
+
+**Die Annahmen über den 'mind' wurden verworfen, daher sollte er als eigenständiges Thema unabhängig von anderen behalten werden.**
+
+_deterministisch:_ Auf 'mind': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mind' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'mind' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-4087
+
+## metal · Tiefe 1 (self_review)
+
+**Metal als eigenständiges Thema verfolgen, indem wiederkehrende Annahmen verworfen werden.**
+
+_deterministisch:_ Auf 'metal': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'metal' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'metal' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-3264
+
+## mentions · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen über wiederkehrende Begriffe, um genaue Themenverfolgung zu gewährleisten.**
+
+_deterministisch:_ Auf 'mentions': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mentions' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'mentions' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-4477
+
 ## mentioned · Tiefe 1 (self_review)
 
-**Auf 'mentioned': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mentioned' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfe Annahmen, wenn "mentioned" in mehreren Themen wiederkehrt.**
+
+_deterministisch:_ Auf 'mentioned': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mentioned' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'mentioned' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-871
@@ -396,35 +507,45 @@ _deterministisch:_ Auf 'memorywam+paradlc-bench': 1 korrigierte(r) Irrtum/Irrtü
 
 ## memory-dependent · Tiefe 1 (self_review)
 
-**Auf 'memory-dependent': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'memory-dependent' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfen von Annahmen, um 'memory-dependent' als eigenständiges Thema zu behandeln.**
+
+_deterministisch:_ Auf 'memory-dependent': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'memory-dependent' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'memory-dependent' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-633
 
 ## medication · Tiefe 1 (self_review)
 
-**Auf 'medication': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'medication' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfe Annahmen über die Häufigkeit von "medication" und behandle es als eigenständiges Thema nur nach direkter Bestätigung.**
+
+_deterministisch:_ Auf 'medication': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'medication' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'medication' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-720
 
 ## media · Tiefe 1 (self_review)
 
-**Auf 'media': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'media' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfen von Annahmen über die Bedeutung von 'media' als eigenständiges Thema, da es sich lediglich um wiederkehrende Verweise handelt.**
+
+_deterministisch:_ Auf 'media': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'media' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'media' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-4557
 
 ## mechanisms · Tiefe 1 (self_review)
 
-**Auf 'mechanisms': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mechanisms' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfen von Annahmen über die Wiederkehr von 'mechanisms' als eigenständiges Thema, um die Genauigkeit zu gewährleisten.**
+
+_deterministisch:_ Auf 'mechanisms': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mechanisms' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'mechanisms' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-855
 
 ## mechanism · Tiefe 1 (self_review)
 
-**Auf 'mechanism': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mechanism' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfen von Annahmen über die Wiederkehr von 'mechanism' als eigenständiges Thema, um die Analyse zu präzisieren.**
+
+_deterministisch:_ Auf 'mechanism': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'mechanism' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'mechanism' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-419
@@ -440,98 +561,126 @@ _deterministisch:_ Auf 'measure': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt
 
 ## manipulation · Tiefe 1 (self_review)
 
-**Auf 'manipulation': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'manipulation' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Manipulation erfordert die Zurückweisung von Annahmen, um genaue Verfolgung zu gewährleisten.**
+
+_deterministisch:_ Auf 'manipulation': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'manipulation' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'manipulation' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-615
 
 ## management · Tiefe 1 (self_review)
 
-**Auf 'management': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'management' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Management erfordert die Verwerfung von Annahmen, um genaue Themenverfolgung zu gewährleisten.**
+
+_deterministisch:_ Auf 'management': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'management' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'management' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-694
 
 ## making · Tiefe 1 (self_review)
 
-**Auf 'making': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'making' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Belege Annahmen, um 'making' als eigenständiges Thema zu validieren.**
+
+_deterministisch:_ Auf 'making': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'making' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'making' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1177
 
 ## maintains · Tiefe 1 (self_review)
 
-**Auf 'maintains': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'maintains' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Beobachte 'maintains' sorgfältig, um veraltete Annahmen zu identifizieren und zu eliminieren.**
+
+_deterministisch:_ Auf 'maintains': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'maintains' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'maintains' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1545
 
 ## maintaining · Tiefe 1 (self_review)
 
-**Auf 'maintaining': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'maintaining' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Belege Annahmen, um das Verständnis von 'maintaining' zu verbessern.**
+
+_deterministisch:_ Auf 'maintaining': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'maintaining' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'maintaining' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1247
 
 ## loss · Tiefe 1 (self_review)
 
-**Auf 'loss': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'loss' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfe Annahmen, wenn "loss" in mehreren Themen wiederkehrt.**
+
+_deterministisch:_ Auf 'loss': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'loss' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'loss' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1185
 
 ## loops · Tiefe 1 (self_review)
 
-**Auf 'loops': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'loops' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfen von Annahmen über die Bedeutung von wiederkehrenden Begriffen wie 'loops' zur eigenen Themenverfolgung.**
+
+_deterministisch:_ Auf 'loops': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'loops' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'loops' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-4327
 
 ## long-term · Tiefe 1 (self_review)
 
-**Auf 'long-term': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'long-term' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Belege langfristige Annahmen, um irrelevante Muster zu verwerfen.**
+
+_deterministisch:_ Auf 'long-term': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'long-term' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'long-term' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-429
 
 ## long-range · Tiefe 1 (self_review)
 
-**Auf 'long-range': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'long-range' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfe Annahmen, wenn "long-range" in zwei Themen wiederkehrt, um es als eigenständiges Thema zu behandeln.**
+
+_deterministisch:_ Auf 'long-range': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'long-range' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'long-range' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-4161
 
 ## long-horizon · Tiefe 1 (self_review)
 
-**Auf 'long-horizon': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'long-horizon' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfe Annahmen, um das 'long-horizon'-Thema als eigenständiges Thema zu behandeln.**
+
+_deterministisch:_ Auf 'long-horizon': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'long-horizon' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'long-horizon' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1501
 
 ## localized · Tiefe 1 (self_review)
 
-**Auf 'localized': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'localized' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfen von Annahmen, um 'localized' als eigenständiges Thema zu bestätigen.**
+
+_deterministisch:_ Auf 'localized': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'localized' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'localized' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-2237
 
 ## local · Tiefe 1 (self_review)
 
-**Auf 'local': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'local' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfe Annahmen über die Relevanz von "local", um die Genauigkeit der Themenverfolgung zu gewährleisten.**
+
+_deterministisch:_ Auf 'local': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'local' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'local' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-281
 
 ## living · Tiefe 1 (self_review)
 
-**Auf 'living': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'living' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Belege Annahmen, um 'living' als eigenständiges Thema zu etablieren.**
+
+_deterministisch:_ Auf 'living': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'living' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'living' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-3354
 
 ## literary · Tiefe 1 (self_review)
 
-**Auf 'literary': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'literary' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Verwerfe Annahmen, die 'literary' als eigenständiges Thema rechtfertigen.**
+
+_deterministisch:_ Auf 'literary': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'literary' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'literary' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1175
@@ -664,7 +813,9 @@ _deterministisch:_ Auf 'journal': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt
 
 ## jointly · Tiefe 1 (self_review)
 
-**Auf 'jointly': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'jointly' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Beobachte 'jointly' sorgfältig, um veraltete Annahmen zu identifizieren und zu eliminieren.**
+
+_deterministisch:_ Auf 'jointly': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'jointly' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'jointly' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-2235
@@ -716,7 +867,9 @@ _deterministisch:_ Auf 'introduced': 1 korrigierte(r) Irrtum/Irrtümer (0× erse
 
 ## interpretation · Tiefe 1 (self_review)
 
-**Auf 'interpretation': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'interpretation' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Interpretation erfordert die Zurückweisung von Annahmen, um Fehler zu korrigieren.**
+
+_deterministisch:_ Auf 'interpretation': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'interpretation' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'interpretation' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1173
@@ -1444,15 +1597,6 @@ _deterministisch:_ Auf 'explicit': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetz
 
 - Anker: „'explicit' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-764
-
-## experiments · Tiefe 1 (self_review)
-
-**Verwerfe Annahmen, um die Genauigkeit von Experimenten zu verbessern.**
-
-_deterministisch:_ Auf 'experiments': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'experiments' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
-
-- Anker: „'experiments' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
-- _volle Spur (1):_ C-527
 
 ## experiences · Tiefe 1 (self_review)
 
@@ -2635,7 +2779,9 @@ _deterministisch:_ Auf 'autonomous': 1 korrigierte(r) Irrtum/Irrtümer (0× erse
 
 ## attention+publication · Tiefe 1 (self_review)
 
-**Auf 'attention+publication': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'The journal Milliy Turkiston devoted considerable attention to the history of Turkestan's art and music.' (from attention) might also apply to publication.“ → verworfen (verworfen)**
+**Verwerfen von Annahmen, um das Muster zwischen Aufmerksamkeit und Veröffentlichung zu klären.**
+
+_deterministisch:_ Auf 'attention+publication': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'The journal Milliy Turkiston devoted considerable attention to the history of Turkestan's art and music.' (from attention) might also apply to publication.“ → verworfen (verworfen)
 
 - Anker: „Hypothesis: the pattern behind 'The journal Milliy Turkiston devoted considerable attention to the history of Turkestan's art and music.' (from attention) might also apply to publication.“ → verworfen — verworfen
 - _volle Spur (1):_ C-5580
@@ -2669,7 +2815,9 @@ _deterministisch:_ Auf 'atlast': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt,
 
 ## assessment · Tiefe 1 (self_review)
 
-**Auf 'assessment': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'assessment' keeps recurring across 4 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)**
+**Bei der Bewertung (Assessment) werden wiederholte Annahmen verworfen, um genaue Ergebnisse zu gewährleisten.**
+
+_deterministisch:_ Auf 'assessment': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'assessment' keeps recurring across 4 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
 
 - Anker: „'assessment' keeps recurring across 4 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-5691
