@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 483 · 233 Methoden** — proposed 198 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 35  
+**Cycle 484 · 233 Methoden** — proposed 197 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -183,7 +183,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | converts-as-a-lens | **proposed** | candidate | 0 | — |
 | appearance-as-a-lens | **proposed** | candidate | 0 | — |
 | No Resource, No Benchmarks, No Problem? Evaluating and Improving LLMs for Code G | **proposed** | candidate | 0 | — |
-| Benchmark of quantum algorithms for ground state preparation in the presence of  | **proposed** | candidate | 0 | — |
 | Failure is a Moving Target: Subspace Drift Theory and the Dynamics of Evolving F | **proposed** | candidate | 0 | — |
 | SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for Long-Doc | **proposed** | candidate | 0 | — |
 | Drift-free Visual SLAM using Digital Twins | **proposed** | candidate | 0 | — |
@@ -239,3 +238,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | From Perception to Cognition: Distinguishing World Models and Worldviews in Huma | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
 | PerceptionDLM: Parallel Region Perception with Multimodal Diffusion Language Mod | **retired** | rejected | 0 | — |
+| Benchmark of quantum algorithms for ground state preparation in the presence of  | **retired** | rejected | 0 | — |
