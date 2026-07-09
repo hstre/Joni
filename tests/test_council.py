@@ -143,15 +143,23 @@ def test_budget_stops_the_circle(monkeypatch):
 
         def charge(self, a):
             self.spent_eur += a
-    out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]), budget=_Budget())
+    proto = _Proto()
+    out = council.converse(cs, {}, proto, 1, ask=_seen_ask([]), budget=_Budget())
     assert out["heard"] == 0                                  # over cap -> no calls
+    assert any(k == "note" and "Wochenbudget" in msg for k, msg in proto.events)  # said why
 
 
-def test_nothing_to_ask_is_a_clean_no_op(monkeypatch):
+def test_a_due_circle_with_nothing_to_ask_says_so_and_adjourns(monkeypatch):
+    # silence that looks identical to "ran fine" is the guard-liveness failure mode: a DUE
+    # circle that does not sit must say why, and the sitting counts against the cadence.
     _env(monkeypatch)
     cs = CoreState(seed_core())                               # no starved topic, no hypothesis
-    out = council.converse(cs, {}, _Proto(), 1, ask=_seen_ask([]))
+    ext: dict = {}
+    proto = _Proto()
+    out = council.converse(cs, ext, proto, 7, ask=_seen_ask([]))
     assert out["heard"] == 0 and out["topic"] is None
+    assert any(k == "note" and "nichts zu fragen" in msg for k, msg in proto.events)
+    assert ext["council_last_cycle"] == 7                     # convened and adjourned
 
 
 def test_a_dead_model_voice_is_simply_absent(monkeypatch):
