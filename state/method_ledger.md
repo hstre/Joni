@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 478 · 229 Methoden** — proposed 205 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 24  
+**Cycle 479 · 231 Methoden** — proposed 204 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 27  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -146,6 +146,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Dual Latent Memory in Vision-Language-Action Models for Robotic Manipulation | **proposed** | candidate | 0 | — |
 | RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Gener | **proposed** | candidate | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
+| Co-LMLM: Continuous-Query Limited Memory Language Models | **proposed** | candidate | 0 | — |
+| The Key to Going Linear: Analysis-Driven Transformer Linearization | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
@@ -163,10 +165,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | retrieval-as-a-lens | **proposed** | candidate | 0 | — |
 | short-term-as-a-lens | **proposed** | candidate | 0 | — |
 | spatial-as-a-lens | **proposed** | candidate | 0 | — |
-| The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **proposed** | candidate | 0 | — |
-| Youth safeguarding Public Benefit program proposal | **proposed** | candidate | 0 | — |
 | Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detecti | **proposed** | candidate | 0 | — |
-| Quotient-Defect Generators for Physical Field Equations: A Reduction-Quotient Fr | **proposed** | candidate | 0 | — |
 | coding-as-a-lens | **proposed** | candidate | 0 | — |
 | PREDICTIVE LEARNING ANALYTICS IN AI-BASED ADAPTIVE DIGITAL EDUCATION: A METHODOL | **proposed** | candidate | 0 | — |
 | STUDYING THE TOPIC OF RESEARCHING SELECTION METHODS USING SWOT ANALYSIS | **proposed** | candidate | 0 | — |
@@ -233,5 +232,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Coevolutionary AI Infrastructure: Integrating Behavioral Specification and Struc | **retired** | rejected | 0 | — |
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **retired** | rejected | 0 | — |
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **retired** | rejected | 0 | — |
+| The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **retired** | rejected | 0 | — |
+| Youth safeguarding Public Benefit program proposal | **retired** | rejected | 0 | — |
+| Quotient-Defect Generators for Physical Field Equations: A Reduction-Quotient Fr | **retired** | rejected | 0 | — |
 | flarum | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
