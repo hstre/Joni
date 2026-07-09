@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 474 · 227 Methoden** — proposed 212 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 15  
+**Cycle 475 · 227 Methoden** — proposed 209 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 18  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -153,11 +153,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
-| LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agent Debate f | **proposed** | candidate | 0 | — |
 | relevant-as-a-lens | **proposed** | candidate | 0 | — |
-| RON-27 - Rete di Osservazione di Riferimento - Costruzione, Convergenza e Congel | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
-| The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **proposed** | candidate | 0 | — |
 | Design and Implementation of a Multi-Protocol IoT Gateway Using PIC18 Controller | **proposed** | candidate | 0 | — |
 | Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **proposed** | candidate | 0 | — |
 | A Formal C-Based Simulation Framework for Comparative Analysis of Paging and Seg | **proposed** | candidate | 0 | — |
@@ -229,7 +226,10 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Context-Aware RL for Agentic and Multimodal LLMs | **retired** | rejected | 0 | — |
 | Configurable Clinical Information Extraction with Agentic RAG: What Works, What  | **retired** | rejected | 0 | — |
 | High-Resolution Daily PM2.5 Dataset for the Contiguous US (2005–2021) | **retired** | rejected | 0 | — |
+| LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agent Debate f | **retired** | rejected | 0 | — |
+| RON-27 - Rete di Osservazione di Riferimento - Costruzione, Convergenza e Congel | **retired** | rejected | 0 | — |
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
+| The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
 | flarum | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
