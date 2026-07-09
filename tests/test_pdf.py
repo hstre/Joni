@@ -6,6 +6,19 @@ from joni.autonomy.core_state import CoreState, seed_core
 from joni.autonomy.pdf import PdfText
 
 
+def test_fetch_refuses_non_public_and_non_http_urls():
+    # SSRF guard: only http(s) URLs that resolve to a PUBLIC address may be fetched.
+    assert pdf._is_safe_url("https://arxiv.org/pdf/2401.00001") is True
+    assert pdf._is_safe_url("http://localhost:8000/x.pdf") is False        # loopback
+    assert pdf._is_safe_url("http://127.0.0.1/x.pdf") is False             # loopback ip
+    assert pdf._is_safe_url("http://169.254.169.254/latest/meta-data") is False  # cloud metadata
+    assert pdf._is_safe_url("http://10.0.0.5/x.pdf") is False              # private
+    assert pdf._is_safe_url("file:///etc/passwd") is False                 # not http(s)
+    assert pdf._is_safe_url("ftp://example.com/x") is False
+    # a blocked url never reaches the network - _fetch returns None without opening a connection
+    assert pdf._fetch("http://127.0.0.1/x.pdf") is None
+
+
 class _Proto:
     def __init__(self):
         self.events = []

