@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 479 · 231 Methoden** — proposed 204 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 27  
+**Cycle 480 · 231 Methoden** — proposed 201 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 30  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -167,9 +167,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | spatial-as-a-lens | **proposed** | candidate | 0 | — |
 | Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detecti | **proposed** | candidate | 0 | — |
 | coding-as-a-lens | **proposed** | candidate | 0 | — |
-| PREDICTIVE LEARNING ANALYTICS IN AI-BASED ADAPTIVE DIGITAL EDUCATION: A METHODOL | **proposed** | candidate | 0 | — |
-| STUDYING THE TOPIC OF RESEARCHING SELECTION METHODS USING SWOT ANALYSIS | **proposed** | candidate | 0 | — |
-| Reproduction Package for the CAV 2026 submission: "SvLibChecker: A Light-Weight  | **proposed** | candidate | 0 | — |
 | Magic Realism and the Representation of Trauma and Identity in Selected Novels o | **proposed** | candidate | 0 | — |
 | Anywhere and here: zcreative a toolkit for distributed control | **proposed** | candidate | 0 | — |
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **proposed** | candidate | 0 | — |
@@ -235,5 +232,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **retired** | rejected | 0 | — |
 | Youth safeguarding Public Benefit program proposal | **retired** | rejected | 0 | — |
 | Quotient-Defect Generators for Physical Field Equations: A Reduction-Quotient Fr | **retired** | rejected | 0 | — |
+| PREDICTIVE LEARNING ANALYTICS IN AI-BASED ADAPTIVE DIGITAL EDUCATION: A METHODOL | **retired** | rejected | 0 | — |
 | flarum | **retired** | rejected | 0 | — |
+| STUDYING THE TOPIC OF RESEARCHING SELECTION METHODS USING SWOT ANALYSIS | **retired** | rejected | 0 | — |
+| Reproduction Package for the CAV 2026 submission: "SvLibChecker: A Light-Weight  | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
