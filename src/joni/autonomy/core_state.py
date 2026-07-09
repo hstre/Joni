@@ -438,8 +438,8 @@ class CoreState:
         #     tokenised thousands of times. Precomputing per-claim token/content/polarity (the SAME
         #     conflict.py primitives, reused - no logic duplicated) cut this from ~82s to ~13s/cycle
         #     (measured, identical opened set). The residual ~13s is the 5.5M-pair loop itself in
-        #     that one giant 'forum' bucket; shrinking it further needs incremental (new-claims-only)
-        #     comparison, which is a separate, semantics-sensitive change - not done here.
+        #     that one giant 'forum' bucket; shrinking it further needs an incremental
+        #     (new-claims-only) pass, a separate semantics-sensitive change - not done here.
         # Buckets preserve id order (live is id-sorted), so within a bucket a.id < b.id as before.
         by_topic: dict[str, list] = {}
         for c in live:
