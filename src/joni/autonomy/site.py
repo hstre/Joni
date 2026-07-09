@@ -27,6 +27,17 @@ def build(data: dict) -> str:
     def esc(x) -> str:
         return html.escape(str(x))
 
+    def safe_url(x) -> str:
+        """HTML-escape a URL AND allow only safe schemes for an href. Source URLs come from
+        external feeds (arXiv/OpenAlex/forum metadata), so a ``javascript:`` (or ``data:``) URL
+        would be clickable script on the public page - reject anything but http(s), a site-relative
+        path, or a fragment, falling back to '#'."""
+        s = str(x or "#").strip()
+        low = s.lower()
+        if low.startswith(("http://", "https://", "/", "#")):
+            return html.escape(s)
+        return "#"
+
     rows = "\n".join(
         f"<tr><td class=ts>{esc(e.get('ts',''))}</td><td>c{esc(e.get('cycle',''))}</td>"
         f"<td><span class='k k-{esc(e.get('kind',''))}'>{esc(e.get('kind',''))}</span></td>"
@@ -156,7 +167,7 @@ def build(data: dict) -> str:
     for entry in reversed(dok_log[-8:]):
         src = esc(entry.get("source", "?"))
         ttl = esc(entry.get("title", "")) or "—"
-        url = esc(entry.get("url", "") or "#")
+        url = safe_url(entry.get("url", ""))
         if entry.get("applicable"):
             tag = (f"<span class=chip style='background:var(--good);color:#06210f'>✓ Auftrag → "
                    f"{esc(entry.get('component_key',''))}</span>")
@@ -275,7 +286,7 @@ def build(data: dict) -> str:
     added = "".join(f"<span class='pill add'>{esc(t)}</span>"
                     for t in ext.get("topics_added", [])) or "<span class=empty>none yet</span>"
     notes = "".join(f"<li>{esc(n.get('note',''))} "
-                    f"<span class=src>(<a href='{esc(n.get('source','#'))}'>src</a>)</span></li>"
+                    f"<span class=src>(<a href='{safe_url(n.get('source'))}'>src</a>)</span></li>"
                     for n in ext.get("notes", [])) or "<li class=empty>none yet</li>"
     spent_pct = (b["spent_eur"] / b["cap_eur"] * 100) if b.get("cap_eur") else 0
     lr = s.get("last_route")

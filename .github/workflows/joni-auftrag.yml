@@ -79,6 +79,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hstre/DESi
+          ref: b87b9fecc199ebca10cd8c1e2a8765f3603d8b55   # pinned (see autonomy.yml rationale)
           path: _desi
 
       - uses: actions/setup-python@v5
@@ -144,27 +145,53 @@ jobs:
           set -e
           issue="${{ steps.pick.outputs.issue }}"
           repo="$GITHUB_REPOSITORY"
-          # Find the PR Claude opened for this Auftrag (it references the issue in its body).
+          # Find the PR Claude opened for this Auftrag. Require an explicit "Closes #<issue>" (the
+          # builder prompt asks for exactly that) so a stray PR that merely mentions the number in
+          # prose is never picked up.
           pr=$(gh pr list --repo "$repo" --state open --json number,body,createdAt \
-                --jq "map(select(.body | test(\"#${issue}\"))) | sort_by(.createdAt) | last | .number // empty")
+                --jq "map(select(.body | test(\"[Cc]loses #${issue}\\\\b\"))) | sort_by(.createdAt) | last | .number // empty")
           if [ -z "$pr" ]; then
             echo "no PR opened (Claude likely routed this to the human core-ask path) - nothing to merge"
             exit 0
           fi
-          head=$(gh pr view "$pr" --repo "$repo" --json headRefName --jq .headRefName)
-          echo "verifying PR #$pr ($head) before auto-merge"
-          # GITHUB_TOKEN-opened PRs do NOT trigger ci.yml, so run the very same checks here, on
-          # the PR head: ruff + pytest (what ci.yml runs) plus the protected-core fail-safe.
-          git fetch origin "$head"
-          git checkout "$head"
+          # Provenance + integrity. Read the exact head SHA and whether the PR comes from a fork.
+          meta=$(gh pr view "$pr" --repo "$repo" --json headRefName,headRefOid,isCrossRepository)
+          head=$(echo "$meta" | jq -r .headRefName)
+          sha=$(echo "$meta" | jq -r .headRefOid)
+          cross=$(echo "$meta" | jq -r .isCrossRepository)
+          # 1. A fork PR must never auto-merge: it would let anyone open a PR that runs (and merges)
+          #    code into a job holding the API-key secrets. An Auftrag PR is a branch in THIS repo.
+          if [ "$cross" = "true" ]; then
+            gh pr comment "$pr" --repo "$repo" --body "Auto-merge refused: this PR comes from a fork. An Auftrag PR must be a branch in this repository - a human should review it."
+            echo "cross-repo PR #$pr - refusing to auto-merge"; exit 1
+          fi
+          git fetch origin main "$sha"
+          # 2. Diff gate. An Auftrag is NON-CORE *by definition*; the "hard rules" in the builder
+          #    prompt are only natural language. Enforce them here: refuse to auto-merge any diff
+          #    that touches the protected core lock, the Layer-9 kernel, the workflows, the
+          #    packaging, or the helper scripts - regardless of what the (LLM-authored) issue asked.
+          #    Only a human may change those paths.
+          bad=$(git diff --name-only "origin/main...$sha" \
+                | grep -E '^(joni_core\.lock|\.github/|scripts/|pyproject\.toml|src/desi_layer9/)' || true)
+          if [ -n "$bad" ]; then
+            gh pr comment "$pr" --repo "$repo" --body "Auto-merge refused: this PR changes protected paths ($(echo $bad | tr '\n' ' ')). An Auftrag is non-core only; core/CI/packaging changes need a human."
+            echo "PR #$pr touches protected paths - refusing:"; echo "$bad"; exit 1
+          fi
+          echo "verifying PR #$pr ($head @ $sha) before auto-merge"
+          # GITHUB_TOKEN-opened PRs do NOT trigger ci.yml, so run the very same checks here, on the
+          # EXACT head SHA (not the branch name - so verification and merge cannot target different
+          # commits): ruff + pytest (what ci.yml runs) plus the protected-core fail-safe.
+          git checkout "$sha"
           python -m pip install -e ".[dev,llm,pdf,embed]" >/dev/null 2>&1 || true
           ok=1
           python -m ruff check . || ok=0
           python -m pytest -q || ok=0
           python -m joni.autonomy verify || ok=0
           if [ "$ok" = "1" ]; then
-            gh pr merge "$pr" --repo "$repo" --squash --delete-branch
-            echo "auto-merged PR #$pr - Joni's non-core extension is live; the issue auto-closes"
+            # --match-head-commit pins the merge to the verified SHA: if the branch moved since,
+            # the merge fails closed rather than merging unreviewed code.
+            gh pr merge "$pr" --repo "$repo" --squash --delete-branch --match-head-commit "$sha"
+            echo "auto-merged PR #$pr @ $sha - Joni's non-core extension is live; the issue auto-closes"
           else
             gh pr comment "$pr" --repo "$repo" --body "Auto-merge held: the checks (ruff / pytest / \`joni.autonomy verify\`) are not green on this branch, so it was **not** merged. A human should review and fix it."
             gh issue comment "$issue" --repo "$repo" --body "The auto-build opened PR #$pr but its checks did not pass, so it was not auto-merged. A human needs to look."

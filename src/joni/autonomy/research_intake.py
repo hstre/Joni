@@ -120,6 +120,16 @@ def _ingest_one(cs, pkg: dict, proto, cycle: int, paths, heard: list) -> dict:
     return {"candidates": candidates, "conflicts": conflicts, "published": bool(published)}
 
 
+def _safe_stem(pid: str) -> str:
+    """A filesystem-safe file stem from a package id. The ``id`` field comes from Doktores'
+    (LLM-driven) output over external sources, so a crafted id like ``../../docs/index`` must not
+    escape the research dir: keep only word chars / dash / dot, drop any path separators and
+    leading dots, and cap the length. ``pid`` itself is unchanged as a dedup key - only the
+    on-disk name is sanitised."""
+    stem = re.sub(r"[^\w.-]", "-", pid).lstrip(".-")[:80]
+    return stem or "package"
+
+
 def _archive_publication(pkg: dict, pid: str, verdict: str, confidence, paths) -> str:
     """Write the publication artifact under docs/research/. Returns its kind, or '' if none."""
     pub = pkg.get("publication")
@@ -137,8 +147,11 @@ def _archive_publication(pkg: dict, pid: str, verdict: str, confidence, paths) -
             f"> **Adversarial-reviewer verdict:** {verdict} · **internal confidence:** "
             f"{confidence}\n"
             f"> **Kind:** {kind} · **package:** `{pid}`\n\n---\n\n")
-        (out_dir / f"{pid}.md").write_text(header + str(pub.get("markdown", "")),
-                                           encoding="utf-8")
+        out_path = out_dir / f"{_safe_stem(pid)}.md"
+        # Defence in depth: even after sanitising, refuse to write outside the research dir.
+        if out_dir.resolve() not in out_path.resolve().parents:
+            return ""
+        out_path.write_text(header + str(pub.get("markdown", "")), encoding="utf-8")
     return kind
 
 

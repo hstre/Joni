@@ -47,6 +47,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hstre/DESi
+          # Pinned to an IMMUTABLE commit, like the Kevin dependency: an UNpinned default-branch
+          # checkout means anyone who can push to DESi runs code inside this secret-bearing job.
+          # Bump this SHA deliberately when Joni should pick up new DESi work.
+          ref: b87b9fecc199ebca10cd8c1e2a8765f3603d8b55
           path: _desi
       - uses: actions/setup-python@v5
         with:
