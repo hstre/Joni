@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 489 · 234 Methoden** — proposed 198 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
+**Cycle 490 · 235 Methoden** — proposed 199 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -151,6 +151,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Sparse Delta Memory: Scaling the State of Linear RNNs through Sparsity | **proposed** | candidate | 0 | — |
 | Automating the Design of Embodied Agent Architectures | **proposed** | candidate | 0 | — |
 | Token-Based Dual-view Fusion and Adaptation of Large Vision Models for Breast Ca | **proposed** | candidate | 0 | — |
+| divergence-as-a-lens | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
