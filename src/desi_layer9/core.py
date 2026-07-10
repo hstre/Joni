@@ -229,6 +229,14 @@ class Layer9:
         return [copy.deepcopy(o) for o in self._objects.values()
                 if o.object_type is object_type]
 
+    def count(self, object_type: ObjectType | None = None) -> int:
+        """How many objects (optionally of one type) the store holds - a cheap size read that does
+        NOT deep-copy. Use this instead of ``len(store.objects)``: the ``objects`` property copies
+        the ENTIRE store on every access (protection), which at production size costs seconds."""
+        if object_type is None:
+            return len(self._objects)
+        return sum(1 for o in self._objects.values() if o.object_type is object_type)
+
     def _all(self, object_type: ObjectType) -> list:
         """INTERNAL read (no copy) - the gate/handlers only read or mutate via ``_objects``."""
         return [o for o in self._objects.values() if o.object_type is object_type]

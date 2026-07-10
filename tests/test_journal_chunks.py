@@ -99,6 +99,31 @@ def test_a_tampered_chunk_fails_the_seal(monkeypatch, tmp_path):
         pass                                              # hash/chain verification caught it
 
 
+def test_an_interrupted_save_leaves_a_recoverable_tail(monkeypatch, tmp_path):
+    # save writes the tail chunk, THEN the head, both atomically. A crash in between leaves extra,
+    # uncommitted entries in the tail; the head is the commit point, so load must drop the excess
+    # and recover the last committed state - never crash (the old code raised on any count mismatch,
+    # which then made repair() re-raise -> crash-on-load off-CI).
+    state = _grown_state()
+    p = tmp_path / "layer9.json"
+    _save(state, p, 10, monkeypatch)
+    committed = snapshot_hash(persistence.load(p, verify=True))
+    tail = json.loads(p.read_text())["journal_chunks"]["files"][-1]["name"]
+    tail_fp = tmp_path / "layer9.journal" / tail
+    with open(tail_fp, "a", encoding="utf-8") as fh:
+        fh.write('{"uncommitted": "an entry from an interrupted save"}\n')
+        fh.write('a torn, non-json trailing line\n')          # beyond recorded count, never parsed
+    reloaded = persistence.load(p, verify=True)               # must NOT raise, must recover
+    assert reloaded is not None and snapshot_hash(reloaded) == committed
+
+
+def test_count_is_a_cheap_size_read_without_a_deep_copy(monkeypatch, tmp_path):
+    import desi_layer9 as l9
+    state = _grown_state(6)
+    assert state.count() == sum(len(state.all(t)) for t in l9.ObjectType)   # total
+    assert state.count(l9.ObjectType.CLAIM) == len(state.all(l9.ObjectType.CLAIM))   # by type
+
+
 def test_compaction_shrinks_and_prunes_stale_chunks(monkeypatch, tmp_path):
     # a compacted (smaller) journal rewrites its chunks and drops leftover higher ones
     state = _grown_state(25)
