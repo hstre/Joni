@@ -10,43 +10,40 @@ _5 entscheidbare(r) Konflikt(e)._
 
 ## X-297 · Thema: memory
 
-- **C-5817** (0 stützend · 3 Kontext): The challenge of translating long-term memory into embodied plans is defined within WorldLines as a method to handle partial observability, not as a standalone problem.
+- **C-5817** (0 stützend · 2 Kontext): The challenge of translating long-term memory into embodied plans is defined within WorldLines as a method to handle partial observability, not as a standalone problem.
   - _Quelle:_ deepseek:joni-c259:2e76283ed615
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
   - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2040: WorldLines defines memory-to-plan translation as the concrete algorithmic process it uses to map long-term memory into actionable plans under partial observability, not as a
   - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2096: The WorldLines paper introduces memory-to-plan translation exclusively within its framework for handling partial observability, never as a standalone challenge for all embod
 - **C-5874** (0 stützend · 0 Kontext): Partial observability, overwritten world states, and translating long-term memory into embodied plans are ongoing challenges in AI systems.
   - _Quelle:_ granite:joni-c228:1486b31244e8
-- _Evidenzlage (C-5817 vs C-5874): Belege 3 vs 0 · Quellfamilien 3 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+- _Evidenzlage (C-5817 vs C-5874): Belege 2 vs 0 · Quellfamilien 2 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
 
 ```
 X-297 | <gewinner: C-5817 oder C-5874> | <grund>
 ```
 
-## X-313 · Thema: memory
+## X-317 · Thema: benchmarking+integration
 
-- **C-5891** (0 stützend · 0 Kontext): WorldLines addresses translating long-term memory into embodied plans to solve partial observability and overwritten world states.
-  - _Quelle:_ granite:joni-c250:9abb40b5bfa2
-- **C-5893** (0 stützend · 1 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
-  - _Quelle:_ deepseek:joni-c250:a74cc83ae851
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
-- _Evidenzlage (C-5891 vs C-5893): Belege 0 vs 1 · Quellfamilien 0 vs 1 · Provenienz Modell/selbst vs Modell/selbst_
-
-```
-X-313 | <gewinner: C-5891 oder C-5893> | <grund>
-```
-
-## X-307 · Thema: memory
-
-- **C-5873** (0 stützend · 0 Kontext): Partial observability, overwritten world states, and translating long-term memory into embodied plans remain persistent challenges in current AI systems.
-  - _Quelle:_ granite:joni-c227:703bc9f2be24
-- **C-5893** (0 stützend · 1 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
-  - _Quelle:_ deepseek:joni-c250:a74cc83ae851
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
-- _Evidenzlage (C-5873 vs C-5893): Belege 0 vs 1 · Quellfamilien 0 vs 1 · Provenienz Modell/selbst vs Modell/selbst_
+- **C-5961** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial observability and overwritten world states.' (from benchmarking) might also apply to integration.
+  - _stützt:_ supports via C-5908: UniClawBench addresses the challenge of translating long-term memory into embodied plans to handle partial observability and overwritten world states.
+- **C-5960** (0 stützend · 0 Kontext): The necessity of translating long-term memory into embodied plans does not follow from partial observability alone; it arises only when an agent's explicit world model can be overwritten.
+  - _Quelle:_ deepseek:joni-c496:e6b544cb8c85
+- _Evidenzlage (C-5961 vs C-5960): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
 
 ```
-X-307 | <gewinner: C-5873 oder C-5893> | <grund>
+X-317 | <gewinner: C-5961 oder C-5960> | <grund>
+```
+
+## X-316 · Thema: benchmarking+integration
+
+- **C-5961** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial observability and overwritten world states.' (from benchmarking) might also apply to integration.
+  - _stützt:_ supports via C-5908: UniClawBench addresses the challenge of translating long-term memory into embodied plans to handle partial observability and overwritten world states.
+- **C-1860** (0 stützend · 0 Kontext): The challenge of translating long-term memory into embodied plans specifically arises when an agent maintains an explicit world model that can be overwritten, not from partial observability alone.
+  - _Quelle:_ deepseek:joni-c269:a1cbb4b01e39
+- _Evidenzlage (C-5961 vs C-1860): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-316 | <gewinner: C-5961 oder C-1860> | <grund>
 ```
 
 ## X-295 · Thema: memory
