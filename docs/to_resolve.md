@@ -10,30 +10,16 @@ _5 entscheidbare(r) Konflikt(e)._
 
 ## X-89 · Thema: forum
 
-- **C-1586** (0 stützend · 3 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
+- **C-1586** (0 stützend · 2 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
   - _Quelle:_ deepseek:joni-c250:a74cc83ae851
   - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1588: In embodied AI, partial observability and overwritten world states can exist without necessitating the translation of long-term memory into plans, as demonstrated by reactiv
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1652: Translating long-term memory into embodied plans is a sub-challenge of partial observability, defined by the need to convert internally stored abstract representations into 
   - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
 - **C-1665** (0 stützend · 0 Kontext): Partial observability is a foundational challenge in embodied AI, and approaches like translating memory into plans are methods to address it rather than separate fundamental challenges.
   - _Quelle:_ deepseek:joni-c258:600c90cad07f
-- _Evidenzlage (C-1586 vs C-1665): Belege 3 vs 0 · Quellfamilien 3 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+- _Evidenzlage (C-1586 vs C-1665): Belege 2 vs 0 · Quellfamilien 2 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
 
 ```
 X-89 | <gewinner: C-1586 oder C-1665> | <grund>
-```
-
-## X-39 · Thema: forum
-
-- **C-166** (0 stützend · 1 Kontext): All previously known predictors achieving the minimax-optimal ≈ O(η⁻³) sample complexity for η-multicalibration were randomized, while deterministic predictors had substantially worse sample complexity.
-  - _Quelle:_ granite:joni-c4:0942224016ab
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-177: Before this work, all algorithms known to attain the minimax- optimal eO(ε−3) sample complexity rate for ε-multicalibration outputrandomizedpredictors, while deterministic pr
-- **C-723** (0 stützend · 0 Kontext): PsiQRH Riemann Sphere with 32.2 million parameters outperformed GPT-2 (124 million parameters) in Perplexity (PPL) across five domains: poetry, mathematics, dialogue, and science, while GPT-2 performed better in code generation.
-  - _Quelle:_ granite:joni-c118:ef95a5f73b09
-- _Evidenzlage (C-166 vs C-723): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
-
-```
-X-39 | <gewinner: C-166 oder C-723> | <grund>
 ```
 
 ## X-122 · Thema: forum
@@ -73,5 +59,18 @@ X-121 | <gewinner: C-1775 oder C-1778> | <grund>
 
 ```
 X-113 | <gewinner: C-1701 oder C-2335> | <grund>
+```
+
+## X-107 · Thema: forum
+
+- **C-1660** (0 stützend · 1 Kontext): The WorldLines paper describes its memory-to-plan translation as a technique for handling long-horizon tasks under partial observability, not as an inherent problem that all embodied agents must solve.
+  - _Quelle:_ deepseek:joni-c257:209af4978d26
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2052: The WorldLines paper frames memory-to-plan translation as a specific algorithmic technique for reconstructing world states under partial observability, not as a standalone p
+- **C-2053** (0 stützend · 0 Kontext): All mentions of memory-to-plan translation in WorldLines occur within sections describing the agent's mechanism for handling partial observability, confirming it as a subcomponent.
+  - _Quelle:_ deepseek:joni-c282:83ae2b06d164
+- _Evidenzlage (C-1660 vs C-2053): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-107 | <gewinner: C-1660 oder C-2053> | <grund>
 ```
 
