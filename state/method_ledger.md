@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 500 · 243 Methoden** — proposed 206 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 37  
+**Cycle 501 · 244 Methoden** — proposed 207 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 37  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -161,6 +161,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | A Quantized Native Runtime for On-Device Semantic Audio Generation | **proposed** | candidate | 0 | — |
 | Wat3R: Underwater 3D Geometry Learning without Annotations | **proposed** | candidate | 0 | — |
 | LongE2V: Long-Horizon Event-based Video Reconstruction, Prediction, and Frame In | **proposed** | candidate | 0 | — |
+| DrugGen 2: A disease-aware language model for enhancing drug discovery | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |

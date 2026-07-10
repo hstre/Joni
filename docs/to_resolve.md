@@ -8,20 +8,6 @@ als SUPERSEDED (Nachfolger = Gewinner) und die Persona lernt „X → Y, weil �
 
 _5 entscheidbare(r) Konflikt(e)._
 
-## X-297 · Thema: memory
-
-- **C-5817** (0 stützend · 2 Kontext): The challenge of translating long-term memory into embodied plans is defined within WorldLines as a method to handle partial observability, not as a standalone problem.
-  - _Quelle:_ deepseek:joni-c259:2e76283ed615
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2040: WorldLines defines memory-to-plan translation as the concrete algorithmic process it uses to map long-term memory into actionable plans under partial observability, not as a
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2096: The WorldLines paper introduces memory-to-plan translation exclusively within its framework for handling partial observability, never as a standalone challenge for all embod
-- **C-5874** (0 stützend · 0 Kontext): Partial observability, overwritten world states, and translating long-term memory into embodied plans are ongoing challenges in AI systems.
-  - _Quelle:_ granite:joni-c228:1486b31244e8
-- _Evidenzlage (C-5817 vs C-5874): Belege 2 vs 0 · Quellfamilien 2 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
-
-```
-X-297 | <gewinner: C-5817 oder C-5874> | <grund>
-```
-
 ## X-317 · Thema: benchmarking+integration
 
 - **C-5961** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial observability and overwritten world states.' (from benchmarking) might also apply to integration.
@@ -44,6 +30,19 @@ X-317 | <gewinner: C-5961 oder C-5960> | <grund>
 
 ```
 X-316 | <gewinner: C-5961 oder C-1860> | <grund>
+```
+
+## X-297 · Thema: memory
+
+- **C-5817** (0 stützend · 1 Kontext): The challenge of translating long-term memory into embodied plans is defined within WorldLines as a method to handle partial observability, not as a standalone problem.
+  - _Quelle:_ deepseek:joni-c259:2e76283ed615
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2096: The WorldLines paper introduces memory-to-plan translation exclusively within its framework for handling partial observability, never as a standalone challenge for all embod
+- **C-5874** (0 stützend · 0 Kontext): Partial observability, overwritten world states, and translating long-term memory into embodied plans are ongoing challenges in AI systems.
+  - _Quelle:_ granite:joni-c228:1486b31244e8
+- _Evidenzlage (C-5817 vs C-5874): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-297 | <gewinner: C-5817 oder C-5874> | <grund>
 ```
 
 ## X-321 · Thema: memory
