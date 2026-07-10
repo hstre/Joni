@@ -399,7 +399,8 @@ def one_cycle() -> dict:
     homeostasis.retire_junk_topics(cs, extensions, proto, cycle)       # drain pre-gate junk topics
     homeostasis.retire_orphan_topic_trackers(cs, extensions, proto, cycle)  # drain 1-claim mints
     homeostasis.retire_offdomain_topics(cs, extensions, proto, cycle)  # drain laxiflora-type topics
-    reclassify.reclassify_forum(cs, extensions, proto, cycle)          # provenance is not a topic
+    reclassify.reclassify_forum(cs, extensions, proto, cycle,          # provenance is not a topic
+                                max_refile=12, max_retire=50)          # drain legacy sink faster
     topic_review.review_topics(cs, extensions, proto, cycle,           # LLM 'does it belong?' gate
                                budget=budget, runs_per_week=runs_per_week())
     homeostasis.retire_junk_hypotheses(cs, extensions, proto, cycle)   # drain junk-subject ideas
@@ -407,6 +408,7 @@ def one_cycle() -> dict:
     method_review.review_methods(cs, extensions, proto, cycle,          # LLM 'is it a method?' gate
                                  budget=budget, runs_per_week=runs_per_week())
     homeostasis.review_numeric_duplicate_conflicts(cs, proto, cycle)   # defuse legacy numeric hards
+    homeostasis.tolerate_sink_conflicts(cs, proto, cycle)              # drain forum-vs-forum falses
     vitality = homeostasis.vitality(cs, extensions, proto, cycle)
 
     # Collapse-Resistance-Panel: a READ-ONLY early-warning over the trajectory (measures, logs,
