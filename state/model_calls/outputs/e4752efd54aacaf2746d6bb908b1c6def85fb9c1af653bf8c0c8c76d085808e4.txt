@@ -1,0 +1,18 @@
+[
+  {
+    "text": "Clarify the exact definition of 'opaque serial depth' used in statements A and B, specifying whether the interpretable token bottleneck is counted as a serial step in each.",
+    "topic": "Metric definition verification"
+  },
+  {
+    "text": "Conduct a controlled experiment measuring the serial depth ratio of DiffusionGemma to Gemma 4 with vs. without the token bottleneck, using identical model weights, hardware, and evaluation protocol.",
+    "topic": "Controlled replication"
+  },
+  {
+    "text": "Audit the measurement code from A to determine if the token bottleneck was inadvertently excluded from the serial step count, which would make A consistent with B.",
+    "topic": "Code audit"
+  },
+  {
+    "text": "Measure the absolute number of serial steps contributed by the token bottleneck in DiffusionGemma to see if it is negligible (e.g., a single transformation that adds 0.1 steps), resolving the ratio discrepancy.",
+    "topic": "Bottleneck contribution isolation"
+  }
+]

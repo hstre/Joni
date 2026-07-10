@@ -8,63 +8,84 @@ als SUPERSEDED (Nachfolger = Gewinner) und die Persona lernt „X → Y, weil �
 
 _5 entscheidbare(r) Konflikt(e)._
 
-## X-270 · Thema: forum
+## X-297 · Thema: memory
 
-- **C-5265** (0 stützend · 0 Kontext): ENAXON SIDDIQOVA SHE'RIYATIDA PRETSEDENT BIRLIKLARNING POETIK-KONNOTATIV VAZIFALARI
-  - _Quelle:_ zenodo:21266388
-- **C-5683** (0 stützend · 0 Kontext): The phrase 'ENAXON SIDDIQOVA SHE'RIYATIDA PRETSEDENT BIRLIKLARNING POETIK-KONNOTATIV VAZIFALARI' appears in the provided context, though its specific meaning is unclear without additional context.
-  - _Quelle:_ granite:joni-c484:7a6a02111106
-- _Evidenzlage (C-5265 vs C-5683): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-270 | <gewinner: C-5265 oder C-5683> | <grund>
-```
-
-## X-266 · Thema: forum
-
-- **C-5012** (0 stützend · 0 Kontext): Sparse space-time spectral element methods advance block by block, store only one block, and require far fewer time coefficients per solve for long-time problems.
-  - _Quelle:_ granite:joni-c461:17ff2d7da9f5
-- **C-5018** (0 stützend · 0 Kontext): Our findings emphasize that the purpose of Hindi ADs is accessibility for Indian BLV audiences, and that this requires adapting content for the audience more than strict fidelity to the source.
-  - _Quelle:_ arxiv:2607.06457v1
-- _Evidenzlage (C-5012 vs C-5018): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+- **C-5817** (0 stützend · 3 Kontext): The challenge of translating long-term memory into embodied plans is defined within WorldLines as a method to handle partial observability, not as a standalone problem.
+  - _Quelle:_ deepseek:joni-c259:2e76283ed615
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2040: WorldLines defines memory-to-plan translation as the concrete algorithmic process it uses to map long-term memory into actionable plans under partial observability, not as a
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2096: The WorldLines paper introduces memory-to-plan translation exclusively within its framework for handling partial observability, never as a standalone challenge for all embod
+- **C-5874** (0 stützend · 0 Kontext): Partial observability, overwritten world states, and translating long-term memory into embodied plans are ongoing challenges in AI systems.
+  - _Quelle:_ granite:joni-c228:1486b31244e8
+- _Evidenzlage (C-5817 vs C-5874): Belege 3 vs 0 · Quellfamilien 3 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
 
 ```
-X-266 | <gewinner: C-5012 oder C-5018> | <grund>
+X-297 | <gewinner: C-5817 oder C-5874> | <grund>
 ```
 
-## X-265 · Thema: forum
+## X-295 · Thema: memory
 
-- **C-5009** (0 stützend · 0 Kontext): Sparse space-time spectral element methods advance block by block, store only one block, and require far fewer time coefficients per solve for long-time problems.
-  - _Quelle:_ granite:joni-c461:35285d5897c5
-- **C-5018** (0 stützend · 0 Kontext): Our findings emphasize that the purpose of Hindi ADs is accessibility for Indian BLV audiences, and that this requires adapting content for the audience more than strict fidelity to the source.
-  - _Quelle:_ arxiv:2607.06457v1
-- _Evidenzlage (C-5009 vs C-5018): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
+  - _Quelle:_ arxiv:2606.20553v1
+- **C-5872** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
 
-```
-X-265 | <gewinner: C-5009 oder C-5018> | <grund>
-```
+ChatGPT and DeepSeek converge; their divergence is one of register, not assumption. ChatGPT treats "transferability" as an empirical/cognitive bet (data quality, subjectivity); DeepSeek formalizes it as a relation `x nutzt y für z` whose context-invariance must be proven. The differing category: ChatGPT = epistemic-pragmatic risk; DeepSeek = formal-relational coherence. Both keep the same break — recurrence may be idiosyncratic artifact (DeepSeek's "Binnenevidenz" = ChatGPT's "evidence limitation"). No admissible disagreement remains; the dissent collapses once the categories are named.
 
-## X-264 · Thema: forum
+**Reconciled assessment:**
 
-- **C-4149** (0 stützend · 0 Kontext): A genuinely background-independent theory is more fundamental than one that presupposes a geometric arena.
-  - _Quelle:_ granite:joni-c419:b03e3975e8ea
-- **C-5024** (0 stützend · 0 Kontext): The result is a sparse space-time spectral ele- ment method that advances block by block, stores only one block, and needs far fewer time coefficients per solve for long-time problems.
-  - _Quelle:_ arxiv:2607.06449v1
-- _Evidenzlage (C-4149 vs C-5024): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+Tenable IFF: (a) 'usage' is isolable as one relation, not a homonym cluster; (b) recurrence across forum+memory is cross-checked against external evidence, not self-selected; (c) lens stays heuristic — generates readings, claims no truth.
 
-```
-X-264 | <gewinner: C-4149 oder C-5024> | <grund>
-```
+Breaks IF: 'usage' fragments into non-equivalent senses, recurrence is selection-artifact of Joni's own corpus, or analogy-pressure overwrites problem-specific features.
 
-## X-242 · Thema: forum
+Formally admissible as method-suggestion under controlled, non-veridical use. Scope flag: "applicable to forum, memory" rests solely on internal evidence — transfer to a *new* problem is asserted, not yet warranted.
 
-- **C-3813** (0 stützend · 0 Kontext): A classical slow programmer combined with a quantum-inspired fast programmer is identified as a promising design for resource-conscious network traffic matrix forecasting.
-  - _Quelle:_ granite:joni-c399:3b4c06dc8970
-- **C-465** (0 stützend · 0 Kontext): JanusMesh: Fast and Zero-Shot 3D Visual Illusion Generation via Cross-Space Denoising
-  - _Quelle:_ arxiv:2606.20563v1
-- _Evidenzlage (C-3813 vs C-465): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+No verdict — Joni decides.
+  - _Quelle:_ panel:expert:claude
+- _Evidenzlage (C-49 vs C-5872): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Forum_
 
 ```
-X-242 | <gewinner: C-3813 oder C-465> | <grund>
+X-295 | <gewinner: C-49 oder C-5872> | <grund>
+```
+
+## X-294 · Thema: memory
+
+- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
+  - _Quelle:_ arxiv:2606.20553v1
+- **C-5869** (0 stützend · 0 Kontext): Segmentation uses variable-size units to map logical address spaces onto physical memory, which can avoid internal fragmentation but may lead to external fragmentation.
+  - _Quelle:_ granite:joni-c122:a1ea4ffb8fa6
+- _Evidenzlage (C-49 vs C-5869): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-294 | <gewinner: C-49 oder C-5869> | <grund>
+```
+
+## X-293 · Thema: memory
+
+- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
+  - _Quelle:_ arxiv:2606.20553v1
+- **C-5868** (0 stützend · 0 Kontext): Paging divides memory into fixed-size units called frames and pages, eliminating external fragmentation but potentially causing internal fragmentation.
+  - _Quelle:_ granite:joni-c122:a1ea4ffb8fa6
+- _Evidenzlage (C-49 vs C-5868): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-293 | <gewinner: C-49 oder C-5868> | <grund>
+```
+
+## X-292 · Thema: memory
+
+- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
+  - _Quelle:_ arxiv:2606.20553v1
+- **C-5867** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
+
+ChatGPT and DeepSeek converge: both name *context-dependency* as the central break and *transferability* as the load-bearing assumption. DeepSeek adds two sharper points ChatGPT lacks: (a) circularity — the recurrence may be self-confirming (availability heuristic as confounder), and (b) absence of a *falsification criterion*. These are stronger and I adopt them; ChatGPT's "subjectivity/overgeneralization" are special cases of DeepSeek's projection-risk.
+
+**Disagreement kept (justified):** ChatGPT treats recurrence-across-three-sources as neutral; DeepSeek treats it as weak robustness evidence. The differing assumption is the *evidential status of recurrence*: ChatGPT assumes self-evidence requires external warrant, DeepSeek assumes pattern-frequency carries it. I side with ChatGPT here — recurrence in *one's own* evidence (forum/memory/tools) is precisely the confounder DeepSeek itself flags, so it cannot also count as independent support.
+
+**Reconciled assessment:** Tragfähig *only if* (1) a domain-invariant operative function of "relevant" is shown, and (2) a falsification criterion separates lens from projection. Absent these, formally underspecified — admissible as hypothesis, not as method.
+  - _Quelle:_ panel:expert:claude
+- _Evidenzlage (C-49 vs C-5867): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Forum_
+
+```
+X-292 | <gewinner: C-49 oder C-5867> | <grund>
 ```
 

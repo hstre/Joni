@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 493 · 236 Methoden** — proposed 200 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
+**Cycle 494 · 237 Methoden** — proposed 201 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -153,6 +153,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Token-Based Dual-view Fusion and Adaptation of Large Vision Models for Breast Ca | **proposed** | candidate | 0 | — |
 | divergence-as-a-lens | **proposed** | candidate | 0 | — |
 | OpenCoF: Learning to Reason Through Video Generation | **proposed** | candidate | 0 | — |
+| code-as-a-lens | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
