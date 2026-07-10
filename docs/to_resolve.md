@@ -46,39 +46,27 @@ X-317 | <gewinner: C-5961 oder C-5960> | <grund>
 X-316 | <gewinner: C-5961 oder C-1860> | <grund>
 ```
 
-## X-295 · Thema: memory
+## X-321 · Thema: memory
 
-- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
+- **C-50** (0 stützend · 0 Kontext): After fine- tuning, the resulting isolated per-sample updates can be an- alytically inverted in closed form to recover text embed- dings, which are then deterministically mapped back to to- ken sequences.
   - _Quelle:_ arxiv:2606.20553v1
-- **C-5872** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
-
-ChatGPT and DeepSeek converge; their divergence is one of register, not assumption. ChatGPT treats "transferability" as an empirical/cognitive bet (data quality, subjectivity); DeepSeek formalizes it as a relation `x nutzt y für z` whose context-invariance must be proven. The differing category: ChatGPT = epistemic-pragmatic risk; DeepSeek = formal-relational coherence. Both keep the same break — recurrence may be idiosyncratic artifact (DeepSeek's "Binnenevidenz" = ChatGPT's "evidence limitation"). No admissible disagreement remains; the dissent collapses once the categories are named.
-
-**Reconciled assessment:**
-
-Tenable IFF: (a) 'usage' is isolable as one relation, not a homonym cluster; (b) recurrence across forum+memory is cross-checked against external evidence, not self-selected; (c) lens stays heuristic — generates readings, claims no truth.
-
-Breaks IF: 'usage' fragments into non-equivalent senses, recurrence is selection-artifact of Joni's own corpus, or analogy-pressure overwrites problem-specific features.
-
-Formally admissible as method-suggestion under controlled, non-veridical use. Scope flag: "applicable to forum, memory" rests solely on internal evidence — transfer to a *new* problem is asserted, not yet warranted.
-
-No verdict — Joni decides.
-  - _Quelle:_ panel:expert:claude
-- _Evidenzlage (C-49 vs C-5872): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Forum_
+- **C-5966** (0 stützend · 0 Kontext): The manuscript investigates the analytic structure of three central objects in non-Markovian open quantum dynamics: the Nakajima-Zwanzig memory kernel, the reduced-state Laplace transform, and the effective kernel.
+  - _Quelle:_ granite:joni-c131:0510bdb827ed
+- _Evidenzlage (C-50 vs C-5966): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
 
 ```
-X-295 | <gewinner: C-49 oder C-5872> | <grund>
+X-321 | <gewinner: C-50 oder C-5966> | <grund>
 ```
 
-## X-294 · Thema: memory
+## X-320 · Thema: memory
 
-- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
+- **C-50** (0 stützend · 0 Kontext): After fine- tuning, the resulting isolated per-sample updates can be an- alytically inverted in closed form to recover text embed- dings, which are then deterministically mapped back to to- ken sequences.
   - _Quelle:_ arxiv:2606.20553v1
-- **C-5869** (0 stützend · 0 Kontext): Segmentation uses variable-size units to map logical address spaces onto physical memory, which can avoid internal fragmentation but may lead to external fragmentation.
-  - _Quelle:_ granite:joni-c122:a1ea4ffb8fa6
-- _Evidenzlage (C-49 vs C-5869): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+- **C-5959** (0 stützend · 0 Kontext): In the broader AI research context, translating long-term memory into embodied plans remains an open challenge, specifically when agents maintain explicit world models subject to overwriting.
+  - _Quelle:_ deepseek:joni-c496:e6b544cb8c85
+- _Evidenzlage (C-50 vs C-5959): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
 
 ```
-X-294 | <gewinner: C-49 oder C-5869> | <grund>
+X-320 | <gewinner: C-50 oder C-5959> | <grund>
 ```
 
