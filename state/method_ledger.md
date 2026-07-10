@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 497 · 239 Methoden** — proposed 203 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
+**Cycle 498 · 241 Methoden** — proposed 205 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -157,6 +157,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | UniClawBench: A Universal Benchmark for Proactive Agents on Real-World Tasks | **proposed** | candidate | 0 | — |
 | Video-Oasis: Rethinking Evaluation of Video Understanding | **proposed** | candidate | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
+| Enhancing In-context Panoramic Generation via Geometric-aware Pretraining | **proposed** | candidate | 0 | — |
+| A Quantized Native Runtime for On-Device Semantic Audio Generation | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
