@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_29 offene(r) Entwurf/Entwürfe._
+_31 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -235,6 +235,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'parallelism'? Ich sammle dazu Mater
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'parallelism'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-511-5eb43e · Vorschlag: reddit
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'Cloudflare Reverse Proxies Are Dumping Uninitialized Memory' (from memory) might also apply to paradlc-bench." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-511-0d1dbe · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'Cloudflare Reverse Proxies Are Dumping Uninitialized Memory' (from memory) might also apply to paradlc-bench." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
