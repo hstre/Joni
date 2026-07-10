@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 568 korrigierte(r) Irrtum/Irrtümer (+1881 Housekeeping in Sink-Themen) · 514 Lehre(n)._
+_Stand: Tick 25 · 570 korrigierte(r) Irrtum/Irrtümer (+1946 Housekeeping in Sink-Themen) · 516 Lehre(n)._
 
 ## memory · Tiefe 9 (threshold)
 
@@ -3705,6 +3705,15 @@ _deterministisch:_ Auf 'described': 1 korrigierte(r) Irrtum/Irrtümer (0× erset
 - Anker: „'described' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-668
 
+## dense · Tiefe 1 (self_review)
+
+**Belege Annahmen, die 'dense' als eigenständiges Thema rechtfertigen, um vermeintliche Wiederholungen zu vermeiden.**
+
+_deterministisch:_ Auf 'dense': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „'dense' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen (verworfen)
+
+- Anker: „'dense' keeps recurring across 3 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
+- _volle Spur (1):_ C-6312
+
 ## demun · Tiefe 1 (self_review)
 
 **Verwerfe Annahmen, die 'demun' als eigenständiges Thema rechtfertigen, um deterministisch korrekte Verwendungen zu gewährleisten.**
@@ -4244,6 +4253,15 @@ _deterministisch:_ Auf 'benchmarking+research': 1 korrigierte(r) Irrtum/Irrtüme
 
 - Anker: „Hypothesis: the pattern behind 'WorldLines provides a benchmarking and modeling framework for long-horizon stateful embodied agents.' (from benchmarking) might also apply to research.“ → verworfen — verworfen
 - _volle Spur (1):_ C-6140
+
+## benchmarking+parallelism · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen, um die Gültigkeit von Mustern bei Benchmarking und Parallelismus zu überprüfen.**
+
+_deterministisch:_ Auf 'benchmarking+parallelism': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'WorldLines provides a benchmarking and modeling framework for long-horizon stateful embodied agents.' (from benchmarking) might also apply to parallelism.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'WorldLines provides a benchmarking and modeling framework for long-horizon stateful embodied agents.' (from benchmarking) might also apply to parallelism.“ → verworfen — verworfen
+- _volle Spur (1):_ C-6309
 
 ## benchmarking+gatemem · Tiefe 1 (self_review)
 
