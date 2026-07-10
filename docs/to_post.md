@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_25 offene(r) Entwurf/Entwürfe._
+_27 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -203,6 +203,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'worldlines'? Ich sammle dazu Materi
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'worldlines'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-493-f93683 · Vorschlag: huggingface
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'integration'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-493-2dbe98 · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'integration'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________

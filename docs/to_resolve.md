@@ -8,69 +8,63 @@ als SUPERSEDED (Nachfolger = Gewinner) und die Persona lernt „X → Y, weil �
 
 _5 entscheidbare(r) Konflikt(e)._
 
-## X-89 · Thema: forum
+## X-270 · Thema: forum
 
-- **C-1586** (0 stützend · 2 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
-  - _Quelle:_ deepseek:joni-c250:a74cc83ae851
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1588: In embodied AI, partial observability and overwritten world states can exist without necessitating the translation of long-term memory into plans, as demonstrated by reactiv
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
-- **C-1665** (0 stützend · 0 Kontext): Partial observability is a foundational challenge in embodied AI, and approaches like translating memory into plans are methods to address it rather than separate fundamental challenges.
-  - _Quelle:_ deepseek:joni-c258:600c90cad07f
-- _Evidenzlage (C-1586 vs C-1665): Belege 2 vs 0 · Quellfamilien 2 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+- **C-5265** (0 stützend · 0 Kontext): ENAXON SIDDIQOVA SHE'RIYATIDA PRETSEDENT BIRLIKLARNING POETIK-KONNOTATIV VAZIFALARI
+  - _Quelle:_ zenodo:21266388
+- **C-5683** (0 stützend · 0 Kontext): The phrase 'ENAXON SIDDIQOVA SHE'RIYATIDA PRETSEDENT BIRLIKLARNING POETIK-KONNOTATIV VAZIFALARI' appears in the provided context, though its specific meaning is unclear without additional context.
+  - _Quelle:_ granite:joni-c484:7a6a02111106
+- _Evidenzlage (C-5265 vs C-5683): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
 
 ```
-X-89 | <gewinner: C-1586 oder C-1665> | <grund>
+X-270 | <gewinner: C-5265 oder C-5683> | <grund>
 ```
 
-## X-122 · Thema: forum
+## X-266 · Thema: forum
 
-- **C-1776** (0 stützend · 1 Kontext): Extended reasoning chains in Gemini Deep Research are fragile.
-  - _Quelle:_ granite:joni-c266:72105da076f8
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1777: Knowledge transfer in Gemini Deep Research is limited.
-- **C-1778** (0 stützend · 0 Kontext): Gemini Deep Research lacks physics-grounded self-verification.
-  - _Quelle:_ granite:joni-c266:72105da076f8
-- _Evidenzlage (C-1776 vs C-1778): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
-
-```
-X-122 | <gewinner: C-1776 oder C-1778> | <grund>
-```
-
-## X-121 · Thema: forum
-
-- **C-1775** (0 stützend · 1 Kontext): Gemini Deep Research achieves 33.5% accuracy in evaluations.
-  - _Quelle:_ granite:joni-c266:72105da076f8
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1777: Knowledge transfer in Gemini Deep Research is limited.
-- **C-1778** (0 stützend · 0 Kontext): Gemini Deep Research lacks physics-grounded self-verification.
-  - _Quelle:_ granite:joni-c266:72105da076f8
-- _Evidenzlage (C-1775 vs C-1778): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+- **C-5012** (0 stützend · 0 Kontext): Sparse space-time spectral element methods advance block by block, store only one block, and require far fewer time coefficients per solve for long-time problems.
+  - _Quelle:_ granite:joni-c461:17ff2d7da9f5
+- **C-5018** (0 stützend · 0 Kontext): Our findings emphasize that the purpose of Hindi ADs is accessibility for Indian BLV audiences, and that this requires adapting content for the audience more than strict fidelity to the source.
+  - _Quelle:_ arxiv:2607.06457v1
+- _Evidenzlage (C-5012 vs C-5018): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
 
 ```
-X-121 | <gewinner: C-1775 oder C-1778> | <grund>
+X-266 | <gewinner: C-5012 oder C-5018> | <grund>
 ```
 
-## X-113 · Thema: forum
+## X-265 · Thema: forum
 
-- **C-1701** (0 stützend · 1 Kontext): No section of the WorldLines paper presents memory-to-plan translation as an independently necessary challenge for embodied agents outside the context of its partial observability framework.
-  - _Quelle:_ deepseek:joni-c260:cfa603e81868
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2096: The WorldLines paper introduces memory-to-plan translation exclusively within its framework for handling partial observability, never as a standalone challenge for all embod
-- **C-2335** (0 stützend · 0 Kontext): Memory-to-plan translation is treated in the WorldLines paper as an engineered solution specific to handling partial observability and overwritten states, rather than a universal challenge for all embodied agents.
-  - _Quelle:_ granite:joni-c307:a10e2dd209cc
-- _Evidenzlage (C-1701 vs C-2335): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
-
-```
-X-113 | <gewinner: C-1701 oder C-2335> | <grund>
-```
-
-## X-107 · Thema: forum
-
-- **C-1660** (0 stützend · 1 Kontext): The WorldLines paper describes its memory-to-plan translation as a technique for handling long-horizon tasks under partial observability, not as an inherent problem that all embodied agents must solve.
-  - _Quelle:_ deepseek:joni-c257:209af4978d26
-  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-2052: The WorldLines paper frames memory-to-plan translation as a specific algorithmic technique for reconstructing world states under partial observability, not as a standalone p
-- **C-2053** (0 stützend · 0 Kontext): All mentions of memory-to-plan translation in WorldLines occur within sections describing the agent's mechanism for handling partial observability, confirming it as a subcomponent.
-  - _Quelle:_ deepseek:joni-c282:83ae2b06d164
-- _Evidenzlage (C-1660 vs C-2053): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+- **C-5009** (0 stützend · 0 Kontext): Sparse space-time spectral element methods advance block by block, store only one block, and require far fewer time coefficients per solve for long-time problems.
+  - _Quelle:_ granite:joni-c461:35285d5897c5
+- **C-5018** (0 stützend · 0 Kontext): Our findings emphasize that the purpose of Hindi ADs is accessibility for Indian BLV audiences, and that this requires adapting content for the audience more than strict fidelity to the source.
+  - _Quelle:_ arxiv:2607.06457v1
+- _Evidenzlage (C-5009 vs C-5018): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
 
 ```
-X-107 | <gewinner: C-1660 oder C-2053> | <grund>
+X-265 | <gewinner: C-5009 oder C-5018> | <grund>
+```
+
+## X-264 · Thema: forum
+
+- **C-4149** (0 stützend · 0 Kontext): A genuinely background-independent theory is more fundamental than one that presupposes a geometric arena.
+  - _Quelle:_ granite:joni-c419:b03e3975e8ea
+- **C-5024** (0 stützend · 0 Kontext): The result is a sparse space-time spectral ele- ment method that advances block by block, stores only one block, and needs far fewer time coefficients per solve for long-time problems.
+  - _Quelle:_ arxiv:2607.06449v1
+- _Evidenzlage (C-4149 vs C-5024): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+
+```
+X-264 | <gewinner: C-4149 oder C-5024> | <grund>
+```
+
+## X-242 · Thema: forum
+
+- **C-3813** (0 stützend · 0 Kontext): A classical slow programmer combined with a quantum-inspired fast programmer is identified as a promising design for resource-conscious network traffic matrix forecasting.
+  - _Quelle:_ granite:joni-c399:3b4c06dc8970
+- **C-465** (0 stützend · 0 Kontext): JanusMesh: Fast and Zero-Shot 3D Visual Illusion Generation via Cross-Space Denoising
+  - _Quelle:_ arxiv:2606.20563v1
+- _Evidenzlage (C-3813 vs C-465): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+
+```
+X-242 | <gewinner: C-3813 oder C-465> | <grund>
 ```
 
