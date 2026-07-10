@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 498 · 241 Methoden** — proposed 205 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 36  
+**Cycle 499 · 243 Methoden** — proposed 206 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 37  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -159,6 +159,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | Enhancing In-context Panoramic Generation via Geometric-aware Pretraining | **proposed** | candidate | 0 | — |
 | A Quantized Native Runtime for On-Device Semantic Audio Generation | **proposed** | candidate | 0 | — |
+| Wat3R: Underwater 3D Geometry Learning without Annotations | **proposed** | candidate | 0 | — |
+| LongE2V: Long-Horizon Event-based Video Reconstruction, Prediction, and Frame In | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
@@ -198,7 +200,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Unreasonable Effectiveness of VLMs for Zero-shot Procedural Mistake Detectio | **proposed** | candidate | 0 | — |
 | A Correlation Aware Quantum Feature Map for Variational Quantum Classification | **proposed** | candidate | 0 | — |
 | generative-as-a-lens | **proposed** | candidate | 0 | — |
-| Deep Research in Physical Sciences: A Multi-Agent Framework and Comprehensive Be | **proposed** | candidate | 0 | — |
 | PaperClaw: Harnessing Agents for Autonomous Research and Human-in-the-Loop Refin | **proposed** | candidate | 0 | — |
 | SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation | **proposed** | candidate | 0 | — |
 | Sub-Billion, Super-Frontier: Small Language Models Rival Zero-Shot Frontier LLMs | **proposed** | candidate | 0 | — |
@@ -247,3 +248,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
 | PerceptionDLM: Parallel Region Perception with Multimodal Diffusion Language Mod | **retired** | rejected | 0 | — |
 | Benchmark of quantum algorithms for ground state preparation in the presence of  | **retired** | rejected | 0 | — |
+| Deep Research in Physical Sciences: A Multi-Agent Framework and Comprehensive Be | **retired** | rejected | 0 | — |
