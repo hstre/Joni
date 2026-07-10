@@ -23,6 +23,32 @@ _5 entscheidbare(r) Konflikt(e)._
 X-297 | <gewinner: C-5817 oder C-5874> | <grund>
 ```
 
+## X-313 · Thema: memory
+
+- **C-5891** (0 stützend · 0 Kontext): WorldLines addresses translating long-term memory into embodied plans to solve partial observability and overwritten world states.
+  - _Quelle:_ granite:joni-c250:9abb40b5bfa2
+- **C-5893** (0 stützend · 1 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
+  - _Quelle:_ deepseek:joni-c250:a74cc83ae851
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
+- _Evidenzlage (C-5891 vs C-5893): Belege 0 vs 1 · Quellfamilien 0 vs 1 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-313 | <gewinner: C-5891 oder C-5893> | <grund>
+```
+
+## X-307 · Thema: memory
+
+- **C-5873** (0 stützend · 0 Kontext): Partial observability, overwritten world states, and translating long-term memory into embodied plans remain persistent challenges in current AI systems.
+  - _Quelle:_ granite:joni-c227:703bc9f2be24
+- **C-5893** (0 stützend · 1 Kontext): The WorldLines paper explicitly classifies the challenge of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states, not as a fundamental challenge independent of those.
+  - _Quelle:_ deepseek:joni-c250:a74cc83ae851
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-1699: The WorldLines paper defines 'translating long-term memory into embodied plans' as a design element of its planner, not as a general fundamental challenge for all agents.
+- _Evidenzlage (C-5873 vs C-5893): Belege 0 vs 1 · Quellfamilien 0 vs 1 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-307 | <gewinner: C-5873 oder C-5893> | <grund>
+```
+
 ## X-295 · Thema: memory
 
 - **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
@@ -57,35 +83,5 @@ X-295 | <gewinner: C-49 oder C-5872> | <grund>
 
 ```
 X-294 | <gewinner: C-49 oder C-5869> | <grund>
-```
-
-## X-293 · Thema: memory
-
-- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
-  - _Quelle:_ arxiv:2606.20553v1
-- **C-5868** (0 stützend · 0 Kontext): Paging divides memory into fixed-size units called frames and pages, eliminating external fragmentation but potentially causing internal fragmentation.
-  - _Quelle:_ granite:joni-c122:a1ea4ffb8fa6
-- _Evidenzlage (C-49 vs C-5868): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-293 | <gewinner: C-49 oder C-5868> | <grund>
-```
-
-## X-292 · Thema: memory
-
-- **C-49** (0 stützend · 0 Kontext): Concretely, our attack,NeuroImprint, assigns a dedicated memorization neuron to each training sample and constrains that each neuron is updated at most once along the local fine-tuning trajectory.
-  - _Quelle:_ arxiv:2606.20553v1
-- **C-5867** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
-
-ChatGPT and DeepSeek converge: both name *context-dependency* as the central break and *transferability* as the load-bearing assumption. DeepSeek adds two sharper points ChatGPT lacks: (a) circularity — the recurrence may be self-confirming (availability heuristic as confounder), and (b) absence of a *falsification criterion*. These are stronger and I adopt them; ChatGPT's "subjectivity/overgeneralization" are special cases of DeepSeek's projection-risk.
-
-**Disagreement kept (justified):** ChatGPT treats recurrence-across-three-sources as neutral; DeepSeek treats it as weak robustness evidence. The differing assumption is the *evidential status of recurrence*: ChatGPT assumes self-evidence requires external warrant, DeepSeek assumes pattern-frequency carries it. I side with ChatGPT here — recurrence in *one's own* evidence (forum/memory/tools) is precisely the confounder DeepSeek itself flags, so it cannot also count as independent support.
-
-**Reconciled assessment:** Tragfähig *only if* (1) a domain-invariant operative function of "relevant" is shown, and (2) a falsification criterion separates lens from projection. Absent these, formally underspecified — admissible as hypothesis, not as method.
-  - _Quelle:_ panel:expert:claude
-- _Evidenzlage (C-49 vs C-5867): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Forum_
-
-```
-X-292 | <gewinner: C-49 oder C-5867> | <grund>
 ```
 
