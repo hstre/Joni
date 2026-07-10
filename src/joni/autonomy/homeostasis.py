@@ -471,7 +471,7 @@ def vitality(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     emergent = len(extensions.get("emerged_topics", [])) + \
         len(extensions.get("emerged_methods", [])) + len(extensions.get("synthesized", []))
     usable = _usable_semantic_rate(cs)
-    objects = len(s.objects)
+    objects = s.count()   # cheap size read; len(s.objects) deep-copies the whole store (~seconds)
     methods_total = len(s.all(l9.ObjectType.METHOD))
     method_trials_total = extensions.get("method_trials_total", 0)
     methods_ready_total = extensions.get("methods_ready_total", 0)

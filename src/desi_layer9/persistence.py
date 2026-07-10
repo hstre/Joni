@@ -66,6 +66,19 @@ def _sidecar_path(path: Path) -> Path:
 # speak a single journal list, and load verifies the reassembled journal against the recorded
 # ``snapshot_hash`` and the ledger chain - a missing, truncated or tampered chunk cannot load.
 
+def _atomic_write(path: Path, text: str) -> None:
+    """Write ``text`` to ``path`` crash-safely: write a sibling temp file, flush+fsync it, then
+    ``os.replace`` (atomic on POSIX). A kill at any point leaves either the old file intact or the
+    new file complete - never a half-written/truncated file. Used for every state file so an
+    interrupted ``save`` can never corrupt the head or a chunk in place."""
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+
+
 def _chunk_size() -> int:
     """Entries per chunk. ``JONI_JOURNAL_CHUNK=0`` disables chunking (legacy inline journal)."""
     return max(0, int(os.getenv("JONI_JOURNAL_CHUNK", "2000")))
@@ -97,8 +110,7 @@ def _write_chunks(entries: list[dict], path: Path) -> list[dict]:
         sealed = len(chunk) == n
         fp = cdir / name
         if not (sealed and prior.get(name) == n and fp.exists()):
-            fp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in chunk),
-                          encoding="utf-8")
+            _atomic_write(fp, "".join(json.dumps(e, ensure_ascii=False) + "\n" for e in chunk))
         files.append({"name": name, "entries": len(chunk)})
     keep = {f["name"] for f in files}
     for fp in cdir.glob("chunk-*.jsonl"):
@@ -120,14 +132,24 @@ def _read_doc(path: Path) -> dict | None:
     if jc and "journal" not in doc:
         cdir = _chunk_dir(path)
         entries: list[dict] = []
-        for f in jc.get("files", []):
+        files = jc.get("files", [])
+        for i, f in enumerate(files):
             fp = cdir / str(f.get("name"))
-            got = [json.loads(line) for line in fp.read_text(encoding="utf-8").splitlines()
-                   if line.strip()]
-            if len(got) != int(f.get("entries", -1)):
-                raise ValueError(f"journal chunk {fp.name}: {len(got)} entries on disk, head "
-                                 f"records {f.get('entries')} - refusing to load")
-            entries.extend(got)
+            recorded = int(f.get("entries", -1))
+            lines = [line for line in fp.read_text(encoding="utf-8").splitlines() if line.strip()]
+            is_tail = i == len(files) - 1
+            # A sealed (non-tail) chunk is immutable, so its count must match EXACTLY - any
+            # mismatch is truncation or tampering and hard-stops (the snapshot-hash/chain check
+            # downstream catches modified content; this names a size mismatch). The TAIL chunk may
+            # legitimately hold MORE than the head records: ``save`` writes the tail then the head
+            # atomically, so a crash in between leaves extra, uncommitted entries in the tail. Those
+            # are not part of the committed state (the head is the commit point), so we read exactly
+            # the recorded prefix and drop the excess - recovering the last committed state instead
+            # of refusing to load. FEWER than recorded is still corruption and hard-stops.
+            if len(lines) < recorded or (len(lines) != recorded and not is_tail):
+                raise ValueError(f"journal chunk {fp.name}: {len(lines)} entries on disk, head "
+                                 f"records {recorded} - refusing to load")
+            entries.extend(json.loads(line) for line in lines[:recorded])
         doc["journal"] = entries
     return doc
 
@@ -178,14 +200,16 @@ def save(state: Layer9, path: str | Path) -> Path:
         # Chunked on-disk format: sealed immutable chunk files + a small head. The head carries
         # the same tick/snapshot_hash contract; only WHERE the journal lives changes.
         doc["journal_chunks"] = {"files": _write_chunks(doc.pop("journal"), path)}
-    path.write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")
+    # The head is written LAST and atomically: it is the commit point that names each chunk and its
+    # entry count, so it must land whole and only after every chunk it references is on disk.
+    _atomic_write(path, json.dumps(doc, ensure_ascii=False, indent=2))
     sidecar = _sidecar_path(path)
     if _fast_load_enabled():
         # Write the verified fast-load cache alongside (git-ignored). It carries the same hash the
         # committed file records, so ``load`` can confirm the sidecar matches this exact journal.
-        sidecar.write_text(json.dumps(
+        _atomic_write(sidecar, json.dumps(
             {"snapshot_hash": snapshot_hash(state), "tick": state.tick,
-             "state_snapshot": snapshot.capture(state)}, ensure_ascii=False), encoding="utf-8")
+             "state_snapshot": snapshot.capture(state)}, ensure_ascii=False))
     elif sidecar.exists():
         sidecar.unlink()                              # fast-load off: never leave a stale sidecar
     return path
