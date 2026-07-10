@@ -46,27 +46,27 @@ X-317 | <gewinner: C-5961 oder C-5960> | <grund>
 X-316 | <gewinner: C-5961 oder C-1860> | <grund>
 ```
 
-## X-321 · Thema: memory
+## X-338 · Thema: memory
 
-- **C-50** (0 stützend · 0 Kontext): After fine- tuning, the resulting isolated per-sample updates can be an- alytically inverted in closed form to recover text embed- dings, which are then deterministically mapped back to to- ken sequences.
-  - _Quelle:_ arxiv:2606.20553v1
-- **C-5966** (0 stützend · 0 Kontext): The manuscript investigates the analytic structure of three central objects in non-Markovian open quantum dynamics: the Nakajima-Zwanzig memory kernel, the reduced-state Laplace transform, and the effective kernel.
-  - _Quelle:_ granite:joni-c131:0510bdb827ed
-- _Evidenzlage (C-50 vs C-5966): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-321 | <gewinner: C-50 oder C-5966> | <grund>
-```
-
-## X-320 · Thema: memory
-
-- **C-50** (0 stützend · 0 Kontext): After fine- tuning, the resulting isolated per-sample updates can be an- alytically inverted in closed form to recover text embed- dings, which are then deterministically mapped back to to- ken sequences.
-  - _Quelle:_ arxiv:2606.20553v1
-- **C-5959** (0 stützend · 0 Kontext): In the broader AI research context, translating long-term memory into embodied plans remains an open challenge, specifically when agents maintain explicit world models subject to overwriting.
-  - _Quelle:_ deepseek:joni-c496:e6b544cb8c85
-- _Evidenzlage (C-50 vs C-5959): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+- **C-6472** (0 stützend · 0 Kontext): Jiepai Jianghu Legends and Beliefs Series: Vernacular Folklore, Sacred Sites, Ghost Narratives, and Local Belief Memory from Jiepai, Jiangsu, China
+  - _Quelle:_ zenodo:20834123
+- **C-6510** (0 stützend · 0 Kontext): Overwritable world states, not partial observability in isolation, introduce the requirement to transform latent memory into actionable plans, because planning must account for dynamic external changes not reflected in stable internal beliefs.
+  - _Quelle:_ deepseek:joni-c332:0a8f44adcd08
+- _Evidenzlage (C-6472 vs C-6510): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
 
 ```
-X-320 | <gewinner: C-50 oder C-5959> | <grund>
+X-338 | <gewinner: C-6472 oder C-6510> | <grund>
+```
+
+## X-336 · Thema: memory
+
+- **C-5888** (0 stützend · 0 Kontext): MemSlides: A Hierarchical Memory Driven Agent Framework for Personalized Slide Generation with Multi-turn Local Revision
+  - _Quelle:_ huggingface:2606.17162
+- **C-6510** (0 stützend · 0 Kontext): Overwritable world states, not partial observability in isolation, introduce the requirement to transform latent memory into actionable plans, because planning must account for dynamic external changes not reflected in stable internal beliefs.
+  - _Quelle:_ deepseek:joni-c332:0a8f44adcd08
+- _Evidenzlage (C-5888 vs C-6510): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-336 | <gewinner: C-5888 oder C-6510> | <grund>
 ```
 

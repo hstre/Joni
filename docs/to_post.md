@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_31 offene(r) Entwurf/Entwürfe._
+_33 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -251,6 +251,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'Cloudflare Reverse Proxies Are Dumping Uninitialized Memory' (from memory) might also apply to paradlc-bench." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-512-3d0bad · Vorschlag: lesswrong
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to parallelism." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-512-a9b940 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to parallelism." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
