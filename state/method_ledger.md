@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 509 · 248 Methoden** — proposed 207 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 41  
+**Cycle 510 · 248 Methoden** — proposed 206 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 42  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -209,7 +209,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation | **proposed** | candidate | 0 | — |
 | west-as-a-lens | **proposed** | candidate | 0 | — |
 | AC-ODM: Actor--Critic Online Data Mixing for Sample-Efficient LLM Pretraining | **proposed** | candidate | 0 | — |
-| Deeper is Not Always Better: Mitigating the Alignment Tax via Confident Layer De | **proposed** | candidate | 0 | — |
 | Vera: A Layered Diffusion Model for Content-Preserving Video Editing | **proposed** | candidate | 0 | — |
 | Shared Tradition, Local Network: An Interaction Model for the Lake District in L | **proposed** | candidate | 0 | — |
 | COSMOLOGICAL EQUATIONS AND EMERGENT SPACETIME FROM A COMPRESSIBLE VORTON VACUUM | **proposed** | candidate | 0 | — |
@@ -254,3 +253,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Randomized YaRN Improves Length Generalization for Long-Context Reasoning | **retired** | rejected | 0 | — |
 | LIBERO-Safety: A Comprehensive Benchmark for Physical and Semantic Safety in Vis | **retired** | rejected | 0 | — |
 | ENHANCING THE COMPETITIVENESS OF INDUSTRIAL ENTERPRISES IN THE CONTEXT OF THE DI | **retired** | rejected | 0 | — |
+| Deeper is Not Always Better: Mitigating the Alignment Tax via Confident Layer De | **retired** | rejected | 0 | — |
