@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 514 · 250 Methoden** — proposed 205 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 45  
+**Cycle 515 · 250 Methoden** — proposed 204 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 46  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -8,7 +8,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 |---|---|---|---|---|
 | MemoryWAM: Efficient World Action Modeling with Persistent Memory | **proposed** | candidate | 0 | — |
 | FlowEdit: Associative Memory for Lifelong Pronunciation Adaptation in Flow-Match | **proposed** | candidate | 0 | — |
-| Closed-Loop Targeted Memory Reactivation during Slow-Wave Sleep Enhances Fear-Ex | **proposed** | candidate | 0 | — |
 | RFC-ATF-14: Agent Trust Fabric -- Assumption Renewal Governance Protocol (ARGP). | **proposed** | candidate | 0 | — |
 | RFC-ATF-13: Agent Trust Fabric -- Agent Capability Emergence Engine (ACEE). Clos | **proposed** | candidate | 0 | — |
 | governance-as-a-lens | **proposed** | candidate | 0 | — |
@@ -212,6 +211,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | AC-ODM: Actor--Critic Online Data Mixing for Sample-Efficient LLM Pretraining | **proposed** | candidate | 0 | — |
 | Vera: A Layered Diffusion Model for Content-Preserving Video Editing | **proposed** | candidate | 0 | — |
 | Stone Programming Paradigm: Language Abstraction | **retired** | rejected | 0 | — |
+| Closed-Loop Targeted Memory Reactivation during Slow-Wave Sleep Enhances Fear-Ex | **retired** | rejected | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
