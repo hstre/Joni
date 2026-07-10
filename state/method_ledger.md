@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 506 · 246 Methoden** — proposed 207 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 39  
+**Cycle 507 · 246 Methoden** — proposed 206 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 40  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -205,7 +205,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | generative-as-a-lens | **proposed** | candidate | 0 | — |
 | PaperClaw: Harnessing Agents for Autonomous Research and Human-in-the-Loop Refin | **proposed** | candidate | 0 | — |
 | SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation | **proposed** | candidate | 0 | — |
-| LIBERO-Safety: A Comprehensive Benchmark for Physical and Semantic Safety in Vis | **proposed** | candidate | 0 | — |
 | ENHANCING THE COMPETITIVENESS OF INDUSTRIAL ENTERPRISES IN THE CONTEXT OF THE DI | **proposed** | candidate | 0 | — |
 | west-as-a-lens | **proposed** | candidate | 0 | — |
 | AC-ODM: Actor--Critic Online Data Mixing for Sample-Efficient LLM Pretraining | **proposed** | candidate | 0 | — |
@@ -252,3 +251,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Deep Research in Physical Sciences: A Multi-Agent Framework and Comprehensive Be | **retired** | rejected | 0 | — |
 | Sub-Billion, Super-Frontier: Small Language Models Rival Zero-Shot Frontier LLMs | **retired** | rejected | 0 | — |
 | Randomized YaRN Improves Length Generalization for Long-Context Reasoning | **retired** | rejected | 0 | — |
+| LIBERO-Safety: A Comprehensive Benchmark for Physical and Semantic Safety in Vis | **retired** | rejected | 0 | — |
