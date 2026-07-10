@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_33 offene(r) Entwurf/Entwürfe._
+_35 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -267,6 +267,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to parallelism." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-513-c95392 · Vorschlag: huggingface
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'video'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-513-2df9f8 · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'video'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________

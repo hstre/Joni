@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 512 · 248 Methoden** — proposed 205 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 43  
+**Cycle 513 · 250 Methoden** — proposed 206 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 44  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -166,7 +166,9 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | javascript-algorithms | **proposed** | candidate | 0 | — |
 | SAM-MT: Real-Time Interactive Multi-Target Video Segmentation | **proposed** | candidate | 0 | — |
 | dynamics-as-a-lens | **proposed** | candidate | 0 | — |
+| SAM-MT: Real-Time Interactive Multi-Target Video Segmentation | **proposed** | candidate | 0 | — |
 | memorywam-as-a-lens | **proposed** | candidate | 0 | — |
+| AutoAnchor: Stable Diffusion Unlearning Using Cross-Attention as a Manifold Surr | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
@@ -210,7 +212,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | west-as-a-lens | **proposed** | candidate | 0 | — |
 | AC-ODM: Actor--Critic Online Data Mixing for Sample-Efficient LLM Pretraining | **proposed** | candidate | 0 | — |
 | Vera: A Layered Diffusion Model for Content-Preserving Video Editing | **proposed** | candidate | 0 | — |
-| COSMOLOGICAL EQUATIONS AND EMERGENT SPACETIME FROM A COMPRESSIBLE VORTON VACUUM | **proposed** | candidate | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
@@ -254,3 +255,4 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | ENHANCING THE COMPETITIVENESS OF INDUSTRIAL ENTERPRISES IN THE CONTEXT OF THE DI | **retired** | rejected | 0 | — |
 | Deeper is Not Always Better: Mitigating the Alignment Tax via Confident Layer De | **retired** | rejected | 0 | — |
 | Shared Tradition, Local Network: An Interaction Model for the Lake District in L | **retired** | rejected | 0 | — |
+| COSMOLOGICAL EQUATIONS AND EMERGENT SPACETIME FROM A COMPRESSIBLE VORTON VACUUM | **retired** | rejected | 0 | — |
