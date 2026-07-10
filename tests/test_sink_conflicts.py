@@ -43,7 +43,7 @@ def test_tolerate_sink_conflicts_closes_a_false_conflict_and_revives_both_claims
     cs = CoreState(seed_core())
     a = cs.learn("routing must always be remote", "forum")
     b = cs.learn("routing must never be remote", "forum")
-    cid = cs.open_conflict((a, b), severity="hard")          # a legacy false conflict, opened directly
+    cid = cs.open_conflict((a, b), severity="hard")          # a legacy false conflict, direct
     assert cs.core.get(a).status.value == "contested"
     assert cs.core.get(b).status.value == "contested"
 
@@ -59,7 +59,7 @@ def test_tolerate_sink_conflicts_closes_a_false_conflict_and_revives_both_claims
 def test_a_real_conflict_is_never_tolerated_by_the_sink_pass():
     cs = CoreState(seed_core())
     a = cs.learn("routing must always be remote", "routing")
-    b = cs.learn("routing must never be remote", "routing")
+    cs.learn("routing must never be remote", "routing")
     cs.detect_and_open_conflicts()                           # a genuine, same-subject conflict
     assert homeostasis.tolerate_sink_conflicts(cs, _Proto(), 1) == 0   # untouched
     assert cs.core.get(a).status.value == "contested"        # stays contested - it IS a dispute
