@@ -427,23 +427,22 @@ class CoreState:
         live = sorted(self._live_claims(), key=lambda c: c.id)
         existing = {frozenset(x.claim_ids[:2])
                     for x in self.core.all(l9.ObjectType.CONFLICT) if len(x.claim_ids) >= 2}
-        # Two structural speed-ups over the old all-pairs loop; NEITHER changes which conflicts
-        # open (verified against the production state - identical opened set):
-        #  1. Bucket by topic. The old loop compared all O(N^2) live pairs and discarded every
-        #     cross-topic / empty-topic pair as its first step, so only same-topic pairs could
-        #     ever open a conflict. Pairing within each topic bucket is the identical candidate set.
-        #  2. Tokenise each claim ONCE, not per pair. The old loop re-ran _tokens/_content on both
-        #     texts inside every pair; on the production state one topic ('forum') holds ~3.3k of
-        #     ~3.9k live claims, so that single bucket is ~5.5M pairs and each claim's text was
-        #     tokenised thousands of times. Precomputing per-claim token/content/polarity (the SAME
-        #     conflict.py primitives, reused - no logic duplicated) cut this from ~82s to ~13s/cycle
-        #     (measured, identical opened set). The residual ~13s is the 5.5M-pair loop itself in
-        #     that one giant 'forum' bucket; shrinking it further needs an incremental
-        #     (new-claims-only) pass, a separate semantics-sensitive change - not done here.
-        # Buckets preserve id order (live is id-sorted), so within a bucket a.id < b.id as before.
+        from . import quality
+        # A conflict is only meaningful between two claims ON THE SAME SUBJECT. Bucket by topic and
+        # pair within each bucket, and SKIP the sink topics ('forum' + the reserved placeholders):
+        #  * Correctness - claims land in a sink because their real subject is unknown, so a
+        #    'forum vs forum' pairing is a category error ('provenance is not a topic'), not a real
+        #    contradiction. On the production state ~99% of opened conflicts were exactly such
+        #    spurious sink pairs; skipping sinks stops the loop manufacturing them.
+        #  * Speed - one sink ('forum') held ~3.3k of ~3.9k live claims (~5.5M pairs, each claim
+        #    re-tokenised thousands of times), which alone cost ~82s/cycle. Skipping it drops the
+        #    whole scan to well under a second.
+        # Within a real-topic bucket each claim is tokenised ONCE (reusing conflict.py's own
+        # primitives) rather than per pair. Buckets preserve id order (live is id-sorted), so within
+        # a bucket a.id < b.id, exactly as the old all-pairs loop compared same-topic pairs.
         by_topic: dict[str, list] = {}
         for c in live:
-            if c.topic:
+            if c.topic and not quality.is_sink_topic(c.topic):
                 by_topic.setdefault(c.topic, []).append(c)
         toks = {c.id: _tokens(c.text) for cl in by_topic.values() for c in cl}
         cont = {c.id: _content(c.text) for cl in by_topic.values() for c in cl}

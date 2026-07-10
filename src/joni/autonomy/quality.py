@@ -111,6 +111,16 @@ def is_reserved_topic(term: str) -> bool:
     return (term or "").strip().lower() in _RESERVED_TOPICS
 
 
+def is_sink_topic(term: str) -> bool:
+    """A provenance/placeholder label, NOT a subject: the reserved set plus ``forum`` (a platform
+    Joni heard a claim ON, not what it is ABOUT). Claims land in a sink precisely because their
+    real subject could not be determined, so two sink claims are not reliably about the same thing
+    - they must never be paired for contradiction ('provenance is not a topic'). Used by conflict
+    detection (skip these buckets) and the sink-conflict cleanup."""
+    t = (term or "").strip().lower()
+    return t == "forum" or t in _RESERVED_TOPICS
+
+
 def is_meaningful_term(term: str) -> bool:
     """Could this single token plausibly name a concept worth developing or asking about?
 

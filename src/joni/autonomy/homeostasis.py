@@ -121,6 +121,60 @@ def review_numeric_duplicate_conflicts(cs, proto, cycle: int = 0, *, max_review:
     return reviewed
 
 
+def tolerate_sink_conflicts(cs, proto, cycle: int = 0, *, max_review: int = 40) -> int:
+    """Close the false conflicts the pre-fix detector opened between two SINK-topic claims.
+
+    A conflict needs two claims on the SAME SUBJECT, but 'forum' (and the reserved placeholders)
+    are provenance/placeholder labels, not subjects - claims sit there because their real subject
+    could not be determined, so a 'forum vs forum' pairing is not about the same thing and its
+    'contradiction' is an artifact of the old category error, not a real disagreement. On the
+    production state this was ~99% of all open conflicts. ``detect_and_open_conflicts`` no longer
+    opens these; this drains the stock the early cycles already opened.
+
+    Deterministic, structural rule - NOT a force-resolve of a real dispute (which stays the
+    operator's call): the conflict is closed TOLERATED, so NO claim is superseded and nothing false
+    reaches the persona (same disposition ``conflict_resolution`` uses for an operator's 'kein
+    Widerspruch', and the same autonomous-cleanup pattern as the numeric-duplicate review).
+    Bounded per cycle, gate-recorded, fail-open per item."""
+    from . import quality
+    from .conflict_resolution import _other_open
+    by_id = {c.id: c for c in cs.core.all(l9.ObjectType.CLAIM)}
+    closed = 0
+    for conf in cs.core.open_conflicts():
+        if closed >= max_review:
+            break
+        if conf.conflict_status.value not in ("open", "under_review"):
+            continue
+        ids = [i for i in conf.claim_ids[:2] if i in by_id]
+        if len(ids) != 2:
+            continue
+        ta = getattr(by_id[ids[0]], "topic", "") or ""
+        tb = getattr(by_id[ids[1]], "topic", "") or ""
+        if not (quality.is_sink_topic(ta) and quality.is_sink_topic(tb)):
+            continue
+        try:
+            cs.tolerate_conflict(conf.id, reason=(
+                "sink-pair: both claims sit in a placeholder/'forum' provenance sink, so the "
+                "pairing was a category-error artifact of the pre-fix detector, not a real "
+                "contradiction - tolerated, no claim superseded"))
+            # revive each side to active IF this was its ONLY open contest - exactly the operator's
+            # 'keiner' path (conflict_resolution): a false conflict must not leave a claim stranded
+            # in CONTESTED limbo, but a claim still held by a REAL conflict stays contested.
+            for side in ids:
+                c = cs.core.get(side)
+                if (c is not None and getattr(c.status, "value", "") == "contested"
+                        and not _other_open(cs, side, conf.id)):
+                    cs.activate_claim(side)
+        except Exception:  # noqa: BLE001 - a stubborn conflict must never break the cycle
+            continue
+        closed += 1
+    if closed:
+        proto.record(cycle, "regulate",
+                     f"tolerated {closed} spurious sink-pair conflict(s) - 'provenance is not a "
+                     "topic', so these were never real contradictions; no claim superseded")
+    return closed
+
+
 def retire_offdomain_topics(cs, extensions: dict, proto, cycle: int = 0, *,
                             max_check: int = 4, max_retire: int = 3) -> int:
     """Drain off-domain *real-word* topics the lexical junk pass cannot see (laxiflora, cotton,
