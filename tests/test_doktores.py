@@ -22,13 +22,19 @@ def _paper(key="arxiv:p1", source="arxiv"):
                 "coverage for autonomous reading agents.")
 
 
-def _online(monkeypatch, tmp_path, reply, scout=(), agents=()):
+def _online(monkeypatch, tmp_path, reply, scout=(), agents=(), full_text=None, ground=None):
     monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
-    monkeypatch.setattr(model_call, "_complete", lambda profile, system, user: reply)
-    # deterministic: no real network scouting (papers OR agent repos) unless a test asks for it
+
+    # the review is two calls: abstract triage, then (if it passed) full-text grounding. Route by
+    # the grounding system prompt so a test can give a different reply for each stage.
+    def complete(profile, system, user):
+        return ground if (ground is not None and "FULL TEXT" in system) else reply
+    monkeypatch.setattr(model_call, "_complete", complete)
+    # deterministic: no real network scouting (papers OR agent repos) or PDF fetch in tests
     monkeypatch.setattr(doktores, "_scout", lambda queries: list(scout))
     monkeypatch.setattr(doktores, "_agent_scout", lambda extensions: list(agents))
+    monkeypatch.setattr(doktores, "_full_text", lambda item: full_text)
 
 
 _APPLICABLE = (
@@ -40,6 +46,16 @@ _APPLICABLE = (
 )
 _INAPPLICABLE = '{"applicable": false}'
 _CORE_TARGET = '{"applicable": true, "component_key": "operators", "title": "x", "desired": "y"}'
+# what the model returns AFTER reading the full text - grounded in the real method, not the abstract
+_GROUNDED = (
+    '{"applicable": true, "component_key": "reader-sources", '
+    '"title": "Erweitere die Leseschicht um die konkrete Retrieval-Schleife", '
+    '"motivation": "Der Volltext zeigt: die Methode ist eine iterative Query-Verfeinerung mit '
+    'Rueckkopplung, nicht bloss ein Ranking.", '
+    '"desired": "Implementiere in reader.py die im Paper beschriebene Feedback-Schleife (Retrieve '
+    '-> Rerank -> Query-Refine), Abschnitt 4.", '
+    '"acceptance": "Recall@5 steigt um >=3 Punkte gegenueber der flachen Suche."}'
+)
 
 
 def test_off_by_default(monkeypatch, tmp_path):
@@ -155,6 +171,39 @@ def test_a_peer_agent_repo_becomes_a_non_core_auftrag(monkeypatch, tmp_path):
     assert len(new) == 1
     assert new[0]["found_by"] == "doktores" and new[0]["touches_core"] is False
     assert ext["doktores_review"][-1]["source"] == "github"    # a peer agent's code was reviewed
+
+
+def test_full_text_grounds_the_order_in_the_real_method_not_the_abstract(monkeypatch, tmp_path):
+    # the abstract passes triage, then Doktores READS THE PAPER and re-grounds the order in the
+    # actual method - the important part is in the body, not the summary.
+    _online(monkeypatch, tmp_path, _APPLICABLE,
+            full_text="Section 4: the method is an iterative retrieve-rerank-refine feedback loop.",
+            ground=_GROUNDED)
+    ext: dict = {}
+    new = doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=[_paper()])
+    assert len(new) == 1
+    order = new[0]
+    assert "Feedback-Schleife" in order["desired_capability"]    # the grounded method, not abstract
+    assert order["evidence"]["grounded_in"] == "full-text"
+
+
+def test_full_text_can_refute_an_oversold_abstract(monkeypatch, tmp_path):
+    # the abstract sounded applicable, but the full text shows it does not really map to a module:
+    # the order is dropped (a quality gain the abstract-only review could not make).
+    _online(monkeypatch, tmp_path, _APPLICABLE,
+            full_text="On reading, this is a survey with no implementable method.",
+            ground=_INAPPLICABLE)
+    ext: dict = {}
+    assert doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=[_paper()]) == []
+
+
+def test_no_full_text_falls_back_to_the_abstract_verdict(monkeypatch, tmp_path):
+    # a source with no fetchable PDF (GitHub repo, paywalled): the abstract verdict still stands,
+    # so peer-practice and closed papers are not lost - just marked as abstract-grounded.
+    _online(monkeypatch, tmp_path, _APPLICABLE, full_text=None)     # no body available
+    ext: dict = {}
+    new = doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=[_paper()])
+    assert len(new) == 1 and new[0]["evidence"]["grounded_in"] == "abstract"
 
 
 def _with_hypothesis(cs, text="local routing bounds memory consolidation", topic="memory"):
