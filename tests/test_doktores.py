@@ -22,12 +22,13 @@ def _paper(key="arxiv:p1", source="arxiv"):
                 "coverage for autonomous reading agents.")
 
 
-def _online(monkeypatch, tmp_path, reply, scout=()):
+def _online(monkeypatch, tmp_path, reply, scout=(), agents=()):
     monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
     monkeypatch.setattr(model_call, "_complete", lambda profile, system, user: reply)
-    # deterministic: no real network scouting unless a test asks for it
+    # deterministic: no real network scouting (papers OR agent repos) unless a test asks for it
     monkeypatch.setattr(doktores, "_scout", lambda queries: list(scout))
+    monkeypatch.setattr(doktores, "_agent_scout", lambda extensions: list(agents))
 
 
 _APPLICABLE = (
@@ -107,6 +108,53 @@ def test_zenodo_passive_items_are_throttled(monkeypatch, tmp_path):
     reviewed = ext["doktores_review"]
     assert sum(1 for e in reviewed if e["source"] == "zenodo") <= 1
     assert any(e["source"] == "arxiv" for e in reviewed)    # the scouted paper got reviewed
+
+
+def _fake_github(url, headers=None):
+    import json
+    return json.dumps({"items": [
+        {"full_name": "acme/memory-agent", "name": "memory-agent",
+         "html_url": "https://github.com/acme/memory-agent",
+         "description": "Long-term memory for LLM agents via hybrid vector+graph retrieval.",
+         "stargazers_count": 42},
+        {"full_name": "acme/tool-agent", "name": "tool-agent",
+         "html_url": "https://github.com/acme/tool-agent",
+         "description": "A tool-use planning loop for autonomous agents.", "stargazers_count": 7},
+    ]})
+
+
+def test_agent_scout_reads_github_agent_repos_and_rotates_the_queries(monkeypatch):
+    # watching how OTHER agents are built: GitHub agent repos enter as reviewable 'github' items,
+    # and the query window advances each firing so fresh, active projects keep surfacing.
+    from joni.autonomy import sources
+    monkeypatch.delenv("JONI_DOKTORES_AGENTS", raising=False)
+    monkeypatch.setattr(sources, "_get", _fake_github)
+    ext: dict = {}
+    items = doktores._agent_scout(ext)
+    assert items and all(it.source == "github" for it in items)
+    assert any(it.id == "acme/memory-agent" for it in items)   # repo full_name is the item id
+    assert ext["agent_scout_idx"] == 2                          # the query window advanced
+    doktores._agent_scout(ext)
+    assert ext["agent_scout_idx"] == 4                          # ...and again -> fresh queries
+
+
+def test_agent_scout_respects_the_off_flag(monkeypatch):
+    monkeypatch.setenv("JONI_DOKTORES_AGENTS", "0")
+    assert doktores._agent_scout({}) == []
+
+
+def test_a_peer_agent_repo_becomes_a_non_core_auftrag(monkeypatch, tmp_path):
+    # an applicable peer-agent codebase becomes an Auftrag through the SAME gate/commission channel
+    # as a paper - a source to assess and adapt, never the protected core, never self-applied.
+    repo = Item("github", "acme/memory-agent", "memory-agent",
+                "https://github.com/acme/memory-agent",
+                "Hybrid vector+graph long-term memory for LLM agents.", 42.0)
+    _online(monkeypatch, tmp_path, _APPLICABLE, agents=[repo])
+    ext: dict = {}
+    new = doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=[])
+    assert len(new) == 1
+    assert new[0]["found_by"] == "doktores" and new[0]["touches_core"] is False
+    assert ext["doktores_review"][-1]["source"] == "github"    # a peer agent's code was reviewed
 
 
 def _with_hypothesis(cs, text="local routing bounds memory consolidation", topic="memory"):
