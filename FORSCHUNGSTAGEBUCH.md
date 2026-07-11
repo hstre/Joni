@@ -3089,3 +3089,17 @@ Der Betreiber wählte den **harten Stopp**: Moltbook-Autoposts eskalieren ab jet
 **Output:** `state/method_ledger.md` (aktuelle Tabelle) + `state/method_ledger.jsonl` (append-only **Übergangs**-Events — nur bei echtem Zustandswechsel, kein Bloat) + eine `method_ledger`-Protokollzeile. Verdrahtet read-only nach dem Collapse-Panel.
 
 **[Prinzip]** Das Zustandsbuch ist ein **View auf das bestehende Ledger, keine neue Quelle der Wahrheit** — die versiegelten Trial-Records bleiben autoritativ; es projiziert sie, entscheidet keine Verdikte, erfindet keine Provenance. Dieselbe Linie wie überall: messen und zeigen, nie sich selbst zur Autorität machen.
+
+### Eintrag 2026-07-11 (XLII) — Kleine geparkte Idee: ein „Counterframe-Operator" (negative residual steering) — festgehalten, nicht gebaut
+
+**[Idee, geparkt]** Eine Notiz zum späteren Aufgreifen, ausdrücklich **kein Bau**. Angeregt aus dem — nicht ganz sauberen — Repo `github.com/Ruffian-L/ontological-inversion`. Aus dem Paper ist nicht mehr herauszulesen als *eine* kleine, aber reale Mechanik; die große Theorie darum herum ist Überbau und wird verworfen.
+
+**Was real ist (der Kern, entkleidet):** *Context-conditioned semantic redirection through negative residual steering.* Konkret: Man nimmt die aktuelle semantische Interpretation eines Modells und erzeugt durch einen gezielten **Hidden-State-Eingriff** (ein negativer Steering-Vektor auf den Residualstrom, entlang einer Kontrastachse) eine **alternative Lesart** — eine Gegen-Interpretation zur naheliegenden. Das ist ein billiger **Counter-Reading-/Reframing-Generator**, mehr nicht.
+
+**Wo es hingehörte, falls je gebaut:** als **Geschwister-Sitz des Gesprächskreis-Falsifikators** — nicht als dessen Ersatz. Sein Output wäre wie jeder Modell-Output eine **nicht-autoritative Quelle**, die den normalen Weg nimmt: ClaimGraph → Konflikt-Erkennung → Einlass-Gate → Layer 9. Er entscheidet nichts, schreibt nichts, und ersetzt **weder DESi noch Layer 9**. Der einzige Unterschied zum heutigen Prompt-Falsifikator: die Gegen-Lesart entstünde nicht per Prompt, sondern per Aktivierungs-Eingriff.
+
+**Die harte Bedingung (der Grund fürs Parken):** Der Eingriff braucht **Zugriff auf die Hidden States** — also ein **lokales Modell**, kein Cloud-API hinter einem Broker. Joni läuft über gebrokerte API-Calls ohne Logit-/Aktivierungszugriff (dasselbe, was dem Verifier den Logprob-Pfad verwehrt). Das liefe also **nur dort, wo ein lokales Modell steht** (Hermine/Laptop), **nicht** in Jonis Cloud-Loop.
+
+**Was verworfen wird (Überbau, ehrlich benannt):** die Groß-Ansprüche des Papers — „Ontological Inversion", „self-involution", „stable recursive self-check without information loss". Das ist überzogen und unbelegt. Bezeichnend: **Jonis eigener Verifier** (Dimension `overclaim_risk`, Red-Flags) würde genau solche Formulierungen als übermäßigen Anspruch markieren — die Idee fällt unter das Prüfraster, das wir gerade erst gebaut haben.
+
+**[Bedingung fürs Ernstnehmen]** Bevor das je mehr als eine Notiz wird: ein **A/B gegen den bestehenden Prompt-Falsifikator** — bringt die aktivierungsbasierte Gegen-Lesart nachweisbar *andere/bessere* Widersprüche als der billige Prompt-Weg? Ohne diese Messung ist es Spielerei. Dieselbe observe-then-adopt-Disziplin wie überall. Bis dahin: **geparkt**, hier vermerkt „falls wir es mal brauchen".
