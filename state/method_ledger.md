@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 524 · 257 Methoden** — proposed 210 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 525 · 258 Methoden** — proposed 211 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -173,6 +173,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | discussed-as-a-lens | **proposed** | candidate | 0 | — |
 | Context Sliced Attention Network: Designing and Theoretical Framework of Deep Se | **proposed** | candidate | 0 | — |
 | GROMACS: High performance molecular simulations through multi-level parallelism  | **proposed** | candidate | 0 | — |
+| integrates-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
