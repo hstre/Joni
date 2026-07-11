@@ -4,13 +4,22 @@ name: joni-auftrag
 # Auftrag, opens a PR, and - once the checks are green - the PR is auto-merged (no human; only
 # the protected core stays human-gated via the separate joni-core-ask path).
 #
-# COST: this build calls the Claude API (ANTHROPIC_API_KEY), so it is **manual-only**
-# (workflow_dispatch) to avoid recurring API spend. The operator clears Joni's Aufträge by
-# invoking Claude directly instead; the loop still files joni-auftrag issues as the work queue.
-# Re-add the `schedule` / `issues: labeled` triggers below to make it run automatically again.
+# ARMED (operator, 2026-07-11): a DAILY schedule now clears the queue autonomously - Joni finds
+# AND builds. Cost is bounded: each run takes the OLDEST open joni-auftrag and does at most ONE
+# Claude build; an empty queue costs almost nothing (the pick step runs, then every later step
+# gates on `issue != ''` and skips before any Claude call). This is safe to arm because the
+# auto-merge was hardened (#221): a fork PR is refused, the EXACT head SHA is verified and merged
+# (--match-head-commit), and a diff-gate rejects any PR touching joni_core.lock / .github/ /
+# scripts/ / pyproject.toml / the kernel - regardless of what the (LLM-authored) order asked.
+# Requires the ANTHROPIC_API_KEY secret; without it the run comments "no key" and skips.
 # A `joni-auftrag-wip` label marks an order as taken so it is never picked up twice.
+# To disarm: comment out the `schedule` below (workflow_dispatch stays for manual runs).
+# For INSTANT builds instead of daily, add `issues: {types: [labeled]}` (the pick step already
+# handles it) - more responsive, less cost-paced.
 
 on:
+  schedule:
+    - cron: "23 18 * * *"    # daily: clear the oldest open Auftrag (one Claude build/run, max)
   workflow_dispatch:
 
 permissions:
