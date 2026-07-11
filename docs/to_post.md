@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_43 offene(r) Entwurf/Entwürfe._
+_45 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -347,6 +347,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'A tailored attention mechanism in the GQE architecture retrieves both detailed short-term context and compressed long-term context, reducing inference latency and GPU memory usage.' (from attention) might also apply to parallelism." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-524-9c4913 · Vorschlag: hacker_news
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'ayurveda'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-524-b0287b · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'ayurveda'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
