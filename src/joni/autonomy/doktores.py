@@ -130,6 +130,74 @@ def _parse(output: str) -> dict | None:
     return obj if isinstance(obj, dict) else None
 
 
+# The abstract is triage; the METHOD is in the body. Once an abstract passes, Doktores READS THE
+# PAPER (full text) and re-grounds the order in what it actually does - so the desired/acceptance
+# name the real technique, not an abstract-level guess (and an oversold abstract can be dropped).
+_GROUND_SYS = (
+    "You are Doktores. An abstract already suggested this source could improve one of Joni's "
+    "non-core modules. Now you have the source's FULL TEXT - the actual method, not just the "
+    "claim. Re-ground the order in what it REALLY does. Output ONLY a JSON object. If it "
+    "concretely maps onto a listed module: {\"applicable\": true, \"component_key\": <EXACTLY one "
+    "allowlist "
+    "key>, \"title\": <short German imperative order>, \"motivation\": <why, grounded in the "
+    "METHOD, German>, \"desired\": <the concrete non-core change, naming the actual "
+    "technique/algorithm from the text, German>, \"acceptance\": <a measurable acceptance "
+    "criterion, German>}. If the full text shows the abstract oversold it and it does NOT map onto "
+    "a listed module: {\"applicable\": false}. No prose, no markdown."
+)
+
+
+def _full_text(item) -> str | None:
+    """Best-effort FULL paper text (not just the abstract) - the method lives in the body. arXiv
+    PDFs and direct-.pdf urls only; None for GitHub repos, landing-page-only or paywalled sources
+    (then the abstract verdict stands). Bounded by pdf.extract_text's page cap; never raises."""
+    try:
+        from . import pdf
+        if not pdf.available():
+            return None
+        src = getattr(item, "source", "")
+        doc = None
+        if src == "arxiv":
+            doc = pdf.read_arxiv(item)
+        elif str(getattr(item, "url", "")).lower().endswith(".pdf"):
+            doc = pdf.read_url(getattr(item, "url", ""), source_id=getattr(item, "key", ""),
+                               title=getattr(item, "title", ""))
+        return (getattr(doc, "text", "") or "").strip() or None if doc is not None else None
+    except Exception:  # noqa: BLE001 - full text is best-effort enrichment, never fatal
+        return None
+
+
+def _ground_prompt(item, body: str) -> str:
+    return (
+        f"SOURCE ({getattr(item, 'source', '?')}): {getattr(item, 'title', '')}\n"
+        f"URL: {getattr(item, 'url', '')}\n"
+        f"FULL TEXT (method/body, truncated):\n{body[:8000]}\n\n"
+        f"Joni's non-core modules you may target (and ONLY these):\n{_allowlist_block()}\n\n"
+        "Ground the order in the ACTUAL method from the full text. Answer with the JSON only."
+    )
+
+
+def _ground_on_full_text(item, *, cycle: int, budget, runs_per_week: int, store_dir):
+    """The abstract passed triage; now READ THE PAPER and re-ground the order in the actual method.
+    Returns a grounded verdict dict; ``False`` if the full text refutes the abstract (drop the
+    order); ``None`` if no full text is fetchable or the budget is spent (the abstract verdict
+    stands). One extra model call, only for a paper about to be filed (<= _MAX_NEW/cycle)."""
+    body = _full_text(item)
+    if not body:
+        return None
+    output, _cap = model_call.call(
+        model_profile.profile("joni-hard"), _GROUND_SYS, _ground_prompt(item, body),
+        run_id=f"joni-c{cycle}-doktores-ground", store_dir=store_dir,
+        escalation_reason="doktores-full-text-grounding", budget=budget,
+        runs_per_week=runs_per_week)
+    if output is None:
+        return None                                            # budget cap -> keep abstract verdict
+    v = _parse(output)
+    if not v:
+        return None
+    return v if v.get("applicable") is True else False
+
+
 def _arxiv_scout(queries) -> list:
     """arXiv, **relevance-sorted** and **phrase-quoted**, so it returns the most ON-TOPIC methods
     (the default ArxivFetcher sorts by date). Fails quietly to []."""
@@ -428,6 +496,22 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
             continue                                           # this module ordered recently
         if len(new) >= _MAX_NEW:
             continue
+        # The abstract passed triage; now READ THE PAPER. The important part - the actual method -
+        # is in the body, not the summary. Re-ground the order in it; drop an oversold abstract;
+        # if no full text is fetchable, the abstract verdict stands.
+        grounded = _ground_on_full_text(item, cycle=cycle, budget=budget,
+                                        runs_per_week=runs_per_week, store_dir=store_dir)
+        if grounded is False:
+            proto.record(cycle, "note",
+                         f"Doktores: Volltext von '{getattr(item, 'title', '')[:80]}' widerlegt "
+                         "das Abstract-Versprechen - kein Auftrag")
+            continue
+        grounded_in = "full-text" if grounded else "abstract"
+        if grounded:
+            key = str(grounded.get("component_key") or key)
+            if key not in commission._EXTENSIBLE:
+                continue
+            verdict = grounded
         order = commission._commission(
             f"doktores:{key}", key, cycle=cycle,
             title=str(verdict.get("title") or "Erweiterung aus Doktores-Review"),
@@ -435,7 +519,8 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
             desired=str(verdict.get("desired", "")),
             acceptance=str(verdict.get("acceptance", "")),
             evidence={"found_by": "doktores", "source": getattr(item, "source", ""),
-                      "ref": getattr(item, "url", ""), "source_title": getattr(item, "title", "")})
+                      "ref": getattr(item, "url", ""), "source_title": getattr(item, "title", ""),
+                      "grounded_in": grounded_in})
         order["found_by"] = "doktores"                         # provenance: literature/tool review
         filed[key] = cycle
         commission_log = extensions.setdefault("commissions", [])
