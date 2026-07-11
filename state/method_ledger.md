@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 521 · 254 Methoden** — proposed 207 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 522 · 255 Methoden** — proposed 208 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -170,6 +170,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | A Memory-Augmented Extension of Random Forest: The Memory-Augmented Forest (MAF) | **proposed** | candidate | 0 | — |
 | Research on Progressive Compression Forest Architecture with Multi-Layer Sequent | **proposed** | candidate | 0 | — |
 | skill-as-a-lens | **proposed** | candidate | 0 | — |
+| discussed-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
