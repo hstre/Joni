@@ -71,7 +71,8 @@ _MODULE_QUERIES = {
 
 _SYS = (
     "You are Doktores, the method-review arm of an autonomous reasoning agent named Joni. You read "
-    "ONE external paper or software extension and judge ONE thing: could it concretely improve one "
+    "ONE external paper, software extension, or another agent's codebase and judge ONE thing: "
+    "could it concretely improve one "
     "of Joni's OWN non-core modules (given to you as an allowlist), WITHOUT touching his protected "
     "core? Be strict and grounded: only say yes when the source actually describes a method, "
     "technique or tool that maps onto a listed module; never invent a capability the source does "
@@ -195,6 +196,75 @@ def _github_scout(queries) -> list:
         return []
 
 
+# Watching PEERS, not just papers: how OTHER agents are actually BUILT. The scouts above read
+# theory (arXiv/OpenAlex/SSRN); this reads PRACTICE - agent codebases and extensions on GitHub,
+# how other agents are programmed. Sorted by RECENTLY UPDATED (not stars) and rotated over a query
+# pool, so freshly-active projects keep surfacing instead of dedup-exhausting into the same famous
+# repos a fixed stars-sorted search would. Each repo is judged by the SAME review: does this peer's
+# technique map onto one of Joni's non-core modules? A peer's capability is a SOURCE to assess, not
+# an authority to copy - Joni's own discipline, which is why importing it through the gate is safe.
+_AGENT_QUERIES = (
+    "autonomous LLM agent", "LLM agent memory", "agent tool use", "self-improving agent",
+    "agent skill library", "agentic retrieval augmented generation", "LLM agent architecture",
+    "agent planning reasoning", "long-term memory agent", "agent self-reflection",
+    "multi-agent collaboration framework", "agent evaluation harness",
+)
+
+
+def _agent_scout(extensions: dict) -> list:
+    """Search GitHub for how OTHER agents are built - architectures and extensions, not papers.
+    Sorted by recently-updated and rotated over ``_AGENT_QUERIES`` so fresh, active projects keep
+    coming (a stars-sorted fixed query re-surfaces the same famous repos and dedup-exhausts).
+    Best-effort -> [] (never breaks the cycle). Off with ``JONI_DOKTORES_AGENTS=0``."""
+    if os.getenv("JONI_DOKTORES_AGENTS", "1") == "0":
+        return []
+    try:
+        import urllib.parse
+
+        from .sources import Item, _get
+        n = len(_AGENT_QUERIES)
+        idx = int(extensions.get("agent_scout_idx", 0)) % n
+        extensions["agent_scout_idx"] = (idx + 2) % n          # rotate the query window each firing
+        terms = [_AGENT_QUERIES[idx], _AGENT_QUERIES[(idx + 1) % n]]
+        headers = {"Accept": "application/vnd.github+json"}
+        token = os.getenv("GITHUB_TOKEN")
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        out, seen = [], set()
+        for term in terms:
+            url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
+                {"q": f"{term} in:name,description,readme", "sort": "updated", "order": "desc",
+                 "per_page": _SCOUT_PER_SOURCE})
+            try:
+                data = json.loads(_get(url, headers))
+            except Exception:  # noqa: BLE001 - rate limit / network: skip this term, keep the rest
+                continue
+            for repo in data.get("items", [])[:_SCOUT_PER_SOURCE]:
+                full = repo.get("full_name", "")
+                if not full or full in seen:
+                    continue
+                seen.add(full)
+                out.append(Item("github", full, repo.get("name", full),
+                                repo.get("html_url", f"https://github.com/{full}"),
+                                repo.get("description") or "",
+                                float(repo.get("stargazers_count") or 0)))
+        return out
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _interleave(a: list, b: list) -> list:
+    """Alternate two lists (a, b, a, b, ...), keeping leftovers - so agent-practice finds and
+    academic finds share the bounded review slots instead of one crowding the other out."""
+    out = []
+    for i in range(max(len(a), len(b))):
+        if i < len(a):
+            out.append(a[i])
+        if i < len(b):
+            out.append(b[i])
+    return out
+
+
 def _scout(queries) -> list:
     """Best-effort targeted scouting for one non-core module across the high-signal sources, each
     **relevance-sorted** and best-effort: arXiv + OpenAlex (which also indexes SSRN) + a dedicated
@@ -305,9 +375,12 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
         extensions["doktores_module_idx"] = (midx + 1) % len(mkeys)
         target_module = mkeys[midx]
     scouted = _scout(_MODULE_QUERIES.get(target_module, ()))
-    # Scouted (relevance-sorted arXiv/OpenAlex/SSRN/GitHub) is reviewed first; the passive feed
-    # fills the rest, but the Zenodo "most recent" firehose is capped so it cannot crowd out the
-    # on-topic finds.
+    # Also watch how OTHER agents are built (GitHub agent codebases/extensions), interleaved with
+    # the academic scout so peer-practice and papers share the review slots. Same review, same gate.
+    scouted = _interleave(_agent_scout(extensions), scouted)
+    # Scouted (relevance-sorted arXiv/OpenAlex/SSRN/GitHub + agent repos) is reviewed first; the
+    # passive feed fills the rest, but the Zenodo "most recent" firehose is capped so it cannot
+    # crowd out the on-topic finds.
     reviewable, batch, zen = [], set(), 0
     for it in list(scouted) + list(items or []):
         src = getattr(it, "source", "")
