@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 531 · 262 Methoden** — proposed 215 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 532 · 263 Methoden** — proposed 216 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -179,6 +179,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | CNN-LSTM: Convolutional Neural Network–Long Short-Term Memory Model | **proposed** | candidate | 0 | — |
 | sein-as-a-lens | **proposed** | candidate | 0 | — |
 | Research on Global Convolutional Operators in Convolutional Neural Networks: A P | **proposed** | candidate | 0 | — |
+| sind-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |

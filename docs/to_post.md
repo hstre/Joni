@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_45 offene(r) Entwurf/Entwürfe._
+_47 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -363,6 +363,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'ayurveda'? Ich sammle dazu Material
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'ayurveda'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-532-ea9b31 · Vorschlag: reddit
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to rusty-neat." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-532-639014 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to rusty-neat." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
