@@ -9,8 +9,8 @@ def test_doc_ocr_dormant_without_the_flag(tmp_path, monkeypatch):
 
 
 def test_doc_ocr_parses_via_file_parser_and_is_capture_stable(tmp_path, monkeypatch):
-    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_OCR_OPENROUTER", "1")
+    monkeypatch.setattr(doc_ocr, "enabled", lambda: True)   # OCR on; don't hang on the embed model
     calls = {"n": 0}
 
     def fake_complete(profile, system, user, attachment=None):
@@ -45,8 +45,8 @@ def test_ocr_uses_a_large_transcription_budget_not_the_768_proposal_cap(monkeypa
 
 def test_ocr_attachment_is_always_pdf_scoped(tmp_path, monkeypatch):
     # OpenRouter's file-parser is PDF-scoped; parse must send application/pdf, never an image mime
-    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_OCR_OPENROUTER", "1")
+    monkeypatch.setattr(doc_ocr, "enabled", lambda: True)   # OCR on; don't hang on the embed model
     seen = {}
 
     def fake_complete(profile, system, user, attachment=None):
@@ -164,8 +164,8 @@ class _StubBudget:
 def test_paid_ocr_engine_is_budget_gated_and_charged(tmp_path, monkeypatch):
     # mistral-ocr bills per page; est_call_cost is €0 on the prepaid OpenRouter path, so doc_ocr
     # must gate + charge it itself, else the paid engine bypasses the weekly cap.
-    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_OCR_OPENROUTER", "1")
+    monkeypatch.setattr(doc_ocr, "enabled", lambda: True)   # OCR on; don't hang on the embed model
     monkeypatch.setenv("JONI_OCR_ENGINE", "mistral-ocr")
     monkeypatch.setenv("JONI_COST_PER_OCR_CALL", "0.02")
     monkeypatch.setattr(model_call, "_complete", lambda p, s, u, attachment=None: "SCAN TEXT")
@@ -180,8 +180,8 @@ def test_paid_ocr_engine_is_budget_gated_and_charged(tmp_path, monkeypatch):
 
 
 def test_free_ocr_engine_is_not_charged(tmp_path, monkeypatch):
-    monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_OCR_OPENROUTER", "1")
+    monkeypatch.setattr(doc_ocr, "enabled", lambda: True)        # OCR on; don't hang on embed model
     monkeypatch.delenv("JONI_OCR_ENGINE", raising=False)          # default cloudflare-ai (free)
     monkeypatch.setattr(model_call, "_complete", lambda p, s, u, attachment=None: "TEXT")
     b = _StubBudget(0.0)                                          # even at €0 remaining
