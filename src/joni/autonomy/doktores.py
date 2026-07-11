@@ -519,6 +519,24 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
             if key not in commission._EXTENSIBLE:
                 continue
             verdict = grounded
+        # Probabilistic verifier - an escalation stage (shadow by default): re-assess this
+        # to-be-filed commission on continuous, multi-dimensional signals and log what it WOULD
+        # decide. In 'shadow' it changes nothing, so both loops run in parallel and we evaluate
+        # which was more sensible; in 'enforce' a weak/risky verdict can hold back the auto-file.
+        from . import verifier
+        vres = verifier.verify(item, verdict, grounded, budget=budget, cycle=cycle,
+                               runs_per_week=runs_per_week, store_dir=store_dir)
+        if vres is not None:
+            vlog = extensions.setdefault("verifier_shadow", [])
+            vlog.append({"cycle": cycle, "plain_action": "file", **vres.audit})
+            extensions["verifier_shadow"] = vlog[-200:]
+            proto.record(cycle, "note",
+                         f"Verifier [{verifier.config.load().mode}] zu "
+                         f"'{getattr(item, 'title', '')[:60]}': würde '{vres.action}' "
+                         f"(agg {vres.aggregate_score}, conf {vres.confidence}"
+                         + (f", Veto {vres.veto}" if vres.veto else "") + ")")
+            if verifier.config.load().mode == "enforce" and vres.action != "file":
+                continue                                   # verifier holds back this auto-file
         order = commission._commission(
             f"doktores:{key}", key, cycle=cycle,
             title=str(verdict.get("title") or "Erweiterung aus Doktores-Review"),

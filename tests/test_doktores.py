@@ -25,6 +25,7 @@ def _paper(key="arxiv:p1", source="arxiv"):
 def _online(monkeypatch, tmp_path, reply, scout=(), agents=(), full_text=None, ground=None):
     monkeypatch.setenv("JONI_SEMANTIC_PROPOSALS", "1")
     monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    monkeypatch.setenv("JONI_VERIFIER", "0")   # the verifier has its own tests; keep these pure
 
     # the review is two calls: abstract triage, then (if it passed) full-text grounding. Route by
     # the grounding system prompt so a test can give a different reply for each stage.
