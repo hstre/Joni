@@ -8,11 +8,14 @@ written unfiltered; only the source id/title and the structured verdict/scores g
 from __future__ import annotations
 
 
-def record(item, verdict, grounded, esc, dims, red_flags, decision, reps, cost, cfg) -> dict:
+def record(item, verdict, grounded, esc, dims, red_flags, decision, reps, cost, cfg,
+           full_text=None) -> dict:
     return {
         "source": getattr(item, "key", getattr(item, "id", "")),
         "title": (getattr(item, "title", "") or "")[:160],
         "target_module": verdict.get("component_key", ""),
+        # what the VERIFIER actually judged on (the whole paper when fetchable, else the abstract)
+        "verifier_evidence": "full-text" if (full_text or "").strip() else "abstract",
         "grounded_in": "full-text" if isinstance(grounded, dict) else "abstract",
         "escalation_reasons": list(esc.reasons),
         "mode": cfg.mode,
