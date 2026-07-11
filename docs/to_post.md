@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_47 offene(r) Entwurf/Entwürfe._
+_49 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -379,6 +379,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to rusty-neat." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-536-1db305 · Vorschlag: lesswrong
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Encoding forum thread dependencies using the CAQFM's quantum correlation measures (Pearson, Spearman, Kendall Tau, Mutual Information, Distance Correlation) predicts the emergence of a university governance norm within 3 months significantly better than topic-model baselines." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-536-37ee63 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Encoding forum thread dependencies using the CAQFM's quantum correlation measures (Pearson, Spearman, Kendall Tau, Mutual Information, Distance Correlation) predicts the emergence of a university governance norm within 3 months significantly better than topic-model baselines." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
