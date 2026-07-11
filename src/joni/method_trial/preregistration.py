@@ -1,6 +1,6 @@
 """Stage 0 — the PRE-REGISTRATION of the method-transfer experiment (frozen before any data).
 
-Per the plan (``docs/METHOD_TRIAL_MEASUREMENT_PLAN.md`` v2), the analysis is locked *before* a single
+Per the plan (``design-notes/METHOD_TRIAL_MEASUREMENT_PLAN.md`` v2), the analysis is locked *before* a single
 task meets a solver, so results cannot be rationalised after the fact. This module IS that lock: the
 spec below is content-hashed, and a test pins the hash — any change to the pre-registration must be a
 deliberate, reviewed edit that updates the pinned hash, never a silent post-hoc tweak.

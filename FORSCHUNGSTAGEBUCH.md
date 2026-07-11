@@ -67,7 +67,7 @@ Block wird bei jeder Aktualisierung mitgeführt; Details stehen in den datierten
 - **Persistenz:** SQLite-Re-Grounding **gebaut, additiv** — dreiräumiger Store + Converter
   (`joni-layer9-convert`, 21.987 Objekte / 26.031 Kanten) + opt-in Persistenz-Backend
   (`JONI_PERSISTENCE=sqlite`): load **>200 s → ~4,5 s**, Äquivalenz auf Echtdaten gemessen. **Loop-Resume
-  darauf noch nicht live** (Stufe 1). Umbau-Plan als gated core-ask: `docs/CORE_REBUILD_PLAN.md` (A–D).
+  darauf noch nicht live** (Stufe 1). Umbau-Plan als gated core-ask: `design-notes/CORE_REBUILD_PLAN.md` (A–D).
 - **Primäre Modelle:** Granite 4.1 8B (strukturiert) · DeepSeek Pro v4 (schwierig/Eskalation) ·
   Kevin auf DeepSeek Pro v4 (Fernanalogie).
 - **Governance:** Layer 9, deterministisch (geschützter Core, jedes `verify` grün).
@@ -1232,7 +1232,7 @@ gemeldet. Zweitens, und wichtiger: das Backend behebt den **Lade-/Replay-Hang**,
 der dieses Tagebuch warnt: der Kaltstart ist jetzt *messbar* geheilt, der In-Cycle-Quadrat *nicht*.
 
 **[Eingriff → core-ask] Der Umbau-Plan, benannt statt aufgeschoben.** Auf die (berechtigte) Bemerkung
-des Betreibers, dass Joni *irgendwann* umgebaut werden muss: `docs/CORE_REBUILD_PLAN.md` als gated
+des Betreibers, dass Joni *irgendwann* umgebaut werden muss: `design-notes/CORE_REBUILD_PLAN.md` als gated
 core-ask geschrieben — vier Phasen, ehrlich sequenziert. **A:** inkrementelles Hashing (tötet das
 In-Cycle-O(n²) — kleinster Eingriff, größte Wirkung). **B:** materialisierter Zustand wird im Kernel
 autoritativ, Replay nur noch Audit/Recovery. **C:** Modell-Konvergenz (dreiräumig als Laufzeit *oder*
@@ -1947,7 +1947,7 @@ ich hätte vor dem „mach das" sehen müssen, dass er auf eine nicht existieren
 Apparatur-≠-Wirkung-Verwechslung, diesmal in meiner eigenen Planung. Zurückgerudert, **nichts auf
 Verdacht gebaut.**
 
-**[Eingriff → Plan statt Schein]** Statt ein Signal zu fingieren: `docs/METHOD_TRIAL_MEASUREMENT_PLAN.md`
+**[Eingriff → Plan statt Schein]** Statt ein Signal zu fingieren: `design-notes/METHOD_TRIAL_MEASUREMENT_PLAN.md`
 (`c99e345`) — ein **falsifikations-first, budget-quarantänierter** 6-Stufen-Plan. Die tragende Frage ist
 nicht „wie messen wir billiger", sondern **„transferieren gespeicherte Methoden überhaupt messbar,
 stärker als eine *verwürfelte* Kontrolle?"** Der Angelpunkt ist die **Negativkontrolle in Stufe 2**:
@@ -2493,7 +2493,7 @@ Methode-als-ausgeführter-Operator-über-der-Karte ist der Weg.
   einem Embedding (`fastembed`, Cosinus), ein kleiner Baustein. Der Raum ist das **Produkt** aus 9-dim
   Governance (Wie) × Embedding (Wo).
 
-**[Entscheidung des Betreibers]** „Erst Design festhalten." Getan: **`docs/SOLUTION_SPACE_PIPELINE.md`** hält
+**[Entscheidung des Betreibers]** „Erst Design festhalten." Getan: **`design-notes/SOLUTION_SPACE_PIPELINE.md`** hält
 die Ziel-Architektur, die schon-gebauten Bausteine, die eine Lücke, den Entdecker-Meta-Loop (holdout-
 validiert) und die Baureihenfolge (A Kartograph / **B Operator-Layer, empfohlen** / C Entdecker) fest —
 Reifegrad 0, ehrlich als Design markiert.
@@ -2503,7 +2503,7 @@ Reifegrad 0, ehrlich als Design markiert.
 | Baustein | Stufe | Beleg |
 |---|---|---|
 | „Alle Methoden geworfen" (Portfolio + Oracle) | **gemessen, kein Hebel** | Portfolio 0.2, Oracle 0.6 = Mehrfachvergleichs-Rauschen, harter Kern 0 |
-| Ziel-Architektur (Lösungsraum-Pipeline) | **0 · Design festgehalten** | `docs/SOLUTION_SPACE_PIPELINE.md` |
+| Ziel-Architektur (Lösungsraum-Pipeline) | **0 · Design festgehalten** | `design-notes/SOLUTION_SPACE_PIPELINE.md` |
 | Produktraum-Bausteine (9-dim, Gap-Modul) | **teils gebaut (in DESi)** | `epistemic_trajectory`, `solution_space_gap` verifiziert |
 
 **[Offen]** Baustein B (Operator-Layer: `solution_space_gap` auf tiefe Methoden heben) als empfohlener

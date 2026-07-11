@@ -190,7 +190,7 @@ def test_BOUNDARY_forced_reentrancy_would_break_uniqueness():
     # constraint - it relies on submit being non-reentrant/serial. If we artificially interleave a
     # second submit AFTER the lookup but BEFORE the first mint commits, two objects appear for one
     # trial_id. In-process this interleave cannot occur; a future multi-writer store MUST add an
-    # atomic unique constraint on trial_id (see docs/PROTECTION_ZONES.md / replay notes).
+    # atomic unique constraint on trial_id (see design-notes/PROTECTION_ZONES.md / replay notes).
     core = _core()
     orig_mint = core._mint
     fired = {"x": False}

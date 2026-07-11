@@ -2,7 +2,7 @@
 
 Built NEXT TO the legacy Layer-9, not replacing it. The legacy JSON store stays the source of truth
 until v2 passes its tests and is deliberately promoted; everything here is additive and (through
-Phase 5) read-only with respect to the live system. See ``docs/layer9_v2_sqlite.md``.
+Phase 5) read-only with respect to the live system. See ``design-notes/layer9_v2_sqlite.md``.
 
 Quick start::
 
