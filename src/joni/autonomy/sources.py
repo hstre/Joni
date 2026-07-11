@@ -32,10 +32,24 @@ class Item:
     url: str
     summary: str
     score: float = 0.0
+    pdf_url: str = ""          # a directly-fetchable full-text PDF, when the source exposes one
 
     @property
     def key(self) -> str:
         return f"{self.source}:{self.id}"
+
+
+def _openalex_pdf_url(work: dict) -> str:
+    """The best directly-fetchable OA PDF url for an OpenAlex work, or '' if it is not open access
+    (then only the abstract is available - e.g. a gated SSRN paper with no repository copy). Prefers
+    a location's actual ``pdf_url`` over the landing-page ``oa_url``. Lets the reader pull the FULL
+    text of open papers (SSRN/journal/preprint), not just the abstract."""
+    for loc_key in ("primary_location", "best_oa_location"):
+        loc = work.get(loc_key) or {}
+        if loc.get("pdf_url"):
+            return str(loc["pdf_url"])
+    oa = work.get("open_access") or {}
+    return str(oa.get("oa_url") or "") if oa.get("is_oa") else ""
 
 
 @runtime_checkable
@@ -320,7 +334,8 @@ class OpenAlexFetcher:
                         or f"https://openalex.org/{wid}")
                 summary = _openalex_abstract(work.get("abstract_inverted_index"))
                 merged[wid] = Item("openalex", wid, title, link, summary,
-                                   float(work.get("cited_by_count") or 0))
+                                   float(work.get("cited_by_count") or 0),
+                                   _openalex_pdf_url(work))
         return sorted(merged.values(), key=lambda it: -it.score)[:limit]
 
 

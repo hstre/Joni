@@ -148,18 +148,24 @@ _GROUND_SYS = (
 
 
 def _full_text(item) -> str | None:
-    """Best-effort FULL paper text (not just the abstract) - the method lives in the body. arXiv
-    PDFs and direct-.pdf urls only; None for GitHub repos, landing-page-only or paywalled sources
-    (then the abstract verdict stands). Bounded by pdf.extract_text's page cap; never raises."""
+    """Best-effort FULL paper text (not just the abstract) - the method lives in the body. Reads
+    any open-access PDF the source exposes: the OA ``pdf_url`` (SSRN/journal/OpenAlex open copies),
+    arXiv, or a direct-.pdf url. None for GitHub repos and for GATED papers with no open copy (a
+    paywalled SSRN paper without a repository copy) - then the abstract verdict stands. Bounded by
+    pdf.extract_text's page cap; never raises."""
     try:
         from . import pdf
         if not pdf.available():
             return None
         src = getattr(item, "source", "")
+        pdf_url = getattr(item, "pdf_url", "") or ""
         doc = None
-        if src == "arxiv":
+        if pdf_url:                                            # SSRN/OpenAlex/journal OA PDF
+            doc = pdf.read_url(pdf_url, source_id=getattr(item, "key", ""),
+                               title=getattr(item, "title", ""))
+        if doc is None and src == "arxiv":
             doc = pdf.read_arxiv(item)
-        elif str(getattr(item, "url", "")).lower().endswith(".pdf"):
+        if doc is None and str(getattr(item, "url", "")).lower().endswith(".pdf"):
             doc = pdf.read_url(getattr(item, "url", ""), source_id=getattr(item, "key", ""),
                                title=getattr(item, "title", ""))
         return (getattr(doc, "text", "") or "").strip() or None if doc is not None else None
@@ -231,7 +237,7 @@ def _openalex_scout(queries, *, ssrn: bool = False) -> list:
     try:
         import urllib.parse
 
-        from .sources import Item, _get, _openalex_abstract
+        from .sources import Item, _get, _openalex_abstract, _openalex_pdf_url
         params = {"search": " ".join(list(queries)[:3]), "per_page": _SCOUT_PER_SOURCE,
                   "sort": "relevance_score:desc",
                   "mailto": "joni-autonomy@users.noreply.github.com"}
@@ -248,7 +254,8 @@ def _openalex_scout(queries, *, ssrn: bool = False) -> list:
             loc = w.get("primary_location") or {}
             link = loc.get("landing_page_url") or w.get("doi") or f"https://openalex.org/{wid}"
             out.append(Item("ssrn" if ssrn else "openalex", wid, title, link,
-                            _openalex_abstract(w.get("abstract_inverted_index"))))
+                            _openalex_abstract(w.get("abstract_inverted_index")),
+                            0.0, _openalex_pdf_url(w)))
         return out
     except Exception:  # noqa: BLE001
         return []

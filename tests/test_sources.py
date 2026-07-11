@@ -48,6 +48,27 @@ def test_openalex_fetcher_rebuilds_abstract_and_parses(monkeypatch):
     assert it.score == 7.0
 
 
+def test_openalex_captures_the_oa_pdf_url_for_full_text_reading(monkeypatch):
+    # an OPEN paper: OpenAlex exposes a real PDF url -> the Item carries it so the reader can pull
+    # the FULL text (the method), not just the abstract. Prefers the pdf over the landing page.
+    payload = {"results": [
+        {"id": "https://openalex.org/W7", "title": "An open method",
+         "primary_location": {"landing_page_url": "https://papers.ssrn.com/abstract=7",
+                              "pdf_url": "https://repo.example.org/7.pdf"},
+         "open_access": {"is_oa": True, "oa_url": "https://repo.example.org/7"},
+         "abstract_inverted_index": {"Open": [0]}}]}
+    monkeypatch.setattr(sources, "_get", _canned(payload))
+    it = sources.OpenAlexFetcher().fetch(["method"], limit=4)[0]
+    assert it.pdf_url == "https://repo.example.org/7.pdf"        # real PDF, not the SSRN landing
+
+
+def test_openalex_pdf_url_is_empty_for_a_gated_paper():
+    assert sources._openalex_pdf_url({"open_access": {"is_oa": False, "oa_url": "x"}}) == ""
+    assert sources._openalex_pdf_url({}) == ""
+    assert sources._openalex_pdf_url(
+        {"best_oa_location": {"pdf_url": "https://x/y.pdf"}}) == "https://x/y.pdf"
+
+
 def test_online_fetchers_include_wikipedia():
     # Auftrag #128: the encyclopedic source for topics the paper feeds miss is wired in online.
     assert "wikipedia" in {f.name for f in sources.get_fetchers(online=True)}

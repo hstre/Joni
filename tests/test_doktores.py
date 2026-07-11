@@ -206,6 +206,34 @@ def test_no_full_text_falls_back_to_the_abstract_verdict(monkeypatch, tmp_path):
     assert len(new) == 1 and new[0]["evidence"]["grounded_in"] == "abstract"
 
 
+def test_full_text_reads_an_ssrn_open_access_pdf_not_just_the_abstract(monkeypatch):
+    # a SSRN/OpenAlex paper that HAS an open PDF: _full_text pulls the PDF BODY via the OA pdf_url,
+    # not just the abstract - so SSRN papers (incl. the operator's own, when open) are read in full.
+    from joni.autonomy import pdf
+    monkeypatch.setattr(pdf, "available", lambda: True)
+    seen = {}
+
+    def fake_read_url(url, **kw):
+        seen["url"] = url
+        return type("Doc", (), {"text": "Section 3: the actual method, equations and results."})()
+    monkeypatch.setattr(pdf, "read_url", fake_read_url)
+    item = Item("ssrn", "w1", "My SSRN paper", "https://papers.ssrn.com/abstract=1",
+                "abstract only", 0.0, "https://repo.example.org/open/w1.pdf")
+    body = doktores._full_text(item)
+    assert body and "actual method" in body
+    assert seen["url"] == "https://repo.example.org/open/w1.pdf"    # the OA PDF, not the landing
+
+
+def test_full_text_of_a_gated_paper_with_no_open_pdf_is_none(monkeypatch):
+    # a truly gated SSRN paper (no open pdf, only a landing page): honestly None -> abstract stands,
+    # nothing lost, but the review knows it only saw the abstract.
+    from joni.autonomy import pdf
+    monkeypatch.setattr(pdf, "available", lambda: True)
+    item = Item("ssrn", "w2", "Gated paper", "https://papers.ssrn.com/abstract=2", "abstract",
+                0.0, "")
+    assert doktores._full_text(item) is None
+
+
 def _with_hypothesis(cs, text="local routing bounds memory consolidation", topic="memory"):
     parent = cs.learn("routing is local at serving time", topic, source_id="arxiv:seed")
     cs.hypothesize(text, topic, parents=[parent])
