@@ -37,12 +37,16 @@ _SYS = (
 )
 
 
-def _user(item, verdict: dict, grounded) -> str:
-    read = "full text was read" if isinstance(grounded, dict) else "ONLY the abstract was read"
+def _user(item, verdict: dict, grounded, full_text=None) -> str:
+    body = (full_text or "").strip()
+    if body:
+        evidence = f"FULL PAPER TEXT (method/body, truncated):\n{body[:8000]}"
+    else:
+        evidence = ("ONLY the abstract is available (the full paper could not be fetched - a gated "
+                    f"source):\n{(getattr(item, 'summary', '') or '')[:1500]}")
     return (
         f"SOURCE: {getattr(item, 'title', '')}\nURL: {getattr(item, 'url', '')}\n"
-        f"EVIDENCE AVAILABLE: {read}.\n"
-        f"ABSTRACT/DESCRIPTION:\n{(getattr(item, 'summary', '') or '')[:1500]}\n\n"
+        f"{evidence}\n\n"
         f"Doktores' proposed self-improvement:\n"
         f"- target module: {verdict.get('component_key', '?')}\n"
         f"- change: {verdict.get('desired', '')}\n"
@@ -85,8 +89,8 @@ def _default_ask(cfg, *, cycle, budget, runs_per_week, store_dir):
     return ask
 
 
-def score(item, verdict: dict, grounded, cfg, *, budget=None, cycle=0, runs_per_week=0,
-          store_dir=None, ask=None):
+def score(item, verdict: dict, grounded, cfg, *, full_text=None, budget=None, cycle=0,
+          runs_per_week=0, store_dir=None, ask=None):
     """Run cfg.reps verifications; return (dimensions, red_flags, valid_reps, cost) or None.
 
     ``cost`` is the estimated spend charged to ``budget`` (bounded by cfg.max_cost_eur - the loop
@@ -102,7 +106,7 @@ def score(item, verdict: dict, grounded, cfg, *, budget=None, cycle=0, runs_per_
     except Exception:  # noqa: BLE001 - cost estimate is advisory; budget.call charges the real seam
         per_call = 0.0
     cost = 0.0
-    user = _user(item, verdict, grounded)
+    user = _user(item, verdict, grounded, full_text)
     for _ in range(cfg.reps):
         if per_call and cost + per_call > cfg.max_cost_eur:
             break                                          # defined budget stop, never overshoot

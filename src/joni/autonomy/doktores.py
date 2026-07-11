@@ -183,12 +183,11 @@ def _ground_prompt(item, body: str) -> str:
     )
 
 
-def _ground_on_full_text(item, *, cycle: int, budget, runs_per_week: int, store_dir):
+def _ground_on_full_text(item, body, *, cycle: int, budget, runs_per_week: int, store_dir):
     """The abstract passed triage; now READ THE PAPER and re-ground the order in the actual method.
-    Returns a grounded verdict dict; ``False`` if the full text refutes the abstract (drop the
-    order); ``None`` if no full text is fetchable or the budget is spent (the abstract verdict
-    stands). One extra model call, only for a paper about to be filed (<= _MAX_NEW/cycle)."""
-    body = _full_text(item)
+    ``body`` is the full text (fetched once by the caller and shared with the verifier). Returns a
+    grounded verdict dict; ``False`` if the full text refutes the abstract (drop the order);
+    ``None`` if no full text is available or the budget is spent (the abstract verdict stands)."""
     if not body:
         return None
     output, _cap = model_call.call(
@@ -504,9 +503,11 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
         if len(new) >= _MAX_NEW:
             continue
         # The abstract passed triage; now READ THE PAPER. The important part - the actual method -
-        # is in the body, not the summary. Re-ground the order in it; drop an oversold abstract;
-        # if no full text is fetchable, the abstract verdict stands.
-        grounded = _ground_on_full_text(item, cycle=cycle, budget=budget,
+        # is in the body, not the summary. Fetch the full text ONCE and share it with both the
+        # grounding and the verifier, so both judge on the whole paper, not the abstract. Re-ground
+        # the order; drop an oversold abstract; if no full text is fetchable, the abstract stands.
+        body = _full_text(item)
+        grounded = _ground_on_full_text(item, body, cycle=cycle, budget=budget,
                                         runs_per_week=runs_per_week, store_dir=store_dir)
         if grounded is False:
             proto.record(cycle, "note",
@@ -524,7 +525,7 @@ def review(cs, extensions: dict, proto, cycle: int, *, items, budget=None,
         # decide. In 'shadow' it changes nothing, so both loops run in parallel and we evaluate
         # which was more sensible; in 'enforce' a weak/risky verdict can hold back the auto-file.
         from . import verifier
-        vres = verifier.verify(item, verdict, grounded, budget=budget, cycle=cycle,
+        vres = verifier.verify(item, verdict, grounded, full_text=body, budget=budget, cycle=cycle,
                                runs_per_week=runs_per_week, store_dir=store_dir)
         if vres is not None:
             vlog = extensions.setdefault("verifier_shadow", [])

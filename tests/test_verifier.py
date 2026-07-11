@@ -80,6 +80,21 @@ def test_scorer_returns_none_on_all_malformed_replies(monkeypatch):
     assert scorer.score(_item(), _VERDICT, None, cfg, ask=lambda s, u: "not json at all") is None
 
 
+def test_verifier_judges_on_the_whole_paper_when_available(monkeypatch):
+    # the important part is in the body, not the abstract - the verifier must see the full text.
+    cfg = _cfg(monkeypatch)
+    seen = {}
+
+    def ask(system, user):
+        seen["user"] = user
+        return _reply(_GOOD)
+    scorer.score(_item(), _VERDICT, {}, cfg, full_text="Section 4: the method is X.", ask=ask)
+    assert "FULL PAPER TEXT" in seen["user"] and "the method is X" in seen["user"]
+    # ...and honestly falls back to the abstract for a gated/unfetchable paper
+    scorer.score(_item(), _VERDICT, None, cfg, full_text=None, ask=ask)
+    assert "ONLY the abstract" in seen["user"]
+
+
 # -- safety vetoes: rules decide, safety overrides the score --------------------------------- #
 
 def _dims(scores):
@@ -148,12 +163,13 @@ def test_shadow_mode_logs_the_verifier_verdict_but_still_files(monkeypatch, tmp_
     monkeypatch.setattr(model_call, "_complete", complete)
     monkeypatch.setattr(doktores, "_scout", lambda q: [])
     monkeypatch.setattr(doktores, "_agent_scout", lambda e: [])
-    monkeypatch.setattr(doktores, "_full_text", lambda item: None)
+    monkeypatch.setattr(doktores, "_full_text", lambda item: "Section 4: the full method text.")
     ext: dict = {}
     new = doktores.review(CoreState(seed_core()), ext, _Proto(), 3, items=[_item()])
     assert len(new) == 1                              # shadow changed nothing: still filed
-    assert ext["verifier_shadow"] and ext["verifier_shadow"][-1]["action"] == "file"
-    assert ext["verifier_shadow"][-1]["plain_action"] == "file"
+    log = ext["verifier_shadow"][-1]
+    assert log["action"] == "file" and log["plain_action"] == "file"
+    assert log["verifier_evidence"] == "full-text"   # judged on the whole paper, not the abstract
 
 
 def test_enforce_mode_holds_back_an_abstain(monkeypatch, tmp_path):

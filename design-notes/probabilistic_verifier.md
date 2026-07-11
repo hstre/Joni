@@ -28,6 +28,12 @@ source → Doktores verdict (applicable?) → full-text grounding → [should_es
   holds back the auto-file.
 - `off` (or `JONI_VERIFIER=0`): disabled.
 
+## Evidence: the whole paper, not the abstract
+The verifier judges on the FULL paper text (fetched once by Doktores via #228/#229 and shared with
+both grounding and the verifier - arXiv / open-access PDFs). Only for a GATED source with no
+fetchable copy does it fall back to the abstract; the audit records `verifier_evidence:
+full-text|abstract`, so the shadow evaluation knows what each judgement was actually based on.
+
 ## Dimensions (continuous 0..1, Joni's translation of the clinical spec)
 `module_fit`, `evidence_grounding`, `consistency`, `alternatives`, `error_safety`, `impact`,
 `info_needed` (inverted), `reasoning_stability`, `hard_constraint_compliance`, `overclaim_risk`
