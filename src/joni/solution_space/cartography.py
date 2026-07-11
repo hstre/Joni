@@ -1,4 +1,4 @@
-"""Baustein A — the product-space cartographer (docs/SOLUTION_SPACE_PIPELINE.md).
+"""Baustein A — the product-space cartographer (design-notes/SOLUTION_SPACE_PIPELINE.md).
 
 Places solution points in the PRODUCT of two real spaces — DESi's 9-dim governance StateVector (the
 *how*: in what epistemic state the reasoning sits) and a semantic embedding (the *what*: which

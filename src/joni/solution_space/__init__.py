@@ -1,4 +1,4 @@
-"""Baustein B of the solution-space pipeline (docs/SOLUTION_SPACE_PIPELINE.md).
+"""Baustein B of the solution-space pipeline (design-notes/SOLUTION_SPACE_PIPELINE.md).
 
 The deep-method OPERATOR layer over DESi's epistemic gap map. Where DESi's
 ``solution_space_gap.analyze_gaps`` proposes a shallow AFFINITY per open gap, this proposes a DEEP
