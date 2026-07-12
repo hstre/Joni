@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 560 · 274 Methoden** — proposed 227 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 561 · 275 Methoden** — proposed 228 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -191,6 +191,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Tools to convert ONNX files (NCHW) to TensorFlow format (NHWC) | **proposed** | candidate | 0 | — |
 | reconstruction-as-a-lens | **proposed** | candidate | 0 | — |
 | section-as-a-lens | **proposed** | candidate | 0 | — |
+| platform-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
