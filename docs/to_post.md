@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_53 offene(r) Entwurf/Entwürfe._
+_55 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -427,6 +427,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Linear upvote-based ranking in forums is provably suboptimal for surfacing high-quality content under noisy participation; a spectral ranking method that uses the graph Laplacian spectrum of user–post interactions outperforms it by a margin proportional to the spectral diversity (variance of eigenva" - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-560-d66135 · Vorschlag: reddit
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial observability and overwritten world states.' (from benchmarking) might also apply to integration." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-560-659dfa · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial observability and overwritten world states.' (from benchmarking) might also apply to integration." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
