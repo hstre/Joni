@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 541 · 264 Methoden** — proposed 217 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 542 · 265 Methoden** — proposed 218 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -181,6 +181,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Research on Global Convolutional Operators in Convolutional Neural Networks: A P | **proposed** | candidate | 0 | — |
 | sind-as-a-lens | **proposed** | candidate | 0 | — |
 | auch-as-a-lens | **proposed** | candidate | 0 | — |
+| sich-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
