@@ -46,27 +46,27 @@ X-317 | <gewinner: C-5961 oder C-5960> | <grund>
 X-316 | <gewinner: C-5961 oder C-1860> | <grund>
 ```
 
-## X-346 · Thema: memory
+## X-384 · Thema: memory
 
-- **C-42** (0 stützend · 0 Kontext): Abstract:Robust robotic manipulation in the real world requires not only an understanding of the current observation, but alsomemoryanddynamics modeling.
-  - _Quelle:_ arxiv:2606.20562v1
-- **C-6779** (0 stützend · 0 Kontext): Robust robotic manipulation requires understanding current observations, memory, and dynamics modeling.
-  - _Quelle:_ granite:joni-c383:5aad13cdd4fc
-- _Evidenzlage (C-42 vs C-6779): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-346 | <gewinner: C-42 oder C-6779> | <grund>
-```
-
-## X-338 · Thema: memory
-
-- **C-6472** (0 stützend · 0 Kontext): Jiepai Jianghu Legends and Beliefs Series: Vernacular Folklore, Sacred Sites, Ghost Narratives, and Local Belief Memory from Jiepai, Jiangsu, China
-  - _Quelle:_ zenodo:20834123
-- **C-6510** (0 stützend · 0 Kontext): Overwritable world states, not partial observability in isolation, introduce the requirement to transform latent memory into actionable plans, because planning must account for dynamic external changes not reflected in stable internal beliefs.
-  - _Quelle:_ deepseek:joni-c332:0a8f44adcd08
-- _Evidenzlage (C-6472 vs C-6510): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+- **C-6835** (0 stützend · 0 Kontext): WorldDirector: Building Controllable World Simulators with Persistent Dynamic Memory
+  - _Quelle:_ arxiv:2607.02517v1
+- **C-7820** (0 stützend · 0 Kontext): WorldDirector introduces persistent dynamic object memory to enable controllable world simulators without continuous visual observation.
+  - _Quelle:_ granite:joni-c552:7162357c4ff5
+- _Evidenzlage (C-6835 vs C-7820): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
 
 ```
-X-338 | <gewinner: C-6472 oder C-6510> | <grund>
+X-384 | <gewinner: C-6835 oder C-7820> | <grund>
+```
+
+## X-383 · Thema: memory
+
+- **C-6800** (0 stützend · 0 Kontext): WorldDirector: Building Controllable World Simulators with Persistent Dynamic Memory
+  - _Quelle:_ huggingface:2607.02517
+- **C-7820** (0 stützend · 0 Kontext): WorldDirector introduces persistent dynamic object memory to enable controllable world simulators without continuous visual observation.
+  - _Quelle:_ granite:joni-c552:7162357c4ff5
+- _Evidenzlage (C-6800 vs C-7820): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-383 | <gewinner: C-6800 oder C-7820> | <grund>
 ```
 
