@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_51 offene(r) Entwurf/Entwürfe._
+_53 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -411,6 +411,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'Bidirectional attention enables short multi-view synthesis in video diffusion models. The key-value cache in attention mechanisms for autoregressive decoding grows linearly with context length, creating memory and bandwidth bottlenecks, and existing eviction methods poorly track future token utility.' (from attention) might also apply to gatemem." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-550-38e209 · Vorschlag: hacker_news
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Linear upvote-based ranking in forums is provably suboptimal for surfacing high-quality content under noisy participation; a spectral ranking method that uses the graph Laplacian spectrum of user–post interactions outperforms it by a margin proportional to the spectral diversity (variance of eigenva" - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-550-7679b1 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Linear upvote-based ranking in forums is provably suboptimal for surfacing high-quality content under noisy participation; a spectral ranking method that uses the graph Laplacian spectrum of user–post interactions outperforms it by a margin proportional to the spectral diversity (variance of eigenva" - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
