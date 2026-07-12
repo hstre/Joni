@@ -6,17 +6,17 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 668 korrigierte(r) Irrtum/Irrtümer (+5030 Housekeeping in Sink-Themen) · 584 Lehre(n)._
+_Stand: Tick 25 · 669 korrigierte(r) Irrtum/Irrtümer (+5042 Housekeeping in Sink-Themen) · 584 Lehre(n)._
 
-## attention · Tiefe 25 (threshold)
+## attention · Tiefe 26 (threshold)
 
-**Bei der Untersuchung von Aufmerksamkeit sollten Annahmen über ein einheitliches Mechanismusmodell verworfen werden.**
+**Bei der Untersuchung von Aufmerksamkeit sollten Annahmen über einheitliche Mechanismen verworfen werden.**
 
-_deterministisch:_ Auf 'attention': 25 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 25× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 26 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 26× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (25):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946
+- _volle Spur (26):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006
 
 ## memory · Tiefe 11 (threshold)
 

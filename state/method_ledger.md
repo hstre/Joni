@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 557 · 272 Methoden** — proposed 225 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 558 · 273 Methoden** — proposed 226 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -189,6 +189,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | DOPS: Dynamic OPerator Sorting for Heterogeneous NPU-PIM LLM Inference | **proposed** | candidate | 0 | — |
 | DOPS: Dynamic OPerator Sorting for Heterogeneous NPU-PIM LLM Inference | **proposed** | candidate | 0 | — |
 | Tools to convert ONNX files (NCHW) to TensorFlow format (NHWC) | **proposed** | candidate | 0 | — |
+| reconstruction-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
