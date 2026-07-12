@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_55 offene(r) Entwurf/Entwürfe._
+_57 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -443,6 +443,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial observability and overwritten world states.' (from benchmarking) might also apply to integration." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-564-76fe86 · Vorschlag: lesswrong
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'authorship'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-564-972754 · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'authorship'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
