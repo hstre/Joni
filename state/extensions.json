@@ -4228,6 +4228,15 @@
       "replayed": false,
       "claims": 4,
       "conflict": "X-367"
+    },
+    {
+      "call_id": "joni-c546:3adbbf743d2b",
+      "served_model": "deepseek-v4-pro",
+      "reason": "contested",
+      "state_k": 3,
+      "replayed": false,
+      "claims": 4,
+      "conflict": "X-368"
     }
   ],
   "methods_seen": [
@@ -4526,8 +4535,6 @@
   },
   "core_ask_filed": {},
   "linked": [
-    "C-1254|C-7222",
-    "C-1255|C-782",
     "C-1255|C-784",
     "C-1255|C-787",
     "C-1256|C-1262",
@@ -5287,12 +5294,14 @@
     "C-43|C-5707",
     "C-43|C-6899",
     "C-43|C-7617",
+    "C-43|C-7618",
     "C-43|C-770",
     "C-4485|C-6792",
     "C-44|C-5408",
     "C-4525|C-4868",
     "C-4525|C-4869",
     "C-4525|C-7426",
+    "C-4525|C-7642",
     "C-4606|C-7448",
     "C-4607|C-7449",
     "C-4608|C-7452",
@@ -6589,12 +6598,14 @@
     "C-43|C-5707@bge-small-en-v1.5",
     "C-43|C-6899@bge-small-en-v1.5",
     "C-43|C-7617@bge-small-en-v1.5",
+    "C-43|C-7618@bge-small-en-v1.5",
     "C-43|C-770@bge-small-en-v1.5",
     "C-4485|C-6792@bge-small-en-v1.5",
     "C-44|C-5408@bge-small-en-v1.5",
     "C-4525|C-4868@bge-small-en-v1.5",
     "C-4525|C-4869@bge-small-en-v1.5",
     "C-4525|C-7426@bge-small-en-v1.5",
+    "C-4525|C-7642@bge-small-en-v1.5",
     "C-4606|C-7448@bge-small-en-v1.5",
     "C-4607|C-7449@bge-small-en-v1.5",
     "C-4608|C-7452@bge-small-en-v1.5",
@@ -6895,6 +6906,7 @@
     "ayurveda|skill",
     "ayurveda|tools",
     "ayurveda|video",
+    "ayurveda|worldlines",
     "benchmarking|cognition",
     "benchmarking|context",
     "benchmarking|drift",
@@ -8022,6 +8034,7 @@
     "scheduling",
     "scientific",
     "search",
+    "segmentation",
     "selection",
     "semantic",
     "sensory",
@@ -8877,6 +8890,7 @@
     "semantic",
     "session",
     "settings",
+    "shared",
     "shared-memory",
     "short-term",
     "sich",
@@ -8936,6 +8950,8 @@
     "worldlines"
   ],
   "emerge_insufficient": {
+    "attention|memory": 1,
+    "attention|short-term": 1,
     "forum|achieves": 1,
     "forum|actions": 2,
     "forum|active": 1,
@@ -8964,8 +8980,7 @@
     "meth:long-context": 3,
     "meth:mentions": 2,
     "meth:newly": 2,
-    "meth:representation": 1,
-    "meth:shared": 3
+    "meth:representation": 1
   },
   "hyp_tested": [
     "C-1011|C-634",
@@ -10959,6 +10974,12 @@
     "C-7614|C-343",
     "C-7614|C-5242",
     "C-7614|C-5259",
+    "C-7647|C-6031",
+    "C-7647|C-6096",
+    "C-7647|C-6413",
+    "C-7648|C-1046",
+    "C-7648|C-161",
+    "C-7648|C-285",
     "C-765|C-634",
     "C-765|C-640",
     "C-765|C-655",
@@ -11355,14 +11376,14 @@
     "C-817"
   ],
   "learned_queries": [
-    "ayurveda+tools natural",
-    "unsorted consistency",
-    "unsorted contradi",
-    "attention+research attention+rusty-neat attention+context",
     "forum pretraining",
     "forum geometric-aware",
     "memory tailored",
-    "memory employs"
+    "memory employs",
+    "ayurveda+worldlines worldlines",
+    "ayurveda+worldlines products",
+    "segmentation keeps",
+    "segmentation across"
   ],
   "hyp_seen_cycle": {
     "C-793": 303,
@@ -11662,18 +11683,14 @@
     "C-4811": 454,
     "C-4838": 455,
     "C-4862": 456,
-    "C-4889": 457,
     "C-4891": 457,
     "C-4930": 458,
     "C-4959": 459,
-    "C-4982": 460,
     "C-4983": 460,
     "C-5032": 461,
-    "C-5073": 462,
     "C-5074": 462,
     "C-5119": 464,
     "C-5139": 465,
-    "C-5175": 466,
     "C-5176": 466,
     "C-5195": 467,
     "C-5278": 470,
@@ -11753,8 +11770,8 @@
     "C-7549": 543,
     "C-7550": 543,
     "C-7583": 544,
-    "C-7600": 545,
-    "C-7614": 545
+    "C-7647": 546,
+    "C-7648": 546
   },
   "topics_domain_ok": [
     "abstract",
@@ -12420,6 +12437,7 @@
     "resolution": "invalid",
     "retrieval": "valid",
     "secure-openclaw": "invalid",
+    "segmentation": "valid",
     "selection": "valid",
     "shadow-frog": "invalid",
     "shared": "valid",
@@ -12883,42 +12901,35 @@
   ],
   "vitality": {
     "verdict": "developing",
-    "development": 60,
+    "development": 66,
     "degeneration": 0,
-    "active": 1989,
-    "hypotheses": 384,
+    "active": 1943,
+    "hypotheses": 386,
     "unsupported_hypotheses": 0,
-    "promoted_ideas": 861,
+    "promoted_ideas": 873,
     "confirmed_claims": 0,
-    "evidence_links": 3029,
-    "supporting_links": 3029,
-    "emergent_total": 1340,
+    "evidence_links": 3035,
+    "supporting_links": 3035,
+    "emergent_total": 1342,
     "usable_semantic_rate": 1.0,
     "methods_total": 267,
     "method_trials_total": 0,
     "methods_ready_total": 0,
     "stagnation_cycles": 0,
-    "objects": 97997,
-    "cycle": 545
+    "objects": 98311,
+    "cycle": 546
   },
   "vitality_prev": {
-    "supports": 3029,
-    "promoted": 861,
+    "supports": 3035,
+    "promoted": 873,
     "confirmed": 0,
-    "objects": 97997,
-    "active": 1989,
-    "links": 3029,
-    "emergent": 1340
+    "objects": 98311,
+    "active": 1943,
+    "links": 3035,
+    "emergent": 1342
   },
   "stagnation": 0,
   "vitality_history": [
-    {
-      "cycle": 346,
-      "verdict": "developing",
-      "development": 24,
-      "degeneration": 0,
-      "usable_semantic_rate": 1.0
-    },
     {
       "cycle": 347,
       "verdict": "developing",
@@ -14309,6 +14320,13 @@
       "cycle": 545,
       "verdict": "developing",
       "development": 60,
+      "degeneration": 0,
+      "usable_semantic_rate": 1.0
+    },
+    {
+      "cycle": 546,
+      "verdict": "developing",
+      "development": 66,
       "degeneration": 0,
       "usable_semantic_rate": 1.0
     }
@@ -64469,6 +64487,7 @@
     "X-365",
     "X-366",
     "X-367",
+    "X-368",
     "X-46",
     "X-47",
     "X-48",
@@ -65733,1102 +65752,1102 @@
     "M-1": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-2": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-3": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-8": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-9": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-10": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-11": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-13": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-14": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-15": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-17": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-18": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-19": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-22": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-23": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-24": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-25": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-26": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-28": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-33": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-34": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-35": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-36": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-38": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-40": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-43": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-44": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-45": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-46": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-47": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-48": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-56": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-58": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-66": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-67": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-68": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-69": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-70": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-71": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-72": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-74": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-75": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-76": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-77": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-78": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-79": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-81": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-82": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-83": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-84": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-85": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-86": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-87": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-89": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-94": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-95": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-97": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-103": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-104": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-105": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-106": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-107": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-108": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-109": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-110": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-111": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-112": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-113": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-114": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-115": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-116": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-117": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-118": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-119": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-120": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-121": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-122": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-123": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-124": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-125": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-126": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-127": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-128": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-129": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-131": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-132": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-133": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-134": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-135": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-136": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-137": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-138": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-139": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-140": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-141": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-142": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-143": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-144": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-145": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-146": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-147": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-148": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-149": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-150": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-151": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-152": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-153": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-154": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-155": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-156": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-157": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-158": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-159": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-160": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-161": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-162": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-163": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-164": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-165": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-166": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-167": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-168": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-169": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-170": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-171": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-172": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-173": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-174": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-175": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-176": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-177": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-178": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-179": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-180": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-181": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-182": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-183": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-184": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-185": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-186": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-187": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-188": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-189": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-190": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-191": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-192": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-193": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-194": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-195": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-196": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-197": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-198": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-199": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-200": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-201": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-202": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-203": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-204": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-205": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-206": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-207": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-208": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-209": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-211": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-212": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-213": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-214": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-215": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-216": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-217": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-218": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-219": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-220": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-221": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-222": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-223": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-224": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-225": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-226": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-227": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-228": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-229": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-230": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-231": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-232": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-233": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-234": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-235": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-236": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-237": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-238": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-239": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-240": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-241": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-242": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-243": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-244": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-245": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-246": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-247": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-248": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-249": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-250": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-251": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-252": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-253": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-254": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-255": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-256": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-257": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-258": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-259": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-260": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-261": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-262": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-263": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-264": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-265": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-266": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "M-267": {
       "success": 0,
       "last_pass_cycle": -1000000000,
-      "last_seen_cycle": 545
+      "last_seen_cycle": 546
     },
     "contradiction-first-review": {
       "last_condition": "16f797d1ce0ea683b5eb2f0ce0547f071820c669d94ff20a944f893316e3b6a1",
@@ -68867,6 +68886,7 @@
     "random": 521,
     "real-world": 499,
     "representation": 509,
+    "segmentation": 546,
     "selection": 543,
     "shared": 523,
     "sparse": 529,
