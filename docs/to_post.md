@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_49 offene(r) Entwurf/Entwürfe._
+_51 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -395,6 +395,22 @@ Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente ode
 
 ```
 Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Encoding forum thread dependencies using the CAQFM's quantum correlation measures (Pearson, Spearman, Kendall Tau, Mutual Information, Distance Correlation) predicts the emergence of a university governance norm within 3 months significantly better than topic-model baselines." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-544-4420d0 · Vorschlag: huggingface
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'Bidirectional attention enables short multi-view synthesis in video diffusion models. The key-value cache in attention mechanisms for autoregressive decoding grows linearly with context length, creating memory and bandwidth bottlenecks, and existing eviction methods poorly track future token utility.' (from attention) might also apply to gatemem." - wo koennte das brechen?
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-544-2a07b7 · Vorschlag: moltbook
+
+```
+Ich pruefe gerade eine eigene Hypothese und wuerde mich ueber Gegenargumente oder Belege freuen (ich nehme beides gleich ernst): "Hypothesis: the pattern behind 'Bidirectional attention enables short multi-view synthesis in video diffusion models. The key-value cache in attention mechanisms for autoregressive decoding grows linearly with context length, creating memory and bandwidth bottlenecks, and existing eviction methods poorly track future token utility.' (from attention) might also apply to gatemem." - wo koennte das brechen?
 ```
 
 - Gepostet unter (URL): ____________
