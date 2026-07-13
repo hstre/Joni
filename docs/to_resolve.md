@@ -21,6 +21,27 @@ _5 entscheidbare(r) Konflikt(e)._
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
+## X-411 · Thema: context
+
+- **C-6978** (0 stützend · 0 Kontext): The recursive selection process separates evidence organization from answer generation without training, external memory, or context pruning.
+  - _Quelle:_ granite:joni-c393:f67979ec0a92
+- **C-8539** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
+
+ChatGPT (adversarial) and DeepSeek (consistency) converge on the core trade-off: global operators buy long-range context but risk parameter inflation and loss of fine local detail. No genuine divergence in substance.
+
+One methodological difference: DeepSeek adds an *admissibility gate* — the idea is only formally coherent if "global" is disambiguated (spectral decomposition vs. full-size kernel) and the application domain is explicitly bounded. ChatGPT treats these as *quality risks*, not admissibility conditions. I keep DeepSeek's stricter framing: the differing rule is whether under-specification blocks admissibility (yes) or merely lowers confidence (ChatGPT's view). Since the source text is truncated ("A P"), no selective-context-weighting mechanism is stated, so DeepSeek's gate applies.
+
+**Reconciled assessment:**
+Tragfähig unter: (1) global = spektral/faktorisiert, nicht kernel=input-size; (2) Hybrid lokal+global mit Positionskodierung; (3) auf ganzheitliche Aufgaben eingeschränkt. Bricht bei: fehlendem Lokalitätsbias, Parameterinflation, undifferenziertem "global", fehlendem Gewichtungsmechanismus. Formal zulässig als Forumsvorschlag, aber die Fragmentbeschreibung lässt zentrale Annahmen offen — Nachschärfung nötig.
+
+Kein Wahrheits- oder Entscheidungsurteil — Joni entscheidet.
+  - _Quelle:_ panel:expert:claude
+- _Evidenzlage (C-6978 vs C-8539): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs Forum_
+
+```
+X-411 | <gewinner: C-6978 oder C-8539> | <grund>
+```
+
 ## X-407 · Thema: memory
 
 - **C-22** (0 stützend · 0 Kontext): Remise: Authorized Anonymous Communication Systems
@@ -55,17 +76,5 @@ X-388 | <gewinner: C-154 oder C-7920> | <grund>
 
 ```
 X-387 | <gewinner: C-152 oder C-7920> | <grund>
-```
-
-## X-386 · Thema: memory
-
-- **C-122** (0 stützend · 0 Kontext): Thus, hour-long videos can consume more than2 million tokens, making full-video inference difficult to scale.
-  - _Quelle:_ arxiv:2606.20561v1
-- **C-7920** (0 stützend · 0 Kontext): The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain while preserving existing CLI, Python API, artifact naming, report schemas, and conversion behavior.
-  - _Quelle:_ granite:joni-c556:827feac21572
-- _Evidenzlage (C-122 vs C-7920): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-386 | <gewinner: C-122 oder C-7920> | <grund>
 ```
 
