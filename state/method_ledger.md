@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 575 · 283 Methoden** — proposed 236 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 576 · 285 Methoden** — proposed 238 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -201,6 +201,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Self-Guided Test-Time Training for Long-Context LLMs | **proposed** | candidate | 0 | — |
 | werden-as-a-lens | **proposed** | candidate | 0 | — |
 | während-as-a-lens | **proposed** | candidate | 0 | — |
+| D-GAF: A Socio-Technical Framework for Robust and Trustworthy Real-World Deploym | **proposed** | candidate | 0 | — |
+| durch-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |

@@ -45,6 +45,18 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
+## X-417 · Thema: memory
+
+- **C-8586** (0 stützend · 0 Kontext): Structural identifiability of a minimal dynamical model of the post-mitotic nuclear reassembly window: what HeLa literature constraints can and cannot resolve
+  - _Quelle:_ zenodo:21337940
+- **C-8593** (0 stützend · 0 Kontext): HeLa literature constraints can partially resolve the structural identifiability of the minimal dynamical model of the nuclear reassembly window.
+  - _Quelle:_ granite:joni-c576:2bdcf07f8648
+- _Evidenzlage (C-8586 vs C-8593): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-417 | <gewinner: C-8586 oder C-8593> | <grund>
+```
+
 ## X-416 · Thema: memory
 
 - **C-8511** (0 stützend · 0 Kontext): VaseAgent in VaseMuseum enables 3D-aware reasoning, external knowledge retrieval, and inference-time reliability control.
@@ -55,17 +67,5 @@ X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 
 ```
 X-416 | <gewinner: C-8511 oder C-8561> | <grund>
-```
-
-## X-415 · Thema: memory
-
-- **C-8507** (0 stützend · 0 Kontext): VaseAgent in VaseMuseum enables 3D-aware reasoning, external knowledge retrieval, and inference-time reliability control.
-  - _Quelle:_ granite:joni-c573:e7161abc2c5e
-- **C-8561** (0 stützend · 0 Kontext): Prem Singh (Kekar Singh Pehlwan): Oral History, Local Memory, and the Cultural Heritage of Punjabi Pehlwani
-  - _Quelle:_ zenodo:21310169
-- _Evidenzlage (C-8507 vs C-8561): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
-
-```
-X-415 | <gewinner: C-8507 oder C-8561> | <grund>
 ```
 
