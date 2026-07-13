@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_57 offene(r) Entwurf/Entwürfe._
+_59 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -459,6 +459,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'authorship'? Ich sammle dazu Materi
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'authorship'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-572-a63bb2 · Vorschlag: huggingface
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'evaluation'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-572-2cabe6 · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'evaluation'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
