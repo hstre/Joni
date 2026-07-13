@@ -45,36 +45,27 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
-## X-411 · Thema: context
+## X-416 · Thema: memory
 
-- **C-6978** (0 stützend · 0 Kontext): The recursive selection process separates evidence organization from answer generation without training, external memory, or context pruning.
-  - _Quelle:_ granite:joni-c393:f67979ec0a92
-- **C-8539** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
-
-ChatGPT (adversarial) and DeepSeek (consistency) converge on the core trade-off: global operators buy long-range context but risk parameter inflation and loss of fine local detail. No genuine divergence in substance.
-
-One methodological difference: DeepSeek adds an *admissibility gate* — the idea is only formally coherent if "global" is disambiguated (spectral decomposition vs. full-size kernel) and the application domain is explicitly bounded. ChatGPT treats these as *quality risks*, not admissibility conditions. I keep DeepSeek's stricter framing: the differing rule is whether under-specification blocks admissibility (yes) or merely lowers confidence (ChatGPT's view). Since the source text is truncated ("A P"), no selective-context-weighting mechanism is stated, so DeepSeek's gate applies.
-
-**Reconciled assessment:**
-Tragfähig unter: (1) global = spektral/faktorisiert, nicht kernel=input-size; (2) Hybrid lokal+global mit Positionskodierung; (3) auf ganzheitliche Aufgaben eingeschränkt. Bricht bei: fehlendem Lokalitätsbias, Parameterinflation, undifferenziertem "global", fehlendem Gewichtungsmechanismus. Formal zulässig als Forumsvorschlag, aber die Fragmentbeschreibung lässt zentrale Annahmen offen — Nachschärfung nötig.
-
-Kein Wahrheits- oder Entscheidungsurteil — Joni entscheidet.
-  - _Quelle:_ panel:expert:claude
-- _Evidenzlage (C-6978 vs C-8539): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs Forum_
+- **C-8511** (0 stützend · 0 Kontext): VaseAgent in VaseMuseum enables 3D-aware reasoning, external knowledge retrieval, and inference-time reliability control.
+  - _Quelle:_ granite:joni-c573:e0bf822cc5d3
+- **C-8561** (0 stützend · 0 Kontext): Prem Singh (Kekar Singh Pehlwan): Oral History, Local Memory, and the Cultural Heritage of Punjabi Pehlwani
+  - _Quelle:_ zenodo:21310169
+- _Evidenzlage (C-8511 vs C-8561): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
 
 ```
-X-411 | <gewinner: C-6978 oder C-8539> | <grund>
+X-416 | <gewinner: C-8511 oder C-8561> | <grund>
 ```
 
-## X-407 · Thema: memory
+## X-415 · Thema: memory
 
-- **C-22** (0 stützend · 0 Kontext): Remise: Authorized Anonymous Communication Systems
-  - _Quelle:_ zenodo:20761254
-- **C-8309** (0 stützend · 0 Kontext): Authorized Anonymous Communication Systems (Remise) enable communication without revealing identities.
-  - _Quelle:_ granite:joni-c568:087871c363d2
-- _Evidenzlage (C-22 vs C-8309): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+- **C-8507** (0 stützend · 0 Kontext): VaseAgent in VaseMuseum enables 3D-aware reasoning, external knowledge retrieval, and inference-time reliability control.
+  - _Quelle:_ granite:joni-c573:e7161abc2c5e
+- **C-8561** (0 stützend · 0 Kontext): Prem Singh (Kekar Singh Pehlwan): Oral History, Local Memory, and the Cultural Heritage of Punjabi Pehlwani
+  - _Quelle:_ zenodo:21310169
+- _Evidenzlage (C-8507 vs C-8561): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
 
 ```
-X-407 | <gewinner: C-22 oder C-8309> | <grund>
+X-415 | <gewinner: C-8507 oder C-8561> | <grund>
 ```
 
