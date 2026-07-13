@@ -8,6 +8,30 @@ als SUPERSEDED (Nachfolger = Gewinner) und die Persona lernt „X → Y, weil �
 
 _5 entscheidbare(r) Konflikt(e)._
 
+## X-414 · Thema: authors+evaluation
+
+- **C-8552** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'The rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems was recently resolved by the author.' (from authors) might also apply to evaluation.
+  - _stützt:_ supports via C-8270: Hypothesis: the pattern behind 'The author of the source is Marleide da Mota Gomes.' (from authorship) might also apply to benchmarking.
+- **C-8255** (0 stützend · 0 Kontext): The rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems was recently resolved by the author.
+  - _Quelle:_ granite:joni-c513:bde047948133
+- _Evidenzlage (C-8552 vs C-8255): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-414 | <gewinner: C-8552 oder C-8255> | <grund>
+```
+
+## X-413 · Thema: authors+evaluation
+
+- **C-8552** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'The rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems was recently resolved by the author.' (from authors) might also apply to evaluation.
+  - _stützt:_ supports via C-8270: Hypothesis: the pattern behind 'The author of the source is Marleide da Mota Gomes.' (from authorship) might also apply to benchmarking.
+- **C-7370** (0 stützend · 0 Kontext): The author recently resolved the rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems.
+  - _Quelle:_ granite:joni-c537:24e570afd567
+- _Evidenzlage (C-8552 vs C-7370): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-413 | <gewinner: C-8552 oder C-7370> | <grund>
+```
+
 ## X-335 · Thema: forum
 
 - **C-6482** (1 stützend · 0 Kontext): WorldLines benchmarks aim to address the challenge of translating long-term memory into embodied plans to solve partial observability and overwritten world states.
@@ -52,29 +76,5 @@ X-411 | <gewinner: C-6978 oder C-8539> | <grund>
 
 ```
 X-407 | <gewinner: C-22 oder C-8309> | <grund>
-```
-
-## X-388 · Thema: memory
-
-- **C-154** (0 stützend · 0 Kontext): By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large language model (LLM) architectures, thereby providing users with a more personalized and responsive experience.
-  - _Quelle:_ arxiv:2606.20554v1
-- **C-7920** (0 stützend · 0 Kontext): The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain while preserving existing CLI, Python API, artifact naming, report schemas, and conversion behavior.
-  - _Quelle:_ granite:joni-c556:827feac21572
-- _Evidenzlage (C-154 vs C-7920): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-388 | <gewinner: C-154 oder C-7920> | <grund>
-```
-
-## X-387 · Thema: memory
-
-- **C-152** (0 stützend · 0 Kontext): Overall, G2Rec enables recommendation models to capture holistic and semantically grounded user interest prototypes without requiring ground-truth user interests, thereby providing more comprehensive and accurate modeling of user behavior contexts in industrial sequential recommendation.
-  - _Quelle:_ arxiv:2606.20554v1
-- **C-7920** (0 stützend · 0 Kontext): The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain while preserving existing CLI, Python API, artifact naming, report schemas, and conversion behavior.
-  - _Quelle:_ granite:joni-c556:827feac21572
-- _Evidenzlage (C-152 vs C-7920): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-387 | <gewinner: C-152 oder C-7920> | <grund>
 ```
 
