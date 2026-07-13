@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 567 · 276 Methoden** — proposed 229 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 568 · 279 Methoden** — proposed 232 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -193,6 +193,9 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | section-as-a-lens | **proposed** | candidate | 0 | — |
 | platform-as-a-lens | **proposed** | candidate | 0 | — |
 | dass-as-a-lens | **proposed** | candidate | 0 | — |
+| PanoWorld: Real-World Panoramic Generation | **proposed** | candidate | 0 | — |
+| OpenLongTail: Generative Scaling of Long-Tail Driving Data | **proposed** | candidate | 0 | — |
+| habe-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |

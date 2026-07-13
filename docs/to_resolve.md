@@ -21,6 +21,18 @@ _5 entscheidbare(r) Konflikt(e)._
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
+## X-407 · Thema: memory
+
+- **C-22** (0 stützend · 0 Kontext): Remise: Authorized Anonymous Communication Systems
+  - _Quelle:_ zenodo:20761254
+- **C-8309** (0 stützend · 0 Kontext): Authorized Anonymous Communication Systems (Remise) enable communication without revealing identities.
+  - _Quelle:_ granite:joni-c568:087871c363d2
+- _Evidenzlage (C-22 vs C-8309): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-407 | <gewinner: C-22 oder C-8309> | <grund>
+```
+
 ## X-388 · Thema: memory
 
 - **C-154** (0 stützend · 0 Kontext): By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large language model (LLM) architectures, thereby providing users with a more personalized and responsive experience.
@@ -55,17 +67,5 @@ X-387 | <gewinner: C-152 oder C-7920> | <grund>
 
 ```
 X-386 | <gewinner: C-122 oder C-7920> | <grund>
-```
-
-## X-384 · Thema: memory
-
-- **C-6835** (0 stützend · 0 Kontext): WorldDirector: Building Controllable World Simulators with Persistent Dynamic Memory
-  - _Quelle:_ arxiv:2607.02517v1
-- **C-7820** (0 stützend · 0 Kontext): WorldDirector introduces persistent dynamic object memory to enable controllable world simulators without continuous visual observation.
-  - _Quelle:_ granite:joni-c552:7162357c4ff5
-- _Evidenzlage (C-6835 vs C-7820): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-384 | <gewinner: C-6835 oder C-7820> | <grund>
 ```
 
