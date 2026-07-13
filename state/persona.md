@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 726 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 603 Lehre(n)._
+_Stand: Tick 25 · 733 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 604 Lehre(n)._
 
-## attention · Tiefe 43 (threshold)
+## attention · Tiefe 44 (threshold)
 
 **Beurteile Annahmen kritisch, um die Konstanz des Mechanismus in Aufmerksamkeitsansprüchen als zentralen Faktor zu überprüfen.**
 
-_deterministisch:_ Auf 'attention': 43 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 43× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 44 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 44× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (43):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753
+- _volle Spur (44):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778
 
-## memory · Tiefe 28 (threshold)
+## memory · Tiefe 32 (threshold)
 
-**Verwerfen von Annahmen zur Vermeidung von Speicherproblemen bei der Verarbeitung großer Wissensgraphen.**
+**Verwerfen von Annahmen über die Funktionsweise von ResearchStudio-Reel und SproutRAG zur Optimierung des Gedächtnisses.**
 
-_deterministisch:_ Auf 'memory': 28 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 28× verworfen). Muster: Annahmen wurden verworfen. Anker: „DocKG version 0.4.6, released on 2026-07-09, lowers the default embedding batch size to prevent memory exhaustion on Apple Silicon and CPU for large knowledge graph builds.“ → verworfen (verworfen) ; „The preprint of the research article is available via DOI 10.48550/arXiv.2604.17058.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 32 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 32× verworfen). Muster: Annahmen wurden verworfen. Anker: „ResearchStudio-Reel extracts each paper once into a shared bundle that can be reused by every downstream skill.“ → verworfen (verworfen) ; „SproutRAG constructs a binary chunking tree to balance detailed short-term context retrieval with compressed long-term context retrieval.“ → verworfen (verworfen)
 
-- Anker: „DocKG version 0.4.6, released on 2026-07-09, lowers the default embedding batch size to prevent memory exhaustion on Apple Silicon and CPU for large knowledge graph builds.“ → verworfen — verworfen
-- Anker: „The preprint of the research article is available via DOI 10.48550/arXiv.2604.17058.“ → verworfen — verworfen
-- _volle Spur (28):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742
+- Anker: „ResearchStudio-Reel extracts each paper once into a shared bundle that can be reused by every downstream skill.“ → verworfen — verworfen
+- Anker: „SproutRAG constructs a binary chunking tree to balance detailed short-term context retrieval with compressed long-term context retrieval.“ → verworfen — verworfen
+- _volle Spur (32):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -335,6 +335,16 @@ _deterministisch:_ Auf 'heft': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2
 - Anker: „HEFT incorporates privileged motion guidance alongside its windowed payload curriculum for effective teleoperation.“ → verworfen — verworfen
 - Anker: „Windowed Payload Curriculum (WPC) is a component of the HEFT method for heavy-payload full-size humanoid teleoperation.“ → verworfen — verworfen
 - _volle Spur (2):_ C-3385, C-3387
+
+## chunking · Tiefe 2 (threshold)
+
+**Bei der Chunking-Technik werden extrahierte Samples basierend auf der angegebenen Chunk-Größe in Segmente unterteilt, wobei alle Annahmen über die Notwendigkeit von Anführungszeichen verworfen werden.**
+
+_deterministisch:_ Auf 'chunking': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2× verworfen). Muster: Annahmen wurden verworfen. Anker: „The extracted samples are broken up into "chunks" based on the specified chunk size.“ → verworfen (verworfen) ; „The extracted samples are broken up into 'chunks' based on the specified chunk size.“ → verworfen (verworfen)
+
+- Anker: „The extracted samples are broken up into "chunks" based on the specified chunk size.“ → verworfen — verworfen
+- Anker: „The extracted samples are broken up into 'chunks' based on the specified chunk size.“ → verworfen — verworfen
+- _volle Spur (2):_ C-8699, C-8757
 
 ## balsa · Tiefe 2 (threshold)
 
@@ -4431,15 +4441,6 @@ _deterministisch:_ Auf 'class': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 
 - Anker: „'class' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-3324
 
-## chunking · Tiefe 1 (self_review)
-
-**Beim Chunking werden Annahmen verworfen und extrahierte Proben basierend auf der angegebenen Chunk-Größe nicht in 'Chunks' unterteilt.**
-
-_deterministisch:_ Auf 'chunking': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „The extracted samples are broken up into 'chunks' based on the specified chunk size.“ → verworfen (verworfen)
-
-- Anker: „The extracted samples are broken up into 'chunks' based on the specified chunk size.“ → verworfen — verworfen
-- _volle Spur (1):_ C-8699
-
 ## chinese · Tiefe 1 (self_review)
 
 **Verwerfe Annahmen über die Eigenständigkeit von 'chinese' und behalte es als eigenständiges Thema nur nach gründlicher Überprüfung.**
@@ -4844,6 +4845,15 @@ _deterministisch:_ Auf 'autonomous': 1 korrigierte(r) Irrtum/Irrtümer (0× erse
 
 - Anker: „'autonomous' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1656
+
+## authorship+research · Tiefe 1 (self_review)
+
+**In der Forschung, wie im Autorship, kann die Hauptautorin von einer Gemeinschaft von Mitwirkenden abhängen, ohne ihre Autorität zu beeinträchtigen.**
+
+_deterministisch:_ Auf 'authorship+research': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Die individuelle Autorin kann gleichzeitig von einer Gemeinschaft von Mitwirkenden abhängig sein, die konstruktive Feedback und Korrekturen bereitstellt, ohne dass dies ihre Hauptautorinstellung beeinträchtigt.' (from authorship) might also apply to research.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Die individuelle Autorin kann gleichzeitig von einer Gemeinschaft von Mitwirkenden abhängig sein, die konstruktive Feedback und Korrekturen bereitstellt, ohne dass dies ihre Hauptautorinstellung beeinträchtigt.' (from authorship) might also apply to research.“ → verworfen — verworfen
+- _volle Spur (1):_ C-8777
 
 ## authorship+platemo · Tiefe 1 (self_review)
 
