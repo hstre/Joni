@@ -45,6 +45,18 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
+## X-420 · Thema: context
+
+- **C-8614** (0 stützend · 0 Kontext): Not All Cross-Service Work Is Harmful: Context-Aware Governance of Organizational Coupling in Microservice Systems
+  - _Quelle:_ zenodo:21338970
+- **C-8623** (0 stützend · 0 Kontext): Context-aware governance can mitigate the negative impacts of organizational coupling in microservice systems.
+  - _Quelle:_ granite:joni-c577:8514a9a2e45f
+- _Evidenzlage (C-8614 vs C-8623): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-420 | <gewinner: C-8614 oder C-8623> | <grund>
+```
+
 ## X-417 · Thema: memory
 
 - **C-8586** (0 stützend · 0 Kontext): Structural identifiability of a minimal dynamical model of the post-mitotic nuclear reassembly window: what HeLa literature constraints can and cannot resolve
@@ -55,17 +67,5 @@ X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 
 ```
 X-417 | <gewinner: C-8586 oder C-8593> | <grund>
-```
-
-## X-416 · Thema: memory
-
-- **C-8511** (0 stützend · 0 Kontext): VaseAgent in VaseMuseum enables 3D-aware reasoning, external knowledge retrieval, and inference-time reliability control.
-  - _Quelle:_ granite:joni-c573:e0bf822cc5d3
-- **C-8561** (0 stützend · 0 Kontext): Prem Singh (Kekar Singh Pehlwan): Oral History, Local Memory, and the Cultural Heritage of Punjabi Pehlwani
-  - _Quelle:_ zenodo:21310169
-- _Evidenzlage (C-8511 vs C-8561): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
-
-```
-X-416 | <gewinner: C-8511 oder C-8561> | <grund>
 ```
 
