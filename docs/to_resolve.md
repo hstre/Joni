@@ -45,6 +45,18 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
+## X-421 · Thema: memory
+
+- **C-8738** (0 stützend · 0 Kontext): Trait and State Boredom in Adults with Elevated ADHD Symptoms: The Roles of ADHD Symptoms and Attention Control
+  - _Quelle:_ zenodo:21275104
+- **C-8743** (0 stützend · 0 Kontext): Adults with elevated ADHD symptoms report higher levels of trait boredom compared to those without elevated ADHD symptoms.
+  - _Quelle:_ granite:joni-c582:05fd6fa37866
+- _Evidenzlage (C-8738 vs C-8743): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-421 | <gewinner: C-8738 oder C-8743> | <grund>
+```
+
 ## X-420 · Thema: context
 
 - **C-8614** (0 stützend · 0 Kontext): Not All Cross-Service Work Is Harmful: Context-Aware Governance of Organizational Coupling in Microservice Systems
@@ -55,17 +67,5 @@ X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 
 ```
 X-420 | <gewinner: C-8614 oder C-8623> | <grund>
-```
-
-## X-417 · Thema: memory
-
-- **C-8586** (0 stützend · 0 Kontext): Structural identifiability of a minimal dynamical model of the post-mitotic nuclear reassembly window: what HeLa literature constraints can and cannot resolve
-  - _Quelle:_ zenodo:21337940
-- **C-8593** (0 stützend · 0 Kontext): HeLa literature constraints can partially resolve the structural identifiability of the minimal dynamical model of the nuclear reassembly window.
-  - _Quelle:_ granite:joni-c576:2bdcf07f8648
-- _Evidenzlage (C-8586 vs C-8593): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-417 | <gewinner: C-8586 oder C-8593> | <grund>
 ```
 
