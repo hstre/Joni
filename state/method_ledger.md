@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 580 · 290 Methoden** — proposed 243 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 581 · 292 Methoden** — proposed 245 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -208,6 +208,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Porting Aurora to Intel accelerated hardware, an experimental and experiential c | **proposed** | candidate | 0 | — |
 | Predictive Maintenance MCP Server: An open-source framework for integrating Larg | **proposed** | candidate | 0 | — |
 | zwischen-as-a-lens | **proposed** | candidate | 0 | — |
+| Predictive Maintenance MCP Server: An open-source framework for integrating Larg | **proposed** | candidate | 0 | — |
+| mögliche-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
