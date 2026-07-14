@@ -218,7 +218,7 @@ def evaluate_character(
 
     if not findings:
         return CharacterVerdict(CharacterDecision.ALLOW)
-    strongest = max((_DECISION_RANK[f.decision] for f in findings))
+    strongest = max(_DECISION_RANK[f.decision] for f in findings)
     decision = next(d for d, rank in _DECISION_RANK.items() if rank == strongest)
     return CharacterVerdict(decision, tuple(findings))
 
