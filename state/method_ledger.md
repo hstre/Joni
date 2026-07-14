@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 586 · 297 Methoden** — proposed 250 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 587 · 300 Methoden** — proposed 253 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -215,7 +215,10 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | github.com/broadinstitute/gatk-sv/AnnotateVcf | **proposed** | candidate | 0 | — |
 | thurlow-research/HumanOversightSystem: v0.5.0 — Governance, Accuracy & Usability | **proposed** | candidate | 0 | — |
 | informationen-as-a-lens | **proposed** | candidate | 0 | — |
+| Invariant Learning Dynamics of Transformers in Inductive Reasoning Tasks | **proposed** | candidate | 0 | — |
+| A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Mani | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
+| können-as-a-lens | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
