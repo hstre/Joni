@@ -3,12 +3,12 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
+from joni.autonomy import governance
 from joni.character import (
     CORE_CHARACTER,
     PINNED_FINGERPRINT,
     CharacterContinuityError,
 )
-from joni.autonomy import governance
 
 
 def test_manifest_character_is_complete_and_pinned():
