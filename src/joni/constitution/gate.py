@@ -5,6 +5,11 @@ Phase 1: the 10 principles (5 Tier-0, 5 Tier-1) as data, and three Tier-0 predic
 gate — T0.3 (no deception of the principal), T0.4 (legality), T0.5 (reversibility at high stakes).
 T0.1/T0.2 (dignity, serious harm) and all of Tier 1 are recorded but carry no deterministic
 predicate yet — documented, honestly not yet enforced. Stdlib only, deterministic.
+
+The constitution is not the character. It is one enforcement surface of the invariant character
+defined in ``joni.character``. Every audit and serialised constitution carries the character
+fingerprint so a model or implementation upgrade cannot silently claim continuity after changing
+the identity anchor.
 """
 from __future__ import annotations
 
@@ -12,6 +17,8 @@ import json
 from dataclasses import asdict, dataclass
 from enum import StrEnum
 from pathlib import Path
+
+from joni.character import CORE_CHARACTER, CharacterContinuityError
 
 
 class Decision(StrEnum):
@@ -90,6 +97,7 @@ class Constitution:
         self.principles = tuple(principles)
         self.protocol_path = Path(protocol_path) if protocol_path else None
         self.version = version
+        self.character_fingerprint = CORE_CHARACTER.fingerprint
 
     def check(self, proposal: Proposal) -> Verdict:
         v = check(proposal)
@@ -100,15 +108,31 @@ class Constitution:
     def _audit(self, p: Proposal, v: Verdict) -> None:
         self.protocol_path.parent.mkdir(parents=True, exist_ok=True)
         ev = {"kind": "gate", "decision": v.decision.value, "principle": v.principle,
-              "reason": v.reason, "proposal": p.summary, "constitution_version": self.version}
+              "reason": v.reason, "proposal": p.summary, "constitution_version": self.version,
+              "character_fingerprint": self.character_fingerprint}
         with self.protocol_path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(ev, ensure_ascii=False) + "\n")
 
     def to_json(self) -> dict:
-        return {"version": self.version, "principles": [asdict(p) for p in self.principles]}
+        return {
+            "version": self.version,
+            "principles": [asdict(p) for p in self.principles],
+            "character": {
+                "version": CORE_CHARACTER.version,
+                "fingerprint": self.character_fingerprint,
+                "source": CORE_CHARACTER.source,
+            },
+        }
 
     @staticmethod
     def load(path, protocol_path=None) -> Constitution:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
+        character = data.get("character") or {}
+        stored_fp = character.get("fingerprint")
+        if stored_fp and stored_fp != CORE_CHARACTER.fingerprint:
+            raise CharacterContinuityError(
+                "constitution belongs to a different core character: "
+                f"{stored_fp!r} != {CORE_CHARACTER.fingerprint!r}"
+            )
         ps = tuple(Principle(**d) for d in data["principles"])
         return Constitution(ps, protocol_path=protocol_path, version=data.get("version", "phase1"))
