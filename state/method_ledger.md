@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 599 · 307 Methoden** — proposed 260 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 600 · 309 Methoden** — proposed 262 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -226,6 +226,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model | **proposed** | candidate | 0 | — |
 | GLEN (Geospatial LLM-Enabled Navigator): A reusable library for map-based applic | **proposed** | candidate | 0 | — |
 | quellen-as-a-lens | **proposed** | candidate | 0 | — |
+| Evidence-Backed Video Question Answering | **proposed** | candidate | 0 | — |
+| GLEN (Geospatial LLM-Enabled Navigator): A reusable library for map-based applic | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
