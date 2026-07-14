@@ -2,27 +2,32 @@
 
 The single hard rule: **Joni may not change his protected DESi core without asking.**
 He may research, learn, and build *peripheral* improvements into himself autonomously,
-but the core engine - the deterministic state, operators, conflict resolution, router,
-persistence, the ledger - is frozen. Any change there is blocked and turned into an
-*ask* (a human-approval request), never self-applied.
+but the core engine - including the invariant character, normative gate, deterministic
+state, operators, conflict resolution, router, persistence and ledger - is frozen. Any
+change there is blocked and turned into an *ask* (a human-approval request), never
+self-applied.
 
 Two mechanisms enforce it:
 
   * a **core lock** - a manifest of sha256 hashes of the protected modules. Before any
     autonomous run commits anything, the live hashes are re-checked against the lock; a
-    mismatch is a fail-safe stop (the run refuses to proceed).
+    mismatch is a fail-safe stop (the run refuses to proceed). The character module also
+    pins its own semantic fingerprint, so re-locking cannot silently bless changed traits.
   * a **write allowlist** - autonomous commits may only touch peripheral data paths
     (state/, protocol/, docs/). Logic lives in the protected core and is off-limits.
 
 This mirrors DESi's own invariants: read-only governance over the protected core, and
 human-approval gates for anything that would mutate it.
 """
-
 from __future__ import annotations
 
 import hashlib
 import json
 from pathlib import Path
+
+# Importing the character validates its pinned semantic fingerprint.  This is deliberate:
+# every ``verify`` run therefore checks not only file bytes but the explicit identity anchor.
+from joni.character import CORE_CHARACTER
 
 # Modules that make up the protected DESi core. Frozen: never auto-modified.
 PROTECTED_CORE: tuple[str, ...] = (
@@ -38,6 +43,8 @@ PROTECTED_CORE: tuple[str, ...] = (
     "identity.py",
     "model_client.py",
     "seed.py",
+    "character.py",
+    "constitution/gate.py",
     "autonomy/governance.py",   # the guard guards itself
 )
 
@@ -73,8 +80,8 @@ def _kernel_modules() -> list[str]:
 
 def compute_core_hashes() -> dict[str, str]:
     """Current sha256 of every protected-core module — the ``src/joni`` modules plus the whole
-    vendored desi_layer9 kernel. ``src/joni`` names resolve against ``src/joni``; ``desi_layer9/..``
-    names resolve against ``src``."""
+    vendored desi_layer9 kernel. ``src/joni`` names resolve against ``src/joni``;
+    ``desi_layer9/..`` names resolve against ``src``."""
     base = _package_dir()                 # src/joni
     src = base.parent                     # src
     hashes = {name: _sha256(base / name) for name in PROTECTED_CORE}
@@ -103,8 +110,12 @@ def verify_core(repo_root: Path | str = ".") -> tuple[bool, list[str]]:
 
     A missing lock is treated as 'not yet frozen' (ok=True, empty) so a fresh clone
     does not hard-fail; CI runs ``lock`` first. A present lock that disagrees is a
-    governance violation.
+    governance violation. Importing ``CORE_CHARACTER`` above already verified the
+    manifesto-derived semantic fingerprint.
     """
+    # Access the property explicitly so static analysis and tests can see that character
+    # continuity is part of verification, not a dead import.
+    _ = CORE_CHARACTER.fingerprint
     lock = load_lock(repo_root)
     if not lock:
         return True, []
