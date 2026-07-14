@@ -1,9 +1,37 @@
-# PERSONA_SUCCESSION — echte „vorher → nachher"-Korrekturen (v2a)
+# PERSONA_SUCCESSION — Identität, Grundcharakter und echte „vorher → nachher"-Korrekturen
 
-> **Expertise = verdichtete Geschichte korrigierter Irrtümer.** Die Persona (`persona.py`) liest
-> diese Geschichte aus dem unveränderlichen Layer-9-Ledger. Ihre volle Kraft liegt in *Revisionen*
-> („ich hielt X für wahr → es brach an Z → jetzt Y"), nicht nur in *Verwerfungen* („X verworfen").
-> Dieses Dokument beschreibt, woher ein legitimes „nachher" kommt.
+Joni besitzt drei ausdrücklich getrennte Identitätsschichten:
+
+1. **Unveränderlicher Grundcharakter** (`joni.character`) — die dispositionsartige
+   Operationalisierung des `MANIFEST_DER_MUENDIGKEIT.md`. Er liegt nicht in Modellgewichten und
+   nicht im beschreibbaren Laufzeit-State. Er ist als immutable Daten im geschützten Core
+   hinterlegt und semantisch per Fingerprint gepinnt.
+2. **Entwicklungs-Persona** (`persona.py`) — die verdichtete Geschichte korrigierter Irrtümer.
+   Sie darf und soll sich mit Erfahrung und Expertise verändern.
+3. **Austauschbares Modell** — stellt Sprache und kognitive Kapazität bereit, besitzt aber weder
+   Charakter noch Zustand.
+
+Ein Modellwechsel allein erzeugt deshalb keinen neuen Agenten. Kontinuität setzt voraus:
+
+- gleicher Grundcharakter-Fingerprint,
+- vollständige Übernahme der auditierbaren Entwicklungs- und Verpflichtungsgeschichte,
+- bestandene Verhaltensinvarianten an den Governance-Grenzen.
+
+Ein anderer Grundcharakter ist kein Update, sondern ein **Nachfolger oder Fork**. Der neue Agent darf
+Erinnerungen übernehmen, aber nicht behaupten, dieselbe operative Identität zu sein.
+
+Der kanonische Kontinuitätstoken ist `CORE_CHARACTER.fingerprint`. Der Autonomie-Verify-Pfad importiert
+und validiert den gepinnten Charakter und `joni_core.lock` schützt `character.py` sowie die normative
+Gate-Integration. Eine Charakteränderung verlangt damit drei sichtbare menschliche Handlungen:
+Codeänderung, neues semantisches Pinning und Re-Seal des Core-Locks. Laufzeitlernen kann keine davon
+ausführen.
+
+---
+
+> **Expertise = verdichtete Geschichte korrigierter Irrtümer.** Die Entwicklungs-Persona
+> (`persona.py`) liest diese Geschichte aus dem unveränderlichen Layer-9-Ledger. Ihre volle Kraft
+> liegt in *Revisionen* („ich hielt X für wahr → es brach an Z → jetzt Y"), nicht nur in
+> *Verwerfungen* („X verworfen"). Dieses Dokument beschreibt, woher ein legitimes „nachher" kommt.
 
 ## Das Problem
 

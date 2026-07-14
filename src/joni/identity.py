@@ -3,7 +3,8 @@
 Wraps Layer 9, the router, the research harvester, the creativity engine and the
 voice model into one object that (a) lives over ticks, (b) answers in two views at
 once, and (c) persists, so the same identity resumes after a restart. It owns no
-hidden state - everything it 'is' sits in ``self.state`` and the append-only ledger.
+hidden state - everything developmental sits in ``self.state`` and the append-only
+ledger. The invariant core character is separate, model-independent and protected.
 
     joni = Joni(state_path="joni.json")   # resumes if the file exists
     joni.live(ticks=8)                      # weeks, compressed: it evolves, audited
@@ -12,12 +13,12 @@ hidden state - everything it 'is' sits in ``self.state`` and the append-only led
     print(r.epistemic)                      # the receipts
     joni.save()                             # lives on
 """
-
 from __future__ import annotations
 
 from pathlib import Path
 
 from . import persistence
+from .character import CORE_CHARACTER
 from .creativity import CreativityEngine, get_default_creativity
 from .loops import ResearchHarvester, run_tick
 from .model_client import ModelClient, get_default_model
@@ -82,6 +83,7 @@ class Joni:
         return {
             "name": s.name,
             "tick": s.tick,
+            "character": CORE_CHARACTER.snapshot(),
             "claims": {"total": len(s.claims), "active": len(s.active_claims())},
             "goals": len(s.active_goals()),
             "projects": len(s.active_projects()),
