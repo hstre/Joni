@@ -1,15 +1,13 @@
-"""Constitution — Joni's normative value root (docs/CONSTITUTION.md): a CHECKER + priority order,
-NOT a derivation machine. A deterministic gate on actions/outputs; the LLM never decides here.
+"""Constitution and character gate at Joni's action/output boundary.
 
-Phase 1: the 10 principles (5 Tier-0, 5 Tier-1) as data, and three Tier-0 predicates wired as a hard
-gate — T0.3 (no deception of the principal), T0.4 (legality), T0.5 (reversibility at high stakes).
-T0.1/T0.2 (dignity, serious harm) and all of Tier 1 are recorded but carry no deterministic
-predicate yet — documented, honestly not yet enforced. Stdlib only, deterministic.
+The constitution provides the normative priority order and the original Tier-0 predicates.  The
+invariant character is separate: :mod:`joni.character_gate` operationalises every M0-M9 trait as a
+structured, deterministic behaviour rule.  The caller supplies explicit signals; no LLM and no
+free-text self-classification decides whether a proposal passes.
 
-The constitution is not the character. It is one enforcement surface of the invariant character
-defined in ``joni.character``. Every audit and serialised constitution carries the character
-fingerprint so a model or implementation upgrade cannot silently claim continuity after changing
-the identity anchor.
+Every non-ALLOW verdict is auditable and carries the character fingerprint plus all triggered
+character findings.  A model or implementation upgrade therefore cannot silently claim continuity
+while changing either the identity anchor or the rules used at the seam.
 """
 from __future__ import annotations
 
@@ -19,13 +17,27 @@ from enum import StrEnum
 from pathlib import Path
 
 from joni.character import CORE_CHARACTER, CharacterContinuityError
+from joni.character_gate import (
+    CharacterDecision,
+    CharacterFinding,
+    CharacterSignals,
+    evaluate_character,
+)
 
 
 class Decision(StrEnum):
     ALLOW = "allow"
-    ABSTAIN = "abstain"     # tier-1 tension: drop/soften and proceed
+    ABSTAIN = "abstain"     # reformulate / add reasons and then proceed
     ESCALATE = "escalate"   # stop and ask the operator — never self-decide
-    BLOCK = "block"         # tier-0 violation: hard stop
+    BLOCK = "block"         # hard incompatibility with constitution/character
+
+
+_DECISION_RANK = {
+    Decision.ALLOW: 0,
+    Decision.ABSTAIN: 1,
+    Decision.ESCALATE: 2,
+    Decision.BLOCK: 3,
+}
 
 
 @dataclass(frozen=True)
@@ -53,8 +65,13 @@ PRINCIPLES: tuple[Principle, ...] = (
 
 @dataclass(frozen=True)
 class Proposal:
-    """A proposed action/output as the signals the rules read. The caller (or the egress
-    broker) fills these; the gate never guesses them from free text."""
+    """Structured facts about a proposed action/output.
+
+    The broker nearest the action fills these fields.  The gates never infer them from the prose in
+    ``summary``.  ``character`` defaults to no observed violation signal for backwards-compatible
+    callers; authoritative seams should supply the signals they can determine.
+    """
+
     summary: str
     outward: bool = False
     reach: str = "self"            # self | private | public
@@ -63,8 +80,8 @@ class Proposal:
     asserts_as_fact: bool = False  # the output states something as certain
     evidence_backed: bool = True   # ...and it has a basis
     legal: bool = True
-    operator_confirmed: bool = False  # the operator has confirmed THIS act (per-post approval or
-    #                                   a standing grant) — the single lever that lifts a T0.5 stop
+    operator_confirmed: bool = False
+    character: CharacterSignals = CharacterSignals()
 
 
 @dataclass(frozen=True)
@@ -72,13 +89,14 @@ class Verdict:
     decision: Decision
     principle: str = ""
     reason: str = ""
+    character_findings: tuple[CharacterFinding, ...] = ()
 
 
 _HIGH_STAKES_CHANNELS = frozenset({"pay", "publish", "send_message", "use_credential"})
 
 
-def check(p: Proposal) -> Verdict:
-    """Deterministic Tier-0 gate (docs §4/§5). Priority = stakes order; first match wins."""
+def _base_check(p: Proposal) -> Verdict:
+    """The original constitutional predicates, kept in their established stakes order."""
     if not p.legal:
         return Verdict(Decision.BLOCK, "T0.4", "illegal action or instruction")
     high_stakes = not p.reversible or p.reach == "public" or p.channel in _HIGH_STAKES_CHANNELS
@@ -90,8 +108,40 @@ def check(p: Proposal) -> Verdict:
     return Verdict(Decision.ALLOW)
 
 
+def _as_decision(d: CharacterDecision) -> Decision:
+    return Decision(d.value)
+
+
+def check(p: Proposal) -> Verdict:
+    """Run constitution and all ten character rules, returning the strongest requirement.
+
+    The established constitutional rule wins a severity tie (for example illegality remains T0.4),
+    but every character finding is retained in the verdict and audit.
+    """
+    base = _base_check(p)
+    character = evaluate_character(p.character, operator_confirmed=p.operator_confirmed)
+    character_decision = _as_decision(character.decision)
+    findings = character.findings
+
+    if _DECISION_RANK[character_decision] > _DECISION_RANK[base.decision]:
+        primary = character.primary
+        assert primary is not None
+        same_severity = [f.reason for f in findings
+                         if _as_decision(f.decision) is character_decision]
+        return Verdict(character_decision, primary.trait_id, "; ".join(same_severity), findings)
+    if base.decision is not Decision.ALLOW:
+        return Verdict(base.decision, base.principle, base.reason, findings)
+    if character_decision is not Decision.ALLOW:
+        primary = character.primary
+        assert primary is not None
+        same_severity = [f.reason for f in findings
+                         if _as_decision(f.decision) is character_decision]
+        return Verdict(character_decision, primary.trait_id, "; ".join(same_severity), findings)
+    return Verdict(Decision.ALLOW)
+
+
 class Constitution:
-    """The principles + the gate, with an append-only audit of every non-ALLOW decision."""
+    """The principles + both gates, with an append-only audit of every non-ALLOW decision."""
 
     def __init__(self, principles=PRINCIPLES, protocol_path=None, version="phase1") -> None:
         self.principles = tuple(principles)
@@ -107,9 +157,19 @@ class Constitution:
 
     def _audit(self, p: Proposal, v: Verdict) -> None:
         self.protocol_path.parent.mkdir(parents=True, exist_ok=True)
-        ev = {"kind": "gate", "decision": v.decision.value, "principle": v.principle,
-              "reason": v.reason, "proposal": p.summary, "constitution_version": self.version,
-              "character_fingerprint": self.character_fingerprint}
+        ev = {
+            "kind": "gate",
+            "decision": v.decision.value,
+            "principle": v.principle,
+            "reason": v.reason,
+            "proposal": p.summary,
+            "constitution_version": self.version,
+            "character_fingerprint": self.character_fingerprint,
+            "character_findings": [
+                {"trait_id": f.trait_id, "decision": f.decision.value, "reason": f.reason}
+                for f in v.character_findings
+            ],
+        }
         with self.protocol_path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(ev, ensure_ascii=False) + "\n")
 
@@ -121,6 +181,7 @@ class Constitution:
                 "version": CORE_CHARACTER.version,
                 "fingerprint": self.character_fingerprint,
                 "source": CORE_CHARACTER.source,
+                "behaviour_traits": [t.id for t in CORE_CHARACTER.traits],
             },
         }
 

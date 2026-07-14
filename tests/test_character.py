@@ -37,6 +37,13 @@ def test_identity_continuity_is_a_fingerprint_relation():
         CORE_CHARACTER.require_continuity("different-agent")
 
 
-def test_character_is_inside_the_protected_core():
+def test_character_and_behaviour_gate_are_inside_the_protected_core():
     assert "character.py" in governance.PROTECTED_CORE
+    assert "character_gate.py" in governance.PROTECTED_CORE
     assert "constitution/gate.py" in governance.PROTECTED_CORE
+
+
+def test_committed_core_lock_matches_the_actual_protected_code():
+    # This is deliberately a direct dict equality: on failure pytest prints the exact live hashes
+    # required to re-seal the lock, so a stale or hand-waved lock can never pass CI unnoticed.
+    assert governance.load_lock() == governance.compute_core_hashes()
