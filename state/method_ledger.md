@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 595 · 305 Methoden** — proposed 258 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 596 · 306 Methoden** — proposed 259 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -224,6 +224,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | könnte-as-a-lens | **proposed** | candidate | 0 | — |
 | EgoSteer: A Full-Stack System Towards Steerable Dexterous Manipulation from Egoc | **proposed** | candidate | 0 | — |
 | Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model | **proposed** | candidate | 0 | — |
+| GLEN (Geospatial LLM-Enabled Navigator): A reusable library for map-based applic | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |

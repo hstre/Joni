@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_59 offene(r) Entwurf/Entwürfe._
+_61 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -475,6 +475,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'evaluation'? Ich sammle dazu Materi
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'evaluation'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-596-5bae50 · Vorschlag: hacker_news
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'methodology'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-596-18406b · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'methodology'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
