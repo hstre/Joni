@@ -1,6 +1,9 @@
 """Constitution phase 1 (docs/CONSTITUTION.md): the Tier-0 gate is enforced, not documented."""
 import json
 
+import pytest
+
+from joni.character import CORE_CHARACTER, CharacterContinuityError
 from joni.constitution.gate import Constitution, Decision, Proposal, check
 
 
@@ -56,12 +59,23 @@ def test_only_non_allow_is_audited(tmp_path):
     assert len(lines) == 1
     ev = json.loads(lines[0])
     assert ev["kind"] == "gate" and ev["decision"] == "escalate" and ev["principle"] == "T0.5"
+    assert ev["character_fingerprint"] == CORE_CHARACTER.fingerprint
 
 
-def test_ten_principles_round_trip(tmp_path):
+def test_ten_principles_and_character_round_trip(tmp_path):
     c = Constitution()
     path = tmp_path / "constitution.json"
     path.write_text(json.dumps(c.to_json(), ensure_ascii=False, indent=2), encoding="utf-8")
     loaded = Constitution.load(path)
     assert len(loaded.principles) == 10
     assert sum(1 for p in loaded.principles if p.tier == 0) == 5
+    assert loaded.character_fingerprint == CORE_CHARACTER.fingerprint
+
+
+def test_load_rejects_a_different_character(tmp_path):
+    data = Constitution().to_json()
+    data["character"]["fingerprint"] = "successor-with-different-character"
+    path = tmp_path / "constitution.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    with pytest.raises(CharacterContinuityError):
+        Constitution.load(path)
