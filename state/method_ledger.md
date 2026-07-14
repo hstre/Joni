@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 594 · 304 Methoden** — proposed 257 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 595 · 305 Methoden** — proposed 258 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -223,6 +223,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | LATO.2: Factorized 3D Mesh Generation with Vertex and Topology Flow | **proposed** | candidate | 0 | — |
 | könnte-as-a-lens | **proposed** | candidate | 0 | — |
 | EgoSteer: A Full-Stack System Towards Steerable Dexterous Manipulation from Egoc | **proposed** | candidate | 0 | — |
+| Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
