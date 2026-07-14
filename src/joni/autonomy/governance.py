@@ -73,8 +73,10 @@ def _sha256(path: Path) -> str:
 
 
 def _kernel_modules() -> list[str]:
-    """Every desi_layer9 kernel module, as a ``desi_layer9/<file>.py`` name relative to ``src/``.
-    Discovered dynamically so a re-``lock`` always freezes the current engine, additions included."""
+    """Every kernel module as ``desi_layer9/<file>.py`` relative to ``src/``.
+
+    Discovery is dynamic so a re-``lock`` freezes the current engine, additions included.
+    """
     pkg = _package_dir().parent / "desi_layer9"
     return sorted(f"desi_layer9/{p.name}" for p in pkg.glob("*.py"))
 
