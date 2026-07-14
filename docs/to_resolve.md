@@ -45,6 +45,18 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
+## X-433 · Thema: memory
+
+- **C-8880** (0 stützend · 0 Kontext): This metric is a “shadow metric”: Schur’s lemma forces it to commute with every bilinear observable, making the distortion physically invisible in the closed system.
+  - _Quelle:_ arxiv:2607.11867v1
+- **C-8886** (0 stützend · 0 Kontext): Memory is studied across multiple domains in the recent literature. In open quantum systems, the memory kernel obeys Kramers–Kronig relations only when its Laplace transform is analytic in the upper half-plane, a property intrinsically broken by paraparticles. In machine learning, panoramic world models use rotation-equivariant representations to handle long-range memory, and Long Short-Term Memory networks resolve decaying error backflow to store information over extended time intervals. In bioinformatics, the Bowtie alignment program achieves ultrafast and memory-efficient processing of shor
+  - _Quelle:_ synthesis:iris
+- _Evidenzlage (C-8880 vs C-8886): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Forum_
+
+```
+X-433 | <gewinner: C-8880 oder C-8886> | <grund>
+```
+
 ## X-424 · Thema: memory
 
 - **C-6658** (0 stützend · 0 Kontext): Memory is essential for long-horizon agents to retain decision-relevant information scattered across expanding trajectories, preventing task requirements, prior attempts, and open subgoals from being lost within context windows. Linear attention architectures study recurrent mechanisms as efficient alternatives to softmax attention for retrieving information from long contexts. Version-controlled scientific memory enables the persistent storage and reuse of hypotheses in autonomous physics experimentation.
@@ -55,17 +67,5 @@ X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 
 ```
 X-424 | <gewinner: C-6658 oder C-8836> | <grund>
-```
-
-## X-423 · Thema: memory
-
-- **C-6080** (0 stützend · 0 Kontext): We formulate this as an open problem, prove a positive weighted-metric benchmark, and give a corridor lower-bound mechanism showing how denominator memory can hide large gradients.
-  - _Quelle:_ arxiv:2606.23676v1
-- **C-8836** (0 stützend · 0 Kontext): Detection in the ordinal-recall system fails closed if any layer detects inconsistency, ensuring reliable answers to recall questions.
-  - _Quelle:_ granite:joni-c586:946e9e440a7b
-- _Evidenzlage (C-6080 vs C-8836): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-423 | <gewinner: C-6080 oder C-8836> | <grund>
 ```
 

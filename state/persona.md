@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 738 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 605 Lehre(n)._
+_Stand: Tick 25 · 741 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 606 Lehre(n)._
 
-## attention · Tiefe 46 (threshold)
+## attention · Tiefe 47 (threshold)
 
-**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden sollte.**
+**Beurteile Annahmen kritisch, um die Konstanz des Mechanismus in Aufmerksamkeitsansprüchen als einheitlichen Faktor zu überprüfen.**
 
-_deterministisch:_ Auf 'attention': 46 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 46× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 47 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 47× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (46):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885
+- _volle Spur (47):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919
 
-## memory · Tiefe 34 (threshold)
+## memory · Tiefe 35 (threshold)
 
-**In der Erinnerung werden Annahmen verworfen und spezifische Quellenangaben, die nicht direkt relevant sind, ausgeschlossen.**
+**Verwerfen von Annahmen ist entscheidend, um genaue Schlussfolgerungen aus Erinnerungen zu ziehen.**
 
-_deterministisch:_ Auf 'memory': 34 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 34× verworfen). Muster: Annahmen wurden verworfen. Anker: „Bibby AI includes a retrieval layer over scholarly metadata enriched with patent-to-paper citation signals from USPTO PatentsView and the Marx-Fuegi citation corpus.“ → verworfen (verworfen) ; „The intersection of cognitive psychology and artificial intelligence is explored through studies focusing on human memory models and information processing principles.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 35 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 35× verworfen). Muster: Annahmen wurden verworfen. Anker: „Camera intrinsics are vital for recovering 3D structure from 2D video.“ → verworfen (verworfen) ; „Bibby AI includes a retrieval layer over scholarly metadata enriched with patent-to-paper citation signals from USPTO PatentsView and the Marx-Fuegi citation corpus.“ → verworfen (verworfen)
 
+- Anker: „Camera intrinsics are vital for recovering 3D structure from 2D video.“ → verworfen — verworfen
 - Anker: „Bibby AI includes a retrieval layer over scholarly metadata enriched with patent-to-paper citation signals from USPTO PatentsView and the Marx-Fuegi citation corpus.“ → verworfen — verworfen
-- Anker: „The intersection of cognitive psychology and artificial intelligence is explored through studies focusing on human memory models and information processing principles.“ → verworfen — verworfen
-- _volle Spur (34):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798
+- _volle Spur (35):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -3068,6 +3068,15 @@ _deterministisch:_ Auf 'generate': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetz
 
 - Anker: „'generate' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1154
+
+## generalization · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen, um die Generalisierbarkeit von skelettabhängigen Methoden auf vielfältige Charaktere, wie Tiere verschiedener Arten, zu verbessern und deren einzigartige Bewegungsstile zu bewahren.**
+
+_deterministisch:_ Auf 'generalization': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „These skeleton-dependent methods struggle to generalize to diverse characters, such as animals from different species, while preserving their unique motion styles.“ → verworfen (verworfen)
+
+- Anker: „These skeleton-dependent methods struggle to generalize to diverse characters, such as animals from different species, while preserving their unique motion styles.“ → verworfen — verworfen
+- _volle Spur (1):_ C-8914
 
 ## fundamental · Tiefe 1 (self_review)
 
