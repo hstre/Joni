@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 768 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 612 Lehre(n)._
+_Stand: Tick 25 · 772 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 613 Lehre(n)._
 
-## attention · Tiefe 53 (threshold)
+## attention · Tiefe 54 (threshold)
 
-**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden sollte.**
+**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden muss.**
 
-_deterministisch:_ Auf 'attention': 53 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 53× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 54 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 54× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (53):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122
+- _volle Spur (54):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140
 
-## memory · Tiefe 50 (threshold)
+## memory · Tiefe 52 (threshold)
 
-**Bei der Behandlung von Speicherproblemen sollten Annahmen über relevante Frameworks und Versionsinformationen verworfen werden, um genaue Lösungen zu gewährleisten.**
+**In der Speicheranalyse werden Annahmen über externe Datenquellen und Softwareversionen verworfen, um genaue Bewertungen zu gewährleisten.**
 
-_deterministisch:_ Auf 'memory': 50 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 50× verworfen). Muster: Annahmen wurden verworfen. Anker: „The NEXUS Computational Framework is mentioned in relation to the Absolute Mechanics of the Cosmic Substrate.“ → verworfen (verworfen) ; „DocKG version 0.4.6, released on 2026-07-09, lowers the default embedding batch size to prevent memory exhaustion on Apple Silicon and CPU for large knowledge graph builds.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 52 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 52× verworfen). Muster: Annahmen wurden verworfen. Anker: „Bibby AI includes a retrieval layer over scholarly metadata enriched with patent-to-paper citation signals from USPTO PatentsView and the Marx-Fuegi citation corpus.“ → verworfen (verworfen) ; „Version 0.4.8 of an unspecified software reduces the default memory footprint of parallel CPU embedding.“ → verworfen (verworfen)
 
-- Anker: „The NEXUS Computational Framework is mentioned in relation to the Absolute Mechanics of the Cosmic Substrate.“ → verworfen — verworfen
-- Anker: „DocKG version 0.4.6, released on 2026-07-09, lowers the default embedding batch size to prevent memory exhaustion on Apple Silicon and CPU for large knowledge graph builds.“ → verworfen — verworfen
-- _volle Spur (50):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119
+- Anker: „Bibby AI includes a retrieval layer over scholarly metadata enriched with patent-to-paper citation signals from USPTO PatentsView and the Marx-Fuegi citation corpus.“ → verworfen — verworfen
+- Anker: „Version 0.4.8 of an unspecified software reduces the default memory footprint of parallel CPU embedding.“ → verworfen — verworfen
+- _volle Spur (52):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -4838,6 +4838,15 @@ _deterministisch:_ Auf 'ayurveda+research': 1 korrigierte(r) Irrtum/Irrtümer (0
 
 - Anker: „Hypothesis: the pattern behind 'Ayurveda and natural products drug discovery' (from ayurveda) might also apply to research.“ → verworfen — verworfen
 - _volle Spur (1):_ C-7481
+
+## ayurveda+methodology · Tiefe 1 (self_review)
+
+**In der Ayurveda-Methode werden Annahmen über die Methodik verworfen, um genaue Muster zu identifizieren.**
+
+_deterministisch:_ Auf 'ayurveda+methodology': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Traditional Chinese Medicine and Ayurveda share similarities in their approaches to natural product-based therapies.' (from ayurveda) might also apply to methodology.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Traditional Chinese Medicine and Ayurveda share similarities in their approaches to natural product-based therapies.' (from ayurveda) might also apply to methodology.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9139
 
 ## ayurveda+forum · Tiefe 1 (self_review)
 
