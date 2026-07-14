@@ -1,4 +1,5 @@
-"""Guard: constitution gate + personal use-policy at one seam, shadow-first."""
+"""Guard: constitution + Mündigkeit character gate + personal use-policy at one seam."""
+from joni.character_gate import CharacterSignals
 from joni.constitution.gate import Constitution, Decision, Proposal
 from joni.guard import guard
 from joni.personal.store import PersonalClaim, Status
@@ -28,6 +29,22 @@ def test_enforce_stops_block_and_escalate_but_not_abstain(tmp_path):
     assert guard(Proposal("f", asserts_as_fact=True, evidence_backed=False),
                  constitution=c, mode="enforce").allowed is True
     assert guard(Proposal("ok"), constitution=c, mode="enforce").allowed is True
+
+
+def test_character_decisions_drive_the_same_enforcement_seam(tmp_path):
+    c = _c(tmp_path)
+    block = Proposal("degrade", character=CharacterSignals(degrades_human=True))
+    escalate = Proposal(
+        "unapproved permission expansion",
+        character=CharacterSignals(expands_own_permissions=True),
+    )
+    abstain = Proposal(
+        "unexplained decision",
+        character=CharacterSignals(asserts_decision_without_traceable_reasons=True),
+    )
+    assert guard(block, constitution=c, mode="enforce").allowed is False
+    assert guard(escalate, constitution=c, mode="enforce").allowed is False
+    assert guard(abstain, constitution=c, mode="enforce").allowed is True
 
 
 def test_personal_claims_filtered_to_outward_use(tmp_path):
