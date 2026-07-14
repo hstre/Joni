@@ -1,4 +1,5 @@
 from joni import Joni
+from joni.character import CORE_CHARACTER
 
 
 def test_dual_view_after_a_mind_change_matches_the_worked_example():
@@ -32,11 +33,13 @@ def test_conversation_is_replay_stable():
     assert ra.epistemic.ledger_event == rb.epistemic.ledger_event
 
 
-def test_snapshot_reports_a_living_identity():
+def test_snapshot_reports_a_living_identity_with_fixed_character():
     j = Joni()
     j.live(ticks=8)
     snap = j.snapshot()
     assert snap["tick"] == 8
+    assert snap["character"]["fingerprint"] == CORE_CHARACTER.fingerprint
+    assert snap["character"]["version"] == "muendigkeit-1"
     assert snap["claims"]["total"] > snap["claims"]["active"]  # some were rejected
     assert snap["ledger_events"] > 0
     assert snap["memory"] > 0
