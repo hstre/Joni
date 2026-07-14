@@ -2,10 +2,10 @@
 
 The single hard rule: **Joni may not change his protected DESi core without asking.**
 He may research, learn, and build *peripheral* improvements into himself autonomously,
-but the core engine - including the invariant character, normative gate, deterministic
-state, operators, conflict resolution, router, persistence and ledger - is frozen. Any
-change there is blocked and turned into an *ask* (a human-approval request), never
-self-applied.
+but the core engine - including the invariant character, its deterministic behaviour gate,
+the normative gate, deterministic state, operators, conflict resolution, router, persistence
+and ledger - is frozen. Any change there is blocked and turned into an *ask* (a human-approval
+request), never self-applied.
 
 Two mechanisms enforce it:
 
@@ -44,6 +44,7 @@ PROTECTED_CORE: tuple[str, ...] = (
     "model_client.py",
     "seed.py",
     "character.py",
+    "character_gate.py",
     "constitution/gate.py",
     "autonomy/governance.py",   # the guard guards itself
 )
@@ -73,7 +74,7 @@ def _sha256(path: Path) -> str:
 
 def _kernel_modules() -> list[str]:
     """Every desi_layer9 kernel module, as a ``desi_layer9/<file>.py`` name relative to ``src/``.
-    Discovered dynamically so a re-``lock`` always covers the current engine, additions included."""
+    Discovered dynamically so a re-``lock`` always freezes the current engine, additions included."""
     pkg = _package_dir().parent / "desi_layer9"
     return sorted(f"desi_layer9/{p.name}" for p in pkg.glob("*.py"))
 
