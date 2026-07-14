@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 585 · 296 Methoden** — proposed 249 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 586 · 297 Methoden** — proposed 250 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -214,6 +214,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | github.com/broadinstitute/gatk-sv/VisualizeCnvs | **proposed** | candidate | 0 | — |
 | github.com/broadinstitute/gatk-sv/AnnotateVcf | **proposed** | candidate | 0 | — |
 | thurlow-research/HumanOversightSystem: v0.5.0 — Governance, Accuracy & Usability | **proposed** | candidate | 0 | — |
+| informationen-as-a-lens | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |

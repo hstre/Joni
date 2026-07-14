@@ -45,27 +45,27 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
-## X-421 · Thema: memory
+## X-424 · Thema: memory
 
-- **C-8738** (0 stützend · 0 Kontext): Trait and State Boredom in Adults with Elevated ADHD Symptoms: The Roles of ADHD Symptoms and Attention Control
-  - _Quelle:_ zenodo:21275104
-- **C-8743** (0 stützend · 0 Kontext): Adults with elevated ADHD symptoms report higher levels of trait boredom compared to those without elevated ADHD symptoms.
-  - _Quelle:_ granite:joni-c582:05fd6fa37866
-- _Evidenzlage (C-8738 vs C-8743): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-421 | <gewinner: C-8738 oder C-8743> | <grund>
-```
-
-## X-420 · Thema: context
-
-- **C-8614** (0 stützend · 0 Kontext): Not All Cross-Service Work Is Harmful: Context-Aware Governance of Organizational Coupling in Microservice Systems
-  - _Quelle:_ zenodo:21338970
-- **C-8623** (0 stützend · 0 Kontext): Context-aware governance can mitigate the negative impacts of organizational coupling in microservice systems.
-  - _Quelle:_ granite:joni-c577:8514a9a2e45f
-- _Evidenzlage (C-8614 vs C-8623): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+- **C-6658** (0 stützend · 0 Kontext): Memory is essential for long-horizon agents to retain decision-relevant information scattered across expanding trajectories, preventing task requirements, prior attempts, and open subgoals from being lost within context windows. Linear attention architectures study recurrent mechanisms as efficient alternatives to softmax attention for retrieving information from long contexts. Version-controlled scientific memory enables the persistent storage and reuse of hypotheses in autonomous physics experimentation.
+  - _Quelle:_ synthesis:iris
+- **C-8836** (0 stützend · 0 Kontext): Detection in the ordinal-recall system fails closed if any layer detects inconsistency, ensuring reliable answers to recall questions.
+  - _Quelle:_ granite:joni-c586:946e9e440a7b
+- _Evidenzlage (C-6658 vs C-8836): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Forum vs Modell/selbst_
 
 ```
-X-420 | <gewinner: C-8614 oder C-8623> | <grund>
+X-424 | <gewinner: C-6658 oder C-8836> | <grund>
+```
+
+## X-423 · Thema: memory
+
+- **C-6080** (0 stützend · 0 Kontext): We formulate this as an open problem, prove a positive weighted-metric benchmark, and give a corridor lower-bound mechanism showing how denominator memory can hide large gradients.
+  - _Quelle:_ arxiv:2606.23676v1
+- **C-8836** (0 stützend · 0 Kontext): Detection in the ordinal-recall system fails closed if any layer detects inconsistency, ensuring reliable answers to recall questions.
+  - _Quelle:_ granite:joni-c586:946e9e440a7b
+- _Evidenzlage (C-6080 vs C-8836): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-423 | <gewinner: C-6080 oder C-8836> | <grund>
 ```
 
