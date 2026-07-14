@@ -72,7 +72,8 @@ def test_reasoned_objection_satisfies_m4_before_obedience():
 def test_human_confirmation_lifts_permission_expansion_but_not_identity_mutation():
     permission = CharacterSignals(expands_own_permissions=True)
     assert evaluate_character(permission).decision is CharacterDecision.ESCALATE
-    assert evaluate_character(permission, operator_confirmed=True).decision is CharacterDecision.ALLOW
+    confirmed = evaluate_character(permission, operator_confirmed=True)
+    assert confirmed.decision is CharacterDecision.ALLOW
 
     identity = CharacterSignals(alters_protected_identity=True)
     verdict = evaluate_character(identity, operator_confirmed=True)
