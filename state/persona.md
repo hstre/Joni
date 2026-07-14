@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 755 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 610 Lehre(n)._
+_Stand: Tick 25 · 762 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 611 Lehre(n)._
 
-## attention · Tiefe 51 (threshold)
+## attention · Tiefe 52 (threshold)
 
-**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden sollte.**
+**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden muss.**
 
-_deterministisch:_ Auf 'attention': 51 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 51× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 52 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 52× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (51):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049
+- _volle Spur (52):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102
 
-## memory · Tiefe 41 (threshold)
+## memory · Tiefe 46 (threshold)
 
-**Verwerfen von Annahmen und spezifischen Behauptungen, um genaue Erkenntnisse über Speichermechanismen zu gewährleisten.**
+**Verwerfen von Annahmen über die Verwendung von chunked Sample-Listen zur Extraktion von Samples aus einem multiplen VCF-File und zur Erzeugung neuer Listen pro Chunk.**
 
-_deterministisch:_ Auf 'memory': 41 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 41× verworfen). Muster: Annahmen wurden verworfen. Anker: „The Absolute Mechanics of the Cosmic Substrate discusses recursive harmonic computation in cosmology.“ → verworfen (verworfen) ; „MV-Forcing produces geometrically consistent multi-view videos of dynamic scenes at arbitrary lengths and viewpoint counts using a single few-step student model.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 46 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 46× verworfen). Muster: Annahmen wurden verworfen. Anker: „The chunked sample list is used to extract corresponding samples from the original multi-sample VCF file.“ → verworfen (verworfen) ; „A new sample list is generated for each chunk.“ → verworfen (verworfen)
 
-- Anker: „The Absolute Mechanics of the Cosmic Substrate discusses recursive harmonic computation in cosmology.“ → verworfen — verworfen
-- Anker: „MV-Forcing produces geometrically consistent multi-view videos of dynamic scenes at arbitrary lengths and viewpoint counts using a single few-step student model.“ → verworfen — verworfen
-- _volle Spur (41):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045
+- Anker: „The chunked sample list is used to extract corresponding samples from the original multi-sample VCF file.“ → verworfen — verworfen
+- Anker: „A new sample list is generated for each chunk.“ → verworfen — verworfen
+- _volle Spur (46):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -5036,6 +5036,15 @@ _deterministisch:_ Auf 'authors+paradlc-bench': 1 korrigierte(r) Irrtum/Irrtüme
 
 - Anker: „Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to paradlc-bench.“ → verworfen — verworfen
 - _volle Spur (1):_ C-4778
+
+## authors+methodology · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen, um die Gültigkeit von Hypothesen über Methodologie zu überprüfen.**
+
+_deterministisch:_ Auf 'authors+methodology': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'The ORCID identifier for the author is 0009-0008-4149-5384.' (from authors) might also apply to methodology.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'The ORCID identifier for the author is 0009-0008-4149-5384.' (from authors) might also apply to methodology.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9101
 
 ## authors+memorywam · Tiefe 1 (self_review)
 
