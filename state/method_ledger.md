@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 603 · 312 Methoden** — proposed 265 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 604 · 314 Methoden** — proposed 267 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -231,6 +231,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Multi-Agent LLMs Fail to Explore Each Other | **proposed** | candidate | 0 | — |
 | Simulation of Custom-Precision OCP MX Block Floating-Point Formats and Arithmeti | **proposed** | candidate | 0 | — |
 | wird-as-a-lens | **proposed** | candidate | 0 | — |
+| Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and E | **proposed** | candidate | 0 | — |
+| The Seriality Gap in Video Diffusion Models | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
