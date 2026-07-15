@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 612 · 316 Methoden** — proposed 269 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 613 · 318 Methoden** — proposed 271 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -235,6 +235,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Seriality Gap in Video Diffusion Models | **proposed** | candidate | 0 | — |
 | SynthDocBench: Controlled Benchmark for Long-Context Visual Document Understandi | **proposed** | candidate | 0 | — |
 | Search Beyond What Can Be Taught: Evolving the Knowledge Boundary in Agentic Vis | **proposed** | candidate | 0 | — |
+| A Hybrid LSTM-CNN Model for Text-based Sarcasm Detection | **proposed** | candidate | 0 | — |
+| EnPT - EnMAP Processing Tool | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
