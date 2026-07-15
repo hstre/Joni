@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 601 · 310 Methoden** — proposed 263 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 602 · 312 Methoden** — proposed 265 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -229,6 +229,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Evidence-Backed Video Question Answering | **proposed** | candidate | 0 | — |
 | GLEN (Geospatial LLM-Enabled Navigator): A reusable library for map-based applic | **proposed** | candidate | 0 | — |
 | Multi-Agent LLMs Fail to Explore Each Other | **proposed** | candidate | 0 | — |
+| Simulation of Custom-Precision OCP MX Block Floating-Point Formats and Arithmeti | **proposed** | candidate | 0 | — |
+| wird-as-a-lens | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |

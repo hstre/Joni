@@ -45,27 +45,51 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
-## X-433 · Thema: memory
+## X-440 · Thema: memory
 
-- **C-8880** (0 stützend · 0 Kontext): This metric is a “shadow metric”: Schur’s lemma forces it to commute with every bilinear observable, making the distortion physically invisible in the closed system.
-  - _Quelle:_ arxiv:2607.11867v1
-- **C-8886** (0 stützend · 0 Kontext): Memory is studied across multiple domains in the recent literature. In open quantum systems, the memory kernel obeys Kramers–Kronig relations only when its Laplace transform is analytic in the upper half-plane, a property intrinsically broken by paraparticles. In machine learning, panoramic world models use rotation-equivariant representations to handle long-range memory, and Long Short-Term Memory networks resolve decaying error backflow to store information over extended time intervals. In bioinformatics, the Bowtie alignment program achieves ultrafast and memory-efficient processing of shor
-  - _Quelle:_ synthesis:iris
-- _Evidenzlage (C-8880 vs C-8886): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Forum_
+- **C-9179** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
+
+ChatGPT (adversarial) treats "exploration" as undefined and flags missing empirical grounding, generalization, and unconsidered alternatives — a completeness/evidence lens.
+
+DeepSeek (consistency) resolves the ambiguity ChatGPT names by *decomposing* exploration (in-episode vs. cross-episode; internal policy vs. behavioral output) and ties admissibility to memory architecture.
+
+**Traced divergence:** The two differ on one assumption — whether "exploration" is irreducibly vague (ChatGPT) or splittable into well-defined sub-variants (DeepSeek). This is a category-granularity difference, not a genuine conflict. DeepSeek's decomposition directly discharges ChatGPT's ambiguity objection.
+
+**Reconciled assessment:** I adopt DeepSeek's decomposition and retain ChatGPT's evidence caveat.
+- *Supports:* Viable under static-memory / context-window-bounded agents; the memory-tag in Joni's graph makes the architecture assumption the load-bearing one, aptly matched.
+- *Breaks:* Under dynamic memory consolidation (in-context learning, external stores), the failure claim weakens; "fail" is stated as universal but is architecture-conditional.
+
+**Admissibility:** Formally admissible only if the memory-architecture scope and exploration sub-variant are specified. Undefined scope leaves it underspecified. No verdict — Joni decides.
+  - _Quelle:_ panel:expert:claude
+- **C-9195** (0 stützend · 0 Kontext): Open-KNEAD keeps every meal image on local hardware, preserving privacy and minimal user burden (a single, unannotated meal image).
+  - _Quelle:_ granite:joni-c602:9b101293dcb0
+- _Evidenzlage (C-9179 vs C-9195): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Forum vs Modell/selbst_
 
 ```
-X-433 | <gewinner: C-8880 oder C-8886> | <grund>
+X-440 | <gewinner: C-9179 oder C-9195> | <grund>
 ```
 
-## X-424 · Thema: memory
+## X-439 · Thema: memory
 
-- **C-6658** (0 stützend · 0 Kontext): Memory is essential for long-horizon agents to retain decision-relevant information scattered across expanding trajectories, preventing task requirements, prior attempts, and open subgoals from being lost within context windows. Linear attention architectures study recurrent mechanisms as efficient alternatives to softmax attention for retrieving information from long contexts. Version-controlled scientific memory enables the persistent storage and reuse of hypotheses in autonomous physics experimentation.
-  - _Quelle:_ synthesis:iris
-- **C-8836** (0 stützend · 0 Kontext): Detection in the ordinal-recall system fails closed if any layer detects inconsistency, ensuring reliable answers to recall questions.
-  - _Quelle:_ granite:joni-c586:946e9e440a7b
-- _Evidenzlage (C-6658 vs C-8836): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Forum vs Modell/selbst_
+- **C-9179** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
+
+ChatGPT (adversarial) treats "exploration" as undefined and flags missing empirical grounding, generalization, and unconsidered alternatives — a completeness/evidence lens.
+
+DeepSeek (consistency) resolves the ambiguity ChatGPT names by *decomposing* exploration (in-episode vs. cross-episode; internal policy vs. behavioral output) and ties admissibility to memory architecture.
+
+**Traced divergence:** The two differ on one assumption — whether "exploration" is irreducibly vague (ChatGPT) or splittable into well-defined sub-variants (DeepSeek). This is a category-granularity difference, not a genuine conflict. DeepSeek's decomposition directly discharges ChatGPT's ambiguity objection.
+
+**Reconciled assessment:** I adopt DeepSeek's decomposition and retain ChatGPT's evidence caveat.
+- *Supports:* Viable under static-memory / context-window-bounded agents; the memory-tag in Joni's graph makes the architecture assumption the load-bearing one, aptly matched.
+- *Breaks:* Under dynamic memory consolidation (in-context learning, external stores), the failure claim weakens; "fail" is stated as universal but is architecture-conditional.
+
+**Admissibility:** Formally admissible only if the memory-architecture scope and exploration sub-variant are specified. Undefined scope leaves it underspecified. No verdict — Joni decides.
+  - _Quelle:_ panel:expert:claude
+- **C-9194** (0 stützend · 0 Kontext): On the ACETADA dataset, the local open agent of Open-KNEAD surpasses the direct portion estimates of two frontier closed models by roughly 30% and 53%.
+  - _Quelle:_ granite:joni-c602:9b101293dcb0
+- _Evidenzlage (C-9179 vs C-9194): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Forum vs Modell/selbst_
 
 ```
-X-424 | <gewinner: C-6658 oder C-8836> | <grund>
+X-439 | <gewinner: C-9179 oder C-9194> | <grund>
 ```
 
