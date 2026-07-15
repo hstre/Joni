@@ -45,6 +45,18 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
+## X-443 · Thema: memory
+
+- **C-9229** (0 stützend · 0 Kontext): Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and Execution
+  - _Quelle:_ arxiv:2607.13034v1
+- **C-9430** (0 stützend · 0 Kontext): Edge devices have limited memory resources, making quantization essential for deploying complex multimodal models.
+  - _Quelle:_ granite:joni-c615:11488e102284
+- _Evidenzlage (C-9229 vs C-9430): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-443 | <gewinner: C-9229 oder C-9430> | <grund>
+```
+
 ## X-440 · Thema: memory
 
 - **C-9179** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
@@ -67,29 +79,5 @@ DeepSeek (consistency) resolves the ambiguity ChatGPT names by *decomposing* exp
 
 ```
 X-440 | <gewinner: C-9179 oder C-9195> | <grund>
-```
-
-## X-439 · Thema: memory
-
-- **C-9179** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
-
-ChatGPT (adversarial) treats "exploration" as undefined and flags missing empirical grounding, generalization, and unconsidered alternatives — a completeness/evidence lens.
-
-DeepSeek (consistency) resolves the ambiguity ChatGPT names by *decomposing* exploration (in-episode vs. cross-episode; internal policy vs. behavioral output) and ties admissibility to memory architecture.
-
-**Traced divergence:** The two differ on one assumption — whether "exploration" is irreducibly vague (ChatGPT) or splittable into well-defined sub-variants (DeepSeek). This is a category-granularity difference, not a genuine conflict. DeepSeek's decomposition directly discharges ChatGPT's ambiguity objection.
-
-**Reconciled assessment:** I adopt DeepSeek's decomposition and retain ChatGPT's evidence caveat.
-- *Supports:* Viable under static-memory / context-window-bounded agents; the memory-tag in Joni's graph makes the architecture assumption the load-bearing one, aptly matched.
-- *Breaks:* Under dynamic memory consolidation (in-context learning, external stores), the failure claim weakens; "fail" is stated as universal but is architecture-conditional.
-
-**Admissibility:** Formally admissible only if the memory-architecture scope and exploration sub-variant are specified. Undefined scope leaves it underspecified. No verdict — Joni decides.
-  - _Quelle:_ panel:expert:claude
-- **C-9194** (0 stützend · 0 Kontext): On the ACETADA dataset, the local open agent of Open-KNEAD surpasses the direct portion estimates of two frontier closed models by roughly 30% and 53%.
-  - _Quelle:_ granite:joni-c602:9b101293dcb0
-- _Evidenzlage (C-9179 vs C-9194): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Forum vs Modell/selbst_
-
-```
-X-439 | <gewinner: C-9179 oder C-9194> | <grund>
 ```
 
