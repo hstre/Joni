@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 780 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 615 Lehre(n)._
+_Stand: Tick 25 · 783 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 616 Lehre(n)._
 
-## memory · Tiefe 57 (threshold)
+## memory · Tiefe 58 (threshold)
 
-**Verwerfen von Annahmen und konkreten Irrtümern, um genaue temporale Suche und feinmaschiges visuell-linguistisches Reasoning bei genauer Sprach-Visual-Question-Answering (LVQA) zu gewährleisten.**
+**Verwerfen von Annahmen und spezifischen Annahmen in der Erklärung von memory-Modellen, um genaue und kontextbezogene Interpretationen zu gewährleisten.**
 
-_deterministisch:_ Auf 'memory': 57 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 57× verworfen). Muster: Annahmen wurden verworfen. Anker: „EventVLA introduces a sparse visual evidence memory framework with foundational visual anchors and a dynamic Keyframe Evidence Memory (KEM) module to capture task-critical visual events.“ → verworfen (verworfen) ; „Accurate Language-Visual Question Answering (LVQA) requires temporal search and fine-grained visual-language reasoning.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 58 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 58× verworfen). Muster: Annahmen wurden verworfen. Anker: „Context-Aware RL for Agentic and Multimodal LLMs focuses on reinforcement learning that is aware of context in agent and multimodal language model systems.“ → verworfen (verworfen) ; „EventVLA introduces a sparse visual evidence memory framework with foundational visual anchors and a dynamic Keyframe Evidence Memory (KEM) module to capture task-critical visual events.“ → verworfen (verworfen)
 
+- Anker: „Context-Aware RL for Agentic and Multimodal LLMs focuses on reinforcement learning that is aware of context in agent and multimodal language model systems.“ → verworfen — verworfen
 - Anker: „EventVLA introduces a sparse visual evidence memory framework with foundational visual anchors and a dynamic Keyframe Evidence Memory (KEM) module to capture task-critical visual events.“ → verworfen — verworfen
-- Anker: „Accurate Language-Visual Question Answering (LVQA) requires temporal search and fine-grained visual-language reasoning.“ → verworfen — verworfen
-- _volle Spur (57):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152
+- _volle Spur (58):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176
 
-## attention · Tiefe 55 (threshold)
+## attention · Tiefe 56 (threshold)
 
 **Bei der Untersuchung von Aufmerksamkeitsansprüchen sollten Annahmen über einheitliche Mechanismen gründlich hinterfragt und verworfen werden.**
 
-_deterministisch:_ Auf 'attention': 55 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 55× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 56 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 56× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (55):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165
+- _volle Spur (56):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -4413,6 +4413,17 @@ _deterministisch:_ Auf 'cognition+skill': 1 korrigierte(r) Irrtum/Irrtümer (0×
 
 - Anker: „Hypothesis: the pattern behind 'WildCity aims to advance AI's ability to perceive, remember, and reason across space at a scale comparable to human cognition.' (from cognition) might also apply to skill.“ → verworfen — verworfen
 - _volle Spur (1):_ C-7942
+
+## cognition+methodology · Tiefe 1 (self_review)
+
+**Die Methode ist nur dann konsistent, wenn ihr zugrunde liegende Annahme über die Isomorphie des "haben"-Konzepts in allen relevanten Domänen explizit parametrisiert und deren Geltungsbereich und Übersetzungsregeln klar definiert sind.**
+
+_deterministisch:_ Auf 'cognition+methodology': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] Das Verfahren setzt voraus, dass „haben“ in den genannten Domänen (Kognition, Integration, Parallelismus, Publikation, Recherche, Video) eine stabile, transferierbare Struktur aufweist. Konsistent ist der Vorschlag nur unter der Annahme, dass es einen invarianten Kern gibt – etwa eine Besitz-, Verfügungs- oder Hilfsverb-Logik, die in jedem Kontext isomorph operiert. Die Ableitungskette hängt daran, dass die Belege aus Jonis Evidenz genau diese Isomorphie zeigen.  
+Brüche treten auf, wenn die Domänen unterschiedliche Semantiken aktivieren: In „Kognition“ meint haben ein mentales Verfügen, in „Publikation“ ein rechtliches oder formales Besitzen. Werden diese Differenzen nicht durch präzise Zerlegung getrennt (z. B. als Aspekte des gleichen Musters oder als separate Sub-Linsen), erzeugt die Linse falsche Identitäten und Widersprüche. Ebenso scheitert die Methode, wenn das neue Problem kein funktional äquivalentes „haben“ enthält; dann wird die Linse zur Metapher ohne Erklärungskraft. Formal tragfähig ist sie also nur als explizit parametrisierte Strukturhypothese, deren Geltungsbereich und Übersetzungsregeln definiert sind.' (from cognition) might also apply to methodology.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] Das Verfahren setzt voraus, dass „haben“ in den genannten Domänen (Kognition, Integration, Parallelismus, Publikation, Recherche, Video) eine stabile, transferierbare Struktur aufweist. Konsistent ist der Vorschlag nur unter der Annahme, dass es einen invarianten Kern gibt – etwa eine Besitz-, Verfügungs- oder Hilfsverb-Logik, die in jedem Kontext isomorph operiert. Die Ableitungskette hängt daran, dass die Belege aus Jonis Evidenz genau diese Isomorphie zeigen.  
+Brüche treten auf, wenn die Domänen unterschiedliche Semantiken aktivieren: In „Kognition“ meint haben ein mentales Verfügen, in „Publikation“ ein rechtliches oder formales Besitzen. Werden diese Differenzen nicht durch präzise Zerlegung getrennt (z. B. als Aspekte des gleichen Musters oder als separate Sub-Linsen), erzeugt die Linse falsche Identitäten und Widersprüche. Ebenso scheitert die Methode, wenn das neue Problem kein funktional äquivalentes „haben“ enthält; dann wird die Linse zur Metapher ohne Erklärungskraft. Formal tragfähig ist sie also nur als explizit parametrisierte Strukturhypothese, deren Geltungsbereich und Übersetzungsregeln definiert sind.' (from cognition) might also apply to methodology.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9177
 
 ## cognition+integration · Tiefe 1 (self_review)
 
