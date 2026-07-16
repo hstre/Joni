@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 624 · 328 Methoden** — proposed 281 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 625 · 329 Methoden** — proposed 282 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -247,6 +247,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Resolution Geometry of Observation Systems | **proposed** | candidate | 0 | — |
 | SPEAR: A Simulator for Photorealistic Embodied AI Research | **proposed** | candidate | 0 | — |
 | Self in Space: Benchmarking Self-Awareness and Spatial Cognition in UAV Embodied | **proposed** | candidate | 0 | — |
+| convolutional-as-a-lens | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
