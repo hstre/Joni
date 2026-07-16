@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 617 · 318 Methoden** — proposed 271 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 618 · 320 Methoden** — proposed 273 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -237,6 +237,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Search Beyond What Can Be Taught: Evolving the Knowledge Boundary in Agentic Vis | **proposed** | candidate | 0 | — |
 | A Hybrid LSTM-CNN Model for Text-based Sarcasm Detection | **proposed** | candidate | 0 | — |
 | EnPT - EnMAP Processing Tool | **proposed** | candidate | 0 | — |
+| A modular state-space model of human perception, cognition, and decision dynamic | **proposed** | candidate | 0 | — |
+| From Pixels to States: Rethinking Interactive World Models as Game Engines | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |

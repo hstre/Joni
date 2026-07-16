@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 792 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 618 Lehre(n)._
+_Stand: Tick 25 · 796 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 619 Lehre(n)._
 
-## attention · Tiefe 61 (threshold)
+## attention · Tiefe 62 (threshold)
 
-**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden sollte.**
+**Beurteile Annahmen kritisch, um die Konstanz des Mechanismus in Aufmerksamkeitsansprüchen als einheitlichen Faktor zu überprüfen.**
 
-_deterministisch:_ Auf 'attention': 61 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 61× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 62 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 62× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (61):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438
+- _volle Spur (62):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504
 
-## memory · Tiefe 60 (threshold)
+## memory · Tiefe 61 (threshold)
 
-**In der KI-Praxis müssen Annahmen über die Speicheranforderungen von rekurrenten neuronalen Netzen und die Grenzen des erziehbaren Wissens in agenter visueller Generierung kritisch hinterfragt und verworfen werden.**
+**In der Untersuchung von Gedächtnis ist es entscheidend, Annahmen über menschliche Gedächtnismodelle und die Prinzipien der Informationsverarbeitung in kognitiver Psychologie und künstlicher Intelligenz zu hinterfragen und zu verwerfen, insbesondere in Bezug auf die Auswirkungen hochdimensionaler, kontinuierlicher Gleitkomma-Hidden States in rekurrenten neuronalen Netzen auf den Energieverbrauch an Edge-Geräten.**
 
-_deterministisch:_ Auf 'memory': 60 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 60× verworfen). Muster: Annahmen wurden verworfen. Anker: „Recurrent Neural Networks (RNNs) use high-dimensional, continuous floating-point hidden states, which cause memory walls and high power consumption on edge devices.“ → verworfen (verworfen) ; „Search Beyond What Can Be Taught: Evolving the Knowledge Boundary in Agentic Visual Generation“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 61 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 61× verworfen). Muster: Annahmen wurden verworfen. Anker: „This study investigates the intersection of cognitive psychology and artificial intelligence, focusing on human memory models and information processing principles.“ → verworfen (verworfen) ; „Recurrent Neural Networks (RNNs) use high-dimensional, continuous floating-point hidden states, which cause memory walls and high power consumption on edge devices.“ → verworfen (verworfen)
 
+- Anker: „This study investigates the intersection of cognitive psychology and artificial intelligence, focusing on human memory models and information processing principles.“ → verworfen — verworfen
 - Anker: „Recurrent Neural Networks (RNNs) use high-dimensional, continuous floating-point hidden states, which cause memory walls and high power consumption on edge devices.“ → verworfen — verworfen
-- Anker: „Search Beyond What Can Be Taught: Evolving the Knowledge Boundary in Agentic Visual Generation“ → verworfen — verworfen
-- _volle Spur (60):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423
+- _volle Spur (61):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -205,6 +205,16 @@ _deterministisch:_ Auf 'awesome-openclaw-usecases': 3 korrigierte(r) Irrtum/Irrt
 - Anker: „There is a community collection named awesome-openclaw-usecases that compiles OpenClaw use cases to simplify tasks.“ → verworfen — verworfen
 - Anker: „There is a related collection called awesome-openclaw-usecases.“ → verworfen — verworfen
 - _volle Spur (3):_ C-297, C-300, C-1322
+
+## alignment · Tiefe 3 (threshold)
+
+**Alignment erfordert die Überprüfung und Verwerfung von Annahmen und spezifischen Definitionen, um genaue und relevante Interpretationen zu gewährleisten.**
+
+_deterministisch:_ Auf 'alignment': 3 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 3× verworfen). Muster: Annahmen wurden verworfen. Anker: „alignment is worth tracking as a topic“ → verworfen (verworfen) ; „In 3D foundation models, alignment refers to the integration of text and 3D tokens to enable unified understanding and generation, though existing methods often rely on implicit self-attention that can collapse coarse structural information. In genomics, alignment describes the process of efficiently mapping short DNA sequences to large genomes, with Bowtie leveraging Burrows-Wheeler indexing to align over 25 million reads per CPU hour while using only about 1.3 gigabytes of memory.“ → verworfen (verworfen)
+
+- Anker: „alignment is worth tracking as a topic“ → verworfen — verworfen
+- Anker: „In 3D foundation models, alignment refers to the integration of text and 3D tokens to enable unified understanding and generation, though existing methods often rely on implicit self-attention that can collapse coarse structural information. In genomics, alignment describes the process of efficiently mapping short DNA sequences to large genomes, with Bowtie leveraging Burrows-Wheeler indexing to align over 25 million reads per CPU hour while using only about 1.3 gigabytes of memory.“ → verworfen — verworfen
+- _volle Spur (3):_ C-483, C-5340, C-9502
 
 ## xin-annotations · Tiefe 2 (threshold)
 
@@ -385,16 +395,6 @@ _deterministisch:_ Auf 'architecture': 2 korrigierte(r) Irrtum/Irrtümer (0× er
 - Anker: „The architecture is bio-inspired, drawing on biological processes for its design.“ → verworfen — verworfen
 - Anker: „'architecture' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (2):_ C-1084, C-4579
-
-## alignment · Tiefe 2 (threshold)
-
-**Alignment erfordert die Überprüfung und Verwerfung von Annahmen und irrelevanten Aussagen, um präzise und kontextbezogene Definitionen beizubehalten.**
-
-_deterministisch:_ Auf 'alignment': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2× verworfen). Muster: Annahmen wurden verworfen. Anker: „In 3D foundation models, alignment refers to the integration of text and 3D tokens to enable unified understanding and generation, though existing methods often rely on implicit self-attention that can collapse coarse structural information. In genomics, alignment describes the process of efficiently mapping short DNA sequences to large genomes, with Bowtie leveraging Burrows-Wheeler indexing to align over 25 million reads per CPU hour while using only about 1.3 gigabytes of memory.“ → verworfen (verworfen) ; „alignment is worth tracking as a topic“ → verworfen (verworfen)
-
-- Anker: „In 3D foundation models, alignment refers to the integration of text and 3D tokens to enable unified understanding and generation, though existing methods often rely on implicit self-attention that can collapse coarse structural information. In genomics, alignment describes the process of efficiently mapping short DNA sequences to large genomes, with Bowtie leveraging Burrows-Wheeler indexing to align over 25 million reads per CPU hour while using only about 1.3 gigabytes of memory.“ → verworfen — verworfen
-- Anker: „alignment is worth tracking as a topic“ → verworfen — verworfen
-- _volle Spur (2):_ C-483, C-5340
 
 ## yields · Tiefe 1 (self_review)
 
@@ -3423,6 +3423,15 @@ _deterministisch:_ Auf 'evidence': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetz
 
 - Anker: „'evidence' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-525
+
+## evaluation+memorywam · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen, die Muster zwischen verschiedenen Konzepten ohne direkte Belege verbinden.**
+
+_deterministisch:_ Auf 'evaluation+memorywam': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Die Evaluation kann durch das Vergleichen von Quellen und Suchbegriffen verbessert werden, um potenzielle Bias und selektive Berichterstattung zu identifizieren.' (from evaluation) might also apply to memorywam.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Die Evaluation kann durch das Vergleichen von Quellen und Suchbegriffen verbessert werden, um potenzielle Bias und selektive Berichterstattung zu identifizieren.' (from evaluation) might also apply to memorywam.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9503
 
 ## evaluates · Tiefe 1 (self_review)
 
