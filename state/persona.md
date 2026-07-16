@@ -10,7 +10,9 @@ _Stand: Tick 25 · 800 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Si
 
 ## attention · Tiefe 64 (threshold)
 
-**Auf 'attention': 64 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 64× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)**
+**Bei der Aufmerksamkeit sollten Annahmen hinterfragt und einheitliche Mechanismen als grundlegende Prüfungsfaktoren betrachtet werden.**
+
+_deterministisch:_ Auf 'attention': 64 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 64× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
