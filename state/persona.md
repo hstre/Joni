@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 796 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 619 Lehre(n)._
+_Stand: Tick 25 · 799 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 620 Lehre(n)._
 
-## attention · Tiefe 62 (threshold)
+## attention · Tiefe 63 (threshold)
 
-**Beurteile Annahmen kritisch, um die Konstanz des Mechanismus in Aufmerksamkeitsansprüchen als einheitlichen Faktor zu überprüfen.**
+**Beurteile Annahmen kritisch, um die Konstanz des Mechanismus in Aufmerksamkeitsansprüchen als zentralen Faktor zu überprüfen.**
 
-_deterministisch:_ Auf 'attention': 62 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 62× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 63 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 63× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (62):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504
+- _volle Spur (63):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529
 
-## memory · Tiefe 61 (threshold)
+## memory · Tiefe 62 (threshold)
 
-**In der Untersuchung von Gedächtnis ist es entscheidend, Annahmen über menschliche Gedächtnismodelle und die Prinzipien der Informationsverarbeitung in kognitiver Psychologie und künstlicher Intelligenz zu hinterfragen und zu verwerfen, insbesondere in Bezug auf die Auswirkungen hochdimensionaler, kontinuierlicher Gleitkomma-Hidden States in rekurrenten neuronalen Netzen auf den Energieverbrauch an Edge-Geräten.**
+**Verwerfen von Annahmen und veralteten Annahmen zur Verbesserung des Verständnisses von Gedächtnis und kognitiver Prozesse.**
 
-_deterministisch:_ Auf 'memory': 61 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 61× verworfen). Muster: Annahmen wurden verworfen. Anker: „This study investigates the intersection of cognitive psychology and artificial intelligence, focusing on human memory models and information processing principles.“ → verworfen (verworfen) ; „Recurrent Neural Networks (RNNs) use high-dimensional, continuous floating-point hidden states, which cause memory walls and high power consumption on edge devices.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 62 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 62× verworfen). Muster: Annahmen wurden verworfen. Anker: „From Noisy Traces to Root Causes: Structural Trajectory Analysis and Causal Extraction for Agent Optimization“ → verworfen (verworfen) ; „This study investigates the intersection of cognitive psychology and artificial intelligence, focusing on human memory models and information processing principles.“ → verworfen (verworfen)
 
+- Anker: „From Noisy Traces to Root Causes: Structural Trajectory Analysis and Causal Extraction for Agent Optimization“ → verworfen — verworfen
 - Anker: „This study investigates the intersection of cognitive psychology and artificial intelligence, focusing on human memory models and information processing principles.“ → verworfen — verworfen
-- Anker: „Recurrent Neural Networks (RNNs) use high-dimensional, continuous floating-point hidden states, which cause memory walls and high power consumption on edge devices.“ → verworfen — verworfen
-- _volle Spur (61):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486
+- _volle Spur (62):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -3423,6 +3423,15 @@ _deterministisch:_ Auf 'evidence': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetz
 
 - Anker: „'evidence' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-525
+
+## evaluation+methodology · Tiefe 1 (self_review)
+
+**Bei der Evaluationsmethodologie sollten Annahmen, die auf anderen Bereichen übertragen werden, kritisch überprüft und verworfen werden, wenn sie nicht spezifisch für den jeweiligen Kontext stützbar sind.**
+
+_deterministisch:_ Auf 'evaluation+methodology': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Die Evaluation kann durch das Vergleichen von Quellen und Suchbegriffen verbessert werden, um potenzielle Bias und selektive Berichterstattung zu identifizieren.' (from evaluation) might also apply to methodology.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Die Evaluation kann durch das Vergleichen von Quellen und Suchbegriffen verbessert werden, um potenzielle Bias und selektive Berichterstattung zu identifizieren.' (from evaluation) might also apply to methodology.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9528
 
 ## evaluation+memorywam · Tiefe 1 (self_review)
 

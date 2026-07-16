@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 618 · 320 Methoden** — proposed 273 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 619 · 322 Methoden** — proposed 275 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -239,6 +239,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | EnPT - EnMAP Processing Tool | **proposed** | candidate | 0 | — |
 | A modular state-space model of human perception, cognition, and decision dynamic | **proposed** | candidate | 0 | — |
 | From Pixels to States: Rethinking Interactive World Models as Game Engines | **proposed** | candidate | 0 | — |
+| Hallo4D: Multi-Modal Hallucination Mitigation for Consistent Spatio-Temporal Gen | **proposed** | candidate | 0 | — |
+| Vinci2: Providing Proactive Assistance in Continuous Egocentric Videos | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
