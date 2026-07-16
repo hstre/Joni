@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 622 · 324 Methoden** — proposed 277 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 623 · 326 Methoden** — proposed 279 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -243,6 +243,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Vinci2: Providing Proactive Assistance in Continuous Egocentric Videos | **proposed** | candidate | 0 | — |
 | PalmClaw: A Native On-Device Agent Framework for Mobile Phones | **proposed** | candidate | 0 | — |
 | AgentCompass: A Unified Evaluation Infrastructure for Agent Capabilities | **proposed** | candidate | 0 | — |
+| Discrete Diffusion Models: A Unified Framework from Tokenization to Generation | **proposed** | candidate | 0 | — |
+| Resolution Geometry of Observation Systems | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
