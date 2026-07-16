@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 623 · 326 Methoden** — proposed 279 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 624 · 328 Methoden** — proposed 281 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -245,6 +245,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | AgentCompass: A Unified Evaluation Infrastructure for Agent Capabilities | **proposed** | candidate | 0 | — |
 | Discrete Diffusion Models: A Unified Framework from Tokenization to Generation | **proposed** | candidate | 0 | — |
 | Resolution Geometry of Observation Systems | **proposed** | candidate | 0 | — |
+| SPEAR: A Simulator for Photorealistic Embodied AI Research | **proposed** | candidate | 0 | — |
+| Self in Space: Benchmarking Self-Awareness and Spatial Cognition in UAV Embodied | **proposed** | candidate | 0 | — |
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
