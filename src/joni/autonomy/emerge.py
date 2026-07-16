@@ -29,7 +29,7 @@ from desi_layer9.semantics import adapter
 from desi_layer9.semantics.ports import NullSemanticLayer
 
 from ..conflict import _content
-from . import quality, topic_review
+from . import quality, term_judge, topic_review
 
 # Structural / meta words from Joni's own generated text - never a real emergent topic.
 _META = frozenset({
@@ -102,6 +102,14 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
          and len(e["claims"]) >= _MIN_CLAIMS and len(e["topics"]) >= _MIN_TOPICS_FOR_TOPIC),
         key=lambda kv: (-len(kv[1]["claims"]), kv[0]))
     cands = [(t, e) for t, e in cands if quality.on_domain(t)]   # domain-consistency gate
+    # In-doubt term-judge (OFF by default): veto only the winning term; burn it so it is not
+    # re-judged next cycle. A None/True verdict, or a disabled/over-budget judge, keeps the rule.
+    while cands and term_judge.enabled() and \
+            term_judge.judge(cands[0][0], budget=budget, cycle=cycle) is False:
+        done_topics.add(cands[0][0])
+        proto.record(cycle, "emerged",
+                     f"emergent topic '{cands[0][0]}' vetoed by the term-judge in doubt; dropped")
+        cands = cands[1:]
     if cands:
         term, e = cands[0]
         # Symmetry with moves 2 and 3: no structure without a semantic judgment. Lexical
@@ -182,6 +190,15 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
          and len(e["claims"]) >= _MIN_CLAIMS),
         key=lambda kv: (-len(kv[1]["topics"]), -len(kv[1]["claims"]), kv[0]))
     lenses = [(t, e) for t, e in lenses if quality.on_domain(t)]   # domain-consistency gate
+    # In-doubt term-judge (OFF by default): veto only the winning lens term before it is minted
+    # as an '<term>-as-a-lens' method; burn a vetoed term. Fails to the rule when unavailable.
+    while lenses and term_judge.enabled() and \
+            term_judge.judge(lenses[0][0], budget=budget, cycle=cycle) is False:
+        done_meth.add(lenses[0][0])
+        proto.record(cycle, "emerged",
+                     f"method candidate '{lenses[0][0]}-as-a-lens' vetoed by the term-judge in "
+                     "doubt (not a genuine transferable concept); dropped, not minted")
+        lenses = lenses[1:]
     if lenses:
         term, e = lenses[0]
         topics = tuple(sorted(e["topics"]))

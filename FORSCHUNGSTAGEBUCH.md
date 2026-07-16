@@ -3115,3 +3115,92 @@ Der Betreiber wählte den **harten Stopp**: Moltbook-Autoposts eskalieren ab jet
 **[Prinzip / Rollenklärung]** Die saubere Lesart der Beziehung: **DESi konsumiert Claude Science, nicht umgekehrt** — genau die bekannte Architektur „DESi diagnostiziert, der Router handelt": das Produkt generiert/rechnet, DESi ist das deterministische, provenance-gegatete Epistemik-Gate darüber (via MCP/Skills). DESi ersetzt weder die Infrastruktur (Compute, 60+ DBs, 3D-Renderer, HPC/ELN) noch will es das.
 
 **[Grenzen, nicht versteckt]** DESi ist ein Forschungs-Demonstrator eines Einzelnen, kein skaliertes Produkt; seine Regeln sind hand-kuratierte, geschlossene Fixtures (die Fallstudie sagt selbst: 23 kuratierte Claims, keine gemessene Abdeckung); die Beispiele sind Epistemik/Recht, nicht Genomik/Proteomik — das *Konzept* Domain-Routing transferiert, das biologische Fachwissen müsste gebaut werden. Und Anthropic wird kein Solo-Repo als Komponente importieren. Der realistische Wert: **Validierung der Richtung, Red-Team-Prüfstein, Gate obendrauf, offenes Vokabular** (Claim-Typen, Verdikt-Taxonomie, Source-Domain-Gating, Selbstabdichtungs-Erkennung) — nicht Ersatz, nicht Zulieferer.
+
+### Eintrag 2026-07-16 (XLIV) — Degeneration diagnostiziert und am Ursprung behoben: Joni hortete Kandidaten, statt zu lernen — Stoppwort-Linsen, nie geprüft, nie beschnitten
+
+**[Eingriff]** „Wie geht es Joni?" Der ehrliche Blick ins Collapse-Panel: 🔴 **ALARM** bei ~stündlichem
+Betrieb, Budget 1,44 €/20 €, Gates grün — Körper gesund, Kopf im Kreis. Zwei rote Treiber: **95 % der
+2102 aktiven Claims „schwach"** und **Self-Model-Repetition 97 % / dup-dev 78 %**. Das Methoden-Ledger
+zeigt den Kern nackt: **proposed 267 · trialed 0 · active 0 · retired 47**.
+
+**[Gemessen — Ursachenanalyse, keine Vermutung]** Drei zusammenwirkende Befunde:
+1. **Vermüllter Zufluss.** `emerge.py` prägt „`<term>-as-a-lens`"-Methoden aus wiederkehrenden Termen.
+   Der Term-Filter `quality.is_meaningful_term` lehnt aber nur **englische** Stoppwörter ab — Joni frisst
+   Deutsch (Betreiber-Text + Quellen), also passierten `dass/haben/können/während/zwischen/durch/oder/…`
+   den Filter und wurden als „Linsen" geshelvt. Reine Token-Suppe.
+2. **Nie getestet.** `JONI_SYNTHETIC_TRIALS=0` (bewusst) + der *echte* Trial misst nur EINE feste Aufgabe
+   → die 267 Regal-Kandidaten werden **nie einzeln** geprüft.
+3. **Nie beschnitten.** `retire_unproductive` verwirft erst bei `trial_count ≥ 8` — ungetestete Kandidaten
+   (`trial_count = 0`) fallen nie durch die Bedingung → **unbegrenztes Wachstum** („proposed 267 / trialed 0").
+
+**[Bau — am Ursprung, non-core, `verify` unberührt]**
+- **Deutscher Stoppwort-Boden** in `quality.py` (Funktionswörter ≥ 4 Zeichen; kürzere fängt schon die
+  Längen-Schwelle). Der Müll entsteht gar nicht erst.
+- **Alters-Verfall** in `trials.py` (`JONI_METHOD_MAX_AGE`, Default 40): nie getestete Kandidaten verfallen
+  nach N Zyklen; `first_seen` beim ersten Sehen verankert → **kein Massen-Retire beim Deploy**, der Stau
+  drainiert graduell. Regal = rollierendes Fenster statt Halde.
+- **In-Zweifel-LLM-Term-Judge** (`term_judge.py`, **default AUS** `JONI_TERM_JUDGE=1`): für den unscharfen
+  Rest (echt-klingende Nicht-Konzepte: Orte, Slugs), budget-gedeckelt, gecached, **fällt bei
+  Nichtverfügbarkeit auf die Regel zurück** — nie fail-open. Motiviert durch den DESi-hard2-Befund
+  (LLM+Regel-Komplementarität, Eintrag XLIII-nah).
+
+**[Ehrliche Design-Notiz]** `on_domain` ist *bewusst* fail-open („eine Messung nie durch eine lexikalische
+Vermutung ersetzen"). Ein naives fail-closed hätte die Emergenz eingefroren, sobald der Embedder fehlt —
+also **nicht** gemacht; der Term-Judge deckt genau diesen Zweifelsfall ab.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Stoppwort-Boden (DE) | **3 · getestet** | `test_quality`: dass/haben/können… abgelehnt, Domänenbegriffe passieren |
+| Alters-Verfall | **3 · getestet** | greift bei Alter ≥ N, kein Massen-Retire, `=0` deaktiviert |
+| Term-Judge | **2 · gebaut, default AUS** | Parsing + Fail-to-rule getestet; live noch unbeobachtet |
+
+**[Offen]** Term-Judge scharfschalten und **beobachten**. Der tiefere Hebel bleibt das Trial-/Retirement-
+Regime: dass 267 Kandidaten nie einzeln geprüft werden, ist die nächste ehrliche Baustelle.
+
+### Eintrag 2026-07-16 (XLV) — Neue Schicht: ein externalisierter Metakognitions-Supervisor (Shadow) — Joni misst, WANN seine Prüfsignale tragen, statt zu behaupten, sich zu kennen
+
+**[Eingriff]** Auftrag: eine systemweite **funktionale, externalisierte Metakognition** — ausdrücklich
+**nicht** ein LLM, das per Prompt über seine Antwort „nachdenkt". Joni hat die Bausteine schon (Layer 9,
+Verifier/Doktores, Router/Budget, Gates, ALLOW/ABSTAIN/ESCALATE/BLOCK, Audit). Es fehlte die **systematische
+Messung**: welche strukturierten Signale lagen vor, wie schätzte das System Erfolg/Wissensgrenze ein, welche
+Kontrolle wurde gewählt, was kostete es, welches **belastbare** Ergebnis kam später.
+
+**[Bau — `src/joni/autonomy/metacognition/`, shadow-only, off by default, non-core]** Kein Core-Write, keine
+Entscheidungsautorität, kein Enforce, keine zusätzlichen Modell-Calls (GitHub-Read opt-in + fail-safe).
+- **Datenmodell**: versionierte `Episode` + append-only `OutcomeEvent`; geschlossene Enums; strikte
+  Validierung (unbekannte Felder / falsche Typen / außerhalb [0,1] abgelehnt); deterministische Hash-IDs;
+  **`unknown` bleibt `unknown`**; ein spätes Ergebnis referenziert die `episode_id` und **überschreibt die
+  Episode nie**.
+- **Vier reale Adapter** (verlangt ≥ 2), rein beobachtend: Methoden-Gate · Konflikt-Pfad ·
+  Doktores-Kohärenz-Verifier · Doktores-Literatur (+ PR/CI-Outcome-Reader). Outcomes nur aus belastbaren
+  Quellen (`later_layer9_status`, `pr_outcome`, `gold_label`), sonst `unknown`.
+- **Metriken**: Brier · ECE (feste 10 Bins) · AUROC (nur beide Klassen) · Coverage/unknown/monitor_dark —
+  **verweigern bei Datenmangel** (`insufficient_evidence`), per Gruppe (kein versteckter Global-Score).
+- **Off-by-default Shadow-Hook** (`JONI_METACOG_SHADOW=1`), append-only in `state/metacognition.jsonl`.
+
+**[Gemessen — 15-Fixture Offline-Benchmark]** Trennt Aufgaben- von metakognitiver Leistung:
+`task_accuracy 0.375` **vs** `metacognitive_accuracy 0.533` — sie **divergieren**. Fälle:
+*gutes-Ergebnis-schlechte-Metakognition* (needless holdback/abstain) neben
+*schlechtes-Ergebnis-gute-Metakognition* (Unsicherheit korrekt erkannt → abstain/escalate).
+
+**[Ehrliche Grenze]** Der reiche multidimensionale Verifier des Auftrags (Dimensionen/Streuung/Red-Flags/
+Veto) lebt in **DESi**, nicht in Jonis Doktores — angeschlossen wurde Jonis echter **Kohärenz**-Verifier.
+Die Commission→PR-Verknüpfung ist best-effort; viele Episoden bleiben legitim `unknown`.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Datenmodell + Audit + Metriken | **3 · getestet** | strikte Validierung, append-only, Verweigerung bei Datenmangel |
+| Vier Adapter (Shadow) | **3 · getestet** | log→resolve je Seam; keine Verhaltensänderung |
+| Benchmark (Aufgabe vs. Metakognition) | **3 · gemessen** | 0.375 vs 0.533, Divergenz-Fälle belegt |
+| Shadow-Auswertung (report/CLI) | **2 · gebaut** | per-Gruppe, verweigert bei Datenmangel |
+| Enforce | **0 · bewusst außen vor** | Adoption-Gate vorregistriert (Design-Doc §12) |
+
+**[Offen]** Kein Enforce ohne die vorregistrierten Bedingungen (genug belastbare Outcomes über mehrere
+Task-Familien, Plain- + Naive-Confidence-Baseline, kein Safety-/Liveness-Rückschritt, menschliche Freigabe,
+bei Core-Eingriff ein bewusster Reseal). Kernsatz: Joni soll nicht überzeugender behaupten, sich zu kennen —
+er soll **messen**, wann seine Prüfsignale tragen, wann sie **dunkel** sind, und welche Regulation dann besser
+war. Bewusstsein ist **nicht Gegenstand und nicht behauptet**. (PR #237; `design-notes/metacognitive_supervisor.md`.)
