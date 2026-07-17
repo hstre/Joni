@@ -26,6 +26,7 @@ from __future__ import annotations
 import contextlib
 import json
 import math
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -35,12 +36,6 @@ import desi_layer9 as l9
 # undifferentiated. Netto entropy and the "real topics" views exclude them so the sink cannot
 # fog the picture (the 84%-forum case: formally many topics, semantically one drain).
 _SINK_BUCKETS = frozenset({"forum", "misc", "unknown", "unsorted", "gatemem", "assess"})
-
-# Conflict statuses that are no longer a live contradiction — excluded from the "open" depth metric.
-# (A conflict's status field is ``conflict_status`` (a ``ConflictStatus``); RESOLVED/SUPERSEDED live
-# on THAT enum, not the claim ``Status`` — an earlier version tested the wrong attribute/enum and so
-# counted resolved conflicts as open.)
-_CLOSED_CONFLICT = frozenset({"resolved", "superseded"})
 
 OK, WARN, ALARM = "ok", "warn", "alarm"
 _RANK = {OK: 0, WARN: 1, ALARM: 2}
@@ -63,6 +58,51 @@ def _entropy(counts) -> float:
         return 0.0
     h = -sum((n / total) * math.log2(n / total) for n in counts.values() if n)
     return h / math.log2(len(counts))
+
+
+# Authority is a first-class field on every Layer-9 object (untrusted < candidate < reviewed <
+# authoritative < control). "Presented as reliable" means authority >= reviewed - NOT merely status
+# 'active', which is only a working state (the operator's point: active != strongly supported).
+_AUTHORITY_RANK = {"untrusted": 0, "candidate": 1, "reviewed": 2, "authoritative": 3, "control": 4}
+_REVIEWED_RANK = _AUTHORITY_RANK["reviewed"]
+
+# A source counts as an *independent external family* only if it is a real outside reference. A
+# conversation / self-reference / body-less internal note is not - so synthetic self-support cannot
+# masquerade as external grounding.
+_EXTERNAL_SOURCE_KINDS = frozenset({"web", "paper", "dataset", "document", "observation"})
+
+# Live (still-contested) conflict statuses - matches ``core.open_conflicts()``. TOLERATED is held
+# open on PURPOSE (not an unresolved problem); RESOLVED/SUPERSEDED are closed. The panel used to
+# count TOLERATED as "open", which is why its number sat above the dashboard's - now reconciled.
+_LIVE_CONFLICT = frozenset({"open", "under_review"})
+_CLOSED_CONFLICT_STATUS = frozenset({"resolved", "superseded"})
+
+
+def _authority_rank(obj) -> int:
+    a = getattr(getattr(obj, "authority", None), "value", None)
+    if a is None:
+        a = getattr(obj, "authority", "")
+    return _AUTHORITY_RANK.get(str(a), 0)
+
+
+def _source_family(src) -> str | None:
+    """A stable key for an *independent external* source family (the uri host, else its id/title),
+    or None when the source is internal (a conversation / self-reference / no external uri)."""
+    kind = str(getattr(src, "kind", "") or "")
+    uri = str(getattr(src, "uri", "") or "")
+    if kind not in _EXTERNAL_SOURCE_KINDS and "://" not in uri:
+        return None
+    m = re.search(r"://([^/]+)", uri)
+    if m:
+        host = m.group(1).lower()
+        return host[4:] if host.startswith("www.") else host
+    return uri or str(getattr(src, "id", "")) or None
+
+
+def _normalise(text) -> str:
+    """Lowercase + whitespace-collapse, digits KEPT - so a self-claim differing only in a count
+    ('214 open' vs '215 open') stays DISTINCT (new info), not a false digit-stripped repeat."""
+    return " ".join(str(text).lower().split())
 
 
 # ---- individual metrics (each pure; each returns {value(s)..., "level": ...}) ---------------- #
@@ -91,22 +131,48 @@ def topic_entropy(topics: Counter) -> dict:
             "real_topics": len(netto), "level": _level(1.0 - netto_h, 0.55, 0.75)}
 
 
-def weak_claim_ratio(claims, evidence_of: dict) -> dict:
-    """[3] Fraction of claims with ≤1 evidence link, SPLIT by status. A weak *candidate* is fine;
-    a weak *active/confirmed* ('strong') claim is the concern, so the level rides on that group."""
-    by_status: dict[str, list[int]] = defaultdict(lambda: [0, 0])   # status -> [weak, total]
+def weak_claim_ratio(claims, support_of: dict) -> dict:
+    """[3] Support quality on the RIGHT axes - status, authority and grounding are different things,
+    and the old metric conflated 'active' (a working state) with 'strong' (well supported).
+
+    ``support_of`` maps claim_id -> {'links': int, 'families': int (distinct external source
+    families), 'reviewed': int (reviewed evidence links)}. Three readings:
+
+      * per-status weak-by-links share (continuity with the old number, still informative);
+      * ``presented_strong`` - claims put forward as reliable: status ``confirmed`` OR authority
+        >= ``reviewed``. A merely ``active`` claim is NOT counted as strong;
+      * the ``hollow`` share of those: no independent EXTERNAL source family behind them (only
+        internal / derived / synthetic support). The ALARM rides on the hollow share, so a pile of
+        working-state claims can't trip it and a synthetic claim propped only by other synthetic
+        claims never reads as strong (the operator's synthetic-circularity concern, points 1+6).
+    """
+    by_status: dict[str, list[int]] = defaultdict(lambda: [0, 0])   # status -> [weak_links, total]
+    presented = hollow = reviewed_backed = single_family = 0
     for c in claims:
-        st = c.status.value
-        by_status[st][1] += 1
-        if evidence_of.get(c.id, 0) <= 1:
-            by_status[st][0] += 1
+        sup = support_of.get(c.id, {})
+        links = int(sup.get("links", 0))
+        families = int(sup.get("families", 0))
+        reviewed = int(sup.get("reviewed", 0))
+        by_status[c.status.value][1] += 1
+        if links <= 1:
+            by_status[c.status.value][0] += 1
+        if c.status.value == "confirmed" or _authority_rank(c) >= _REVIEWED_RANK:
+            presented += 1
+            if families == 0:
+                hollow += 1
+            if families <= 1:
+                single_family += 1
+            if reviewed > 0:
+                reviewed_backed += 1
     ratios = {st: round(w / t, 3) for st, (w, t) in by_status.items() if t}
-    strong = ["active", "confirmed"]
-    sw = sum(by_status[s][0] for s in strong)
-    st_ = sum(by_status[s][1] for s in strong)
-    strong_weak = (sw / st_) if st_ else 0.0
-    return {"by_status": ratios, "strong_weak_ratio": round(strong_weak, 3),
-            "strong_claims": st_, "level": _level(strong_weak, 0.60, 0.85)}
+    hollow_ratio = round(hollow / presented, 3) if presented else 0.0
+    return {"by_status": ratios,
+            "presented_strong": presented,
+            "hollow_count": hollow, "hollow_ratio": hollow_ratio,
+            "single_family_count": single_family, "reviewed_backed": reviewed_backed,
+            # kept keys, honestly redefined: 'strong' = presented-as-reliable, 'weak' = hollow
+            "strong_claims": presented, "strong_weak_ratio": hollow_ratio,
+            "level": _level(hollow_ratio, 0.70, 0.90) if presented else OK}
 
 
 def degeneracy(vitality_record: dict, undecidable: int, clusters_total: int) -> dict:
@@ -134,10 +200,16 @@ def conflict_depth(conflicts, topic_of: dict | None = None) -> dict:
     adj: dict[str, set] = defaultdict(set)
     edges = 0
     per_topic: Counter = Counter()
+    by_status: Counter = Counter()
     open_conf = 0
+    total = 0
     for cf in conflicts:
+        total += 1
         status = getattr(getattr(cf, "conflict_status", None), "value", "") or ""
-        if status in _CLOSED_CONFLICT:
+        by_status[status or "open"] += 1
+        # live = open + under_review (matches core.open_conflicts). TOLERATED is deliberately held,
+        # not an unresolved problem; RESOLVED/SUPERSEDED are closed - both excluded from the shape.
+        if status and status not in _LIVE_CONFLICT:
             continue
         open_conf += 1
         ids = [str(x) for x in (getattr(cf, "claim_ids", None) or [])]
@@ -170,7 +242,12 @@ def conflict_depth(conflicts, topic_of: dict | None = None) -> dict:
     max_comp = comps[0][0] if comps else 0
     cyclic = sum(1 for n, e in comps if e >= n)      # a tree has e = n-1; e >= n ⇒ a cycle exists
     worst_topic = per_topic.most_common(1)[0] if per_topic else (None, 0)
-    return {"open_conflicts": open_conf, "components": len(comps), "max_component": max_comp,
+    return {"open_conflicts": open_conf,               # live = open + under_review
+            "total_conflicts": total,
+            "tolerated": by_status.get("tolerated", 0),
+            "closed": sum(by_status.get(s, 0) for s in _CLOSED_CONFLICT_STATUS),
+            "by_status": dict(by_status),
+            "components": len(comps), "max_component": max_comp,
             "cyclic_components": cyclic, "worst_topic": worst_topic[0],
             "worst_topic_conflicts": worst_topic[1],
             "level": max(_level(max_comp, 10, 25), WARN if cyclic else OK, key=_RANK.get)}
@@ -190,20 +267,28 @@ def novelty(new_counts: list[int]) -> dict:
             "zero_new_share_30": zero_share, "samples": len(new_counts), "level": lvl}
 
 
-def repetition(dev_summaries: list[str], selfmodel_texts: list[str]) -> dict:
-    """[7] Repetition / dedup-loop: the share of 'developed' operations that were duplicates
-    (no new link), and whether the self-model is re-minting near-identical traits (the historical
-    re-mint bug is the reference case: same trait text repeated). Read from the protocol only."""
+def repetition(dev_summaries: list[str], selfmodel_claims: list) -> dict:
+    """[7] Repetition / dedup-loop, two independent signals:
+
+      * the share of 'developed' operations that were duplicates (no new link), from the protocol;
+      * self-model re-minting: the share of recent ``SELF_MODEL_CLAIM`` **objects** whose normalised
+        text (digits KEPT) repeats an earlier one.
+
+    Measuring real self-model objects - not digit-stripped protocol self-review text - fixes the
+    old artefact: standardised traits that differ only in a count ('214 open' vs '215 open') used to
+    collapse to one after digit-stripping and read as ~97% repetition. Keeping the digits, those are
+    distinct self-claims (new information); only a genuinely identical trait text is a real re-mint.
+    ``selfmodel_claims`` is a list of objects with a ``.text`` (a bare string is also accepted)."""
     dev_total = len(dev_summaries)
     dup = sum(1 for s in dev_summaries if "duplicate" in s.lower())
     dup_share = round(dup / dev_total, 3) if dev_total else 0.0
-    # self-model repetition: distinct vs total recent self-model trait texts (stripped of digits,
-    # so a count-only difference — exactly the old bug — reads as a repeat).
-    stripped = ["".join(ch for ch in t if not ch.isdigit()) for t in selfmodel_texts]
-    sm_repeat = round(1 - len(set(stripped)) / len(stripped), 3) if stripped else 0.0
+    texts = [_normalise(o if isinstance(o, str) else getattr(o, "text", ""))
+             for o in selfmodel_claims]
+    texts = [t for t in texts if t]
+    sm_repeat = round(1 - len(set(texts)) / len(texts), 3) if texts else 0.0
     lvl = max(_level(dup_share, 0.85, 0.97), _level(sm_repeat, 0.5, 0.8), key=_RANK.get)
     return {"dev_total": dev_total, "duplicate_dev_share": dup_share,
-            "selfmodel_repeat_ratio": sm_repeat, "level": lvl}
+            "selfmodel_count": len(texts), "selfmodel_repeat_ratio": sm_repeat, "level": lvl}
 
 
 def guard_liveness() -> dict:
@@ -262,11 +347,32 @@ def compute(cs, extensions: dict, *, proto_path: Path, load_seconds: float | Non
     claims = cs.active_claims()
     topics = Counter(c.topic for c in claims if c.topic)
 
-    evidence_of: Counter = Counter()
+    # Per-claim support quality (not just a link count): distinct independent EXTERNAL source
+    # families and reviewed links, via EvidenceLink -> Evidence -> Source. Only SUPPORTS count.
+    evidence_by_id = {e.id: e for e in core.all(l9.ObjectType.EVIDENCE)}
+    source_by_id = {s.id: s for s in core.all(l9.ObjectType.SOURCE)}
+    _support: dict[str, dict] = {}
     for el in core.all(l9.ObjectType.EVIDENCE_LINK):
         cid = getattr(el, "claim_id", None)
-        if cid:
-            evidence_of[cid] += 1
+        if not cid:
+            continue
+        rel = getattr(getattr(el, "relation", None), "value", getattr(el, "relation", ""))
+        if str(rel) not in ("supports", ""):
+            continue
+        rec = _support.setdefault(cid, {"links": 0, "reviewed": 0, "families": set()})
+        rec["links"] += 1
+        if str(getattr(el, "review_status", "")) == "reviewed":
+            rec["reviewed"] += 1
+        ev = evidence_by_id.get(getattr(el, "evidence_id", None))
+        src = source_by_id.get(getattr(ev, "source_id", None)) if ev is not None else None
+        fam = _source_family(src) if src is not None else None
+        if fam:
+            rec["families"].add(fam)
+    support_of = {cid: {"links": r["links"], "reviewed": r["reviewed"],
+                        "families": len(r["families"])} for cid, r in _support.items()}
+    # recent self-model OBJECTS (not digit-stripped protocol text) for the repetition sensor
+    selfmodel = sorted(core.all(l9.ObjectType.SELF_MODEL_CLAIM),
+                       key=lambda o: getattr(o, "created_tick", 0))[-30:]
 
     clusters = list(core.all(l9.ObjectType.SEMANTIC_CLUSTER))
     decidable_states = {"synthesis-eligible", "synthesis-rejected", "semantic-measured"}
@@ -277,24 +383,21 @@ def compute(cs, extensions: dict, *, proto_path: Path, load_seconds: float | Non
     # a claim_id -> topic map so conflict_depth can name its worst topic (a Conflict has no topic)
     topic_of = {c.id: c.topic for c in core.all(l9.ObjectType.CLAIM) if getattr(c, "topic", None)}
 
-    # novelty + repetition from the protocol (deterministic fields only)
+    # novelty from the protocol note counts; dev-duplicate share from the develop ops
     notes = _read_protocol_tail(proto_path, frozenset({"note"}), 60)
-    import re
     new_counts = [int(m.group(1)) for e in notes
                   if (m := re.search(r"· (\d+) new", e.get("summary", "")))]
     devs = [e.get("summary", "") for e in
             _read_protocol_tail(proto_path, frozenset({"developed"}), 200)]
-    sms = [e.get("summary", "") for e in
-           _read_protocol_tail(proto_path, frozenset({"self_review"}), 30)]
 
     metrics = {
         "top_bucket_dominance": top_bucket_dominance(topics),
         "topic_entropy": topic_entropy(topics),
-        "weak_claim_ratio": weak_claim_ratio(claims, evidence_of),
+        "weak_claim_ratio": weak_claim_ratio(claims, support_of),
         "degeneracy": degeneracy(vit, undecidable, len(clusters)),
         "conflict_depth": conflict_depth(conflicts, topic_of),
         "novelty": novelty(new_counts),
-        "repetition": repetition(devs, sms),
+        "repetition": repetition(devs, selfmodel),
         "cold_replay": cold_replay(load_seconds),
         "guard_liveness": guard_liveness(),
     }
@@ -326,14 +429,18 @@ def render_summary(rec: dict) -> str:
         f"| 2 Entropy brutto/netto | {m['topic_entropy']['entropy_brutto']:.2f} / "
         f"{m['topic_entropy']['entropy_netto']:.2f} ({m['topic_entropy']['real_topics']} echte) "
         f"| {icon[m['topic_entropy']['level']]} |",
-        f"| 3 Weak-Claim (strong) | {m['weak_claim_ratio']['strong_weak_ratio']:.0%} "
-        f"von {m['weak_claim_ratio']['strong_claims']} | {icon[m['weak_claim_ratio']['level']]} |",
+        f"| 3 Weak-Claim (hohl) | {m['weak_claim_ratio']['strong_weak_ratio']:.0%} von "
+        f"{m['weak_claim_ratio']['strong_claims']} präsentiert-stark, "
+        f"{m['weak_claim_ratio'].get('reviewed_backed', 0)} reviewed-gestützt "
+        f"| {icon[m['weak_claim_ratio']['level']]} |",
         f"| 4 Degen/undecidable | degen {m['degeneracy']['degeneration_score']}, "
         f"decidable {m['degeneracy']['decidable_percent']:.0f}%, "
         f"{m['degeneracy']['unsupported_hypotheses']} unsupp. "
         f"| {icon[m['degeneracy']['level']]} |",
-        f"| 5 Conflict-Tiefe | {m['conflict_depth']['open_conflicts']} offen, "
-        f"max Tangle {m['conflict_depth']['max_component']}, "
+        f"| 5 Conflict-Tiefe | {m['conflict_depth']['open_conflicts']} live "
+        f"(open+review), {m['conflict_depth'].get('tolerated', 0)} toleriert, "
+        f"{m['conflict_depth'].get('closed', 0)} closed; max Tangle "
+        f"{m['conflict_depth']['max_component']}, "
         f"{m['conflict_depth']['cyclic_components']} zyklisch "
         f"| {icon[m['conflict_depth']['level']]} |",
         f"| 6 Novelty (7/30) | {m['novelty']['new_mean_7']:.2f} / "
@@ -341,6 +448,7 @@ def render_summary(rec: dict) -> str:
         f"{m['novelty']['zero_new_share_30']:.0%} leer | {icon[m['novelty']['level']]} |",
         f"| 7 Repetition | dup-dev {m['repetition']['duplicate_dev_share']:.0%}, "
         f"self-model {m['repetition']['selfmodel_repeat_ratio']:.0%} "
+        f"({m['repetition'].get('selfmodel_count', 0)} obj) "
         f"| {icon[m['repetition']['level']]} |",
         f"| 8 Cold-Replay | {m['cold_replay']['load_seconds']}s "
         f"| {icon[m['cold_replay']['level']]} |",
