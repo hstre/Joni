@@ -3204,3 +3204,66 @@ Task-Familien, Plain- + Naive-Confidence-Baseline, kein Safety-/Liveness-Rücksc
 bei Core-Eingriff ein bewusster Reseal). Kernsatz: Joni soll nicht überzeugender behaupten, sich zu kennen —
 er soll **messen**, wann seine Prüfsignale tragen, wann sie **dunkel** sind, und welche Regulation dann besser
 war. Bewusstsein ist **nicht Gegenstand und nicht behauptet**. (PR #237; `design-notes/metacognitive_supervisor.md`.)
+
+### Eintrag 2026-07-17 (XLVI) — Joni pausiert und richtig gebaut: erst die Sensoren reparieren, dann einen Stoffwechsel geben — statt weitere Schichten auf einen versandenden Speicher zu stapeln
+
+**[Eingriff]** Externe Code-Review (via Operator): Die Pause war richtig — aber nicht sofort weiter Schichten
+bauen, sondern die Probleme **nacheinander und messbar** angehen. Kernbefund: Joni hat **keinen echten
+Sättigungsmechanismus**. Ingest/Emergence produzieren weiter; Konsolidierung ist langsamer und darf die
+Aufnahme nicht stoppen; die Gesundheitsmetriken **beobachten** nur. „Neu erzeugt" ist leichter messbar als
+„sauber integriert" — also wird Produktion faktisch bevorzugt. Jede Verbesserung der Aufnahme lässt ihn nur
+schneller überfressen. Entscheidung: **Joni geparkt** (Schedule auskommentiert, laufende Jobs abgebrochen),
+dann in fünf getrennten, je CI-grünen PRs repariert.
+
+**[Bau — alles non-core, `verify` unberührt, Joni bleibt geparkt]**
+- **P0 Method-Sandbox** (#240): isolierter Subprozess-Harness für **nicht** vertrauenswürdigen Solver-Code
+  (Import-Allowlist · PEP-578 Audit-Hook · rlimits · Prozessgruppen-Kill). Adversariales Akzeptanz-Set
+  (Endlosschleife, Speicherfresser, Netz, Datei, Fork-Bombe, Riesen-Output) vollständig eingefangen. Ehrliches
+  Bedrohungsmodell: hegt fehlerhaften LLM-Solver ein, der ephemere CI-Container ist die äußere Grenze. Das
+  Fundament für einen ECHTEN Methoden-Trial (P1–P3 später).
+- **Phase A — Sensoren korrekt** (#241): Weak-Claim reitet nicht mehr auf `active` (Arbeitszustand), sondern
+  auf *präsentiert-stark* (confirmed **oder** authority≥reviewed) und misst den **hohlen** Anteil (keine
+  unabhängige externe Quellenfamilie) — synthetische Selbst-Stützung liest sich nie als stark. Self-Model-
+  Repetition an echten `SELF_MODEL_CLAIM`-Objekten mit **Ziffern**: das ~97 %-Artefakt (zifferngestrippte
+  Standard-Sätze) ist weg. Konfliktzahl `live = open+under_review` (= Dashboard); TOLERATED/closed getrennt
+  ausgewiesen — die zwei Zahlen versöhnt.
+- **Phase B — Synthese härter gaten** (#242): „single underlying factor" raus (behauptete Kausalstruktur aus
+  bloßer Wortrekurrenz) → neutral. Synthese braucht jetzt echten Begriff, kein Sink-Topic, ≥2 unabhängige
+  externe Quellenfamilien, mehrheitlich kompatible (keine live-widersprüchlichen) Cluster-Claims, optional
+  Term-Judge. Kein Core-Eingriff (Wortlaut behält „Across my" — der Core-Detektor greift weiter).
+- **Phase C — der Stoffwechsel** (#243): das fehlende Bindeglied. `metabolism.py` — Regler über Jonis eigenen
+  Zustand: Druck-Signale (ungestützter Backlog, ungeprüfte Methoden, Konfliktwachstum, Stagnation) → **load =
+  der schlimmste** (ein Governor stoppt bei jeder Einzel-Überlast) → **Hunger/Sättigung mit Hysterese**
+  (sated ab 0.70, hungry erst unter 0.40 — kein Zyklus-Pendeln). Kernsatz: *wachsen Verbindlichkeiten
+  schneller als sie konsolidiert werden, stoppe die Expansion und konsolidiere.* Jeden Zyklus **gemessen**
+  (Shadow); **gatet** Intake nur bei `JONI_METABOLISM=1` (per Default aus → null Verhaltensänderung, damit
+  Schwellen erst aus echten Zahlen getunt werden). Keine neue Intelligenzschicht — ein Grund-Stoffwechsel.
+- **Phase D — einmalige Rekonsolidierung** (#244): der bewusste Voll-Sweep, den der gedrosselte Per-Zyklus-
+  Drain (max ~5/Zyklus) nicht schafft. `reconsolidation_audit.py` klassifiziert jeden Topic/Hypothese/Methode
+  in **junk** (klar) / **borderline** (plausibel-ungeprüft, **nie** auto-aktioniert — Mensch entscheidet) /
+  **keep**, read-only mit Begründung. `apply_junk` verwirft **nur** junk und **nur** über die bestehenden
+  Gate-Operatoren (append-only, Provenienz erhalten, **kein** Ledger-Rückschreiben). Script Dry-Run per
+  Default; `--apply` verlangt `--yes` — **hier nicht ausgeführt**, Ausführung bleibt menschlich-gated.
+
+**[Ehrliche Grenzen]** Off-Domain-Junk (`'cotton'`) erkennt der Auditor nur mit lebendem Embedder; ohne ihn
+fällt `on_domain` offen (wie alle Domain-Gates — `guard_liveness` sagt es). Die Metabolism-Schwellen (0.70/0.40)
+sind **konservative Defaults**, nicht aus Live-Daten getunt — deshalb per Default aus und erst nach einem
+Shadow-Lauf scharf zu schalten. P1–P3 des echten Trial-Pfads stehen noch aus; P0 ist nur das Fundament.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| P0 Sandbox-Harness | **3 · getestet** | adversariales Set vollständig eingefangen, CI-grün |
+| Sensoren (Phase A) | **3 · getestet** | korrekte Achsen, Artefakt entfernt, Konfliktzahlen versöhnt |
+| Synthese-Gate (Phase B) | **3 · getestet** | Quellenfamilien/Sink/Kompatibilität, neutraler Wortlaut |
+| Stoffwechsel (Phase C) | **3 · getestet, off by default** | Hysterese getestet; gatet nur bei `JONI_METABOLISM=1` |
+| Rekonsolidierung (Phase D) | **3 · getestet, read-only** | klassifiziert + auditiert; `apply` human-gated |
+| Neustart | **0 · bewusst außen vor** | `design-notes/RESTART_CRITERIA.md` + `scripts/restart_readiness.py` |
+
+**[Offen / Neustartkriterien]** Joni läuft erst wieder autonom, wenn (`RESTART_CRITERIA.md`): die zwei
+Alarm-Metriken inhaltlich korrekt messen; keine offensichtlichen Token-Hypothesen mehr neu entstehen; der
+Methodenbestand sinkt **oder** messbar geprüft wird; der Stoffwechsel Intake↔Konsolidierung koppelt (Schwellen
+aus Shadow-Zahlen getunt); die zwei Konfliktzahlen erklärt sind; ein Replay nach der Rekonsolidierung stabil
+bleibt. Kernsatz dieser Runde: Joni braucht gerade **weniger neue Selbstbeobachtung und mehr saubere
+Zustandskonsolidierung** — erst der Stoffwechsel, dann wieder fressen. (PRs #239–#244.)
