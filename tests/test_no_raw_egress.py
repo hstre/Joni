@@ -34,6 +34,11 @@ _ALLOW = {
     },
     "subprocess": {
         "src/joni/relay/__main__.py",       # local `git` invocation
+        "src/joni/method_trial/sandbox.py",  # controlled-execution broker: runs an untrusted
+                                             # solver in an isolated child (rlimits, import
+                                             # allowlist, audit hook, process-group kill). The
+                                             # subprocess IS the containment boundary
+                                             # (METHOD_SANDBOX_AUFTRAG.md §4).
     },
 }
 
