@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 806 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 621 Lehre(n)._
+_Stand: Tick 25 · 807 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 622 Lehre(n)._
 
 ## attention · Tiefe 66 (threshold)
 
@@ -5452,6 +5452,29 @@ _deterministisch:_ Auf 'architectures': 1 korrigierte(r) Irrtum/Irrtümer (0× e
 
 - Anker: „'architectures' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1312
+
+## architecture+attention · Tiefe 1 (self_review)
+
+**Die gemeinsame mathematische oder prozessuale Struktur von Architektur und Aufmerksamkeit ermöglicht eine konsistente Abstraktion, solange metaphorische Verwendungen vermieden und domänenspezifische Einschränkungen berücksichtigt werden.**
+
+_deterministisch:_ Auf 'architecture+attention': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] **Tragfähig unter Annahmen:**
+- *Operationale Ähnlichkeit*: Die zugrundeliegenden Strukturen (Architektur, Aufmerksamkeit, Kontext, Gedächtnis, Forschung, sparse-gconv) teilen eine gemeinsame mathematische oder prozessuale Form – z.B. Faltung als lokale Gewichtung mit geteilten Parametern, Verschiebungsäquivarianz oder hierarchische Merkmalsaggregation. Dann ist der Linsen-Transfer eine konsistente Abstraktion.
+- *Explizite Schnittstelle*: Die Linse definiert klar, welche Eigenschaft von „convolutional“ übertragen wird (z.B. sparse-gconv als Spezialfall, nicht als Metapher). So bleibt Vergleichbarkeit formal prüfbar.
+
+**Bruchstellen:**
+- *Kategorienfehler*: Wenn „convolutional“ in „Gedächtnis“ oder „Forschung“ nur metaphorisch verwendet wird, fehlt eine gemeinsame formale Basis. Der Linsenbegriff wird dann beliebig und verliert Auflösungskraft.
+- *Implizite Parameter*: Sobald domänenspezifische constraints (z.B. Zeitrichtung im Gedächtnis, Nicht-Stationarität in Kontext) die Faltungsannahmen brechen, versagt die direkte Übertragung, ohne Zusatzannahmen (z.B. dynamische Filter) entsteht Widerspruch.
+- *Zirkularität*: Wenn die Methode nur die eigene Evidenz (sparse-gconv als Spezialfall) bestätigt, ohne neue Probleme zu öffnen, degeneriert die Linse zur Selbstbestätigung.' (from architecture) might also apply to attention.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] **Tragfähig unter Annahmen:**
+- *Operationale Ähnlichkeit*: Die zugrundeliegenden Strukturen (Architektur, Aufmerksamkeit, Kontext, Gedächtnis, Forschung, sparse-gconv) teilen eine gemeinsame mathematische oder prozessuale Form – z.B. Faltung als lokale Gewichtung mit geteilten Parametern, Verschiebungsäquivarianz oder hierarchische Merkmalsaggregation. Dann ist der Linsen-Transfer eine konsistente Abstraktion.
+- *Explizite Schnittstelle*: Die Linse definiert klar, welche Eigenschaft von „convolutional“ übertragen wird (z.B. sparse-gconv als Spezialfall, nicht als Metapher). So bleibt Vergleichbarkeit formal prüfbar.
+
+**Bruchstellen:**
+- *Kategorienfehler*: Wenn „convolutional“ in „Gedächtnis“ oder „Forschung“ nur metaphorisch verwendet wird, fehlt eine gemeinsame formale Basis. Der Linsenbegriff wird dann beliebig und verliert Auflösungskraft.
+- *Implizite Parameter*: Sobald domänenspezifische constraints (z.B. Zeitrichtung im Gedächtnis, Nicht-Stationarität in Kontext) die Faltungsannahmen brechen, versagt die direkte Übertragung, ohne Zusatzannahmen (z.B. dynamische Filter) entsteht Widerspruch.
+- *Zirkularität*: Wenn die Methode nur die eigene Evidenz (sparse-gconv als Spezialfall) bestätigt, ohne neue Probleme zu öffnen, degeneriert die Linse zur Selbstbestätigung.' (from architecture) might also apply to attention.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9659
 
 ## applications · Tiefe 1 (self_review)
 
