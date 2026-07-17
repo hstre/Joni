@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 627 · 331 Methoden** — proposed 284 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 628 · 334 Methoden** — proposed 287 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -251,6 +251,9 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | mechanism-as-a-lens | **proposed** | candidate | 0 | — |
 | Concurrent Image Understanding and Generation: Self-Correcting Coupled Markov Ju | **proposed** | candidate | 0 | — |
 | SearchOS-V1: Towards Robust Open-Domain Information-Seeking Agent Collaboration | **proposed** | candidate | 0 | — |
+| UniVR: Thinking in Visual Space for Unified Visual Reasoning | **proposed** | candidate | 0 | — |
+| KeyFrame-Compass: Towards Comprehensive Evaluation of Keyframe-Conditioned Video | **proposed** | candidate | 0 | — |
+| aspekt-as-a-lens | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
