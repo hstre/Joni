@@ -6,8 +6,9 @@ from joni.autonomy import collapse_panel as cp
 from joni.autonomy.core_state import CoreState, seed_core
 
 
-def _claim(cid, status, evidence):
-    return SimpleNamespace(id=cid, status=SimpleNamespace(value=status)), evidence
+def _claim(cid, status, authority="candidate"):
+    return SimpleNamespace(id=cid, status=SimpleNamespace(value=status),
+                           authority=SimpleNamespace(value=authority))
 
 
 def test_top_bucket_dominance_levels_and_sink_flag():
@@ -26,16 +27,35 @@ def test_entropy_netto_excludes_the_sink_bucket():
     assert e["real_topics"] == 4 and e["entropy_netto"] > 0.9   # a/b/c/d perfectly even
 
 
-def test_weak_claim_ratio_rides_on_strong_claims():
-    claims_ev = [
-        _claim("c1", "active", 0), _claim("c2", "active", 1), _claim("c3", "active", 5),
-        _claim("c4", "confirmed", 0), _claim("c5", "candidate", 0),   # weak candidate: fine
+def test_weak_claim_ratio_rides_on_hollow_presented_strong():
+    # 'active' is a WORKING state, not strong (operator's point 1): only confirmed OR
+    # authority>=reviewed claims are 'presented strong'. The alarm rides on the HOLLOW share of
+    # those - no independent external source family (points 1 + 6) - so a pile of active working
+    # claims can never trip it, and synthetic self-support never reads as grounded.
+    claims = [
+        _claim("c1", "active"), _claim("c2", "active"),          # working state - NOT strong
+        _claim("c3", "confirmed"),                                # presented strong, hollow
+        _claim("c4", "active", authority="reviewed"),             # presented strong, grounded
+        _claim("c5", "candidate"),                                # weak candidate: fine
     ]
-    claims = [c for c, _ in claims_ev]
-    ev = {c.id: e for c, e in claims_ev}
-    r = cp.weak_claim_ratio(claims, ev)
-    # strong = active+confirmed = 4 claims, weak(≤1 link) = c1,c2,c4 = 3/4
-    assert r["strong_claims"] == 4 and r["strong_weak_ratio"] == 0.75 and r["level"] == cp.WARN
+    support = {
+        "c3": {"links": 1, "families": 0, "reviewed": 0},         # hollow: no external family
+        "c4": {"links": 3, "families": 2, "reviewed": 1},         # 2 independent external families
+    }
+    r = cp.weak_claim_ratio(claims, support)
+    assert r["presented_strong"] == 2                             # c3 + c4, not the active c1/c2
+    assert r["hollow_count"] == 1 and r["strong_weak_ratio"] == 0.5
+    assert r["reviewed_backed"] == 1
+    assert r["level"] == cp.OK                          # 50% hollow < warn -> no false alarm
+
+
+def test_weak_claim_alarm_only_from_hollow_strong_not_active_mass():
+    # 100 active working claims with no support: must NOT alarm (they are not 'strong')
+    claims = [_claim(f"a{i}", "active") for i in range(100)]
+    claims += [_claim("s1", "confirmed"), _claim("s2", "confirmed")]   # 2 hollow presented-strong
+    r = cp.weak_claim_ratio(claims, {})
+    assert r["presented_strong"] == 2 and r["strong_weak_ratio"] == 1.0
+    assert r["level"] == cp.ALARM                                 # the 2 hollow strong, not the 100
 
 
 def _cf(claim_ids, status="open"):
@@ -70,6 +90,19 @@ def test_conflict_depth_excludes_resolved_conflicts():
     assert d["max_component"] == 2                      # resolved edges are absent from the graph
 
 
+def test_conflict_depth_reconciles_the_two_counts():
+    # 'live' = open + under_review (matches core.open_conflicts). TOLERATED is held on purpose and
+    # is NOT live - the panel used to count it as open, which is why its number sat above the
+    # dashboard's. Now all statuses are reported so the two numbers reconcile (point 8).
+    conflicts = [_cf(["C1", "C2"]), _cf(["C3", "C4"], status="under_review"),
+                 _cf(["C5", "C6"], status="tolerated"), _cf(["C7", "C8"], status="resolved")]
+    d = cp.conflict_depth(conflicts)
+    assert d["open_conflicts"] == 2                     # open + under_review only
+    assert d["tolerated"] == 1 and d["closed"] == 1
+    assert d["total_conflicts"] == 4
+    assert d["by_status"] == {"open": 1, "under_review": 1, "tolerated": 1, "resolved": 1}
+
+
 def test_novelty_windows_and_starvation_alarm():
     assert cp.novelty([0] * 7)["level"] == cp.ALARM             # fully dry fast window
     warnish = cp.novelty([2, 0, 0, 1, 0, 0, 0, 0, 1, 0] * 3)    # >50% zero, mean<1
@@ -77,14 +110,22 @@ def test_novelty_windows_and_starvation_alarm():
     assert cp.novelty([2, 3, 2, 3] * 8)["level"] == cp.OK       # healthy intake
 
 
-def test_repetition_flags_selfmodel_remint_and_dup_dev():
-    # the historical bug: same trait, only the number changes → repeat after digit-strip
-    sms = ["I hold 214 contradictions open", "I hold 215 contradictions open",
-           "I hold 219 contradictions open"]
+def test_repetition_selfmodel_uses_objects_and_keeps_digits():
+    # the OLD artefact: same trait, only the count changes. Measured on real self-model OBJECTS
+    # with digits KEPT, these are DISTINCT self-claims (new info), not a false digit-strip repeat.
+    counting = [SimpleNamespace(text=f"I hold {n} contradictions open") for n in (214, 215, 219)]
     devs = ["C-1/C-2: duplicate - no link"] * 19 + ["linked C-3 <-> C-4"]
-    r = cp.repetition(devs, sms)
-    assert r["selfmodel_repeat_ratio"] > 0.5        # 3 texts, 1 distinct after strip
+    r = cp.repetition(devs, counting)
+    assert r["selfmodel_repeat_ratio"] == 0.0        # 3 distinct self-claims, no false repeat
+    assert r["selfmodel_count"] == 3
     assert r["duplicate_dev_share"] == 0.95
+
+
+def test_repetition_still_catches_a_genuine_remint():
+    # a truly identical trait text repeated IS a real re-mint (the reference bug)
+    dupe = [SimpleNamespace(text="my drift metric ignores seasonality")] * 4
+    r = cp.repetition([], dupe)
+    assert r["selfmodel_repeat_ratio"] == 0.75       # 4 texts, 1 distinct
 
 
 def test_cold_replay_levels():
@@ -146,13 +187,15 @@ def test_the_summary_renders_the_guard_row(monkeypatch):
     rec = {"cycle": 1, "run": 1, "active_claims": 0, "overall": "alarm", "metrics": {
         "top_bucket_dominance": {"top_bucket": "-", "share": 0, "is_sink": False, "level": "ok"},
         "topic_entropy": {"entropy_brutto": 0, "entropy_netto": 0, "real_topics": 0, "level": "ok"},
-        "weak_claim_ratio": {"strong_weak_ratio": 0, "strong_claims": 0, "level": "ok"},
+        "weak_claim_ratio": {"strong_weak_ratio": 0, "strong_claims": 0, "reviewed_backed": 0,
+                             "level": "ok"},
         "degeneracy": {"degeneration_score": 0, "decidable_percent": 0,
                        "unsupported_hypotheses": 0, "level": "ok"},
-        "conflict_depth": {"open_conflicts": 0, "max_component": 0, "cyclic_components": 0,
-                           "level": "ok"},
+        "conflict_depth": {"open_conflicts": 0, "tolerated": 0, "closed": 0, "max_component": 0,
+                           "cyclic_components": 0, "level": "ok"},
         "novelty": {"new_mean_7": 0, "new_mean_30": 0, "zero_new_share_30": 0, "level": "ok"},
-        "repetition": {"duplicate_dev_share": 0, "selfmodel_repeat_ratio": 0, "level": "ok"},
+        "repetition": {"duplicate_dev_share": 0, "selfmodel_repeat_ratio": 0, "selfmodel_count": 0,
+                       "level": "ok"},
         "cold_replay": {"load_seconds": 0, "level": "ok"},
         "guard_liveness": cp.guard_liveness(),
     }}
