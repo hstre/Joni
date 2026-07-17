@@ -24,8 +24,14 @@ on:
   # is now ~8s instead of >2h and the per-emit O(n) cost is gone, so neither a running cycle nor a
   # fresh cold start hangs. The loop runs on the (now-fast) JSON journal; SQLite stays off. To re-park:
   # re-comment the schedule below and the next job will not launch.
-  schedule:
-    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  # PARKED 2026-07-17 (operator request): pause the loop to build the real method-trial path.
+  # The proposed-method shelf has no belastbaren trial path today - the shelf-iterating trialer was
+  # the synthetic mock (rightly off, JONI_SYNTHETIC_TRIALS=0), and the real protocol only trials one
+  # hard-coded conflict method, never the shelf. We fix that properly, then resume. To resume:
+  # uncomment the schedule below (or trigger once via workflow_dispatch); the next job relaunches
+  # the continuous loop.
+  # schedule:
+  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
