@@ -57,6 +57,58 @@ def _is_synthetic(text: str) -> bool:
             or "keeps recurring" in t)
 
 
+# A synthesis resting solely on a semantic sink (a drain topic) is undifferentiated - never a real
+# through-line. Mirrors the collapse-panel sink set.
+_SINK_TOPICS = frozenset({"forum", "misc", "unknown", "unsorted", "gatemem", "assess"})
+_EXTERNAL_SOURCE_KINDS = frozenset({"web", "paper", "dataset", "document", "observation"})
+
+
+def _source_family(src) -> str | None:
+    """An independent external source-family key (the uri host, else the id), or None if the source
+    is internal (a conversation / self-reference / no external uri)."""
+    import re
+    kind = str(getattr(src, "kind", "") or "")
+    uri = str(getattr(src, "uri", "") or "")
+    if kind not in _EXTERNAL_SOURCE_KINDS and "://" not in uri:
+        return None
+    m = re.search(r"://([^/]+)", uri)
+    if m:
+        host = m.group(1).lower()
+        return host[4:] if host.startswith("www.") else host
+    return uri or str(getattr(src, "id", "")) or None
+
+
+def _claim_family_index(cs) -> tuple[dict, bool]:
+    """claim_id -> set of independent external source families, and whether the graph exposes ANY
+    Source objects at all. If it does not, the family gate fails OPEN (cannot judge unseen data)."""
+    import desi_layer9 as l9
+    sources = {s.id: s for s in cs.core.all(l9.ObjectType.SOURCE)}
+    evidence = {e.id: e for e in cs.core.all(l9.ObjectType.EVIDENCE)}
+    idx: dict[str, set] = defaultdict(set)
+    for el in cs.core.all(l9.ObjectType.EVIDENCE_LINK):
+        cid = getattr(el, "claim_id", None)
+        if not cid:
+            continue
+        ev = evidence.get(getattr(el, "evidence_id", None))
+        src = sources.get(getattr(ev, "source_id", None)) if ev is not None else None
+        fam = _source_family(src) if src is not None else None
+        if fam:
+            idx[cid].add(fam)
+    return idx, bool(sources)
+
+
+def _live_conflict_pairs(cs) -> set:
+    """Unordered claim-id pairs currently in a LIVE (open/under_review) conflict - two claims that
+    contradict each other cannot be a 'majority-compatible' cluster to synthesise over."""
+    pairs: set = set()
+    for cf in cs.core.open_conflicts():
+        ids = [str(x) for x in (getattr(cf, "claim_ids", None) or [])]
+        for i in range(len(ids)):
+            for j in range(i + 1, len(ids)):
+                pairs.add(frozenset((ids[i], ids[j])))
+    return pairs
+
+
 def _term_index(claims) -> dict[str, dict]:
     """term -> {topics: set, claims: list[claim]} over real (non-synthetic) claims."""
     idx: dict[str, dict] = defaultdict(lambda: {"topics": set(), "claims": []})
@@ -150,6 +202,11 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
         for w in _content(c.text):
             if w not in _META and quality.is_meaningful_term(w):
                 by_topic_term[(c.topic, w)].append(c)
+    # Minimum conditions for a synthesis to be worth judging (operator point 3), built once:
+    # independent external grounding and no live intra-cluster contradiction. A synthesis must not
+    # rest on token-recurrence + embedding-proximity alone.
+    fam_idx, have_sources = _claim_family_index(cs)
+    live_pairs = _live_conflict_pairs(cs)
     for (topic, term), cluster in sorted(by_topic_term.items(),
                                          key=lambda kv: (-len(kv[1]), kv[0])):
         if made_syn:
@@ -157,8 +214,30 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
         key = f"{topic}|{term}"
         if key in done_syn or len(cluster) < _MIN_CLAIMS:
             continue
-        if not quality.on_domain(term):
-            continue                            # off-domain token: not a real through-line
+        if topic in _SINK_TOPICS:
+            done_syn.add(key)
+            continue                            # a sink topic is not a real basis for synthesis
+        if not quality.on_domain(term) or not quality.is_good_topic(term):
+            done_syn.add(key)
+            continue                            # off-domain / a name, slug or title fragment
+        # >=2 independent EXTERNAL source families across the cluster (fail-open only if the graph
+        # exposes no Source objects at all). Not burned: the cluster may gain sources later.
+        if have_sources:
+            fams: set = set()
+            for c in cluster:
+                fams |= fam_idx.get(c.id, set())
+            if len(fams) < 2:
+                continue
+        # majority-compatible: no two cluster claims may be in a live contradiction. Not burned:
+        # the conflict may later resolve.
+        cids = [c.id for c in cluster]
+        if any(frozenset((cids[i], cids[j])) in live_pairs
+               for i in range(len(cids)) for j in range(i + 1, len(cids))):
+            continue
+        # in-doubt term-judge before minting a synthesis (OFF by default), like topics and methods
+        if term_judge.enabled() and term_judge.judge(term, budget=budget, cycle=cycle) is False:
+            done_syn.add(key)
+            continue
         if insuff.get(key, 0) >= _MAX_INSUFFICIENT_RETRIES:
             done_syn.add(key)                               # several fair chances - finalise
             insuff.pop(key, None)
@@ -173,8 +252,8 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
             continue                                        # Layer 9 did not clear it
         parents = tuple(sorted(c.id for c in cluster))[:5]
         cs.hypothesize(
-            f"Across my {topic} claims, '{term}' recurs as a through-line worth testing "
-            "as a single underlying factor.", topic, parents=parents)
+            f"Across my {topic} claims, the term '{term}' recurs; whether this reflects a "
+            "shared mechanism remains untested.", topic, parents=parents)
         made_syn += 1
         out["synthesis"] = made_syn
         proto.record(cycle, "emerged",
