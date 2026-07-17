@@ -1,0 +1,22 @@
+[
+  {
+    "text": "LongStraw enables million-token RL post-training under a fixed GPU budget by evaluating the shared prompt without autograd, retaining only model-specific state needed by later tokens, and replaying short response branches one at a time.",
+    "topic": "memory management"
+  },
+  {
+    "text": "On eight H20 GPUs, LongStraw completes grouped Qwen scoring and response backward at 2.1M positions for groups of 2 and 8, with increasing group size adding only 0.21 GB of peak allocated memory.",
+    "topic": "memory usage"
+  },
+  {
+    "text": "A stress test with LongStraw reaches 4.46M positions on eight H20 GPUs while maintaining low additional memory overhead.",
+    "topic": "memory scalability"
+  },
+  {
+    "text": "On 32 H20 GPUs, LongStraw validates the end-to-end execution path for a 2.1M-token prompt across all 78 layers of GLM-5.2.",
+    "topic": "memory capacity"
+  },
+  {
+    "text": "The captured prompt state in LongStraw is detached, and some distributed forward and gradient composition paths remain incomplete, indicating execution capacity rather than complete training correctness.",
+    "topic": "memory limitations"
+  }
+]

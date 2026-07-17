@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 629 · 337 Methoden** — proposed 290 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 630 · 338 Methoden** — proposed 291 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -257,6 +257,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Hierarchical Denoising For Multi-Step Visual Reasoning | **proposed** | candidate | 0 | — |
 | Partition, Prompt, Aggregate: Statistical Self-Consistency in Language Models | **proposed** | candidate | 0 | — |
 | unterscheidung-as-a-lens | **proposed** | candidate | 0 | — |
+| LongStraw: Long-Context RL Beyond 2M Tokens under a Fixed GPU Budget | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
