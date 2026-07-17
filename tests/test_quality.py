@@ -15,6 +15,17 @@ def test_stopwords_and_qualifiers_are_rejected():
         assert not quality.is_meaningful_term(t), t
 
 
+def test_german_function_words_are_rejected():
+    # Joni ingests German; these leaked through the English-only gate and were minted as
+    # '<wort>-as-a-lens' methods. They must not seed structure.
+    for t in ("dass", "haben", "können", "koennen", "während", "waehrend", "zwischen",
+              "durch", "oder", "sein", "sich", "auch", "wird", "werden", "kann", "nicht",
+              "mögliche", "moegliche", "quellen", "informationen", "welche", "dieser"):
+        assert not quality.is_meaningful_term(t), t
+    # a German-looking but genuine domain term must still pass (no over-reach)
+    assert quality.is_meaningful_term("routing")
+
+
 def test_artifact_tokens_are_rejected():
     # vowelless / acronym fragments and hyphenated number-units are not concepts
     for t in ("mllm", "llms", "mid-ir", "gpt-4", "a-b", "xyz"):

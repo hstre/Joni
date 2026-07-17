@@ -95,6 +95,20 @@ STOPWORDS = frozenset({
     "number", "numbers", "example", "examples", "case", "cases", "level", "levels", "step",
     "steps", "type", "types", "form", "forms", "field", "fields", "point", "points", "term",
     "terms", "aspect", "aspects", "range", "scope", "amount", "ability", "capacity",
+    # German function words - Joni ingests German (operator text + German sources), and the
+    # stopword gate above is English-only, so German particles leaked through as "concepts"
+    # and were minted as '<wort>-as-a-lens' methods (dass/haben/koennen/waehrend/...). Only
+    # words >= 4 chars are listed; shorter German particles (der/die/das/und/ist/wie/...) are
+    # already rejected by the length-4 floor in is_meaningful_term.
+    "aber", "auch", "dass", "denn", "doch", "eine", "einem", "einen", "einer", "eines",
+    "haben", "habe", "hatte", "hatten", "kann", "kannst", "keine", "keinen", "koennen",
+    "koennte", "können", "könnte", "konnte", "mehr", "nach", "nicht", "noch", "oder", "ohne",
+    "schon", "sehr", "sein", "seine", "seinen", "seiner", "sind", "sich", "sowie", "über",
+    "ueber", "unter", "gegen", "vom", "von", "vor", "während", "waehrend", "wenn", "weil",
+    "werden", "wird", "wurde", "wurden", "welche", "welcher", "welches", "diese", "dieser",
+    "dieses", "jene", "jener", "jenes", "damit", "dabei", "deren", "dessen", "immer", "jedoch",
+    "sondern", "bereits", "zwischen", "durch", "möglich", "mögliche", "moegliche", "quellen",
+    "informationen", "zwar", "etwa", "beim",
 })
 
 _VOWEL = re.compile(r"[aeiou]")

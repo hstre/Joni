@@ -78,6 +78,36 @@ def test_unproductive_methods_are_retired_after_enough_trials(monkeypatch):
     assert trials.retire_unproductive(cs, _Proto(), 3, max_retire=3) == 3
 
 
+def test_never_trialed_methods_expire_by_age(monkeypatch):
+    """Trials rarely reach every shelf method, so untried candidates otherwise pile up forever
+    (they never hit the trial-count floor). A never-trialed method that has outlived
+    JONI_METHOD_MAX_AGE cycles expires - the shelf is a rolling window, not an unbounded pile.
+    A freshly seen method (age 0) is never caught, so nothing is mass-retired on deploy."""
+    from joni.autonomy.core_state import seed_core
+    cs = CoreState(seed_core())
+    mid = cs.propose_method(name="stale", summary="s", applicable_to=("routing",))
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "8")   # trial-based path cannot fire (0 trials)
+    monkeypatch.setenv("JONI_METHOD_MAX_AGE", "5")
+    ext: dict = {}
+    # first sight this cycle: age 0 -> NOT retired
+    assert trials.retire_unproductive(cs, _Proto(), 100, extensions=ext) == 0
+    assert cs.core.get(mid).status is l9.Status.CANDIDATE
+    assert ext["method_ledger"][mid]["first_seen_cycle"] == 100
+    # ...but once it has sat past the age window with no trial, it expires (gate-recorded)
+    assert trials.retire_unproductive(cs, _Proto(), 106, extensions=ext) == 1   # age 6 >= 5
+    assert cs.core.get(mid).status.value == "rejected"
+
+
+def test_age_expiry_is_disabled_by_zero(monkeypatch):
+    from joni.autonomy.core_state import seed_core
+    cs = CoreState(seed_core())
+    cs.propose_method(name="stale2", summary="s", applicable_to=("routing",))
+    monkeypatch.setenv("JONI_METHOD_MAX_TRIALS", "8")
+    monkeypatch.setenv("JONI_METHOD_MAX_AGE", "0")      # disabled -> nothing expires by age
+    ext: dict = {"method_ledger": {}}
+    assert trials.retire_unproductive(cs, _Proto(), 10_000, extensions=ext) == 0
+
+
 def test_real_method_trial_is_measured_and_distinct_from_the_mock():
     """The real protocol (kevin.real_trial) runs, stores a provenance-bearing result, and is kept
     separate from the synthetic simulator. Decision rests on the metric (provisional weight)."""

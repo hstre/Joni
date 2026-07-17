@@ -167,6 +167,11 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
     import desi_layer9 as l9
     max_trials = int(os.getenv("JONI_METHOD_MAX_TRIALS", "8"))
     window = max(1, int(os.getenv("JONI_METHOD_LEDGER_WINDOW", "6")))
+    # Age expiry: a candidate that has never been trialed after this many cycles on the shelf
+    # expires (0 disables). Trials rarely reach every shelf method, so untried candidates would
+    # otherwise accumulate forever (they never hit the trial-count floor below) - this makes the
+    # shelf a rolling window, not an unbounded pile.
+    max_age = int(os.getenv("JONI_METHOD_MAX_AGE", "40"))
     ledger = extensions.setdefault("method_ledger", {}) if isinstance(extensions, dict) else {}
 
     live = [m for m in cs.core.all(l9.ObjectType.METHOD)
@@ -176,6 +181,7 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
     #    it last gained a pass). This persisted state is what the retirement consults.
     for m in live:
         rec = ledger.get(m.id) or {"success": 0, "last_pass_cycle": -(10**9)}
+        rec.setdefault("first_seen_cycle", cycle)     # age anchor for never-trialed expiry
         if m.success_count > rec.get("success", 0):
             rec["last_pass_cycle"] = cycle           # observed: this method passed since last seen
         rec["success"] = m.success_count
@@ -188,6 +194,19 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
     for m in sorted(live, key=lambda x: (x.success_count - x.failure_count, x.id)):
         if retired >= max_retire:
             break
+        # Age expiry: a never-trialed candidate that has outlived JONI_METHOD_MAX_AGE cycles on
+        # the shelf is discarded. first_seen is anchored on first sight, so a freshly seen method
+        # (age 0) is never caught, and on the first cycle after this ships every existing method
+        # is seen "now" - nothing is mass-retired; the pile drains gradually. Gate-recorded.
+        age = cycle - ledger.get(m.id, {}).get("first_seen_cycle", cycle)
+        if max_age > 0 and m.trial_count == 0 and age >= max_age:
+            cs.reject_method(m.id)
+            retired += 1
+            proto.record(cycle, "trialed",
+                         f"retired never-trialed method {m.id} '{getattr(m, 'name', m.id)}' "
+                         f"after {age} cycle(s) on the shelf with no trial - the shelf is a "
+                         "rolling window; an untried candidate expires so it cannot pile up")
+            continue
         if m.trial_count >= max_trials and m.success_count <= m.failure_count:
             # 2. Check the ledger BEFORE discarding: a recent pass means retiring now would be
             #    premature / inconsistent - hold the method another window instead.

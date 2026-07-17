@@ -536,6 +536,7 @@ def one_cycle() -> dict:
     _save_json(p.commissions_new, commissions_new)
     _finish(p, cs, budget, window, extensions, proto, reflect)
     _maybe_router_shadow(p, cycle)
+    _maybe_metacognition_shadow(p, cs, extensions, cycle)
     return {"cycle": cycle, "new_items": len(new_items), "asks": len(asks_new),
             "commissions": len(commissions_new),
             "spend": budget.spent_eur, "retired": False, "routing": reflect["routing_engine"],
@@ -631,6 +632,36 @@ def _ideas(cs, extensions: dict, *, limit: int = 24) -> dict:
             "invented": [i for i in (extensions.get("invented") or []) if isinstance(i, str)][-16:],
             "emerged_topics": [t for t in (extensions.get("emerged_topics") or [])
                                if isinstance(t, str)][-16:]}
+
+
+def _maybe_metacognition_shadow(p, cs, extensions, cycle: int) -> None:
+    """Opt-in (JONI_METACOG_SHADOW=1), fail-safe, observation-only metacognition supervisor.
+    Off by default -> a normal run is completely unaffected. It reads the Layer-9 core read-only
+    and appends episodes/outcomes to state/metacognition.jsonl; it holds NO decision authority,
+    changes no threshold and triggers no paid model call. Any error is a clean no-op."""
+    import os
+    if os.getenv("JONI_METACOG_SHADOW") != "1":
+        return
+    try:
+        from .metacognition import pr_outcomes, supervisor
+        from .metacognition.audit import AuditLog
+        log = AuditLog(p.core.parent / "metacognition.jsonl")
+        supervisor.observe(cs, extensions, cycle, cycle, log)
+        supervisor.observe_conflicts(cs, extensions, cycle, cycle, log)
+        supervisor.observe_doktores(cs, extensions, cycle, cycle, log)
+        # literature-review Doktores: episodes now, PR/CI outcome from an observable index
+        review = extensions.get("doktores_review", [])
+        keys = [e.get("component_key") for e in review
+                if e.get("applicable") and e.get("component_key")]
+        done_rows = (json.loads(p.commissions_done.read_text(encoding="utf-8"))
+                     if p.commissions_done.exists() else [])
+        # PR outcomes from LOCAL data only - the shadow observer opens no socket in the loop
+        # (docs/EGRESS_GATE.md). The live GitHub read is operator-run (scripts/).
+        pr_index = pr_outcomes.index_from_commissions_done(done_rows, keys)
+        supervisor.observe_doktores_literature(cs, extensions, cycle, cycle, log,
+                                               done_index=pr_index)
+    except Exception:  # noqa: BLE001 - the shadow observer must never break a cycle
+        pass
 
 
 def _maybe_router_shadow(p, cycle: int) -> None:
