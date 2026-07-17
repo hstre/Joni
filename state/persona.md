@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 807 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 622 Lehre(n)._
+_Stand: Tick 25 · 812 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 623 Lehre(n)._
 
-## attention · Tiefe 66 (threshold)
+## memory · Tiefe 67 (threshold)
 
-**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden sollte.**
+**Verwerfen von Annahmen und Annahmen über die Kodierung von episodischem Gedächtnis, um genaue linguistische Übersetzungen zu gewährleisten.**
 
-_deterministisch:_ Auf 'attention': 66 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 66× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 67 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 67× verworfen). Muster: Annahmen wurden verworfen. Anker: „Two approaches for generating Hindi audio descriptions are explored: (i) directly from English dense video descriptions, and (ii) translating English audio descriptions into Hindi.“ → verworfen (verworfen) ; „Episodic memory is encoded within a spatial and temporal framework.“ → verworfen (verworfen)
+
+- Anker: „Two approaches for generating Hindi audio descriptions are explored: (i) directly from English dense video descriptions, and (ii) translating English audio descriptions into Hindi.“ → verworfen — verworfen
+- Anker: „Episodic memory is encoded within a spatial and temporal framework.“ → verworfen — verworfen
+- _volle Spur (67):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508, C-9583, C-9593, C-9633, C-9675, C-9682
+
+## attention · Tiefe 67 (threshold)
+
+**Bei der Untersuchung von Aufmerksamkeitsansprüchen sollten Annahmen über einheitliche Mechanismen gründlich hinterfragt und verworfen werden.**
+
+_deterministisch:_ Auf 'attention': 67 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 67× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (66):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638
-
-## memory · Tiefe 65 (threshold)
-
-**Bei der Erinnerung sollten Annahmen verworfen und die tatsächlichen Fakten überprüft werden, um Irrtümer zu korrigieren.**
-
-_deterministisch:_ Auf 'memory': 65 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 65× verworfen). Muster: Annahmen wurden verworfen. Anker: „The reproduction package for the CAV 2026 submission titled 'SvLibChecker: A Light-Weight Tool for Software Model Checking' exists.“ → verworfen (verworfen) ; „The selection of optimizers for large-scale model training is influenced by compute, memory, tuning budget, and task diversity.“ → verworfen (verworfen)
-
-- Anker: „The reproduction package for the CAV 2026 submission titled 'SvLibChecker: A Light-Weight Tool for Software Model Checking' exists.“ → verworfen — verworfen
-- Anker: „The selection of optimizers for large-scale model training is influenced by compute, memory, tuning budget, and task diversity.“ → verworfen — verworfen
-- _volle Spur (65):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508, C-9583, C-9593, C-9633
+- _volle Spur (67):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -126,6 +126,16 @@ The "forums-as-a-lens" method is formally admissible if treated as a heuristic, 
 The "forums-as-a-lens" method is formally admissible if treated as a heuristic, with explicit assumptions about structural similarity and pattern genuineness. It breaks if assumed universally transferable or derived solely from recurrence without clear lens definition and application conditions.“ → verworfen — verworfen
 - _volle Spur (4):_ C-376, C-459, C-460, C-461
 
+## alignment · Tiefe 4 (threshold)
+
+**Verwerfen von Annahmen über den Wert des "Alignment"-Themas, da es als unwichtig erachtet wird.**
+
+_deterministisch:_ Auf 'alignment': 4 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 4× verworfen). Muster: Annahmen wurden verworfen. Anker: „alignment is worth tracking as a topic“ → verworfen (verworfen) ; „alignment is worth tracking as a topic“ → verworfen (verworfen)
+
+- Anker: „alignment is worth tracking as a topic“ → verworfen — verworfen
+- Anker: „alignment is worth tracking as a topic“ → verworfen — verworfen
+- _volle Spur (4):_ C-483, C-5340, C-9502, C-9687
+
 ## worlddirector · Tiefe 3 (threshold)
 
 **Verwerfen von Annahmen über die Fähigkeiten von WorldDirector, um genaue und kontrollierte Video-Weltdarstellung zu gewährleisten.**
@@ -205,16 +215,6 @@ _deterministisch:_ Auf 'awesome-openclaw-usecases': 3 korrigierte(r) Irrtum/Irrt
 - Anker: „There is a community collection named awesome-openclaw-usecases that compiles OpenClaw use cases to simplify tasks.“ → verworfen — verworfen
 - Anker: „There is a related collection called awesome-openclaw-usecases.“ → verworfen — verworfen
 - _volle Spur (3):_ C-297, C-300, C-1322
-
-## alignment · Tiefe 3 (threshold)
-
-**Alignment erfordert die Überprüfung und Verwerfung von Annahmen und spezifischen Definitionen, um genaue und relevante Interpretationen zu gewährleisten.**
-
-_deterministisch:_ Auf 'alignment': 3 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 3× verworfen). Muster: Annahmen wurden verworfen. Anker: „alignment is worth tracking as a topic“ → verworfen (verworfen) ; „In 3D foundation models, alignment refers to the integration of text and 3D tokens to enable unified understanding and generation, though existing methods often rely on implicit self-attention that can collapse coarse structural information. In genomics, alignment describes the process of efficiently mapping short DNA sequences to large genomes, with Bowtie leveraging Burrows-Wheeler indexing to align over 25 million reads per CPU hour while using only about 1.3 gigabytes of memory.“ → verworfen (verworfen)
-
-- Anker: „alignment is worth tracking as a topic“ → verworfen — verworfen
-- Anker: „In 3D foundation models, alignment refers to the integration of text and 3D tokens to enable unified understanding and generation, though existing methods often rely on implicit self-attention that can collapse coarse structural information. In genomics, alignment describes the process of efficiently mapping short DNA sequences to large genomes, with Bowtie leveraging Burrows-Wheeler indexing to align over 25 million reads per CPU hour while using only about 1.3 gigabytes of memory.“ → verworfen — verworfen
-- _volle Spur (3):_ C-483, C-5340, C-9502
 
 ## xin-annotations · Tiefe 2 (threshold)
 
@@ -5452,6 +5452,29 @@ _deterministisch:_ Auf 'architectures': 1 korrigierte(r) Irrtum/Irrtümer (0× e
 
 - Anker: „'architectures' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1312
+
+## architecture+authors · Tiefe 1 (self_review)
+
+**Die Übertragung von architektonischen Mustern auf Autoren ist nur sinnvoll, wenn eine explizite, formale Schnittstelle und keine metaphorischen oder zirkulären Annahmen vorhanden sind.**
+
+_deterministisch:_ Auf 'architecture+authors': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] **Tragfähig unter Annahmen:**
+- *Operationale Ähnlichkeit*: Die zugrundeliegenden Strukturen (Architektur, Aufmerksamkeit, Kontext, Gedächtnis, Forschung, sparse-gconv) teilen eine gemeinsame mathematische oder prozessuale Form – z.B. Faltung als lokale Gewichtung mit geteilten Parametern, Verschiebungsäquivarianz oder hierarchische Merkmalsaggregation. Dann ist der Linsen-Transfer eine konsistente Abstraktion.
+- *Explizite Schnittstelle*: Die Linse definiert klar, welche Eigenschaft von „convolutional“ übertragen wird (z.B. sparse-gconv als Spezialfall, nicht als Metapher). So bleibt Vergleichbarkeit formal prüfbar.
+
+**Bruchstellen:**
+- *Kategorienfehler*: Wenn „convolutional“ in „Gedächtnis“ oder „Forschung“ nur metaphorisch verwendet wird, fehlt eine gemeinsame formale Basis. Der Linsenbegriff wird dann beliebig und verliert Auflösungskraft.
+- *Implizite Parameter*: Sobald domänenspezifische constraints (z.B. Zeitrichtung im Gedächtnis, Nicht-Stationarität in Kontext) die Faltungsannahmen brechen, versagt die direkte Übertragung, ohne Zusatzannahmen (z.B. dynamische Filter) entsteht Widerspruch.
+- *Zirkularität*: Wenn die Methode nur die eigene Evidenz (sparse-gconv als Spezialfall) bestätigt, ohne neue Probleme zu öffnen, degeneriert die Linse zur Selbstbestätigung.' (from architecture) might also apply to authors.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind '[Alexandria-Bewertung · consistency · keine Entscheidung] **Tragfähig unter Annahmen:**
+- *Operationale Ähnlichkeit*: Die zugrundeliegenden Strukturen (Architektur, Aufmerksamkeit, Kontext, Gedächtnis, Forschung, sparse-gconv) teilen eine gemeinsame mathematische oder prozessuale Form – z.B. Faltung als lokale Gewichtung mit geteilten Parametern, Verschiebungsäquivarianz oder hierarchische Merkmalsaggregation. Dann ist der Linsen-Transfer eine konsistente Abstraktion.
+- *Explizite Schnittstelle*: Die Linse definiert klar, welche Eigenschaft von „convolutional“ übertragen wird (z.B. sparse-gconv als Spezialfall, nicht als Metapher). So bleibt Vergleichbarkeit formal prüfbar.
+
+**Bruchstellen:**
+- *Kategorienfehler*: Wenn „convolutional“ in „Gedächtnis“ oder „Forschung“ nur metaphorisch verwendet wird, fehlt eine gemeinsame formale Basis. Der Linsenbegriff wird dann beliebig und verliert Auflösungskraft.
+- *Implizite Parameter*: Sobald domänenspezifische constraints (z.B. Zeitrichtung im Gedächtnis, Nicht-Stationarität in Kontext) die Faltungsannahmen brechen, versagt die direkte Übertragung, ohne Zusatzannahmen (z.B. dynamische Filter) entsteht Widerspruch.
+- *Zirkularität*: Wenn die Methode nur die eigene Evidenz (sparse-gconv als Spezialfall) bestätigt, ohne neue Probleme zu öffnen, degeneriert die Linse zur Selbstbestätigung.' (from architecture) might also apply to authors.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9688
 
 ## architecture+attention · Tiefe 1 (self_review)
 
