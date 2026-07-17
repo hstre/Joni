@@ -136,6 +136,12 @@ jobs:
           # extraction (joni-semantic), DeepSeek Pro v4 for difficult analysis (joni-hard, also used
           # by the Doktores review). Capped per cycle; budget is the hard ceiling. No fallbacks.
           JONI_SEMANTIC_PROPOSALS: "1"
+          # In-doubt term-judge ON: the lexical quality floor blocks function-word junk, but generic
+          # content nouns (dt. "Aspekt", "Unterscheidung", …) still slip through and get minted as
+          # '<term>-as-a-lens' methods. This gives the fuzzy residual a cheap, budget-gated,
+          # content-addressed joni-semantic yes/no check before the mint. It vetoes ONLY the winning
+          # candidate and FAILS TO THE RULE when unavailable/over-budget (never fails open into junk).
+          JONI_TERM_JUDGE: "1"
           # Persona: Joni's identity as the verdichtete Geschichte korrigierter Irrtümer. The
           # deterministic projection (read-only from the ledger) runs regardless; this flag turns on
           # the LLM *phrasing* pass that only rephrases each already-fixed lesson (language, not
