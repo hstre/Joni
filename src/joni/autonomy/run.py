@@ -19,6 +19,7 @@ escalation, within budget.
 from __future__ import annotations
 
 import json
+import os
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -42,6 +43,7 @@ from . import (
     introspect,
     invent,
     layer9_view,
+    metabolism,
     method_ledger,
     method_review,
     methods,
@@ -249,10 +251,22 @@ def one_cycle() -> dict:
     escalated = escalation.escalate_if_needed(cs, extensions, proto, cycle,
                                               budget=budget, runs_per_week=runs_per_week())
 
+    # 3a-bis. Metabolism: couple intake to consolidation. Measure the load (un-supported backlog,
+    #     un-tested method pile, conflict growth, stagnation) from Joni's own state and hold a
+    #     hunger/satiety state with hysteresis. Measured every cycle (shadow); only GATES intake
+    #     when JONI_METABOLISM=1 - when sated, this cycle expands nothing and only consolidates.
+    metabolic = metabolism.observe(cs, extensions, proto, cycle)
+    intake_ok = os.getenv("JONI_METABOLISM") != "1" or metabolism.intake_allowed(metabolic)
+    if not intake_ok:
+        proto.record(cycle, "note",
+                     f"metabolism sated (load {metabolic['load']:.2f}) - intake suppressed this "
+                     "cycle; consolidation only")
+
     # 3b. Store methods Joni found, as candidates in the Layer 9 core - for Kevin. The Granite
     #     method gate judges a candidate BEFORE it is shelved (budget-metered, cached).
-    found_methods = methods.harvest(cs, judged, extensions, proto, cycle,
-                                    budget=budget, runs_per_week=runs_per_week())
+    found_methods = (methods.harvest(cs, judged, extensions, proto, cycle,
+                                     budget=budget, runs_per_week=runs_per_week())
+                     if intake_ok else {"methods": 0})
 
     # 3c. Kevin trials the shelf in-process: candidate/provisional methods get a
     #     deterministic transfer trial (recorded, never promoted). No-op without Kevin.
@@ -364,8 +378,9 @@ def one_cycle() -> dict:
     # 4d. Emergent self-development: a topic only past the Granite topic gate, a synthesis /
     #     a Kevin method only when Layer 9 marks the semantic cluster eligible - lexical
     #     recurrence is just the candidate trigger.
-    emerged = emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer,
-                            budget=budget, runs_per_week=runs_per_week())
+    emerged = (emerge.emerge(cs, extensions, proto, cycle, layer=semantic_layer,
+                             budget=budget, runs_per_week=runs_per_week())
+               if intake_ok else {"topic": None, "synthesis": 0, "method": None})
 
     # 4d-bis. Reconsolidation: now and then (every ~12 cycles), re-read memory across one of
     #     Kevin's lenses for cross-topic links the within-topic develop pass would miss.
@@ -472,7 +487,8 @@ def one_cycle() -> dict:
     #     structured packages. The epistemic channel enters Layer 9 as SOURCES (method-checked,
     #     not externally replicated; never auto-confirmed); the publication channel is archived
     #     with no epistemic weight. Joni decides, never Doktores. No-op until a package arrives.
-    research = research_intake.ingest(cs, extensions, proto, cycle, paths=p)
+    research = (research_intake.ingest(cs, extensions, proto, cycle, paths=p)
+                if intake_ok else {})
 
     # 5. Self-review -> the next installment of the first-person report. Fires every 10
     #    runs (and at least hourly); the diary appends, never overwrites.
