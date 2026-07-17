@@ -163,3 +163,38 @@ def test_a_non_judgment_cluster_is_retried_then_synthesises_when_eligible():
     # 2) the layer is available -> the same cluster now yields a higher-order synthesis
     out2 = emerge.emerge(cs, ext, _Proto(), layer=StubSemanticLayer())
     assert out2["synthesis"] == 1
+
+
+def test_synthesis_blocked_when_two_cluster_claims_live_contradict():
+    # a synthesis must be over a majority-compatible cluster (operator point 3): if two of its
+    # claims are in a LIVE conflict, it is not minted even when Layer 9 would clear it.
+    cs = CoreState(l9.Layer9())
+    a = cs.learn("latency budgets shape routing choices", "routing")
+    b = cs.learn("memory pressure changes how routing is decided", "routing")
+    cs.learn("load spikes shift routing toward cheaper paths", "routing")
+    cs.open_conflict([a, b])                                  # two cluster claims contradict
+    out = emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
+    assert out["synthesis"] == 0
+
+
+def test_synthesis_over_a_sink_topic_is_not_minted():
+    # a drain/sink topic is undifferentiated - not a real basis for a through-line (point 3)
+    cs = CoreState(l9.Layer9())
+    cs.learn("latency budgets shape routing choices", "forum")
+    cs.learn("memory pressure changes how routing is decided", "forum")
+    cs.learn("load spikes shift routing toward cheaper paths", "forum")
+    out = emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
+    assert out["synthesis"] == 0
+
+
+def test_synthesis_wording_is_neutral_and_still_detected_as_synthetic():
+    # B1: no 'single underlying factor' causal claim; still starts 'Across my' so the core's
+    # synthetic detector keeps excluding it from the vocabulary.
+    cs = CoreState(l9.Layer9())
+    cs.learn("latency budgets shape routing choices", "routing")
+    cs.learn("memory pressure changes how routing is decided", "routing")
+    cs.learn("load spikes shift routing toward cheaper paths", "routing")
+    emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
+    syn = [c for c in cs.core.all(l9.ObjectType.CLAIM) if c.text.startswith("Across my")]
+    assert syn and "single underlying factor" not in syn[0].text
+    assert emerge._is_synthetic(syn[0].text)
