@@ -253,9 +253,10 @@ def one_cycle() -> dict:
 
     # 3a-bis. Metabolism: couple intake to consolidation. Measure the load (un-supported backlog,
     #     un-tested method pile, conflict growth, stagnation) from Joni's own state and hold a
-    #     hunger/satiety state with hysteresis. Measured every cycle (shadow); only GATES intake
-    #     when JONI_METABOLISM=1 - when sated, this cycle expands nothing and only consolidates.
-    metabolic = metabolism.observe(cs, extensions, proto, cycle)
+    #     hunger/satiety state with hysteresis. Measured + PERSISTED every cycle (a durable series
+    #     state/metabolism_series.jsonl + view state/metabolism.md, so the trajectory is visible);
+    #     only GATES intake when JONI_METABOLISM=1 - when sated, this cycle only consolidates.
+    metabolic = metabolism.run_metabolism(cs, extensions, proto, cycle, paths=p)
     # JONI_CONSOLIDATE_ONLY forces the consolidation regime regardless of load - the deliberate
     # 'digest, don't eat' phase an operator runs before resuming normal autonomy (no ingest, no new
     # methods/topics/syntheses; the shedding/conflict passes still run). The metabolism only gates

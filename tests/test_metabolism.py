@@ -99,3 +99,30 @@ def test_observe_holds_hungry_when_load_is_moderate():
     ext = {"vitality": {"unsupported_hypotheses": 15}}   # backlog 0.5, methods 0.5 -> load 0.5
     rec = mb.observe(cs, ext, _Proto(), cycle=2)
     assert rec["load"] == 0.5 and rec["state"] == "hungry"
+
+
+def test_render_summary_shows_state_pressures_and_trajectory():
+    rec = {"cycle": 7, "state": "sated", "load": 0.82, "open_conflicts": 12, "untested_methods": 30,
+           "pressures": {"backlog": 0.82, "untested_methods": 0.75, "conflict_growth": 0.1,
+                         "stagnation": 0.25}}
+    history = [{"cycle": 5, "state": "hungry", "load": 0.4},
+               {"cycle": 6, "state": "hungry", "load": 0.6},
+               {"cycle": 7, "state": "sated", "load": 0.82}]
+    md = mb.render_summary(rec, history)
+    assert "state: sated" in md and "load 0.82" in md
+    assert "backlog" in md and "0.82" in md
+    assert "Trajectory" in md and "| 7 | sated | 0.82 |" in md    # the history, not just now
+
+
+def test_run_metabolism_persists_a_durable_series_and_view(tmp_path):
+    paths = SimpleNamespace(metabolism_series=tmp_path / "metabolism_series.jsonl",
+                            metabolism_panel=tmp_path / "metabolism.md")
+    cs = SimpleNamespace(core=_Core([1, 2], [_method(0) for _ in range(40)]))
+    ext = {"vitality": {"unsupported_hypotheses": 30}}
+    # two cycles -> two appended rows, one overwritten view
+    mb.run_metabolism(cs, ext, _Proto(), cycle=1, paths=paths)
+    rec = mb.run_metabolism(cs, ext, _Proto(), cycle=2, paths=paths)
+    rows = [ln for ln in paths.metabolism_series.read_text().splitlines() if ln.strip()]
+    assert len(rows) == 2                                  # append-only series
+    assert paths.metabolism_panel.read_text().startswith("# Joni")   # the view was written
+    assert rec["state"] == "sated"
