@@ -58,8 +58,20 @@ the script is the read-out.
   separate, later track. Restart does not depend on them, only on criterion 3 being satisfied one
   way or the other.
 
+## The consolidation regime before restart (point 7)
+
+Before normal autonomy resumes, run a short **consolidation-only** phase — "digest, don't eat":
+`JONI_CONSOLIDATE_ONLY=1` forces the no-intake path every cycle regardless of load (no research
+ingest, no new methods/topics/syntheses), while the shedding and conflict passes keep running. This
+is the explicit switch for the deliberate pre-restart digest; the metabolism only throttles when
+*overloaded*, so it does not by itself guarantee a quiet consolidation window. Run these cycles with
+no public activity and no new self-improvement work; when the backlog and conflicts have clearly
+fallen and a replay is stable, move on to the resume procedure.
+
 ## Resume procedure (once the gate is green)
 
-1. Set `JONI_METABOLISM=1` (and tuned thresholds) in `.github/workflows/autonomy.yml`.
-2. Un-comment the `schedule:` block (or trigger once via `workflow_dispatch`).
-3. Watch the first few cycles: metabolism state, collapse panel, no new token-hypotheses.
+1. Run the consolidation regime above (`JONI_CONSOLIDATE_ONLY=1`) until the backlog has fallen.
+2. Set `JONI_METABOLISM=1` (and thresholds tuned from the shadow load) in the workflow, and clear
+   `JONI_CONSOLIDATE_ONLY`.
+3. Un-comment the `schedule:` block (or trigger once via `workflow_dispatch`).
+4. Watch the first few cycles: metabolism state, collapse panel, no new token-hypotheses.

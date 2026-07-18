@@ -43,6 +43,18 @@ def test_second_cycle_dedups(monkeypatch, tmp_path):
     assert second["new_items"] == 0
 
 
+def test_consolidate_only_suppresses_intake(monkeypatch, tmp_path):
+    # the deliberate pre-restart consolidation regime: no new structure this cycle, but the cycle
+    # still runs (shedding/conflict passes) and completes cleanly.
+    root = _root(monkeypatch, tmp_path)
+    monkeypatch.setenv("JONI_CONSOLIDATE_ONLY", "1")
+    summary = one_cycle()
+    proto = (root / "protocol" / "protocol.jsonl").read_text()
+    assert "consolidation-only mode - intake suppressed" in proto
+    assert summary["methods"]["methods"] == 0        # no methods harvested while consolidating
+    assert summary["spend"] == 0.0
+
+
 def test_runtime_window_retires_after_a_week(monkeypatch, tmp_path):
     root = _root(monkeypatch, tmp_path)
     (root / "state").mkdir(parents=True, exist_ok=True)
