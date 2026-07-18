@@ -47,7 +47,9 @@ def classify_hypothesis(text: str, *, support: int) -> tuple[str, str]:
     return JUNK, "not admissible and 0 support"
 
 
-def classify_method(name: str, *, trial_count: int) -> tuple[str, str]:
+def classify_method(name: str, *, trial_count: int, status: str = "candidate") -> tuple[str, str]:
+    if status in ("rejected", "superseded"):
+        return KEEP, "already retired"       # already dealt with - not re-flagged, not re-rejected
     from . import quality
     if trial_count > 0:
         return KEEP, "trialed"
@@ -85,7 +87,8 @@ def audit(cs, *, sample: int = 15) -> dict:
     meth_items = []
     for m in cs.core.all(l9.ObjectType.METHOD):
         v, r = classify_method(str(getattr(m, "name", "")),
-                               trial_count=int(getattr(m, "trial_count", 0)))
+                               trial_count=int(getattr(m, "trial_count", 0)),
+                               status=getattr(getattr(m, "status", None), "value", "candidate"))
         meth_items.append({"id": m.id, "label": str(getattr(m, "name", ""))[:80],
                            "verdict": v, "reason": r})
     return {"topics": _group(topic_items, sample=sample),
@@ -139,7 +142,9 @@ def apply_junk(cs, proto, cycle: int = 0, *, kinds=("hypotheses", "methods"),
             if done["methods"] >= max_apply:
                 break
             if classify_method(str(getattr(m, "name", "")),
-                               trial_count=int(getattr(m, "trial_count", 0)))[0] != JUNK:
+                               trial_count=int(getattr(m, "trial_count", 0)),
+                               status=getattr(getattr(m, "status", None), "value", "candidate")
+                               )[0] != JUNK:
                 continue
             try:
                 cs.reject_method(m.id)

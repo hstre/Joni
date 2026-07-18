@@ -53,6 +53,8 @@ def test_classify_method_verdicts():
     assert ra.classify_method("calibration-as-a-lens", trial_count=0)[0] == ra.BORDERLINE
     assert ra.classify_method("existing-as-a-lens", trial_count=3)[0] == ra.KEEP   # trialed -> keep
     assert ra.classify_method("Some Harvested Paper Title", trial_count=0)[0] == ra.BORDERLINE
+    # an already-rejected junk method is 'done' - not re-flagged, so a second sweep is a no-op
+    assert ra.classify_method("oder-as-a-lens", trial_count=0, status="rejected")[0] == ra.KEEP
 
 
 # --- end-to-end audit over a small real core ----------------------------------------------------
