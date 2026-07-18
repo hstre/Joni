@@ -24,14 +24,16 @@ on:
   # is now ~8s instead of >2h and the per-emit O(n) cost is gone, so neither a running cycle nor a
   # fresh cold start hangs. The loop runs on the (now-fast) JSON journal; SQLite stays off. To re-park:
   # re-comment the schedule below and the next job will not launch.
-  # PARKED 2026-07-17 (operator request): pause the loop to build the real method-trial path.
-  # The proposed-method shelf has no belastbaren trial path today - the shelf-iterating trialer was
-  # the synthetic mock (rightly off, JONI_SYNTHETIC_TRIALS=0), and the real protocol only trials one
-  # hard-coded conflict method, never the shelf. We fix that properly, then resume. To resume:
-  # uncomment the schedule below (or trigger once via workflow_dispatch); the next job relaunches
-  # the continuous loop.
-  # schedule:
-  #   - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+  # PARKED 2026-07-17, RESUMED 2026-07-18 (operator request): the park-and-rebuild is done - the
+  # collapse sensors measure correctly, the synthesis gate is hardened, the metabolism couples
+  # intake to consolidation (measured every cycle, persisted to state/metabolism_series.jsonl), the
+  # legacy junk-method pile was swept (23 rejected), and the method-sandbox foundation (P0) is in.
+  # Resuming as a fresh, OBSERVED 2-day window (run_window reset, JONI_RUNTIME_DAYS=2). Metabolism
+  # stays SHADOW (JONI_METABOLISM unset): enforcing now would freeze intake, because 268 un-tested
+  # methods alone pin the load at 1.0 until a real trial path drains them - so we observe + record
+  # the trajectory first, then tune. To re-park: re-comment the schedule below.
+  schedule:
+    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
@@ -109,7 +111,7 @@ jobs:
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
-          JONI_RUNTIME_DAYS: "19"     # extended +1 week (window start 2026-06-29), retiring ~2026-07-18
+          JONI_RUNTIME_DAYS: "2"      # observed resume: fresh 2-day window (start 2026-07-18), retiring ~2026-07-20
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           # Router shadow (observation-only): after each cycle, run the external DESi router over the
