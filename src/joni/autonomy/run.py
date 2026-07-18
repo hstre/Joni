@@ -256,11 +256,17 @@ def one_cycle() -> dict:
     #     hunger/satiety state with hysteresis. Measured every cycle (shadow); only GATES intake
     #     when JONI_METABOLISM=1 - when sated, this cycle expands nothing and only consolidates.
     metabolic = metabolism.observe(cs, extensions, proto, cycle)
-    intake_ok = os.getenv("JONI_METABOLISM") != "1" or metabolism.intake_allowed(metabolic)
+    # JONI_CONSOLIDATE_ONLY forces the consolidation regime regardless of load - the deliberate
+    # 'digest, don't eat' phase an operator runs before resuming normal autonomy (no ingest, no new
+    # methods/topics/syntheses; the shedding/conflict passes still run). The metabolism only gates
+    # when overloaded; this makes the pre-restart consolidation an explicit switch, not a wait.
+    consolidate_only = os.getenv("JONI_CONSOLIDATE_ONLY") == "1"
+    intake_ok = not consolidate_only and (
+        os.getenv("JONI_METABOLISM") != "1" or metabolism.intake_allowed(metabolic))
     if not intake_ok:
-        proto.record(cycle, "note",
-                     f"metabolism sated (load {metabolic['load']:.2f}) - intake suppressed this "
-                     "cycle; consolidation only")
+        why = ("consolidation-only mode" if consolidate_only
+               else f"metabolism sated (load {metabolic['load']:.2f})")
+        proto.record(cycle, "note", f"{why} - intake suppressed this cycle; consolidation only")
 
     # 3b. Store methods Joni found, as candidates in the Layer 9 core - for Kevin. The Granite
     #     method gate judges a candidate BEFORE it is shelved (budget-metered, cached).
