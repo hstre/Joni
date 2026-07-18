@@ -30,6 +30,8 @@ switching it on.
 """
 from __future__ import annotations
 
+import json
+
 import desi_layer9 as l9
 
 # Hysteresis band on the load score. Deliberately conservative defaults; tune from a shadow run
@@ -114,5 +116,58 @@ def observe(cs, extensions: dict, proto, cycle: int = 0, *,
     return record
 
 
-__all__ = ["pressures", "load", "next_state", "intake_allowed", "observe",
-           "DEFAULT_HIGH", "DEFAULT_LOW"]
+_STATE_GLYPH = {_HUNGRY: "·", _SATED: "▮"}
+
+
+def render_summary(record: dict, history: list) -> str:
+    """A short human/site view of the latest metabolism plus the recent trajectory - so Joni can
+    see not only how full he is now but the history of how he got there."""
+    p = record.get("pressures", {})
+    lines = [
+        "# Joni — Metabolism (intake vs consolidation)",
+        "",
+        f"**Cycle {record.get('cycle')} · state: {record.get('state')} · "
+        f"load {record.get('load', 0):.2f}**  ",
+        "",
+        "_How full the store is and whether Joni is eating or digesting. Hunger allows intake; "
+        f"satiety (load ≥ {DEFAULT_HIGH:.2f}) suppresses it until load falls below "
+        f"{DEFAULT_LOW:.2f} (hysteresis)._",
+        "",
+        f"open conflicts {record.get('open_conflicts', 0)} · "
+        f"untested methods {record.get('untested_methods', 0)}",
+        "",
+        "| Pressure | Value |",
+        "|---|---|",
+    ]
+    for k in ("backlog", "untested_methods", "conflict_growth", "stagnation"):
+        lines.append(f"| {k} | {p.get(k, 0):.2f} |")
+    recent = list(history)[-24:]
+    if recent:
+        glyphs = " ".join(_STATE_GLYPH.get(h.get("state"), "?") for h in recent)
+        lines += ["", f"**Trajectory (last {len(recent)} cycles, old→new):** `{glyphs}`",
+                  "", "| Cycle | State | Load |", "|---|---|---|"]
+        for h in recent[-8:]:
+            lines.append(f"| {h.get('cycle')} | {h.get('state')} | {h.get('load', 0):.2f} |")
+    return "\n".join(lines)
+
+
+def run_metabolism(cs, extensions: dict, proto, cycle: int = 0, *, paths,
+                   high: float = DEFAULT_HIGH, low: float = DEFAULT_LOW) -> dict:
+    """observe() plus durable persistence: append the record to an append-only time series
+    (``state/metabolism_series.jsonl``) and write the human/site view (``state/metabolism.md``).
+    Fail-open: a persistence error never breaks the loop; the record is still returned and gated."""
+    rec = observe(cs, extensions, proto, cycle, high=high, low=low)
+    try:
+        series = paths.metabolism_series
+        series.parent.mkdir(parents=True, exist_ok=True)
+        with series.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        paths.metabolism_panel.write_text(
+            render_summary(rec, extensions.get("metabolism_history", [])), encoding="utf-8")
+    except OSError:  # persistence is best-effort - never break the cycle over it
+        pass
+    return rec
+
+
+__all__ = ["pressures", "load", "next_state", "intake_allowed", "observe", "render_summary",
+           "run_metabolism", "DEFAULT_HIGH", "DEFAULT_LOW"]

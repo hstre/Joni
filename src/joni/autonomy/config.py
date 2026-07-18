@@ -92,6 +92,16 @@ class Paths:
         return self.root / "state" / "collapse_panel.md"
 
     @property
+    def metabolism_series(self) -> Path:
+        # Metabolism: append-only time series of load/state/pressures (one row per cycle).
+        return self.root / "state" / "metabolism_series.jsonl"
+
+    @property
+    def metabolism_panel(self) -> Path:
+        # Metabolism: the short human/site view of the latest state + recent trajectory.
+        return self.root / "state" / "metabolism.md"
+
+    @property
     def method_ledger(self) -> Path:
         # Method Zustandsbuch: the current per-method state table (rewritten each cycle).
         return self.root / "state" / "method_ledger.md"
