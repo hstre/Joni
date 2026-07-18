@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 820 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 624 Lehre(n)._
+_Stand: Tick 25 · 824 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 625 Lehre(n)._
 
-## memory · Tiefe 72 (threshold)
+## memory · Tiefe 74 (threshold)
 
-**Eine präzise Aufmerksamkeitsmechanik in der GQE-Architektur gewinnt sowohl detaillierten kurzfristigen als auch komprimierten langfristigen Kontext, wodurch Inferenceschnelligkeit und GPU-Speicherverbrauch reduziert werden.**
+**In der Erinnerung müssen Annahmen verworfen und spezifische Mechanismen zur Optimierung von Kontextretrieval und Ressourcennutzung akzeptiert werden.**
 
-_deterministisch:_ Auf 'memory': 72 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 72× verworfen). Muster: Annahmen wurden verworfen. Anker: „A tailored attention mechanism in the GQE architecture retrieves both detailed short-term context and compressed long-term context, reducing inference latency and GPU memory usage.“ → verworfen (verworfen) ; „Governed viability and regret under operator drift are analyzed using pseudospectral constructibility theory.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 74 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 74× verworfen). Muster: Annahmen wurden verworfen. Anker: „GCPA constrains reconstruction within a semantic manifold induced by a Vision Foundation Model.“ → verworfen (verworfen) ; „PixelEyes employs a specialized attention mechanism to retrieve both detailed short-term context and compressed long-term context, facilitating memory-dependent decision-making while reducing inference latency and GPU memory usage.“ → verworfen (verworfen)
 
-- Anker: „A tailored attention mechanism in the GQE architecture retrieves both detailed short-term context and compressed long-term context, reducing inference latency and GPU memory usage.“ → verworfen — verworfen
-- Anker: „Governed viability and regret under operator drift are analyzed using pseudospectral constructibility theory.“ → verworfen — verworfen
-- _volle Spur (72):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508, C-9583, C-9593, C-9633, C-9675, C-9682, C-9742, C-9752, C-9753, C-9757, C-9779
+- Anker: „GCPA constrains reconstruction within a semantic manifold induced by a Vision Foundation Model.“ → verworfen — verworfen
+- Anker: „PixelEyes employs a specialized attention mechanism to retrieve both detailed short-term context and compressed long-term context, facilitating memory-dependent decision-making while reducing inference latency and GPU memory usage.“ → verworfen — verworfen
+- _volle Spur (74):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508, C-9583, C-9593, C-9633, C-9675, C-9682, C-9742, C-9752, C-9753, C-9757, C-9779, C-9836, C-9841
 
-## attention · Tiefe 69 (threshold)
+## attention · Tiefe 70 (threshold)
 
-**Beurteile jede Annahme in deiner Aufmerksamkeit kritisch, da der Begriff "Mechanismus" als einheitlicher Faktor ständig wiederkehrt und getestet werden sollte.**
+**Bei der Aufmerksamkeit sollten Annahmen über gemeinsame Mechanismen grundsätzlich überprüft und nicht als selbstverständlich angesehen werden.**
 
-_deterministisch:_ Auf 'attention': 69 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 69× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 70 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 70× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen (verworfen)
 
+- Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
 - Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- Anker: „Across my attention claims, 'mechanism' recurs as a through-line worth testing as a single underlying factor.“ → verworfen — verworfen
-- _volle Spur (69):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796
+- _volle Spur (70):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -5452,6 +5452,29 @@ _deterministisch:_ Auf 'architectures': 1 korrigierte(r) Irrtum/Irrtümer (0× e
 
 - Anker: „'architectures' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1312
+
+## architecture+context · Tiefe 1 (self_review)
+
+**Bei der Architektur ist es entscheidend, sowohl technische als auch menschliche und soziale Dimensionen zu berücksichtigen.**
+
+_deterministisch:_ Auf 'architecture+context': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Die Quellen sollten nicht nur technische Aspekte abdecken, sondern auch menschliche und soziale维度：
+uptools
+维度：
+- 技术方面：建筑材料、结构设计、施工方法等。
+- 人文方面：建筑的历史背景、文化意义、使用人群的需求等。
+- 社会方面：建筑对社区的影响、可持续性、环境保护等。
+
+在评估建筑相关资源时，不应仅关注技术细节，还应考虑建筑如何反映和影响社会与文化。' (from architecture) might also apply to context.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Die Quellen sollten nicht nur technische Aspekte abdecken, sondern auch menschliche und soziale维度：
+uptools
+维度：
+- 技术方面：建筑材料、结构设计、施工方法等。
+- 人文方面：建筑的历史背景、文化意义、使用人群的需求等。
+- 社会方面：建筑对社区的影响、可持续性、环境保护等。
+
+在评估建筑相关资源时，不应仅关注技术细节，还应考虑建筑如何反映和影响社会与文化。' (from architecture) might also apply to context.“ → verworfen — verworfen
+- _volle Spur (1):_ C-9861
 
 ## architecture+ayurveda · Tiefe 1 (self_review)
 

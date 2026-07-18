@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 631 · 338 Methoden** — proposed 291 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 47  
+**Cycle 632 · 340 Methoden** — proposed 270 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -15,7 +15,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | ignacioi-as-a-lens | **proposed** | candidate | 0 | — |
 | kiskalla-as-a-lens | **proposed** | candidate | 0 | — |
 | ed-lau/riana: RIANA v1.0.0 | **proposed** | candidate | 0 | — |
-| existing-as-a-lens | **proposed** | candidate | 0 | — |
 | amnesia-as-a-lens | **proposed** | candidate | 0 | — |
 | autonomous-as-a-lens | **proposed** | candidate | 0 | — |
 | DREAM: Dense Retrieval Embeddings via Autoregressive Modeling | **proposed** | candidate | 0 | — |
@@ -46,7 +45,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Surrogate-Assisted Inverse Thermal Characterization of Façade Elements in Testin | **proposed** | candidate | 0 | — |
 | The AO-Petalometer Test Bench: a laboratory facility for segmented mirror emulat | **proposed** | candidate | 0 | — |
 | Efficient entanglement of three remote single-atom quantum-network nodes | **proposed** | candidate | 0 | — |
-| openclaw-as-a-lens | **proposed** | candidate | 0 | — |
 | DEMUN: Fast and accurate discovery of music notation in very large collections | **proposed** | candidate | 0 | — |
 | Two English Preprint Manuscripts on CODATA 2026 Central-Value Forecasts and CMB  | **proposed** | candidate | 0 | — |
 | Polynomial equivalence of the global transverse-field Ising model and the gate m | **proposed** | candidate | 0 | — |
@@ -78,7 +76,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | gatemem-as-a-lens | **proposed** | candidate | 0 | — |
 | AutoMem: Automated Learning of Memory as a Cognitive Skill | **proposed** | candidate | 0 | — |
 | distillation-as-a-lens | **proposed** | candidate | 0 | — |
-| awesome-openclaw-usecases-as-a-lens | **proposed** | candidate | 0 | — |
 | Parameter-Efficient Quantum-Inspired Fast Weight Programmers for Traffic-Matrix  | **proposed** | candidate | 0 | — |
 | When Should Experience Become Parameters? Selection, Not Volume, Governs Online  | **proposed** | candidate | 0 | — |
 | multi-principal-as-a-lens | **proposed** | candidate | 0 | — |
@@ -174,17 +171,11 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Context Sliced Attention Network: Designing and Theoretical Framework of Deep Se | **proposed** | candidate | 0 | — |
 | GROMACS: High performance molecular simulations through multi-level parallelism  | **proposed** | candidate | 0 | — |
 | integrates-as-a-lens | **proposed** | candidate | 0 | — |
-| oder-as-a-lens | **proposed** | candidate | 0 | — |
 | attention-as-a-lens | **proposed** | candidate | 0 | — |
 | CNN-LSTM: Convolutional Neural Network–Long Short-Term Memory Model | **proposed** | candidate | 0 | — |
-| sein-as-a-lens | **proposed** | candidate | 0 | — |
 | Research on Global Convolutional Operators in Convolutional Neural Networks: A P | **proposed** | candidate | 0 | — |
-| sind-as-a-lens | **proposed** | candidate | 0 | — |
-| auch-as-a-lens | **proposed** | candidate | 0 | — |
-| sich-as-a-lens | **proposed** | candidate | 0 | — |
 | Enhancing In-context Panoramic Generation via Geometric-aware Pretraining | **proposed** | candidate | 0 | — |
 | MSA | **proposed** | candidate | 0 | — |
-| kann-as-a-lens | **proposed** | candidate | 0 | — |
 | geometry-as-a-lens | **proposed** | candidate | 0 | — |
 | DOPS: Dynamic OPerator Sorting for Heterogeneous NPU-PIM LLM Inference | **proposed** | candidate | 0 | — |
 | DOPS: Dynamic OPerator Sorting for Heterogeneous NPU-PIM LLM Inference | **proposed** | candidate | 0 | — |
@@ -192,45 +183,32 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | reconstruction-as-a-lens | **proposed** | candidate | 0 | — |
 | section-as-a-lens | **proposed** | candidate | 0 | — |
 | platform-as-a-lens | **proposed** | candidate | 0 | — |
-| dass-as-a-lens | **proposed** | candidate | 0 | — |
 | PanoWorld: Real-World Panoramic Generation | **proposed** | candidate | 0 | — |
 | OpenLongTail: Generative Scaling of Long-Tail Driving Data | **proposed** | candidate | 0 | — |
-| habe-as-a-lens | **proposed** | candidate | 0 | — |
 | forums-as-a-lens | **proposed** | candidate | 0 | — |
 | PanoWorld: Real-World Panoramic Generation | **proposed** | candidate | 0 | — |
 | Self-Guided Test-Time Training for Long-Context LLMs | **proposed** | candidate | 0 | — |
-| werden-as-a-lens | **proposed** | candidate | 0 | — |
-| während-as-a-lens | **proposed** | candidate | 0 | — |
 | D-GAF: A Socio-Technical Framework for Robust and Trustworthy Real-World Deploym | **proposed** | candidate | 0 | — |
-| durch-as-a-lens | **proposed** | candidate | 0 | — |
 | MedPMC: A Systematic Framework for Scaling High-Fidelity Medical Multimodal Data | **proposed** | candidate | 0 | — |
-| haben-as-a-lens | **proposed** | candidate | 0 | — |
 | Porting Aurora to Intel accelerated hardware, an experimental and experiential c | **proposed** | candidate | 0 | — |
 | Predictive Maintenance MCP Server: An open-source framework for integrating Larg | **proposed** | candidate | 0 | — |
-| zwischen-as-a-lens | **proposed** | candidate | 0 | — |
 | Predictive Maintenance MCP Server: An open-source framework for integrating Larg | **proposed** | candidate | 0 | — |
-| mögliche-as-a-lens | **proposed** | candidate | 0 | — |
 | uzbek-as-a-lens | **proposed** | candidate | 0 | — |
 | github.com/broadinstitute/gatk-sv/VisualizeCnvs | **proposed** | candidate | 0 | — |
 | github.com/broadinstitute/gatk-sv/AnnotateVcf | **proposed** | candidate | 0 | — |
 | thurlow-research/HumanOversightSystem: v0.5.0 — Governance, Accuracy & Usability | **proposed** | candidate | 0 | — |
-| informationen-as-a-lens | **proposed** | candidate | 0 | — |
 | Invariant Learning Dynamics of Transformers in Inductive Reasoning Tasks | **proposed** | candidate | 0 | — |
 | A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Mani | **proposed** | candidate | 0 | — |
 | TimeProVe: Propose, then Verify for Efficient Long Video Temporal Reasoning in A | **proposed** | candidate | 0 | — |
-| können-as-a-lens | **proposed** | candidate | 0 | — |
 | Motion4Motion: Motion Transfer Across Subjects at Inference | **proposed** | candidate | 0 | — |
 | LATO.2: Factorized 3D Mesh Generation with Vertex and Topology Flow | **proposed** | candidate | 0 | — |
-| könnte-as-a-lens | **proposed** | candidate | 0 | — |
 | EgoSteer: A Full-Stack System Towards Steerable Dexterous Manipulation from Egoc | **proposed** | candidate | 0 | — |
 | Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model | **proposed** | candidate | 0 | — |
 | GLEN (Geospatial LLM-Enabled Navigator): A reusable library for map-based applic | **proposed** | candidate | 0 | — |
-| quellen-as-a-lens | **proposed** | candidate | 0 | — |
 | Evidence-Backed Video Question Answering | **proposed** | candidate | 0 | — |
 | GLEN (Geospatial LLM-Enabled Navigator): A reusable library for map-based applic | **proposed** | candidate | 0 | — |
 | Multi-Agent LLMs Fail to Explore Each Other | **proposed** | candidate | 0 | — |
 | Simulation of Custom-Precision OCP MX Block Floating-Point Formats and Arithmeti | **proposed** | candidate | 0 | — |
-| wird-as-a-lens | **proposed** | candidate | 0 | — |
 | Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and E | **proposed** | candidate | 0 | — |
 | The Seriality Gap in Video Diffusion Models | **proposed** | candidate | 0 | — |
 | SynthDocBench: Controlled Benchmark for Long-Context Visual Document Understandi | **proposed** | candidate | 0 | — |
@@ -258,10 +236,11 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Partition, Prompt, Aggregate: Statistical Self-Consistency in Language Models | **proposed** | candidate | 0 | — |
 | unterscheidung-as-a-lens | **proposed** | candidate | 0 | — |
 | LongStraw: Long-Context RL Beyond 2M Tokens under a Fixed GPU Budget | **proposed** | candidate | 0 | — |
+| Chat2Scenic: An Iterative RAG-Based Framework for Scenario Generation in Autonom | **proposed** | candidate | 0 | — |
 | module-as-a-lens | **proposed** | candidate | 0 | — |
+| Hierarchical Denoising For Multi-Step Visual Reasoning | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
-| relevant-as-a-lens | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
 | Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **proposed** | candidate | 0 | — |
 | A Formal C-Based Simulation Framework for Comparative Analysis of Paging and Seg | **proposed** | candidate | 0 | — |
@@ -300,18 +279,41 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Stone Programming Paradigm: Language Abstraction | **retired** | rejected | 0 | — |
 | Closed-Loop Targeted Memory Reactivation during Slow-Wave Sleep Enhances Fear-Ex | **retired** | rejected | 0 | — |
 | RFC-ATF-14: Agent Trust Fabric -- Assumption Renewal Governance Protocol (ARGP). | **retired** | rejected | 0 | — |
+| existing-as-a-lens | **retired** | rejected | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
+| openclaw-as-a-lens | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
+| awesome-openclaw-usecases-as-a-lens | **retired** | rejected | 0 | — |
 | FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |
 | Major-project-list | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
+| oder-as-a-lens | **retired** | rejected | 0 | — |
+| sein-as-a-lens | **retired** | rejected | 0 | — |
+| sind-as-a-lens | **retired** | rejected | 0 | — |
+| auch-as-a-lens | **retired** | rejected | 0 | — |
+| sich-as-a-lens | **retired** | rejected | 0 | — |
+| kann-as-a-lens | **retired** | rejected | 0 | — |
 | JURI | **retired** | rejected | 0 | — |
+| dass-as-a-lens | **retired** | rejected | 0 | — |
+| habe-as-a-lens | **retired** | rejected | 0 | — |
+| werden-as-a-lens | **retired** | rejected | 0 | — |
+| während-as-a-lens | **retired** | rejected | 0 | — |
+| durch-as-a-lens | **retired** | rejected | 0 | — |
+| haben-as-a-lens | **retired** | rejected | 0 | — |
 | JanusMesh: Fast and Zero-Shot 3D Visual Illusion Generation via Cross-Space Deno | **retired** | rejected | 0 | — |
+| zwischen-as-a-lens | **retired** | rejected | 0 | — |
+| mögliche-as-a-lens | **retired** | rejected | 0 | — |
+| informationen-as-a-lens | **retired** | rejected | 0 | — |
 | Context-Aware RL for Agentic and Multimodal LLMs | **retired** | rejected | 0 | — |
+| können-as-a-lens | **retired** | rejected | 0 | — |
+| könnte-as-a-lens | **retired** | rejected | 0 | — |
+| quellen-as-a-lens | **retired** | rejected | 0 | — |
 | Configurable Clinical Information Extraction with Agentic RAG: What Works, What  | **retired** | rejected | 0 | — |
+| wird-as-a-lens | **retired** | rejected | 0 | — |
 | High-Resolution Daily PM2.5 Dataset for the Contiguous US (2005–2021) | **retired** | rejected | 0 | — |
 | LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agent Debate f | **retired** | rejected | 0 | — |
+| relevant-as-a-lens | **retired** | rejected | 0 | — |
 | RON-27 - Rete di Osservazione di Riferimento - Costruzione, Convergenza e Congel | **retired** | rejected | 0 | — |
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **retired** | rejected | 0 | — |
