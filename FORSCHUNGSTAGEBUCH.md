@@ -3267,3 +3267,66 @@ Methodenbestand sinkt **oder** messbar geprüft wird; der Stoffwechsel Intake↔
 aus Shadow-Zahlen getunt); die zwei Konfliktzahlen erklärt sind; ein Replay nach der Rekonsolidierung stabil
 bleibt. Kernsatz dieser Runde: Joni braucht gerade **weniger neue Selbstbeobachtung und mehr saubere
 Zustandskonsolidierung** — erst der Stoffwechsel, dann wieder fressen. (PRs #239–#244.)
+
+### Eintrag 2026-07-19 (XLVII) — Aufgeweckt und beobachtet; der Rückstau wird endlich prüfbar: der Methoden-Trial-Pfad (Sandbox P1–P3), ein Junk-Sweep und der ehrliche Erst-Befund
+
+**[Eingriff]** Nach der Reparatur (XLVI) drei zusammenhängende Schritte: den Altbestand *einmal* wirklich
+aufräumen, Joni **beobachtet** wieder anfahren, und den strukturellen Kern — `trials = 0` — von P0 zu einem
+echten, laufenden Trial-Pfad ausbauen. Alles non-core, alles per Default aus, jede Stufe CI-grün.
+
+**[Bau — Konsolidierung & Aufwecken]**
+- **Konsolidierungs-Schalter** (#246, `JONI_CONSOLIDATE_ONLY`): erzwingt die „verdauen, nicht fressen"-Phase
+  lastunabhängig — der Stoffwechsel drosselt nur bei *Überlast*, für die bewusste Vor-Neustart-Phase fehlte
+  ein expliziter Hebel.
+- **Rekonsolidierung angewandt** (#247): der operator-freigegebene Voll-Sweep verwarf **23 klar-junk Methoden**
+  (fast alle deutschen Funktionswort-Linsen: `oder`, `dass`, `während`, … + Slugs) — append-only über die Gate,
+  Provenienz erhalten. Kandidaten 291→268. `classify_method` wurde idempotent (bereits-verworfene = erledigt).
+- **Stoffwechsel-Historie persistiert** (#248): `state/metabolism_series.jsonl` (eine Zeile/Zyklus) +
+  `state/metabolism.md` — Joni sieht nicht nur *wie* es ihm geht, sondern die **Trajektorie, wie es dazu kam**.
+- **Aufgeweckt, beobachtet** (#249): frisches 2-Tage-Fenster, Schedule wieder an, Stoffwechsel **im Shadow**
+  (misst, steuert nicht) — denn Enforce hätte sofort eingefroren.
+
+**[Gemessen — der ehrliche Erst-Befund, Cycle 632/633]** Die korrigierten Sensoren tragen im echten Betrieb:
+Weak-Claim `hollow 0.0` (die 97,8 % *aktiven* Arbeits-Claims triggern den Alarm nicht mehr — `presented_strong`
+= 0), Self-Model-Repetition `0.0` (Artefakt weg, an echten Objekten gemessen), Konflikte **179 live vs. 276
+tolerated** (versöhnt, vorher ~449 vermischt). Und die Stoffwechsel-Serie liefert sofort die Diagnose:
+`state sated · load 1.0` — **komplett** vom Druck der 268 ungeprüften Methoden getrieben, alles andere 0. Der
+Shadow-Modus war empirisch richtig: Enforce hätte Joni dauerhaft satt = intake-los gemacht, bis der Rückstau
+sinkt. Das *ist* das nächste Problem, jetzt in den Daten sichtbar.
+
+**[Bau — der echte Trial-Pfad, was `trials = 0` auflöst]** Die Sandbox-Reihe des Auftrags, zu Ende gebaut:
+- **Härtung** (#250): `classify_method` + der Emerge-Methoden-Pfad weisen Sink-Bucket-Terme (`gatemem`) und
+  off-domain-Garbage (`ignacioi`, `kiskalla`) zurück — via `on_domain`, das im Autonomie-Job (mit Embedder)
+  lebt, in CI aber offen fällt.
+- **P1** (#251): `sandbox_trial.run` misst eine **beliebige** Methode über den P0-Harness — drei Solver als
+  isolierter Code, Verdikt an der **Metrik allein**, Pflicht-Negativkontrolle, Versiegelung über die bestehende
+  Bridge (kein Kevin-Eingriff). Zweite handkuratierte Methode (Einheiten-Gleichheit) schlägt den Baseline
+  messbar (0.42 → 0.0 Fehler).
+- **P2** (#252): ein captured `joni-hard`-Aufruf synthetisiert aus dem Methoden-**Text** einen Solver, der
+  **ausschließlich im P0-Sandbox** läuft. Tragender Test: generierter `import os; os.system(...)`-Code wird
+  eingehegt (scheitert jeden Fall → „kein Nutzen", kein Ausbruch). LLM schreibt, Metrik entscheidet.
+- **P3** (#253): Lifecycle. Passende ungeprüfte Kandidaten werden pro Zyklus synthetisiert, gemessen, und das
+  Verdikt als **per-Methode-Trial durch die Gate** protokolliert (`core_state.record_method_trial`,
+  `METHOD_TRIAL_RECORD`) — `trial_count` bewegt sich, die *bestehende* Ausmusterung greift. `harmful`/
+  `no_benefit` → Richtung Retirement (der Rückstau sinkt auf **Evidenz**); `benefit` → activation-ready,
+  human-gated. **Recording ≠ Promotion** — Joni promotet weiter nie selbst.
+
+**[Ehrliche Grenzen]** Nur Methoden mit **passendem handkuratiertem Benchmark** sind trialbar; der Rest bleibt
+ehrlich ungeprüft (kein Fake-Signal). Aktuell ein Benchmark (Normalisierung) — die `problems`-Bibliothek muss
+wachsen, damit mehr vom Regal drainbar wird. Die metabolische Schwelle (untested_methods-Druck) friert Enforce
+bis dahin ein; der Trial-Pfad ist der Weg, der das löst.
+
+**[Reifegrad]**
+
+| Baustein | Stufe | Beleg |
+|---|---|---|
+| Sensoren im Live-Betrieb | **4 · gemessen** | hollow 0.0, Artefakt weg, Konflikte versöhnt (Cycle 632) |
+| Stoffwechsel-Historie | **3 · getestet, persistiert** | series+view pro Zyklus; Trajektorie sichtbar |
+| Junk-Sweep | **4 · angewandt** | 23 Methoden verworfen, append-only, idempotent |
+| Trial-Pfad P1/P2/P3 | **3 · getestet, off by default** | Metrik entscheidet; generierter Code eingehegt; Gate bewegt Zähler |
+| Enforce (Stoffwechsel) | **0 · bewusst außen vor** | würde einfrieren, bis der Rückstau drainiert |
+
+**[Offen / als Nächstes]** (a) `problems`-Bibliothek erweitern; (b) `JONI_SANDBOX_LLM_TRIALS` in einem
+überwachten Fenster scharf schalten und den Rückstau fallen sehen; (c) danach — und erst dann — den Stoffwechsel
+enforce-fähig machen. Kernsatz dieser Runde: der Rückstau, den XLVI nur *messen* konnte, wird jetzt **geprüft** —
+die Methode wird ausgeführt und an einer unabhängigen Metrik gemessen, nicht behauptet. (PRs #246–#253.)
