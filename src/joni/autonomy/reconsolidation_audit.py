@@ -25,6 +25,9 @@ import desi_layer9 as l9
 
 JUNK, BORDERLINE, KEEP = "junk", "borderline", "keep"
 _LENS_SUFFIX = "-as-a-lens"
+# Semantic sinks / provenance buckets (mirrors the collapse-panel + emerge set - broader than
+# quality.is_sink_topic, which only covers forum + the reserved labels).
+_SINK_TERMS = frozenset({"forum", "misc", "unknown", "unsorted", "gatemem", "assess"})
 
 
 def classify_topic(topic: str) -> tuple[str, str]:
@@ -55,8 +58,14 @@ def classify_method(name: str, *, trial_count: int, status: str = "candidate") -
         return KEEP, "trialed"
     if name.endswith(_LENS_SUFFIX):
         term = name[: -len(_LENS_SUFFIX)]
+        if term in _SINK_TERMS or quality.is_sink_topic(term):
+            return JUNK, f"lens on a sink/provenance bucket '{term}', never trialed"
         if not (quality.is_meaningful_term(term) and quality.is_good_topic(term)):
             return JUNK, f"lens on a junk term '{term}', never trialed"
+        # off-domain garbage (proper names, foreign tokens like 'ignacioi') the lexical checks miss.
+        # on_domain fails OPEN without a live embedder, so this only tightens where it can judge.
+        if not quality.on_domain(term):
+            return JUNK, f"lens on an off-domain term '{term}', never trialed"
         return BORDERLINE, "lens on a real term but never trialed - a human decides"
     return BORDERLINE, "harvested method, never trialed - a human decides"
 

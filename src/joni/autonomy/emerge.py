@@ -268,7 +268,10 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
          if t not in done_meth and len(e["topics"]) >= _MIN_TOPICS_FOR_METHOD
          and len(e["claims"]) >= _MIN_CLAIMS),
         key=lambda kv: (-len(kv[1]["topics"]), -len(kv[1]["claims"]), kv[0]))
-    lenses = [(t, e) for t, e in lenses if quality.on_domain(t)]   # domain-consistency gate
+    # A lens term must be a real, on-domain, non-sink concept - the same bar the synthesis move
+    # applies. Blocks garbage/sink lens terms (gatemem, a proper name, a slug) at the source.
+    lenses = [(t, e) for t, e in lenses
+              if t not in _SINK_TOPICS and quality.is_good_topic(t) and quality.on_domain(t)]
     # In-doubt term-judge (OFF by default): veto only the winning lens term before it is minted
     # as an '<term>-as-a-lens' method; burn a vetoed term. Fails to the rule when unavailable.
     while lenses and term_judge.enabled() and \

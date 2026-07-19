@@ -115,6 +115,17 @@ def test_a_cross_topic_lens_is_stored_as_a_candidate_method_only_when_eligible()
     assert set(m.applicable_to) >= {"routing", "privacy", "drift"}
 
 
+def test_method_lens_on_a_sink_term_is_not_minted():
+    # a sink/provenance bucket term is never a transferable lens - blocked at the source, the same
+    # bar the synthesis move applies (operator follow-up: garbage/sink lenses like gatemem).
+    cs = CoreState(l9.Layer9())
+    cs.learn("gatemem improves routing decisions", "routing")
+    cs.learn("gatemem matters for privacy budgets", "privacy")
+    cs.learn("gatemem shapes drift detection", "drift")
+    out = emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
+    assert out["method"] is None
+
+
 def test_no_method_for_kevin_when_layer9_does_not_clear_the_cluster():
     cs = _cs_with_recurrence()
     # different frames -> Layer 9 says 'unrelated' -> no method, no synthesis.

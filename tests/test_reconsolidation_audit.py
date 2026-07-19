@@ -57,6 +57,17 @@ def test_classify_method_verdicts():
     assert ra.classify_method("oder-as-a-lens", trial_count=0, status="rejected")[0] == ra.KEEP
 
 
+def test_classify_method_rejects_sink_and_offdomain_lenses(monkeypatch):
+    from joni.autonomy import quality
+    # a sink/provenance bucket as a lens term is junk regardless of the embedder
+    assert ra.classify_method("gatemem-as-a-lens", trial_count=0)[0] == ra.JUNK
+    # an off-domain garbage token (proper name) is junk WHEN the embedder can judge it; on_domain
+    # fails open without one, so this only tightens where it can.
+    monkeypatch.setattr(quality, "on_domain", lambda t, **k: t != "ignacioi")
+    assert ra.classify_method("ignacioi-as-a-lens", trial_count=0)[0] == ra.JUNK
+    assert ra.classify_method("calibration-as-a-lens", trial_count=0)[0] == ra.BORDERLINE
+
+
 # --- end-to-end audit over a small real core ----------------------------------------------------
 
 def test_audit_over_a_small_core_is_read_only_and_grouped():
