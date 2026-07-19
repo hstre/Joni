@@ -31,7 +31,23 @@ _UNIT_EQUALITY = Problem(
               "dimension", "dimensional", "measure", "measurement", "quantit", "equivalen"),
 )
 
-LIBRARY: tuple[Problem, ...] = (_UNIT_EQUALITY,)
+_DEDUP = Problem(
+    spec=sandbox_trial.dedup_spec(),
+    task_desc=("payload has keys 'a' and 'b' (short texts); return {'label': 'duplicate'} if they "
+               "are the same text up to case and punctuation else {'label': 'distinct'}."),
+    keywords=("duplicate", "dedup", "deduplicat", "near-duplicate", "near duplicate", "redundan",
+              "identical text", "same text", "canonical", "collision"),
+)
+
+_TEMPORAL = Problem(
+    spec=sandbox_trial.temporal_order_spec(),
+    task_desc=("payload has keys 'a' and 'b' (dates, ISO YYYY-MM-DD or German DD.MM.YYYY); return "
+               "{'label': 'before' | 'after' | 'same'} for how 'a' relates to 'b' in time."),
+    keywords=("temporal", "chronolog", "date", "dates", "timestamp", "time order", "ordering",
+              "sequence", "sort by time", "earlier", "later", "recency"),
+)
+
+LIBRARY: tuple[Problem, ...] = (_UNIT_EQUALITY, _DEDUP, _TEMPORAL)
 
 
 def match(name: str, summary: str) -> Problem | None:

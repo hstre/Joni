@@ -60,6 +60,16 @@ def test_task_set_sha_is_deterministic_and_short():
     assert a == b and len(a) == 16
 
 
+def test_dedup_method_beats_the_baseline():
+    r = st.run(st.dedup_spec())
+    assert r["intervention"] == 0.0 and r["baseline"] > 0.3 and r["passed"] is True
+
+
+def test_temporal_order_method_beats_the_baseline():
+    r = st.run(st.temporal_order_spec())
+    assert r["intervention"] == 0.0 and r["baseline"] > 0.2 and r["passed"] is True
+
+
 def test_record_runs_end_to_end_through_the_bridge():
     # the P1 acceptance: a second real trial runs and is sealed via the existing bridge path
     # (the same writer the conflict trial uses). Fail-open, so it always reports it ran.
