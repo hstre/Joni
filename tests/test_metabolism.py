@@ -101,6 +101,23 @@ def test_observe_holds_hungry_when_load_is_moderate():
     assert rec["load"] == 0.5 and rec["state"] == "hungry"
 
 
+def test_draining_frees_the_intake_gate_from_the_backlog_it_is_draining():
+    # a full un-tested pile alone (untested pressure 1.0) would satiate; while the trial path is
+    # draining it, the gate ignores that one dimension - so metabolism enforce no longer freezes.
+    cs = SimpleNamespace(core=_Core([], [_method(0) for _ in range(40)]))
+    rec = mb.observe(cs, {"vitality": {}}, _Proto(), cycle=1, draining=True)
+    assert rec["pressures"]["untested_methods"] == 1.0     # still measured
+    assert rec["load"] == 1.0                              # the full load still shows the backlog
+    assert rec["gating_load"] == 0.0                       # but the gate ignores it while draining
+    assert rec["state"] == "hungry"                        # intake is NOT frozen
+
+
+def test_without_draining_the_backlog_still_satiates():
+    cs = SimpleNamespace(core=_Core([], [_method(0) for _ in range(40)]))
+    rec = mb.observe(cs, {"vitality": {}}, _Proto(), cycle=1, draining=False)
+    assert rec["gating_load"] == 1.0 and rec["state"] == "sated"   # default behaviour unchanged
+
+
 def test_render_summary_shows_state_pressures_and_trajectory():
     rec = {"cycle": 7, "state": "sated", "load": 0.82, "open_conflicts": 12, "untested_methods": 30,
            "pressures": {"backlog": 0.82, "untested_methods": 0.75, "conflict_growth": 0.1,

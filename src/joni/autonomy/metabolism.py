@@ -91,9 +91,15 @@ def _untested_methods(cs) -> int:
 
 
 def observe(cs, extensions: dict, proto, cycle: int = 0, *,
-            high: float = DEFAULT_HIGH, low: float = DEFAULT_LOW) -> dict:
+            high: float = DEFAULT_HIGH, low: float = DEFAULT_LOW, draining: bool = False) -> dict:
     """Compute and persist this cycle's metabolism from Joni's own state. Read-only w.r.t. Layer 9;
-    records a protocol note only on a state change. Returns the record (with ``state``/``load``)."""
+    records a protocol note only on a state change. Returns the record (with ``state``/``load``).
+
+    ``draining=True`` (the sandbox trial path is actively testing the un-tested method pile): the
+    intake gate then rides on the load WITHOUT the ``untested_methods`` dimension - otherwise the
+    same backlog that the trials are draining would also freeze intake, a double penalty that would
+    pin Joni sated forever. The full ``load`` and every pressure stay recorded, so the metabolism
+    still SEES the backlog; only the gating decision ignores the dimension it already works on."""
     vit = extensions.get("vitality", {})
     prev = extensions.get("metabolism", {})
     open_now = len(cs.core.open_conflicts())
@@ -101,18 +107,21 @@ def observe(cs, extensions: dict, proto, cycle: int = 0, *,
     untested = _untested_methods(cs)
     p = pressures(vit, open_conflicts=open_now, prev_open_conflicts=prev_open,
                   untested_methods=untested)
-    lv = load(p)
-    state = next_state(prev.get("state", _HUNGRY), lv, high=high, low=low)
-    record = {"state": state, "load": lv, "pressures": p, "open_conflicts": open_now,
-              "untested_methods": untested, "cycle": cycle}
+    lv = load(p)                                    # full load - always recorded
+    gating = {k: v for k, v in p.items() if not (draining and k == "untested_methods")}
+    gv = load(gating)                               # the load the intake gate actually rides on
+    state = next_state(prev.get("state", _HUNGRY), gv, high=high, low=low)
+    record = {"state": state, "load": lv, "gating_load": gv, "pressures": p,
+              "open_conflicts": open_now, "untested_methods": untested,
+              "draining": draining, "cycle": cycle}
     extensions["metabolism"] = record
     hist = extensions.setdefault("metabolism_history", [])
-    hist.append({"cycle": cycle, "state": state, "load": lv})
+    hist.append({"cycle": cycle, "state": state, "load": lv, "gating_load": gv})
     extensions["metabolism_history"] = hist[-500:]
     if prev.get("state", _HUNGRY) != state:
         proto.record(cycle, "note",
                      f"metabolism: {prev.get('state', _HUNGRY)} -> {state} "
-                     f"(load {lv:.2f}; pressures {p})")
+                     f"(gating load {gv:.2f}, full {lv:.2f}; pressures {p})")
     return record
 
 
@@ -152,11 +161,12 @@ def render_summary(record: dict, history: list) -> str:
 
 
 def run_metabolism(cs, extensions: dict, proto, cycle: int = 0, *, paths,
-                   high: float = DEFAULT_HIGH, low: float = DEFAULT_LOW) -> dict:
+                   high: float = DEFAULT_HIGH, low: float = DEFAULT_LOW,
+                   draining: bool = False) -> dict:
     """observe() plus durable persistence: append the record to an append-only time series
     (``state/metabolism_series.jsonl``) and write the human/site view (``state/metabolism.md``).
     Fail-open: a persistence error never breaks the loop; the record is still returned and gated."""
-    rec = observe(cs, extensions, proto, cycle, high=high, low=low)
+    rec = observe(cs, extensions, proto, cycle, high=high, low=low, draining=draining)
     try:
         series = paths.metabolism_series
         series.parent.mkdir(parents=True, exist_ok=True)
