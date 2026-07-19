@@ -256,7 +256,9 @@ def one_cycle() -> dict:
     #     hunger/satiety state with hysteresis. Measured + PERSISTED every cycle (a durable series
     #     state/metabolism_series.jsonl + view state/metabolism.md, so the trajectory is visible);
     #     only GATES intake when JONI_METABOLISM=1 - when sated, this cycle only consolidates.
-    metabolic = metabolism.run_metabolism(cs, extensions, proto, cycle, paths=p)
+    metabolic = metabolism.run_metabolism(
+        cs, extensions, proto, cycle, paths=p,
+        draining=os.getenv("JONI_SANDBOX_LLM_TRIALS") == "1")
     # JONI_CONSOLIDATE_ONLY forces the consolidation regime regardless of load - the deliberate
     # 'digest, don't eat' phase an operator runs before resuming normal autonomy (no ingest, no new
     # methods/topics/syntheses; the shedding/conflict passes still run). The metabolism only gates
