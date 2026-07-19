@@ -63,6 +63,12 @@ def test_match_pairs_a_normalisation_method_and_skips_unrelated():
     assert problems.match("AttentionNet", "a study of transformer attention") is None
 
 
+def test_match_covers_the_expanded_library():
+    assert problems.match("dedup-lens", "detect near-duplicate texts") is not None
+    assert problems.match("chrono", "order events by their timestamp in time") is not None
+    assert problems.match("random", "a paper on diffusion models") is None
+
+
 def test_disabled_is_a_clean_noop(monkeypatch):
     monkeypatch.delenv("JONI_SANDBOX_LLM_TRIALS", raising=False)
     cs = _CS([_method("M-1", "x", "normalise units")])

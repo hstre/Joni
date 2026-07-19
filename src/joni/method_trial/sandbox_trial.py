@@ -179,4 +179,107 @@ def unit_equality_spec() -> TrialSpec:
     )
 
 
-__all__ = ["TrialSpec", "run", "record", "unit_equality_spec", "EVAL_MODE"]
+# --------------------------------------------------------------------------- #
+# Near-duplicate detection: the METHOD is "normalise (case + punctuation) before comparing". It
+# beats an exact-string baseline on texts that differ only in case/punctuation.
+# --------------------------------------------------------------------------- #
+
+_DEDUP_BASELINE = '''
+def solve(payload):
+    return {"label": "duplicate" if payload["a"] == payload["b"] else "distinct"}
+'''
+
+_DEDUP_INTERVENTION = '''
+def solve(payload):
+    import re
+    def norm(x):
+        return re.sub(r"[^a-z0-9 ]", "", x.lower()).split()
+    return {"label": "duplicate" if norm(payload["a"]) == norm(payload["b"]) else "distinct"}
+'''
+
+_DEDUP_NEGATIVE = '''
+def solve(payload):
+    h = sum(ord(c) for c in (payload["a"] + payload["b"]))
+    return {"label": "duplicate" if h % 2 == 0 else "distinct"}
+'''
+
+_DEDUP_CASES = (
+    # differ only in case/punctuation -> baseline says distinct (wrong), the method duplicate
+    {"payload": {"a": "The cat sat.", "b": "the cat sat"}, "gold": "duplicate"},
+    {"payload": {"a": "Hello, world!", "b": "hello world"}, "gold": "duplicate"},
+    {"payload": {"a": "Deep Learning", "b": "deep learning"}, "gold": "duplicate"},
+    {"payload": {"a": "AI, really?", "b": "ai really"}, "gold": "duplicate"},
+    # genuinely distinct
+    {"payload": {"a": "the dog runs", "b": "the cat runs"}, "gold": "distinct"},
+    {"payload": {"a": "machine learning", "b": "deep learning"}, "gold": "distinct"},
+    {"payload": {"a": "hello there", "b": "general kenobi"}, "gold": "distinct"},
+    # string-identical -> duplicate (baseline right too)
+    {"payload": {"a": "quick brown fox", "b": "quick brown fox"}, "gold": "duplicate"},
+)
+
+
+def dedup_spec() -> TrialSpec:
+    return TrialSpec(
+        method_id="normalise-then-compare-dedup", task_set="frozen_dedup_v1", cases=_DEDUP_CASES,
+        baseline_src=_DEDUP_BASELINE, intervention_src=_DEDUP_INTERVENTION,
+        negative_control_src=_DEDUP_NEGATIVE, min_effect=0.15, affinities=("deduplication",))
+
+
+# --------------------------------------------------------------------------- #
+# Temporal ordering: the METHOD parses two dates (ISO YYYY-MM-DD or German DD.MM.YYYY) and compares
+# them. It beats a string-compare baseline across formats ("2020-06-15" == "15.06.2020").
+# --------------------------------------------------------------------------- #
+
+_TIME_BASELINE = '''
+def solve(payload):
+    a, b = payload["a"].strip(), payload["b"].strip()
+    return {"label": "same" if a == b else ("before" if a < b else "after")}
+'''
+
+_TIME_INTERVENTION = '''
+def solve(payload):
+    import re
+    def parse(x):
+        x = x.strip()
+        m = re.match(r"^(\\d{4})-(\\d{2})-(\\d{2})$", x)
+        if m:
+            return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        m = re.match(r"^(\\d{2})\\.(\\d{2})\\.(\\d{4})$", x)
+        if m:
+            return (int(m.group(3)), int(m.group(2)), int(m.group(1)))
+        return None
+    a, b = parse(payload["a"]), parse(payload["b"])
+    if a is None or b is None:
+        return {"label": "unknown"}
+    return {"label": "same" if a == b else ("before" if a < b else "after")}
+'''
+
+_TIME_NEGATIVE = '''
+def solve(payload):
+    h = sum(ord(c) for c in (payload["a"] + payload["b"])) % 3
+    return {"label": ("before", "after", "same")[h]}
+'''
+
+_TIME_CASES = (
+    # cross-format -> baseline (string compare) gets these wrong, the method right
+    {"payload": {"a": "2020-06-15", "b": "15.06.2020"}, "gold": "same"},
+    {"payload": {"a": "05.01.2020", "b": "2019-12-31"}, "gold": "after"},
+    {"payload": {"a": "31.12.2019", "b": "2020-01-05"}, "gold": "before"},
+    {"payload": {"a": "01.03.2021", "b": "2020-01-05"}, "gold": "after"},
+    # same-format, clear
+    {"payload": {"a": "2020-01-05", "b": "2021-03-01"}, "gold": "before"},
+    {"payload": {"a": "2022-05-01", "b": "2022-05-01"}, "gold": "same"},
+    {"payload": {"a": "10.10.2020", "b": "09.10.2020"}, "gold": "after"},
+    {"payload": {"a": "2020-02-01", "b": "2020-03-01"}, "gold": "before"},
+)
+
+
+def temporal_order_spec() -> TrialSpec:
+    return TrialSpec(
+        method_id="parse-then-order-dates", task_set="frozen_temporal_order_v1", cases=_TIME_CASES,
+        baseline_src=_TIME_BASELINE, intervention_src=_TIME_INTERVENTION,
+        negative_control_src=_TIME_NEGATIVE, min_effect=0.15, affinities=("temporal-ordering",))
+
+
+__all__ = ["TrialSpec", "run", "record", "unit_equality_spec", "dedup_spec",
+           "temporal_order_spec", "EVAL_MODE"]
