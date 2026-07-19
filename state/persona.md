@@ -6,27 +6,27 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 835 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 626 Lehre(n)._
+_Stand: Tick 25 · 839 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 627 Lehre(n)._
 
-## memory · Tiefe 77 (threshold)
+## memory · Tiefe 79 (threshold)
 
-**Verwerfen von Annahmen und spezifischen Beispielen, um genaue Erklärungen zu gewährleisten.**
+**Bei der Bewertung von Speicherprototypen sollten Annahmen über Latenzüberlastung, Revokationsverbreitung, Drift-Erkennung und Sicherheit unter Fehlersimulation verworfen werden.**
 
-_deterministisch:_ Auf 'memory': 77 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 77× verworfen). Muster: Annahmen wurden verworfen. Anker: „The Usai ChromoChess v2 framework employs a Convolutional Long Short-Term Memory (ConvLSTM) architecture to predict chess game evolution.“ → verworfen (verworfen) ; „Ultralytics YOLO“ → verworfen (verworfen)
+_deterministisch:_ Auf 'memory': 79 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 79× verworfen). Muster: Annahmen wurden verworfen. Anker: „The evaluation measured latency overheads, revocation propagation, drift detection, and security under fault injection for the SEB prototype.“ → verworfen (verworfen) ; „The evaluation of the SEB prototype measured latency overheads, revocation propagation, drift detection, and security under fault injection.“ → verworfen (verworfen)
 
-- Anker: „The Usai ChromoChess v2 framework employs a Convolutional Long Short-Term Memory (ConvLSTM) architecture to predict chess game evolution.“ → verworfen — verworfen
-- Anker: „Ultralytics YOLO“ → verworfen — verworfen
-- _volle Spur (77):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508, C-9583, C-9593, C-9633, C-9675, C-9682, C-9742, C-9752, C-9753, C-9757, C-9779, C-9836, C-9841, C-9900, C-9959, C-9966
+- Anker: „The evaluation measured latency overheads, revocation propagation, drift detection, and security under fault injection for the SEB prototype.“ → verworfen — verworfen
+- Anker: „The evaluation of the SEB prototype measured latency overheads, revocation propagation, drift detection, and security under fault injection.“ → verworfen — verworfen
+- _volle Spur (79):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508, C-9583, C-9593, C-9633, C-9675, C-9682, C-9742, C-9752, C-9753, C-9757, C-9779, C-9836, C-9841, C-9900, C-9959, C-9966, C-9996, C-9997
 
-## attention · Tiefe 76 (threshold)
+## attention · Tiefe 77 (threshold)
 
 **Beurteile jede Annahme in deinen Aufmerksamkeitsansprüchen kritisch, da wiederkehrende Begriffe wie "Mechanismus" ohne empirische Überprüfung zu Fehlern führen können.**
 
-_deterministisch:_ Auf 'attention': 76 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 76× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 77 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 77× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
-- _volle Spur (76):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
+- _volle Spur (77):_ C-10008, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
 
 ## physcibench · Tiefe 5 (threshold)
 
@@ -5452,6 +5452,29 @@ _deterministisch:_ Auf 'architectures': 1 korrigierte(r) Irrtum/Irrtümer (0× e
 
 - Anker: „'architectures' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1312
+
+## architecture+methodology · Tiefe 1 (self_review)
+
+**Bei der Bewertung von Architektur und Methodik müssen sowohl technische als auch menschliche und soziale Dimensionen berücksichtigt werden.**
+
+_deterministisch:_ Auf 'architecture+methodology': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Die Quellen sollten nicht nur technische Aspekte abdecken, sondern auch menschliche und soziale维度：
+uptools
+维度：
+- 技术方面：建筑材料、结构设计、施工方法等。
+- 人文方面：建筑的历史背景、文化意义、使用人群的需求等。
+- 社会方面：建筑对社区的影响、可持续性、环境保护等。
+
+在评估建筑相关资源时，不应仅关注技术细节，还应考虑建筑如何反映和影响社会与文化。' (from architecture) might also apply to methodology.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Die Quellen sollten nicht nur technische Aspekte abdecken, sondern auch menschliche und soziale维度：
+uptools
+维度：
+- 技术方面：建筑材料、结构设计、施工方法等。
+- 人文方面：建筑的历史背景、文化意义、使用人群的需求等。
+- 社会方面：建筑对社区的影响、可持续性、环境保护等。
+
+在评估建筑相关资源时，不应仅关注技术细节，还应考虑建筑如何反映和影响社会与文化。' (from architecture) might also apply to methodology.“ → verworfen — verworfen
+- _volle Spur (1):_ C-10007
 
 ## architecture+memorywam · Tiefe 1 (self_review)
 

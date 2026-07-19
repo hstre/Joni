@@ -1,6 +1,6 @@
 # Joni — Metabolism (intake vs consolidation)
 
-**Cycle 638 · state: sated · load 1.00**  
+**Cycle 639 · state: sated · load 1.00**  
 
 _How full the store is and whether Joni is eating or digesting. Hunger allows intake; satiety (load ≥ 0.70) suppresses it until load falls below 0.40 (hysteresis)._
 
@@ -11,9 +11,9 @@ open conflicts 179 · untested methods 271
 | backlog | 0.00 |
 | untested_methods | 1.00 |
 | conflict_growth | 0.00 |
-| stagnation | 0.00 |
+| stagnation | 0.08 |
 
-**Trajectory (last 7 cycles, old→new):** `▮ ▮ ▮ ▮ ▮ ▮ ▮`
+**Trajectory (last 8 cycles, old→new):** `▮ ▮ ▮ ▮ ▮ ▮ ▮ ▮`
 
 | Cycle | State | Load |
 |---|---|---|
@@ -24,3 +24,4 @@ open conflicts 179 · untested methods 271
 | 636 | sated | 1.00 |
 | 637 | sated | 1.00 |
 | 638 | sated | 1.00 |
+| 639 | sated | 1.00 |
