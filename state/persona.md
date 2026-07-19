@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 828 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 625 Lehre(n)._
+_Stand: Tick 25 · 829 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 625 Lehre(n)._
 
 ## memory · Tiefe 75 (threshold)
 
@@ -18,15 +18,15 @@ _deterministisch:_ Auf 'memory': 75 korrigierte(r) Irrtum/Irrtümer (0× ersetzt
 - Anker: „GCPA constrains reconstruction within a semantic manifold induced by a Vision Foundation Model.“ → verworfen — verworfen
 - _volle Spur (75):_ C-162, C-246, C-458, C-464, C-56, C-57, C-58, C-532, C-642, C-7614, C-7615, C-8080, C-8081, C-8082, C-8086, C-8227, C-8300, C-8366, C-8509, C-8527, C-8660, C-8662, C-8695, C-8702, C-8722, C-8723, C-8725, C-8742, C-8754, C-8759, C-8760, C-8762, C-8790, C-8798, C-8902, C-8948, C-8950, C-8953, C-8991, C-9036, C-9045, C-9080, C-9083, C-9085, C-9086, C-9087, C-9105, C-9112, C-9113, C-9119, C-9128, C-9137, C-9146, C-9147, C-9148, C-9151, C-9152, C-9176, C-9362, C-9423, C-9486, C-9508, C-9583, C-9593, C-9633, C-9675, C-9682, C-9742, C-9752, C-9753, C-9757, C-9779, C-9836, C-9841, C-9900
 
-## attention · Tiefe 73 (threshold)
+## attention · Tiefe 74 (threshold)
 
-**Beurteile jede Annahme in deinen Aufmerksamkeitsansprüchen kritisch, da wiederkehrende Begriffe wie "Mechanismus" ohne empirische Überprüfung zu Fehlinterpretationen führen können.**
+**Beurteile jede Annahme in deinen Aufmerksamkeitsansprüchen kritisch, da wiederkehrende Begriffe wie "Mechanismus" ohne empirische Überprüfung möglicher gemeinsamer Grundlagen irreführend sein können.**
 
-_deterministisch:_ Auf 'attention': 73 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 73× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 74 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 74× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
-- _volle Spur (73):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909
+- _volle Spur (74):_ C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926
 
 ## physcibench · Tiefe 5 (threshold)
 
