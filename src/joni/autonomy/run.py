@@ -286,6 +286,16 @@ def one_cycle() -> dict:
     #     predefined metric, negative control, provenance) - kept separate from, and honest about,
     #     the synthetic simulator above. Decision rests on the metric, not a model's opinion.
     trials.run_real_method_trial(cs, extensions, proto, cycle)
+    # 3c-sandbox. P3: for a few un-tested candidate methods that match a hand-curated benchmark,
+    #     synthesise a solver from the method text (P2), run it in the P0 sandbox, judge by the
+    #     metric (P1), and record the measured verdict as a per-method trial - so the shelf drains
+    #     on evidence. OFF unless JONI_SANDBOX_LLM_TRIALS=1; fail-safe (never breaks the cycle).
+    try:
+        from ..method_trial import lifecycle as _sandbox_lifecycle
+        _sandbox_lifecycle.run(cs, extensions, proto, cycle,
+                               budget=budget, runs_per_week=runs_per_week())
+    except Exception:  # noqa: BLE001 - the sandbox trial arm must never break a cycle
+        pass
     # running totals so homeostasis/commission can see whether method-trialing ever matures
     extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
         trialed.get("trialed", 0)

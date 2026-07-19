@@ -401,6 +401,15 @@ class CoreState:
         return self._op(ProposalType.METHOD_PROPOSAL, Operator.METHOD_REJECT,
                         {}, targets=(method_id,))
 
+    def record_method_trial(self, method_id: str, *, success: bool, run_id: str = "sandbox"):
+        """Record ONE measured method trial - moves the method's trial / success / failure counters
+        through the gate. The verdict is a DETERMINISTIC sandbox measurement (the metric decides,
+        not Joni), so this is a real trial like Kevin's, not an opinion. Recording is NOT promotion:
+        a method reaches ACTIVE only through the separate, human/Kevin-gated activation operator, so
+        Joni still never promotes his own methods - he only records what the metric measured."""
+        return self._op(ProposalType.METHOD_PROPOSAL, Operator.METHOD_TRIAL_RECORD,
+                        {"success": bool(success), "run_id": run_id}, targets=(method_id,))
+
     def propose_method(self, *, name: str, summary: str, applicable_to=(),
                        origin: str = "joni") -> str:
         """Store a method Joni found, as a CANDIDATE in the shared Layer 9 core - for
