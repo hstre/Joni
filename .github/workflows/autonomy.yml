@@ -28,10 +28,11 @@ on:
   # collapse sensors measure correctly, the synthesis gate is hardened, the metabolism couples
   # intake to consolidation (measured every cycle, persisted to state/metabolism_series.jsonl), the
   # legacy junk-method pile was swept (23 rejected), and the method-sandbox foundation (P0) is in.
-  # Resuming as a fresh, OBSERVED 2-day window (run_window reset, JONI_RUNTIME_DAYS=2). Metabolism
-  # stays SHADOW (JONI_METABOLISM unset): enforcing now would freeze intake, because 268 un-tested
-  # methods alone pin the load at 1.0 until a real trial path drains them - so we observe + record
-  # the trajectory first, then tune. To re-park: re-comment the schedule below.
+  # UPDATE 2026-07-19: the full method-sandbox (P0-P3) is in, plus a 3-benchmark trial library, so
+  # the real trial path is now live (JONI_SANDBOX_LLM_TRIALS=1) and drains the 268-method pile on
+  # measured evidence. With that draining, metabolism ENFORCE is safe (JONI_METABOLISM=1): while the
+  # pile is being drained the intake gate ignores that one pressure, so enforce reflects real
+  # overload, not the standing backlog. Observing this window. To re-park: re-comment the schedule.
   schedule:
     - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
@@ -194,6 +195,17 @@ jobs:
           # The synthetic keyword-trial mock carries no epistemic weight and the REAL trial
           # protocol now exists, so keep the mock OUT of the production loop (no protocol noise).
           JONI_SYNTHETIC_TRIALS: "0"
+          # REAL method-trial path ON (sandbox P0-P3): each cycle, a few un-tested candidate methods
+          # that match a hand-curated benchmark get a solver synthesised from their text (joni-hard,
+          # budget-metered), run in the isolated P0 sandbox, judged by the metric, and the measured
+          # verdict recorded as a per-method trial - so the backlog drains on EVIDENCE, not age.
+          # Capped at 2/cycle; a method matching no benchmark stays honestly untested.
+          JONI_SANDBOX_LLM_TRIALS: "1"
+          # Metabolism ENFORCE (was shadow): couples intake to consolidation. Safe now that the trial
+          # path drains the method pile - while draining, the intake gate ignores the un-tested-method
+          # dimension (metabolism.observe draining=1), so enforce reflects REAL overload (backlog /
+          # conflict growth / stagnation), currently low, not the standing pile. Won't freeze.
+          JONI_METABOLISM: "1"
           # Fast-load (#120) is back ON via the SIDECAR design (#152): the snapshot is written to a
           # git-ignored state/layer9.snapshot.json, never into the committed layer9.json. So the
           # committed file stays journal-only (small, no 100 MB push failures) AND cycles skip the
