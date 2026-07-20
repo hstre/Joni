@@ -1,0 +1,22 @@
+import re
+
+def solve(payload: dict) -> dict:
+    a = payload['a']
+    b = payload['b']
+    def parse_date(s):
+        if re.match(r'^\d{4}-\d{2}-\d{2}$', s):
+            y, m, d = map(int, s.split('-'))
+            return (y, m, d)
+        elif re.match(r'^\d{2}\.\d{2}\.\d{4}$', s):
+            d, m, y = map(int, s.split('.'))
+            return (y, m, d)
+        else:
+            raise ValueError("Invalid date format")
+    da = parse_date(a)
+    db = parse_date(b)
+    if da < db:
+        return {'label': 'before'}
+    elif da > db:
+        return {'label': 'after'}
+    else:
+        return {'label': 'same'}

@@ -1,0 +1,17 @@
+def solve(payload: dict) -> dict:
+    def parse(d):
+        if '-' in d:
+            y, m, d = map(int, d.split('-'))
+        else:
+            d_parts = d.split('.')
+            d, m, y = map(int, d_parts)
+        return y, m, d
+    a = parse(payload['a'])
+    b = parse(payload['b'])
+    if a < b:
+        label = 'before'
+    elif a > b:
+        label = 'after'
+    else:
+        label = 'same'
+    return {'label': label}
