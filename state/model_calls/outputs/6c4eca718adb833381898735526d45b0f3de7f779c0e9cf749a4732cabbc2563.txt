@@ -1,0 +1,24 @@
+def solve(payload: dict) -> dict:
+    a = payload['a']
+    b = payload['b']
+    # Parse date a
+    if '-' in a and a[4] == '-' and len(a) == 10:
+        # ISO format: YYYY-MM-DD
+        y_a, m_a, d_a = map(int, a.split('-'))
+    else:
+        # German format: DD.MM.YYYY
+        d_a, m_a, y_a = map(int, a.split('.'))
+    # Parse date b
+    if '-' in b and b[4] == '-' and len(b) == 10:
+        y_b, m_b, d_b = map(int, b.split('-'))
+    else:
+        d_b, m_b, y_b = map(int, b.split('.'))
+    # Compare as (year, month, day) tuples
+    date_a = (y_a, m_a, d_a)
+    date_b = (y_b, m_b, d_b)
+    if date_a < date_b:
+        return {"label": "before"}
+    elif date_a > date_b:
+        return {"label": "after"}
+    else:
+        return {"label": "same"}
