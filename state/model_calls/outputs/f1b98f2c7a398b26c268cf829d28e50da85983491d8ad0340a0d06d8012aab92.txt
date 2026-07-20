@@ -1,0 +1,27 @@
+```python
+import re
+
+def solve(payload: dict) -> dict:
+    def parse(s: str):
+        # ISO: YYYY-MM-DD
+        m = re.fullmatch(r'(\d{4})-(\d{2})-(\d{2})', s)
+        if m:
+            y, mo, d = map(int, m.groups())
+            return (y, mo, d)
+        # German: DD.MM.YYYY
+        m = re.fullmatch(r'(\d{2})\.(\d{2})\.(\d{4})', s)
+        if m:
+            d, mo, y = map(int, m.groups())
+            return (y, mo, d)
+        raise ValueError(f"Invalid date format: {s}")
+
+    a_date = parse(payload['a'])
+    b_date = parse(payload['b'])
+
+    if a_date < b_date:
+        return {'label': 'before'}
+    elif a_date > b_date:
+        return {'label': 'after'}
+    else:
+        return {'label': 'same'}
+```
