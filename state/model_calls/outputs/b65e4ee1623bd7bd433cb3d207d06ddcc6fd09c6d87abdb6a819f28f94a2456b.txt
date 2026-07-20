@@ -1,0 +1,24 @@
+def solve(payload: dict) -> dict:
+    import re
+    a_str = payload['a']
+    b_str = payload['b']
+
+    def parse_date(s: str):
+        if re.match(r'^\d{4}-\d{2}-\d{2}$', s):
+            y, m, d = map(int, s.split('-'))
+            return (y, m, d)
+        elif re.match(r'^\d{2}\.\d{2}\.\d{4}$', s):
+            d, m, y = map(int, s.split('.'))
+            return (y, m, d)
+        else:
+            raise ValueError('Invalid date format')
+
+    a_date = parse_date(a_str)
+    b_date = parse_date(b_str)
+
+    if a_date < b_date:
+        return {'label': 'before'}
+    elif a_date > b_date:
+        return {'label': 'after'}
+    else:
+        return {'label': 'same'}
