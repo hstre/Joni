@@ -1,0 +1,19 @@
+def solve(payload: dict) -> dict:
+    a = payload['a']
+    b = payload['b']
+    def parse_date(s):
+        if '-' in s:
+            parts = s.split('-')
+            y, m, d = int(parts[0]), int(parts[1]), int(parts[2])
+        else:
+            parts = s.split('.')
+            d, m, y = int(parts[0]), int(parts[1]), int(parts[2])
+        return (y, m, d)
+    da = parse_date(a)
+    db = parse_date(b)
+    if da < db:
+        return {'label': 'before'}
+    elif da > db:
+        return {'label': 'after'}
+    else:
+        return {'label': 'same'}

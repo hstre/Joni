@@ -45,39 +45,27 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
-## X-443 · Thema: memory
+## X-543 · Thema: memory
 
-- **C-9229** (0 stützend · 0 Kontext): Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and Execution
-  - _Quelle:_ arxiv:2607.13034v1
-- **C-9430** (0 stützend · 0 Kontext): Edge devices have limited memory resources, making quantization essential for deploying complex multimodal models.
-  - _Quelle:_ granite:joni-c615:11488e102284
-- _Evidenzlage (C-9229 vs C-9430): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-443 | <gewinner: C-9229 oder C-9430> | <grund>
-```
-
-## X-440 · Thema: memory
-
-- **C-9179** (0 stützend · 0 Kontext): [Alexandria-Bewertung · assessor · keine Entscheidung] **Cross-reconstruction:**
-
-ChatGPT (adversarial) treats "exploration" as undefined and flags missing empirical grounding, generalization, and unconsidered alternatives — a completeness/evidence lens.
-
-DeepSeek (consistency) resolves the ambiguity ChatGPT names by *decomposing* exploration (in-episode vs. cross-episode; internal policy vs. behavioral output) and ties admissibility to memory architecture.
-
-**Traced divergence:** The two differ on one assumption — whether "exploration" is irreducibly vague (ChatGPT) or splittable into well-defined sub-variants (DeepSeek). This is a category-granularity difference, not a genuine conflict. DeepSeek's decomposition directly discharges ChatGPT's ambiguity objection.
-
-**Reconciled assessment:** I adopt DeepSeek's decomposition and retain ChatGPT's evidence caveat.
-- *Supports:* Viable under static-memory / context-window-bounded agents; the memory-tag in Joni's graph makes the architecture assumption the load-bearing one, aptly matched.
-- *Breaks:* Under dynamic memory consolidation (in-context learning, external stores), the failure claim weakens; "fail" is stated as universal but is architecture-conditional.
-
-**Admissibility:** Formally admissible only if the memory-architecture scope and exploration sub-variant are specified. Undefined scope leaves it underspecified. No verdict — Joni decides.
-  - _Quelle:_ panel:expert:claude
-- **C-9195** (0 stützend · 0 Kontext): Open-KNEAD keeps every meal image on local hardware, preserving privacy and minimal user burden (a single, unannotated meal image).
-  - _Quelle:_ granite:joni-c602:9b101293dcb0
-- _Evidenzlage (C-9179 vs C-9195): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Forum vs Modell/selbst_
+- **C-10162** (0 stützend · 0 Kontext): The benefit of using central obscuration pixels is less pronounced for configurations with a center-to-center pitch smaller than approximately 30 nm.
+  - _Quelle:_ granite:joni-c645:67575ae6c23d
+- **C-9761** (0 stützend · 0 Kontext): An in-depth study of persona prompting reveals a pattern we call themacro fallacy: estimates reconstructed from more fine-grained subpopulation responses are often better aligned with human reference data than direct population-level estimates.
+  - _Quelle:_ arxiv:2607.15277v1
+- _Evidenzlage (C-10162 vs C-9761): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
 
 ```
-X-440 | <gewinner: C-9179 oder C-9195> | <grund>
+X-543 | <gewinner: C-10162 oder C-9761> | <grund>
+```
+
+## X-530 · Thema: memory
+
+- **C-10151** (0 stützend · 0 Kontext): Avoiding at-resolution stitching for logic and DRAM applications in high-NA EUV lithography
+  - _Quelle:_ zenodo:21416520
+- **C-10163** (0 stützend · 0 Kontext): High-NA EUV lithography can be applied to logic and DRAM without needing at-resolution field stitching through innovative design strategies.
+  - _Quelle:_ granite:joni-c645:67575ae6c23d
+- _Evidenzlage (C-10151 vs C-10163): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+
+```
+X-530 | <gewinner: C-10151 oder C-10163> | <grund>
 ```
 
