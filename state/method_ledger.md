@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 643 · 343 Methoden** — proposed 273 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
+**Cycle 644 · 344 Methoden** — proposed 274 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -242,6 +242,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Selective Invariance Violations in Large Language Model Moral Judgment: A Geomet | **proposed** | candidate | 0 | — |
 | Reproducibility package for Risk-Aware Resource Estimation and Recommendations f | **proposed** | candidate | 0 | — |
 | Provably Lossless Acceleration of DNN Mutation Testing via Memoization | **proposed** | candidate | 0 | — |
+| RAGU: A Multi-Step GraphRAG Engine with a Compact Domain-Adapted LLM | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
