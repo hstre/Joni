@@ -1,0 +1,17 @@
+def solve(payload: dict) -> dict:
+    def parse_date(s: str):
+        if '-' in s:
+            y, m, d = map(int, s.split('-'))
+            return (y, m, d)
+        else:  # DD.MM.YYYY
+            d, m, y = map(int, s.split('.'))
+            return (y, m, d)
+    a = parse_date(payload['a'])
+    b = parse_date(payload['b'])
+    if a < b:
+        label = 'before'
+    elif a > b:
+        label = 'after'
+    else:
+        label = 'same'
+    return {'label': label}

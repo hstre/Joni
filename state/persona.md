@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 843 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 627 Lehre(n)._
+_Stand: Tick 25 · 844 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 627 Lehre(n)._
 
 ## memory · Tiefe 80 (threshold)
 
@@ -345,6 +345,16 @@ _deterministisch:_ Auf 'heft': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2
 - Anker: „HEFT incorporates privileged motion guidance alongside its windowed payload curriculum for effective teleoperation.“ → verworfen — verworfen
 - Anker: „Windowed Payload Curriculum (WPC) is a component of the HEFT method for heavy-payload full-size humanoid teleoperation.“ → verworfen — verworfen
 - _volle Spur (2):_ C-3385, C-3387
+
+## generalization · Tiefe 2 (threshold)
+
+**Generalization in Machine Learning erfordert die Verwerfung von Annahmen, um über verschiedene, außerhalb der Trainingsdaten liegende Szenarien hinwegzuverstehen.**
+
+_deterministisch:_ Auf 'generalization': 2 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 2× verworfen). Muster: Annahmen wurden verworfen. Anker: „These skeleton-dependent methods struggle to generalize to diverse characters, such as animals from different species, while preserving their unique motion styles.“ → verworfen (verworfen) ; „With just 40,000 human videos and no auxiliary inputs such as language, MotionForesight generalizes across diverse out-of-distribution objects, environments, viewpoints, and interactions.“ → verworfen (verworfen)
+
+- Anker: „These skeleton-dependent methods struggle to generalize to diverse characters, such as animals from different species, while preserving their unique motion styles.“ → verworfen — verworfen
+- Anker: „With just 40,000 human videos and no auxiliary inputs such as language, MotionForesight generalizes across diverse out-of-distribution objects, environments, viewpoints, and interactions.“ → verworfen — verworfen
+- _volle Spur (2):_ C-10093, C-8914
 
 ## chunking · Tiefe 2 (threshold)
 
@@ -3086,15 +3096,6 @@ _deterministisch:_ Auf 'generate': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetz
 
 - Anker: „'generate' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1154
-
-## generalization · Tiefe 1 (self_review)
-
-**Verwerfen von Annahmen, um die Generalisierbarkeit von skelettabhängigen Methoden auf vielfältige Charaktere, wie Tiere verschiedener Arten, zu verbessern und deren einzigartige Bewegungsstile zu bewahren.**
-
-_deterministisch:_ Auf 'generalization': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „These skeleton-dependent methods struggle to generalize to diverse characters, such as animals from different species, while preserving their unique motion styles.“ → verworfen (verworfen)
-
-- Anker: „These skeleton-dependent methods struggle to generalize to diverse characters, such as animals from different species, while preserving their unique motion styles.“ → verworfen — verworfen
-- _volle Spur (1):_ C-8914
 
 ## fundamental · Tiefe 1 (self_review)
 
