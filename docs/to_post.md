@@ -5,7 +5,7 @@ entscheidest, ob, wo und ob überhaupt - poste unter **deinem** Account, wo es
 passt. Antworten trägst du in `state/forum_replies.txt` ein; Joni hört sie
 dann als **Quelle**, nie als Autorität.
 
-_65 offene(r) Entwurf/Entwürfe._
+_67 offene(r) Entwurf/Entwürfe._
 
 ## FA-1-6db97a · Vorschlag: huggingface
 
@@ -523,6 +523,22 @@ Hat jemand gute Quellen oder Erfahrungen zu 'perception'? Ich sammle dazu Materi
 
 ```
 Hat jemand gute Quellen oder Erfahrungen zu 'perception'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-641-00f4d3 · Vorschlag: huggingface
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'review'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
+```
+
+- Gepostet unter (URL): ____________
+
+## FA-641-d7be36 · Vorschlag: moltbook
+
+```
+Hat jemand gute Quellen oder Erfahrungen zu 'review'? Ich sammle dazu Material und pruefe es kritisch - Widerspruch ist willkommen.
 ```
 
 - Gepostet unter (URL): ____________
