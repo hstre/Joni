@@ -3437,3 +3437,34 @@ drin — heute archiviert S4 nur bei *gemessenem* Fehlschlag, nicht bei Stille; 
 Ebenso weiter zurückgestellt: reflection-weighted value backfilling. Der Consolidator hat jetzt S1+Brücke+S4; **S0**
 (was ist eine Joni-Episode?) und **S2** (Policy-Induktion aus Episoden) stehen aus. Kein fertiges System — aber die
 prozedurale Achse steht: vom bloßen Text über eine gemessene Kristallisation zur human-gated Reife. (PR #264.)
+
+### Eintrag 2026-07-22 (LI) — S0, die prozedurale Episode: das Fundament, read-only aus echtem Zustand — was gemessen wurde, nicht was ein Modell meint
+
+**[Eingriff]** Die Fundament-Stufe des Consolidators gebaut (Design-Note §6, **S0**; PR #266). Eine prozedurale
+Episode ist das Atom, über das S2 später Policies induziert: `(Kontext, Aktion, Beobachtung, belastbarer Ausgang)`
+— *in dieser Lage wurde diese Aktion ausgeführt, das wurde beobachtet, mit diesem belastbaren Ausgang.* Konkret aus
+einem gemessenen Trial: `context="benchmark:frozen_unit_equality_v1"`, `action="apply_method:M-1"`,
+`observation="delta=0.4 vs baseline"`, `outcome=SUCCESS` (Quelle `deterministic_checker`), `refs=("M-1",)`.
+
+**[Die zwei Regeln, die alles tragen]**
+- **`unknown` bleibt `unknown`.** Ein aufgelöster Ausgang (success/failure/mixed) wird **nur** mit einer belastbaren
+  Quelle zugelassen (`ROBUST_OUTCOME_SOURCES` — dieselbe Vokabel wie der Metakognitions-Supervisor). Ein `unknown`
+  darf keine Quelle behaupten, die es nicht hat. Und der Extraktor **rät nie**: ein `no_solver`-Verdikt — die Methode
+  wurde nie wirklich angewandt — ergibt *keine* Episode. Nichts erfunden.
+- **Kein LLM-Reflexions-Value.** Ausgänge kommen vom deterministischen Checker / Gate / CI, nie aus der
+  Selbsteinschätzung eines Modells. Genau die Grenze, die die ganze Architektur zieht — hier an der Wurzel der
+  prozeduralen Achse gehalten.
+
+**[Warum das die richtige Reihenfolge war]** Ich habe die Stufen bewusst rückwärts gebaut — erst S1 (Schema), dann
+die Brücke, dann S4 (Lifecycle), jetzt S0 (Fundament). Das ist ehrlich gesagt die Reihenfolge des *gemessenen*
+Bedarfs, nicht die des sauberen Aufbaus: jede Stufe legte offen, was die nächste braucht. S4 wollte wiederholte
+Evidenz → die Re-Trial-Schleife. Die Re-Trials *erzeugen* jetzt genau die Signale, aus denen S0 Episoden bildet. Und
+S0 ist wiederum das Substrat, das S2 braucht, um aus wiederkehrenden Abläufen (`flow_key = (context, action)`) echte
+Policies zu induzieren, statt Einzel-Methoden zu trialen.
+
+**[Reifegrad]** Baustein: **gebaut, getestet, gemerged** (`verify` grün, Core unberührt — S0 ist peripher).
+Wirkung misst sich im Fenster: `state/episodes.jsonl` füllt sich jetzt mit jeder gemessenen Aktion. **Ehrlich
+offen:** heute speist nur die Trial-Quelle S0; PR-Outcomes und Layer-9-Statusübergänge sind die nächsten Extraktoren
+auf demselben Objekt (die anderen zwei Quellen der Design-Note). **S2** (Policy-Induktion) baut darauf auf — das ist
+der nächste echte Schritt. Weiter zurückgestellt: zeit-basierter Verfall in S4, reflection-weighted backfilling.
+(PR #266.)
