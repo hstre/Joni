@@ -3330,3 +3330,42 @@ bis dahin ein; der Trial-Pfad ist der Weg, der das löst.
 überwachten Fenster scharf schalten und den Rückstau fallen sehen; (c) danach — und erst dann — den Stoffwechsel
 enforce-fähig machen. Kernsatz dieser Runde: der Rückstau, den XLVI nur *messen* konnte, wird jetzt **geprüft** —
 die Methode wird ausgeführt und an einer unabhängigen Metrik gemessen, nicht behauptet. (PRs #246–#253.)
+
+### Eintrag 2026-07-22 (XLVIII) — Gleichtägige, unabhängige Konvergenz: ein arXiv-Paper baut denselben Kern-Move wie wir — am selben Tag
+
+**[Eingriff]** Operator legt ein Paper vor: **„From Memory to Skills: Evidence-Grounded Co-Evolution
+Governance for Long-Horizon LLM Agents"** (Tang et al., arXiv:2607.16621, **eingereicht 18. Juli 2026**) —
+also am selben Tag, an dem wir die Rekonsolidierung anwandten, Joni aufweckten und den echten Methoden-Trial-Pfad
+zu bauen begannen (Einträge XLVI/XLVII, PRs #246–#253). Kein Kontakt, keine Vorlage.
+
+**[Deckungsgleich]** Die Kernthese des Papers ist *wörtlich* unser `trials = 0`-Problem: bestehende Agent-Memory-
+Systeme **rufen Erfahrung nur passiv ab, statt sie in ausführbare Fähigkeiten zu wandeln**. Genau das behebt P0–P3:
+eine Regal-Methode ist bei uns bloß **Text** und wird erst durch Synthese→Sandbox→Metrik zu einer *geprüften*
+Fähigkeit. Zweite Übereinstimmung: „**Evidence-Grounded … measurable evidence rather than treating LLM outputs as
+authoritative**" ist Wort für Wort unser Leitsatz — *LLM für Sprache, die Metrik entscheidet, nie die Modell-
+Meinung* — und deckt sich mit dem AleXiona/DESi-Evidenzgraph (typisierte Claims, Provenienz, Evidence-Links,
+Applicability-Boundaries). Dritte: „**Co-Evolution Governance**" = unser gate-vermittelter Lifecycle, in dem
+**Recording ≠ Promotion** und Aktivierung human-gated bleibt.
+
+**[Eigenständig — was das Paper (laut Abstract) NICHT hat]** Drei Joni-Teile stehen daneben: der **Stoffwechsel**
+(Aufnahme↔Konsolidierung koppeln, Hunger/Sättigung mit Hysterese), die **messen-nicht-steuern-Sensoren**
+(Collapse-Panel) und die **externalisierte Metakognition** (Shadow, Kalibrierung). Relativ zu dieser Arbeitslinie
+also nicht bloß Wiederholung.
+
+**[Was wir von ihnen lernen sollten — ehrlich]** Sie sind an einer Stelle sauberer: sie trennen die Skill-
+Repräsentation in „grounded step traces / reusable procedural policies / declarative knowledge". Jonis `Method`
+ist **nur Text** (name/summary/steps-als-Prosa) — genau die Armut, die uns überhaupt zur LLM-Synthese *zwingt*.
+Trüge eine Methode mehr Struktur, wäre mehr direkt trialbar (weniger P2-Abhängigkeit). Ein konkreter nächster
+Bau. Zweiter Lernpunkt: ihr „reflection-weighted value backfilling" (dünnes Endsignal über dichte Selbst-
+Reflexionen zurückpropagieren) betrifft, *wie* ein Trial-Verdikt auf Zwischenschritte/verwandte Methoden
+zurückwirkt — heute ist unser Verdikt binär pro Methode.
+
+**[Ehrliche Grenze]** Nach meinem Wissensstand (Jan 2026) liegt das Paper hinter dem Cutoff; ich habe den
+**Abstract live geholt** und über einen kleinen Summarizer gelesen — die Grobrichtung ist klar, einzelne Details
+(Framework-Name „MSCE", Benchmarks) würde ich vor dem Zitieren im Volltext prüfen.
+
+**[Reifegrad]** Externe Validierung: **hoch** — unabhängige, *gleichzeitige* Konvergenz ist die stärkste Sorte
+Bestätigung einer Richtung; kein Vorsprung behauptet, kein Nachbau. Kernsatz: dass zwei Parteien ohne Kontakt am
+selben Tag denselben Move machen — Memory → geprüfte Skill, per Evidenz regiert — heißt, das Problem ist real und
+die Antwort naheliegend richtig. Unser Zusatz (Stoffwechsel/Sensoren/Metakognition) ist die Wette darüber hinaus.
+(arXiv:2607.16621; vgl. Eintrag XLIII zur „Claude Science"-Validierung.)
