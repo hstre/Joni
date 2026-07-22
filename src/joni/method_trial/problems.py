@@ -77,4 +77,14 @@ def match(name: str, summary: str) -> Problem | None:
     return None
 
 
-__all__ = ["Problem", "LIBRARY", "match"]
+def by_task_set(task_set: str) -> Problem | None:
+    """The library problem whose frozen task set has this name, else None. S4 uses it to re-trial a
+    probationary skill against its **own** stored verification (``SkillCandidate.verification`` is
+    the ``task_set`` name), so maturation measures the same benchmark that first crystallised it."""
+    for problem in LIBRARY:
+        if problem.spec.task_set == task_set:
+            return problem
+    return None
+
+
+__all__ = ["Problem", "LIBRARY", "match", "by_task_set"]

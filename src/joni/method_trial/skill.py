@@ -214,5 +214,89 @@ def propose(candidate: SkillCandidate, cs, *, store_path=None) -> dict:
             "skill_id": candidate.skill_id(), "recorded": recorded}
 
 
+class LifecycleAction(StrEnum):
+    """What S4 *recommends* for a skill - never what it does. Activation stays human/Layer-9 gated,
+    so even ``PROMOTE`` is a recommendation surfaced for a human, not a state write."""
+
+    PROMOTE = "promote"     # earned repeated passes -> recommend active (a human still decides)
+    ARCHIVE = "archive"     # failed to earn its keep -> recommend retiring the proposal
+    HOLD = "hold"           # still maturing / already terminal - no change recommended
+
+
+@dataclass(frozen=True)
+class LifecycleThresholds:
+    """The bar a probationary skill must clear to be *recommended* for activation, and the floor
+    below which it is *recommended* for archival. Deterministic - no model in the loop."""
+
+    min_passes: int = 3                 # repeated benefit trials before promotion is considered
+    promote_reliability: float = 0.75   # smoothed success rate to recommend active
+    archive_reliability: float = 0.34   # at/below this (after enough trials) -> recommend archive
+    min_trials_to_judge: int = 3        # never judge a skill on too little evidence
+
+
+@dataclass(frozen=True)
+class LifecycleAssessment:
+    """A single, append-only lifecycle recommendation. It records the measured evidence it rests on
+    (passes / trials / reliability) so the human deciding can see *why* - the consolidator asserts
+    nothing it cannot show from real trial counts."""
+
+    skill_id: str
+    method_id: str
+    action: LifecycleAction
+    target_status: SkillStatus
+    reliability: float
+    passes: int
+    trials: int
+    reasons: tuple[str, ...] = field(default_factory=tuple)
+
+    def to_record(self) -> dict:
+        return {"skill_id": self.skill_id, "method_id": self.method_id,
+                "action": self.action.value, "target_status": self.target_status.value,
+                "reliability": round(float(self.reliability), 4), "passes": self.passes,
+                "trials": self.trials, "reasons": list(self.reasons)}
+
+
+def assess_lifecycle(candidate: SkillCandidate, cs, *,
+                     thresholds: LifecycleThresholds | None = None) -> LifecycleAssessment:
+    """Deterministically decide what to *recommend* for a skill from its method's real, accumulated
+    trial counts (S4). This is READ-ONLY and human-gated: it never writes a status, never activates,
+    and never turns operational success into an epistemic claim - it only surfaces a recommendation
+    a human/Layer 9 then acts on. ``PROMOTE`` needs repeated passes AND a high smoothed success
+    rate; ``ARCHIVE`` needs a measured failure below the floor after enough trials; else HOLDs.
+    """
+    t = thresholds or LifecycleThresholds()
+    get = getattr(getattr(cs, "core", None), "get", None)
+    method = get(candidate.method_id) if get is not None else None
+    sc = int(getattr(method, "success_count", 0) or 0)
+    tc = int(getattr(method, "trial_count", 0) or 0)
+    reliability = round(sc / tc, 4) if tc > 0 else 0.0
+
+    def _mk(action, target, reasons):
+        return LifecycleAssessment(candidate.skill_id(), candidate.method_id, action, target,
+                                   reliability, sc, tc, tuple(reasons))
+
+    if candidate.status is SkillStatus.ARCHIVED:
+        return _mk(LifecycleAction.HOLD, SkillStatus.ARCHIVED, ("already archived",))
+    if method is None:
+        return _mk(LifecycleAction.HOLD, candidate.status,
+                   ("method not in the core - cannot judge fresh evidence",))
+    # a measured failure archives regardless of current status (a promoted skill that later fails)
+    if tc >= t.min_trials_to_judge and reliability <= t.archive_reliability:
+        return _mk(LifecycleAction.ARCHIVE, SkillStatus.ARCHIVED,
+                   (f"reliability {reliability} <= floor {t.archive_reliability} after {tc} trials "
+                    "- failed to earn its keep",))
+    if candidate.status is SkillStatus.PROBATIONARY:
+        if sc >= t.min_passes and reliability >= t.promote_reliability:
+            return _mk(LifecycleAction.PROMOTE, SkillStatus.ACTIVE,
+                       (f"{sc} repeated passes, reliability {reliability} >= "
+                        f"{t.promote_reliability} - recommend active (human-gated)",))
+        return _mk(LifecycleAction.HOLD, SkillStatus.PROBATIONARY,
+                   (f"maturing - {sc} passes / {tc} trials, reliability {reliability} "
+                    f"(need {t.min_passes} passes at >= {t.promote_reliability})",))
+    return _mk(LifecycleAction.HOLD, SkillStatus.ACTIVE,
+               (f"active and holding - reliability {reliability} over {tc} trials",))
+
+
 __all__ = ["SkillStatus", "SkillCandidate", "GateVerdict", "validate_against_core", "crystallize",
-           "propose", "SKILL_VERSION"]
+           "propose", "LifecycleAction", "LifecycleThresholds", "LifecycleAssessment",
+           "assess_lifecycle", "SKILL_VERSION"]
