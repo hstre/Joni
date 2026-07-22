@@ -89,7 +89,8 @@ def run(cs, extensions: dict, proto, cycle: int = 0, *, budget=None, runs_per_we
         with contextlib.suppress(Exception):           # a recording must never break the cycle
             cs.record_method_trial(m.id, success=(verdict == "benefit"), run_id=f"sandbox-c{cycle}")
         done += 1
-        results.append({"method": m.id, "verdict": verdict,
+        results.append({"method": m.id, "name": str(getattr(m, "name", m.id)),
+                        "task_set": getattr(prob.spec, "task_set", ""), "verdict": verdict,
                         "delta": out.get("result", {}).get("delta")})
         proto.record(cycle, "trialed",
                      f"sandbox-trialed '{getattr(m, 'name', m.id)}': {verdict} "
