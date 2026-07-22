@@ -298,6 +298,17 @@ def one_cycle() -> dict:
                                budget=budget, runs_per_week=runs_per_week())
     except Exception:  # noqa: BLE001 - the sandbox trial arm must never break a cycle
         pass
+    # 3c-skill-lifecycle. S4: probationary skills earn maturation through REPEATED sandbox passes
+    #     against their own verification; a deterministic assessor then surfaces promote/archive
+    #     recommendations. Never writes a skill status - activation stays human/Layer-9 gated.
+    #     Assessment always runs (read-only); re-trials only when JONI_SANDBOX_LLM_TRIALS=1.
+    try:
+        from ..method_trial import skill_lifecycle as _skill_lifecycle
+        _skill_lifecycle.run(cs, extensions, proto, cycle, budget=budget,
+                             runs_per_week=runs_per_week(), store_path=p.skill_candidates,
+                             log_path=p.skill_lifecycle, sheet_path=p.skill_lifecycle_sheet)
+    except Exception:  # noqa: BLE001 - the skill lifecycle arm must never break a cycle
+        pass
     # running totals so homeostasis/commission can see whether method-trialing ever matures
     extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
         trialed.get("trialed", 0)

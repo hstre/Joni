@@ -125,3 +125,44 @@ def test_propose_appends_only_when_admissible(tmp_path):
     skill.propose(_candidate(version=2), _cs({"M-1", "T-1", "T-2"}), store_path=store)
     lines = [ln for ln in store.read_text().splitlines() if ln.strip()]
     assert len(lines) == 2
+
+
+# ---- S4: the lifecycle assessor (deterministic, read-only, human-gated) --------------------------
+
+def _lifecycle_cs(*, success_count, trial_count):
+    method = SimpleNamespace(success_count=success_count, trial_count=trial_count)
+    return SimpleNamespace(core=SimpleNamespace(get=lambda oid: method if oid == "M-1" else None))
+
+
+def test_assess_promotes_after_repeated_passes():
+    a = skill.assess_lifecycle(_candidate(), _lifecycle_cs(success_count=4, trial_count=5))
+    assert a.action is skill.LifecycleAction.PROMOTE        # a RECOMMENDATION - not a state write
+    assert a.target_status is skill.SkillStatus.ACTIVE and a.reliability == 0.8
+
+
+def test_assess_holds_while_maturing():
+    assert skill.assess_lifecycle(_candidate(), _lifecycle_cs(success_count=1, trial_count=1)
+                                  ).action is skill.LifecycleAction.HOLD    # 1 pass < min_passes
+    assert skill.assess_lifecycle(_candidate(), _lifecycle_cs(success_count=2, trial_count=3)
+                                  ).action is skill.LifecycleAction.HOLD    # 0.67 < promote floor
+
+
+def test_assess_archives_a_measured_failure():
+    a = skill.assess_lifecycle(_candidate(), _lifecycle_cs(success_count=1, trial_count=4))
+    assert a.action is skill.LifecycleAction.ARCHIVE       # 0.25 <= floor after >= 3 trials
+    assert a.target_status is skill.SkillStatus.ARCHIVED
+
+
+def test_assess_records_the_evidence_it_rests_on():
+    a = skill.assess_lifecycle(_candidate(), _lifecycle_cs(success_count=3, trial_count=3))
+    assert a.passes == 3 and a.trials == 3                 # shows its work - no unbacked assertion
+    rec = a.to_record()
+    assert rec["action"] == "promote" and rec["reliability"] == 1.0
+
+
+def test_assess_holds_when_method_absent_or_already_archived():
+    absent = SimpleNamespace(core=SimpleNamespace(get=lambda oid: None))
+    assert skill.assess_lifecycle(_candidate(), absent).action is skill.LifecycleAction.HOLD
+    arch = _candidate(status=skill.SkillStatus.ARCHIVED)
+    assert skill.assess_lifecycle(arch, _lifecycle_cs(success_count=4, trial_count=5)
+                                  ).action is skill.LifecycleAction.HOLD

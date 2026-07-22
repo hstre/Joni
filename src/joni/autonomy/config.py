@@ -107,6 +107,18 @@ class Paths:
         return self.root / "state" / "skill_candidates.jsonl"
 
     @property
+    def skill_lifecycle(self) -> Path:
+        # S4: append-only lifecycle recommendations (promote/archive/hold). Not a state write - a
+        # human/Layer 9 acts on these; activation stays human-gated.
+        return self.root / "state" / "skill_lifecycle.jsonl"
+
+    @property
+    def skill_lifecycle_sheet(self) -> Path:
+        # S4: the human-readable "decide these" sheet - which probationary skills earned a promotion
+        # recommendation and which failed and are recommended for archival.
+        return self.root / "docs" / "skill_lifecycle.md"
+
+    @property
     def method_ledger(self) -> Path:
         # Method Zustandsbuch: the current per-method state table (rewritten each cycle).
         return self.root / "state" / "method_ledger.md"
