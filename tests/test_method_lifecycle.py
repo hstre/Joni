@@ -69,6 +69,19 @@ def test_match_covers_the_expanded_library():
     assert problems.match("random", "a paper on diffusion models") is None
 
 
+def test_match_ignores_long_paper_title_methods():
+    # the live finding: a harvested paper title with an INCIDENTAL keyword must not be trialed
+    # against a micro-benchmark. Only short procedures/lenses qualify.
+    assert problems.match(
+        "TimeProVe: Propose then Verify for Efficient Long Video Temporal Reasoning in Agents",
+        "a method for long video temporal reasoning") is None            # 'temporal' but a title
+    assert problems.match(
+        "SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation",
+        "measurement of decoding speed") is None                         # 'measurement' but a title
+    # a short lens on the same theme still qualifies
+    assert problems.match("temporal-ordering-lens", "order dates in time") is not None
+
+
 def test_disabled_is_a_clean_noop(monkeypatch):
     monkeypatch.delenv("JONI_SANDBOX_LLM_TRIALS", raising=False)
     cs = _CS([_method("M-1", "x", "normalise units")])
