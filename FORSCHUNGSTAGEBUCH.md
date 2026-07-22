@@ -3369,3 +3369,37 @@ Bestätigung einer Richtung; kein Vorsprung behauptet, kein Nachbau. Kernsatz: d
 selben Tag denselben Move machen — Memory → geprüfte Skill, per Evidenz regiert — heißt, das Problem ist real und
 die Antwort naheliegend richtig. Unser Zusatz (Stoffwechsel/Sensoren/Metakognition) ist die Wette darüber hinaus.
 (arXiv:2607.16621; vgl. Eintrag XLIII zur „Claude Science"-Validierung.)
+
+### Eintrag 2026-07-22 (XLIX) — Vom Lernpunkt zum Bau: die Methode bekommt Struktur, und eine bestandene Prüfung wird zur probationären Fähigkeit (S1 + Kristallisations-Brücke)
+
+**[Eingriff]** Der konkrete nächste Bau, den XLVIII benannte — „Jonis `Method` ist *nur Text*, das zwingt uns zur
+LLM-Synthese; trüge sie mehr Struktur, wäre mehr direkt trialbar" — in zwei Schritten umgesetzt, ehrlich (nicht
+das Paper nachgebaut, sondern nur dessen **Schema-Idee** extrahiert; kein MemOS-Import):
+
+- **S1 (#261): `SkillCandidate`.** Ein streng validiertes, nicht-Core-Objekt (ihr `k=(ϕ,π,κ,ℬ,𝒜,𝒟,η)`, Joni-
+  benannt): Trigger, Prozedur, **eigene Verifikation**, Applicability-Boundary, reale Evidenz-Anker, Decision-
+  Guidance, gemessene `operational_reliability`. Geschlossener Status-Enum, deterministische Content-Hash-ID,
+  read-only Gate, das nur *reale* Core-Referenzen zulässt — es aktiviert nie, es schlägt append-only vor.
+- **Die Brücke (#262).** `crystallize()` schließt die Lücke zwischen „Trial bestanden" und „Fähigkeit": schlägt eine
+  Regal-Methode im Sandbox-Trial ihren Baseline *messbar* (`verdict == benefit`), wird aus dem bloßen Text ein
+  **probationärer** `SkillCandidate`, der genau **das Benchmark trägt, das ihn geprüft hat** — nicht mehr ein
+  zufällig keyword-gematchtes (der Live-Befund aus XLVII). In `lifecycle.run` verdrahtet, fail-open.
+
+**[Warum das der eigentliche Punkt ist]** XLVII zeigte: mit `task_desc` als vollem Aufgabentext kann der Solver die
+Methode *umgehen* — ein Trial maß dann nicht die Methode, sondern ob ein LLM das Benchmark löst. Eine Fähigkeit, die
+ihre **eigene** Verifikation mitführt, dreht das um: geprüft wird *diese* Prozedur gegen *ihr* Kriterium. Das ist der
+Memory→Skill-Move aus XLVIII, jetzt mit dem Stück, das ihn erst valide macht.
+
+**[Leitplanken gehalten]** Nur ein echter Metrik-Pass kristallisiert — `no_benefit`/`harmful` erzeugen *nichts*, kein
+Skill aus einem Nicht-Ergebnis. `V_operational ≠ V_epistemic`: die Reliability ist eine gemessene Rate, keine
+Wahrheit; der Kandidat bleibt `probationary`, nie auto-aktiv. **Recording ≠ Promotion**, Aktivierung Layer-9/human-
+gated. `verify`-Gate grün — der geschützte Core ist unberührt, die Brücke ist peripher.
+
+**[Was bewusst offen bleibt]** Ihr „reflection-weighted value backfilling" (dünnes Endsignal über verwandte Schritte
+zurückpropagieren) ist **weiter zurückgestellt** — heute ist das Verdikt binär pro Methode. Und der Consolidator hat
+erst S1+Brücke; S0 (was ist eine Joni-Episode?), S2 (Policy-Induktion) und S4 (Lifecycle-Übergänge probationary→
+active→archived) stehen aus. Ehrlicher Zwischenstand, kein fertiges System.
+
+**[Reifegrad]** Baustein: **gebaut, getestet, gemerged** (Ruff + volle Suite + `verify` grün, PR #262). Die *Wirkung*
+— ob real geprüfte Skills entstehen — misst sich erst im laufenden Fenster: Trials sind an (`JONI_SANDBOX_LLM_TRIALS`),
+`state/skill_candidates.jsonl` sammelt die Vorschläge, entschieden wird nichts automatisch. (PRs #261, #262.)
