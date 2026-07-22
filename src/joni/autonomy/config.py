@@ -102,6 +102,11 @@ class Paths:
         return self.root / "state" / "metabolism.md"
 
     @property
+    def skill_candidates(self) -> Path:
+        # Procedural Skill Consolidator: append-only proposals (SkillCandidate records). Not core.
+        return self.root / "state" / "skill_candidates.jsonl"
+
+    @property
     def method_ledger(self) -> Path:
         # Method Zustandsbuch: the current per-method state table (rewritten each cycle).
         return self.root / "state" / "method_ledger.md"
