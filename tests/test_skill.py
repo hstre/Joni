@@ -66,6 +66,55 @@ def test_a_non_probationary_proposal_is_inadmissible():
     assert v.admissible is False
 
 
+def _trial_method(**over):
+    base = dict(id="M-1", name="unit-lens", summary="normalise the unit before comparing",
+                success_count=1, trial_count=1)
+    base.update(over)
+    return SimpleNamespace(**base)
+
+
+_BENEFIT = {"passed": True, "delta": 0.4, "task_set": "frozen_unit_equality_v1"}
+
+
+def test_crystallize_builds_a_probationary_benefit_skill():
+    c = skill.crystallize(_trial_method(), verification="frozen_unit_equality_v1",
+                          task_desc="same/different for two measurement strings",
+                          affinity="normalisation", trial_result=_BENEFIT,
+                          evidence_anchors=("M-1",))
+    assert c is not None
+    assert c.status is skill.SkillStatus.PROBATIONARY           # never crystallised as active
+    assert c.verification == "frozen_unit_equality_v1"          # carries its OWN verification
+    assert c.procedure == "normalise the unit before comparing"
+    assert c.evidence_anchors == ("M-1",)
+    assert 0.0 <= c.operational_reliability <= 1.0
+
+
+def test_crystallize_is_none_unless_the_trial_passed():
+    m = _trial_method()
+    assert skill.crystallize(m, verification="v", task_desc="t", affinity="a",  # no_benefit/harmful
+                             trial_result={"passed": False, "delta": 0.0},
+                             evidence_anchors=("M-1",)) is None
+    assert skill.crystallize(m, verification="v", task_desc="t", affinity="a",
+                             trial_result={}, evidence_anchors=("M-1",)) is None
+
+
+def test_crystallize_reliability_is_the_measured_success_rate():
+    c = skill.crystallize(_trial_method(success_count=3, trial_count=4), verification="v",
+                          task_desc="t", affinity="a", trial_result=_BENEFIT,
+                          evidence_anchors=("M-1",))
+    assert c.operational_reliability == 0.75                    # V_operational, measured not truth
+
+
+def test_crystallize_fails_safe_on_bad_pieces():
+    # no evidence anchors -> not a valid skill -> None, never raises
+    assert skill.crystallize(_trial_method(), verification="v", task_desc="t", affinity="a",
+                             trial_result=_BENEFIT, evidence_anchors=()) is None
+    # a text-less method cannot crystallise
+    assert skill.crystallize(SimpleNamespace(id="M-9", name="", summary=""), verification="v",
+                             task_desc="t", affinity="a", trial_result=_BENEFIT,
+                             evidence_anchors=("M-9",)) is None
+
+
 def test_propose_appends_only_when_admissible(tmp_path):
     store = tmp_path / "skill_candidates.jsonl"
     ok = skill.propose(_candidate(), _cs({"M-1", "T-1", "T-2"}), store_path=store)
