@@ -3403,3 +3403,37 @@ active→archived) stehen aus. Ehrlicher Zwischenstand, kein fertiges System.
 **[Reifegrad]** Baustein: **gebaut, getestet, gemerged** (Ruff + volle Suite + `verify` grün, PR #262). Die *Wirkung*
 — ob real geprüfte Skills entstehen — misst sich erst im laufenden Fenster: Trials sind an (`JONI_SANDBOX_LLM_TRIALS`),
 `state/skill_candidates.jsonl` sammelt die Vorschläge, entschieden wird nichts automatisch. (PRs #261, #262.)
+
+### Eintrag 2026-07-22 (L) — S4, der Skill-Lifecycle: Reife wird nicht behauptet, sondern durch wiederholte Sandbox-Pässe verdient — Promotion bleibt beim Menschen
+
+**[Eingriff]** Die letzte offene Consolidator-Stufe gebaut (Design-Note §6, **S4**; PR #264). Der Grund, warum sie
+*nötig* war, ist selbst ein ehrlicher Befund: die Kristallisations-Brücke (XLIX) machte aus einem *einzelnen*
+Trial-Pass einen probationären Skill — aber `lifecycle.run` trialt eine Methode nur **einmal** (`trial_count == 0`),
+also konnte sich „Bewährung über wiederholte Pässe" **nie akkumulieren**. Ein Skill mit Reliability 1.0 aus *einem*
+Lauf ist kein bewährter Skill. S4 schließt das.
+
+**[Was S4 tut]** Zwei Teile, sauber getrennt:
+- **`assess_lifecycle`** — deterministisch, read-only. Aus den echten, akkumulierten Trial-Countern der Methode
+  empfiehlt es `PROMOTE` (≥ 3 wiederholte Pässe bei ≥ 0.75 geglätteter Erfolgsrate), `ARCHIVE` (Reliability ≤ Floor
+  nach genug Trials — ein *gemessener* Fehlschlag) oder `HOLD`. Es trägt die Evidenz mit, auf der es ruht
+  (Pässe/Trials/Reliability), damit der entscheidende Mensch *sieht warum* — keine unbelegte Behauptung.
+- **`skill_lifecycle.run`** — re-trialt pro Zyklus ein paar *unentschiedene* probationäre Skills gegen ihre **eigene**
+  Verifikation (dasselbe Benchmark, das sie kristallisiert hat), akkumuliert echte Pässe übers Gate, und legt die
+  Empfehlungen in ein append-only Log (`state/skill_lifecycle.jsonl`) + ein Operator-Sheet (`docs/skill_lifecycle.md`).
+  Terminale Skills werden nicht re-trialt — kein Budget verschwendet.
+
+**[Warum das die richtige Form ist]** „Bewährung" heißt: derselbe Move funktioniert **wiederholt**, mit frisch
+synthetisiertem Solver jedes Mal — ein flüchtiger Zufallstreffer fällt durch, ein echtes Verfahren hält. Genau das
+misst die Re-Trial-Schleife. Reliability ist die **geglättete Erfolgsrate über echte Wiederholungen**, nicht ein
+Einzel-Sample.
+
+**[Leitplanke, die zählt]** S4 **schreibt nie einen Skill-Status**. Promotion und Archivierung sind *Empfehlungen*;
+**Aktivierung bleibt human/Layer-9-gated**. Ein Re-Trial aufzuzeichnen ist **Messung, keine Promotion**. Operationaler
+Erfolg wird nie ein bestätigter Claim (`V_operational ≠ V_epistemic`). `verify`-Gate grün — der geschützte Core ist
+unberührt, S4 ist peripher.
+
+**[Ehrlich offen]** Zeit-basierter Verfall („Skill, der nie wieder geprüft wird, weil Budget fehlt") ist noch nicht
+drin — heute archiviert S4 nur bei *gemessenem* Fehlschlag, nicht bei Stille; das braucht S0-Episoden-Zeitstempel.
+Ebenso weiter zurückgestellt: reflection-weighted value backfilling. Der Consolidator hat jetzt S1+Brücke+S4; **S0**
+(was ist eine Joni-Episode?) und **S2** (Policy-Induktion aus Episoden) stehen aus. Kein fertiges System — aber die
+prozedurale Achse steht: vom bloßen Text über eine gemessene Kristallisation zur human-gated Reife. (PR #264.)
