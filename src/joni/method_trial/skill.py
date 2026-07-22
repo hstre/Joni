@@ -139,6 +139,63 @@ def validate_against_core(candidate: SkillCandidate, cs) -> GateVerdict:
     return GateVerdict(not reasons, tuple(reasons))
 
 
+def crystallize(method, *, verification, task_desc, affinity, trial_result, evidence_anchors,
+                decision_guidance: str = "") -> SkillCandidate | None:
+    """The crystallisation bridge (design note §6, stage S3): turn a shelf ``Method`` that
+    *measurably* beat its baseline in the sandbox into a probationary ``SkillCandidate``.
+
+    A bare method is text only; a skill is the rich, evidence-anchored capability that carries its
+    **own** verification - the exact benchmark that decided it works - plus the trial's measured
+    effect and the reliability observed so far. This is the ONLY place a trial result becomes a
+    skill proposal, and it does so honestly:
+
+      * only a genuine metric pass crystallises (``trial_result['passed']``); a ``no_benefit`` or
+        ``harmful`` trial returns ``None`` - no skill is minted from a non-result;
+      * V_operational != V_epistemic: ``operational_reliability`` is the measured success rate,
+        never an epistemic truth, and the candidate is always ``probationary`` - never auto-active;
+      * it builds a *proposal* only. Layer 9 / a human still decides (via ``propose`` -> the gate).
+
+    ``method`` is duck-typed (``id`` / ``name`` / ``summary`` / optional ``success_count`` /
+    ``trial_count``) so this module never imports the method library. Returns ``None`` (never
+    raises) if the trial did not pass or the pieces do not form a valid candidate - crystallisation
+    must never break the trial loop.
+    """
+    if not isinstance(trial_result, dict) or not trial_result.get("passed"):
+        return None
+    procedure = str(getattr(method, "summary", "") or getattr(method, "name", "")).strip()
+    method_id = str(getattr(method, "id", "")).strip()
+    verification = str(verification or "").strip()
+    if not (procedure and method_id and verification):
+        return None
+    aff = (str(affinity or "").strip() or "general")
+    desc = (task_desc or "").strip()
+    first = desc.splitlines()[0].strip() if desc else aff
+    delta = trial_result.get("delta")
+    sc = int(getattr(method, "success_count", 0) or 0)
+    tc = int(getattr(method, "trial_count", 0) or 0)
+    reliability = min(1.0, max(0.0, round(sc / tc, 4))) if tc > 0 else 1.0
+    guidance = decision_guidance or (
+        f"measured benefit Δ={delta} over the baseline on '{verification}'; the negative "
+        f"control did not reproduce it. Probationary - activation is a separate Layer-9/human "
+        f"decision.")
+    try:
+        return SkillCandidate(
+            method_id=method_id,
+            trigger=f"{aff}: {first}",
+            procedure=procedure,
+            verification=verification,
+            applicability_boundary=(
+                f"only for {aff} inputs of the '{verification}' kind; not for free text, other "
+                f"formats, or inputs the benchmark did not cover"),
+            evidence_anchors=tuple(str(a) for a in evidence_anchors if str(a).strip()),
+            decision_guidance=guidance,
+            operational_reliability=reliability,
+            status=SkillStatus.PROBATIONARY,
+        )
+    except ValueError:
+        return None
+
+
 def propose(candidate: SkillCandidate, cs, *, store_path=None) -> dict:
     """Validate a candidate against the core and, if admissible, record it as an append-only
     proposal (never rewrites an earlier record). Returns {admissible, reasons, skill_id, recorded}.
@@ -157,5 +214,5 @@ def propose(candidate: SkillCandidate, cs, *, store_path=None) -> dict:
             "skill_id": candidate.skill_id(), "recorded": recorded}
 
 
-__all__ = ["SkillStatus", "SkillCandidate", "GateVerdict", "validate_against_core", "propose",
-           "SKILL_VERSION"]
+__all__ = ["SkillStatus", "SkillCandidate", "GateVerdict", "validate_against_core", "crystallize",
+           "propose", "SKILL_VERSION"]

@@ -37,7 +37,8 @@ def _method(mid, name, summary):
 
 class _CS:
     def __init__(self, methods):
-        self.core = SimpleNamespace(all=lambda _t: methods)
+        by_id = {m.id: m for m in methods}
+        self.core = SimpleNamespace(all=lambda _t: methods, get=lambda oid: by_id.get(oid))
         self.recorded = []
 
     def record_method_trial(self, method_id, *, success, run_id):
@@ -89,8 +90,9 @@ def test_disabled_is_a_clean_noop(monkeypatch):
     assert out["trialed"] == 0 and cs.recorded == []
 
 
-def test_a_matched_method_is_trialed_and_a_benefit_recorded(monkeypatch):
+def test_a_matched_method_is_trialed_and_a_benefit_recorded(monkeypatch, tmp_path):
     monkeypatch.setenv("JONI_SANDBOX_LLM_TRIALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
     cs = _CS([_method("M-1", "unit-lens", "normalise the unit before comparing quantities"),
               _method("M-2", "attn", "a study of attention")])   # M-2 has no benchmark
     ext = {}
@@ -98,6 +100,32 @@ def test_a_matched_method_is_trialed_and_a_benefit_recorded(monkeypatch):
     assert out["trialed"] == 1                                   # only the matched method
     assert cs.recorded == [("M-1", True)]                        # benefit -> success recorded
     assert ext["sandbox_trials"][0]["verdict"] == "benefit"
+
+
+def test_a_benefit_crystallises_and_proposes_a_probationary_skill(monkeypatch, tmp_path):
+    # the bridge: a measured benefit becomes a probationary SkillCandidate, proposed through the
+    # gate and written to the append-only store. A skill carries its OWN verification (the
+    # benchmark) and is never auto-active - Layer 9 / a human still decides.
+    monkeypatch.setenv("JONI_SANDBOX_LLM_TRIALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    cs = _CS([_method("M-1", "unit-lens", "normalise the unit before comparing quantities")])
+    ext = {}
+    out = lifecycle.run(cs, ext, _Proto(), call=_call(_GOOD))
+    assert out["skills_proposed"] == 1
+    prop = ext["skills_proposed"][0]
+    assert prop["admissible"] is True and prop["skill_id"].startswith("skill-")
+    store = tmp_path / "state" / "skill_candidates.jsonl"
+    assert store.exists() and store.read_text().strip()          # append-only proposal persisted
+
+
+def test_a_harmful_verdict_crystallises_nothing(monkeypatch, tmp_path):
+    monkeypatch.setenv("JONI_SANDBOX_LLM_TRIALS", "1")
+    monkeypatch.setenv("JONI_AUTONOMY_ROOT", str(tmp_path))
+    cs = _CS([_method("M-1", "unit-lens", "normalise units before comparing")])
+    ext = {}
+    lifecycle.run(cs, ext, _Proto(), call=_call(_ALWAYS_DIFFERENT))
+    assert ext["skills_proposed"] == []                          # no skill from a non-benefit trial
+    assert not (tmp_path / "state" / "skill_candidates.jsonl").exists()
 
 
 def test_a_harmful_verdict_is_recorded_as_a_failure(monkeypatch):

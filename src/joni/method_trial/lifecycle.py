@@ -31,13 +31,48 @@ def _untested_candidates(cs) -> list:
             and int(getattr(m, "trial_count", 0)) == 0]
 
 
+def _skill_store():
+    """The append-only SkillCandidate store, or None when config is unavailable (standalone tests).
+    Resolving paths() must never break a trial - a crystallisation without a store still validates
+    the candidate and reports it, it just isn't persisted."""
+    try:
+        from ..autonomy.config import paths
+        return paths().skill_candidates
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _crystallize_and_propose(cs, m, prob, out, proto, cycle) -> dict | None:
+    """On a measured benefit, crystallise the method into a probationary SkillCandidate that carries
+    its OWN verification (the benchmark) and propose it through the read-only gate (append-only).
+    Fail-open: a crystallisation fault never breaks the trial loop. Returns the propose() dict (with
+    ``admissible`` / ``skill_id``) or None if nothing crystallised."""
+    try:
+        from . import skill
+        affinity = prob.spec.affinities[0] if getattr(prob.spec, "affinities", ()) else ""
+        cand = skill.crystallize(
+            m, verification=getattr(prob.spec, "task_set", ""), task_desc=prob.task_desc,
+            affinity=affinity, trial_result=out.get("result", {}), evidence_anchors=(m.id,))
+        if cand is None:
+            return None
+        res = skill.propose(cand, cs, store_path=_skill_store())
+        if res.get("admissible"):
+            proto.record(cycle, "skill_proposed",
+                         f"crystallised skill from '{getattr(m, 'name', m.id)}' "
+                         f"({res['skill_id']}, reliability {cand.operational_reliability}) - "
+                         f"probationary, awaiting a Layer-9/human decision")
+        return res
+    except Exception:  # noqa: BLE001 - crystallisation must never break the trial loop
+        return None
+
+
 def run(cs, extensions: dict, proto, cycle: int = 0, *, budget=None, runs_per_week: int = 0,
         max_per_cycle: int = MAX_PER_CYCLE, call=None) -> dict:
     """Trial up to ``max_per_cycle`` un-tested candidate methods that match a benchmark, and record
     each measured verdict. No-op unless ``JONI_SANDBOX_LLM_TRIALS=1``. Never raises."""
     if not solver_synth.enabled():
         return {"trialed": 0, "results": []}
-    done, results = 0, []
+    done, results, skills = 0, [], []
     for m in _untested_candidates(cs):
         if done >= max_per_cycle:
             break
@@ -59,8 +94,13 @@ def run(cs, extensions: dict, proto, cycle: int = 0, *, budget=None, runs_per_we
         proto.record(cycle, "trialed",
                      f"sandbox-trialed '{getattr(m, 'name', m.id)}': {verdict} "
                      f"(delta {out.get('result', {}).get('delta')}) - trial recorded")
+        if verdict == "benefit":                       # crystallise a measured success into a skill
+            proposed = _crystallize_and_propose(cs, m, prob, out, proto, cycle)
+            if proposed is not None:
+                skills.append(proposed)
     extensions["sandbox_trials"] = results
-    return {"trialed": done, "results": results}
+    extensions["skills_proposed"] = skills
+    return {"trialed": done, "results": results, "skills_proposed": len(skills)}
 
 
 __all__ = ["run", "MAX_PER_CYCLE"]
