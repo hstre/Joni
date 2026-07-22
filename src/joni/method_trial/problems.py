@@ -50,9 +50,26 @@ _TEMPORAL = Problem(
 LIBRARY: tuple[Problem, ...] = (_UNIT_EQUALITY, _DEDUP, _TEMPORAL)
 
 
+_MAX_NAME_TOKENS = 4          # a micro-benchmark is for a SHORT procedure, not a paper title
+
+
+def _name_core(name: str) -> str:
+    n = name or ""
+    return n[: -len("-as-a-lens")] if n.endswith("-as-a-lens") else n
+
+
 def match(name: str, summary: str) -> Problem | None:
-    """The first library problem whose keywords appear in the method's name+summary, else None
-    (the method is not trialable yet - left honestly untested)."""
+    """The first library problem this method can be *meaningfully* trialed against, else None
+    (left honestly untested). A method qualifies only if it is a SHORT procedure/lens - a
+    micro-benchmark tests a micro-procedure, not a harvested paper title. This is the fix for the
+    live finding that long paper titles ('...Long Video Temporal Reasoning...') were being
+    keyword-matched to the date-ordering benchmark and 'trialed' meaninglessly. A keyword still has
+    to appear, but only short-named candidates are eligible - a title with an incidental keyword is
+    not. (The deeper validity limit - a fully-described benchmark lets the solver bypass the method
+    text - is why the Skill Consolidator wants richer methods; see the design note.)
+    """
+    if len(_name_core(name).split()) > _MAX_NAME_TOKENS:
+        return None
     text = f"{name or ''} {summary or ''}".lower()
     for problem in LIBRARY:
         if any(k in text for k in problem.keywords):
