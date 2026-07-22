@@ -309,6 +309,16 @@ def one_cycle() -> dict:
                              log_path=p.skill_lifecycle, sheet_path=p.skill_lifecycle_sheet)
     except Exception:  # noqa: BLE001 - the skill lifecycle arm must never break a cycle
         pass
+    # 3c-episodes. S0: form procedural episodes (context, action, observation, robust outcome)
+    #     READ-ONLY from this cycle's measured signals (trials / re-trials). Append-only; nothing
+    #     invented, unknown stays unknown. The substrate S2 will induce policies over. Fail-open.
+    try:
+        from ..method_trial import episodes as _episodes
+        _eps = _episodes.extract_from_run(cs, extensions, cycle=cycle)
+        _episodes.record(_eps, store_path=p.episodes)
+        extensions["episodes_new"] = [e.to_record() for e in _eps]
+    except Exception:  # noqa: BLE001 - the episode extractor must never break a cycle
+        pass
     # running totals so homeostasis/commission can see whether method-trialing ever matures
     extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
         trialed.get("trialed", 0)

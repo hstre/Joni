@@ -87,7 +87,8 @@ def retrial(cs, cand: skill.SkillCandidate, *, budget=None, cycle: int = 0, runs
     with contextlib.suppress(Exception):               # a recording must never break the cycle
         cs.record_method_trial(cand.method_id, success=(verdict == "benefit"),
                                run_id=f"skill-retrial-c{cycle}")
-    return {"skill_id": cand.skill_id(), "verdict": verdict,
+    return {"skill_id": cand.skill_id(), "method": cand.method_id,
+            "task_set": cand.verification, "name": cand.method_id, "verdict": verdict,
             "delta": out.get("result", {}).get("delta")}
 
 
@@ -165,6 +166,7 @@ def run(cs, extensions: dict, proto, cycle: int = 0, *, budget=None, runs_per_we
                      f"skill {a.skill_id} recommended for archival (reliability {a.reliability} "
                      f"after {a.trials} trials)")
     extensions["skill_lifecycle"] = [a.to_record() for a in assessments]
+    extensions["skill_retrials"] = retrials       # S0 forms procedural episodes from these
     return {"assessed": len(assessments), "retrials": len(retrials),
             "promote": len(promote), "archive": len(archive)}
 

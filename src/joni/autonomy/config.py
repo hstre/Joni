@@ -107,6 +107,12 @@ class Paths:
         return self.root / "state" / "skill_candidates.jsonl"
 
     @property
+    def episodes(self) -> Path:
+        # S0: append-only procedural episodes (context, action, observation, robust outcome), built
+        # read-only from real signals. The substrate S2 induces policies over. Not core.
+        return self.root / "state" / "episodes.jsonl"
+
+    @property
     def skill_lifecycle(self) -> Path:
         # S4: append-only lifecycle recommendations (promote/archive/hold). Not a state write - a
         # human/Layer 9 acts on these; activation stays human-gated.
