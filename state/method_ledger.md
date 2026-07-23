@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 650 · 349 Methoden** — proposed 279 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
+**Cycle 651 · 350 Methoden** — proposed 280 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -249,6 +249,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | SoftReason: A Fully Differentiable Neuro-Soft-Symbolic Deductive Reasoning Archi | **proposed** | candidate | 0 | — |
 | Self Gradient Forcing: Native Long Video Extrapolation | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
+| AI-Enhanced Multi-Constellation Satellite Fusion for Centimeter-Level Positionin | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
 | Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **proposed** | candidate | 0 | — |
