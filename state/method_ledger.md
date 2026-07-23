@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 648 · 347 Methoden** — proposed 277 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
+**Cycle 650 · 349 Methoden** — proposed 279 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -246,6 +246,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | RESOURCE2SKILL: Distilling Executable Agent Skills from Human-Created Multimodal | **proposed** | candidate | 0 | — |
 | webSMLM: a browser-based single-molecule localization microscopy tool | **proposed** | candidate | 0 | — |
 | REBASE: Reference-Background Subspace Elimination for Training-Free In-Context S | **proposed** | candidate | 0 | — |
+| SoftReason: A Fully Differentiable Neuro-Soft-Symbolic Deductive Reasoning Archi | **proposed** | candidate | 0 | — |
+| Self Gradient Forcing: Native Long Video Extrapolation | **proposed** | candidate | 0 | — |
 | latency-as-a-lens | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |

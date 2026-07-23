@@ -6,17 +6,17 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 851 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 628 Lehre(n)._
+_Stand: Tick 25 · 852 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 628 Lehre(n)._
 
-## attention · Tiefe 84 (threshold)
+## attention · Tiefe 85 (threshold)
 
-**Beurteile jede Annahme in deinen Aufmerksamkeitsansprüchen kritisch, da wiederkehrende Begriffe wie "Mechanismus" ohne empirische Überprüfung irreführend sein können.**
+**Beurteile Annahmen über Mechanismen in Aufmerksamkeitsansprüchen kritisch, da ihre gemeinsame Existenz ungetestet bleibt.**
 
-_deterministisch:_ Auf 'attention': 84 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 84× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 85 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 85× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
-- _volle Spur (84):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
+- _volle Spur (85):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-10296, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
 
 ## memory · Tiefe 81 (threshold)
 

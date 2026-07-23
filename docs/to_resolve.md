@@ -45,27 +45,27 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
-## X-543 · Thema: memory
+## X-549 · Thema: memory
 
-- **C-10162** (0 stützend · 0 Kontext): The benefit of using central obscuration pixels is less pronounced for configurations with a center-to-center pitch smaller than approximately 30 nm.
-  - _Quelle:_ granite:joni-c645:67575ae6c23d
-- **C-9761** (0 stützend · 0 Kontext): An in-depth study of persona prompting reveals a pattern we call themacro fallacy: estimates reconstructed from more fine-grained subpopulation responses are often better aligned with human reference data than direct population-level estimates.
-  - _Quelle:_ arxiv:2607.15277v1
-- _Evidenzlage (C-10162 vs C-9761): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
-
-```
-X-543 | <gewinner: C-10162 oder C-9761> | <grund>
-```
-
-## X-530 · Thema: memory
-
-- **C-10151** (0 stützend · 0 Kontext): Avoiding at-resolution stitching for logic and DRAM applications in high-NA EUV lithography
-  - _Quelle:_ zenodo:21416520
-- **C-10163** (0 stützend · 0 Kontext): High-NA EUV lithography can be applied to logic and DRAM without needing at-resolution field stitching through innovative design strategies.
-  - _Quelle:_ granite:joni-c645:67575ae6c23d
-- _Evidenzlage (C-10151 vs C-10163): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
+- **C-10267** (0 stützend · 0 Kontext): QFI serves as a momentum-resolved probe of entanglement, offering a novel perspective on quantum critical phenomena beyond being a lower bound for entanglement depth.
+  - _Quelle:_ granite:joni-c650:b469c1511347
+- **C-10279** (0 stützend · 0 Kontext): Taken together, QFI is not only helpful as a lower bound for entanglement depth, but serves as a momentum-resolved probe of entanglement that offers a novel perspective on quantum critical phenomena.
+  - _Quelle:_ arxiv:2607.20424v1
+- _Evidenzlage (C-10267 vs C-10279): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
 
 ```
-X-530 | <gewinner: C-10151 oder C-10163> | <grund>
+X-549 | <gewinner: C-10267 oder C-10279> | <grund>
+```
+
+## X-548 · Thema: memory
+
+- **C-10264** (0 stützend · 0 Kontext): QFI serves as a momentum-resolved probe of entanglement, offering a novel perspective on quantum critical phenomena beyond being a lower bound for entanglement depth.
+  - _Quelle:_ granite:joni-c650:a1042f53476f
+- **C-10279** (0 stützend · 0 Kontext): Taken together, QFI is not only helpful as a lower bound for entanglement depth, but serves as a momentum-resolved probe of entanglement that offers a novel perspective on quantum critical phenomena.
+  - _Quelle:_ arxiv:2607.20424v1
+- _Evidenzlage (C-10264 vs C-10279): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+
+```
+X-548 | <gewinner: C-10264 oder C-10279> | <grund>
 ```
 
