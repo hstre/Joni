@@ -61,16 +61,24 @@ def ingest(cs, extensions: dict, *, cycle: int) -> list:
                 kind=pv.EntryKind.WEAK_HINT, content=text[:200], source="pattern_hint",
                 refs=(str(hid),), created_cycle=cycle,
                 attention_salience=_ATTENTION[pv.EntryKind.WEAK_HINT]))
-    # conflicts opened this cycle -> open contradictions (a later event may sharpen or resolve them)
-    for pair in (extensions.get("conflicts_opened") or []):
+    # condensed Streitfragen (Priority 5) -> open contradictions worth staging and re-reviewing.
+    # The FEW condensed disputes carry real refs and are taggable (attention 0.6), so the review
+    # trigger has genuine material - not the hundreds of raw pairs.
+    for d in (extensions.get("disputes") or []):
         if len(out) >= MAX_INGEST_PER_CYCLE:
             break
-        refs = tuple(str(x) for x in pair) if isinstance(pair, (list, tuple)) else (str(pair),)
+        if not isinstance(d, dict):
+            continue
+        refs = tuple(str(x) for x in (d.get("claim_ids") or []))[:8]
+        if not refs:
+            continue
+        topic = str(d.get("topic") or "")
         with contextlib.suppress(ValueError):
             out.append(pv.ProvisionalEntry(
                 kind=pv.EntryKind.OPEN_CONTRADICTION,
-                content=f"conflict opened between {', '.join(refs)}"[:200],
-                source="conflict_open", refs=refs, created_cycle=cycle,
+                content=f"Streitfrage '{topic}': {d.get('size', 0)} conflicts, "
+                        f"{len(refs)} positions"[:200],
+                source="streitfrage", refs=refs, topic=topic, created_cycle=cycle,
                 attention_salience=_ATTENTION[pv.EntryKind.OPEN_CONTRADICTION]))
     return out
 

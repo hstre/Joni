@@ -516,6 +516,16 @@ def one_cycle() -> dict:
     #        "X -> Y, weil Z" revisions instead of bare rejections.
     conflict_resolution.interact(cs, extensions, proto, cycle, paths=p)
 
+    # 4i-bb. Priority 5: condense the live pairwise conflicts into a few thematic Streitfragen
+    #        (positions / shared premises / decisive missing evidence). Read-only; writes only its
+    #        own sheet + count row and exposes the disputes so the provisional layer stages the FEW
+    #        condensed questions, not the hundreds of pairs. Never resolves anything. Fail-open.
+    try:
+        from . import disputes as _disputes
+        _disputes.run_disputes(cs, extensions, proto, cycle, paths=p)
+    except Exception:  # noqa: BLE001 - the condensation must never break a cycle
+        pass
+
     # 4i-c. HindsightTag (H1+H2): the provisional-episodic layer. Ingest this cycle's provisional
     #       material (barred pattern hints, opened contradictions), tag the salient ones with a
     #       capture window, and - if a sufficiently salient later event occurred (benefit trial,
