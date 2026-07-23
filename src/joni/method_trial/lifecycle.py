@@ -73,17 +73,21 @@ def run(cs, extensions: dict, proto, cycle: int = 0, *, budget=None, runs_per_we
     if not solver_synth.enabled():
         return {"trialed": 0, "results": []}
     done, results, skills = 0, [], []
+    considered = matched = discarded = 0            # the trial funnel (scoreboard, priority 1)
     for m in _untested_candidates(cs):
         if done >= max_per_cycle:
             break
+        considered += 1
         prob = problems.match(str(getattr(m, "name", "")), str(getattr(m, "summary", "")))
         if prob is None:
             continue                                   # no benchmark -> left honestly untested
+        matched += 1
         method_text = str(getattr(m, "summary", "") or getattr(m, "name", ""))
         out = solver_synth.trial_method(cs, method_text, prob.spec, prob.task_desc,
                                         budget=budget, cycle=cycle, runs_per_week=runs_per_week,
                                         call=call)
         if not out.get("trialed"):
+            discarded += 1                             # a mapping that produced NO valid test
             continue                                   # synthesis failed / over budget: not a trial
         verdict = out["verdict"]
         with contextlib.suppress(Exception):           # a recording must never break the cycle
@@ -101,7 +105,11 @@ def run(cs, extensions: dict, proto, cycle: int = 0, *, budget=None, runs_per_we
                 skills.append(proposed)
     extensions["sandbox_trials"] = results
     extensions["skills_proposed"] = skills
-    return {"trialed": done, "results": results, "skills_proposed": len(skills)}
+    # the funnel priority 1 scores on: valid tests (trialed) vs discarded mappings (no valid test)
+    extensions["trial_funnel"] = {"considered": considered, "matched": matched,
+                                  "trialed": done, "discarded": discarded}
+    return {"trialed": done, "results": results, "skills_proposed": len(skills),
+            "funnel": extensions["trial_funnel"]}
 
 
 __all__ = ["run", "MAX_PER_CYCLE"]

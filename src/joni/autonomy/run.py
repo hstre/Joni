@@ -319,6 +319,14 @@ def one_cycle() -> dict:
         extensions["episodes_new"] = [e.to_record() for e in _eps]
     except Exception:  # noqa: BLE001 - the episode extractor must never break a cycle
         pass
+    # 3c-scoreboard. Priority 1: measure success at the CONSOLIDATOR's output (episodes, crystal-
+    #     lised skills, re-trials, promote/hold/archive recs, valid:discarded mappings) - not the
+    #     claim count. Read-only; writes only its own two artefacts; never Layer 9. Fail-open.
+    try:
+        from ..method_trial import scoreboard as _scoreboard
+        _scoreboard.run_scoreboard(cs, extensions, proto, cycle, run=window["runs"], paths=p)
+    except Exception:  # noqa: BLE001 - the scoreboard must never break a cycle
+        pass
     # running totals so homeostasis/commission can see whether method-trialing ever matures
     extensions["method_trials_total"] = extensions.get("method_trials_total", 0) + \
         trialed.get("trialed", 0)
