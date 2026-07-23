@@ -8,6 +8,19 @@ als SUPERSEDED (Nachfolger = Gewinner) und die Persona lernt „X → Y, weil �
 
 _5 entscheidbare(r) Konflikt(e)._
 
+## X-550 · Thema: memory
+
+- **C-10397** (0 stützend · 0 Kontext): ReContext addresses long-context reasoning failures in large language models by recursively replaying evidence to utilize relevant information already present in their inputs.
+  - _Quelle:_ granite:joni-c654:b9b69c43edc0
+- **C-4655** (0 stützend · 1 Kontext): Recent literature highlights persistent memory as a critical capability for advanced AI systems. WorldDirector introduces persistent dynamic object memory to enable controllable world simulators that do not require continuous visual observation to maintain object state. ReContext addresses long-context reasoning failures in large language models by recursively replaying evidence, helping models utilize relevant information already present in their inputs.
+  - _Quelle:_ synthesis:iris
+  - _Kontext (kann auch dagegen sprechen):_ contextualizes via C-7995: WorldDirector introduces persistent dynamic object memory to enable controllable world simulators without continuous visual observation.
+- _Evidenzlage (C-10397 vs C-4655): Belege 0 vs 1 · Quellfamilien 0 vs 1 · Provenienz Modell/selbst vs Forum_
+
+```
+X-550 | <gewinner: C-10397 oder C-4655> | <grund>
+```
+
 ## X-414 · Thema: authors+evaluation
 
 - **C-8552** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'The rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems was recently resolved by the author.' (from authors) might also apply to evaluation.
@@ -55,17 +68,5 @@ X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 
 ```
 X-549 | <gewinner: C-10267 oder C-10279> | <grund>
-```
-
-## X-548 · Thema: memory
-
-- **C-10264** (0 stützend · 0 Kontext): QFI serves as a momentum-resolved probe of entanglement, offering a novel perspective on quantum critical phenomena beyond being a lower bound for entanglement depth.
-  - _Quelle:_ granite:joni-c650:a1042f53476f
-- **C-10279** (0 stützend · 0 Kontext): Taken together, QFI is not only helpful as a lower bound for entanglement depth, but serves as a momentum-resolved probe of entanglement that offers a novel perspective on quantum critical phenomena.
-  - _Quelle:_ arxiv:2607.20424v1
-- _Evidenzlage (C-10264 vs C-10279): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
-
-```
-X-548 | <gewinner: C-10264 oder C-10279> | <grund>
 ```
 
