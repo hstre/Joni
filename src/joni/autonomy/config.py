@@ -113,6 +113,17 @@ class Paths:
         return self.root / "state" / "episodes.jsonl"
 
     @property
+    def scoreboard_series(self) -> Path:
+        # Priority 1: append-only per-cycle Consolidator scoreboard (episodes/skills/re-trials/
+        # recommendations/valid-vs-discarded). Success measured at the output, not claim growth.
+        return self.root / "state" / "consolidator_series.jsonl"
+
+    @property
+    def scoreboard_panel(self) -> Path:
+        # Priority 1: the short human/site view of the latest scoreboard row.
+        return self.root / "docs" / "consolidator.md"
+
+    @property
     def skill_lifecycle(self) -> Path:
         # S4: append-only lifecycle recommendations (promote/archive/hold). Not a state write - a
         # human/Layer 9 acts on these; activation stays human-gated.
