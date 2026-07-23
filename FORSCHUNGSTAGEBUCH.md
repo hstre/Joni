@@ -3517,3 +3517,37 @@ Gebaut in fünf Stufen (PRs #272–#275):
 die Musterhinweise *an der Quelle* (emerge/invent) verhindert. Und der prozedurale Pfad braucht mehr/andere Benchmarks,
 sonst bleibt er ausgehungert. **Reifegrad:** Bausteine gebaut, getestet, gemerged (`verify` grün, Core unberührt); die
 *Wirkung* misst sich jetzt im Fenster an `docs/consolidator.md` + `docs/hindsight.md`. (PRs #269–#275.)
+
+### Eintrag 2026-07-23 (LIII) — Der erste Live-Blick in den Provisorien-Layer, und Priorität 5: Konflikte werden zu Streitfragen — und geben dem Trigger endlich Futter
+
+**[Beobachtung]** Erstmals echte HindsightTag-Daten aus einem Live-Zyklus (Cycle 654). Der Provisorien-Layer fängt
+**genau den Müll, den der Operator benannt hatte**: die 6 Einträge sind `'segmentation' · 'electrical' · 'ransomware'
+· 'inadmissible' · 'abundance' · 'predictive'` — buchstäblich die „electrical"/„ransomware"-Beispiele — jetzt als
+`weak_hint` im Provisorien-Layer, **nicht** mehr als reflexions-auslösende Hypothesen. Die deklarative Seite fängt die
+Rekurrenz sauber ab. **Aber der Trigger lief leer**: Aufmerksamkeitssalienz der weak_hints 0.3 < Tag-Schwelle 0.5 → nichts
+getaggt; Event-Salienz war 1.0, aber ohne getaggten Eintrag im Fenster gab es nichts zu reaktivieren. Ein ehrlicher
+Befund: der Mechanismus ist korrekt und sicher, aber sein *Nutzen* läuft leer, solange ihm nur (korrekt ignorierter)
+Müll und kein taggbares Signal zufließt.
+
+**[Eingriff — Priorität 5]** Die Konfliktverdichtung (PR #277) — und sie erledigt **beides** in einem: die letzte
+offene deklarative Priorität *und* den Trigger-Leerlauf. `disputes.py` bündelt die live-Konflikte (open + under_review)
+über die **Zusammenhangskomponenten** des Widerspruchs-Graphen — ein Knäuel gegenseitig widersprechender Claims ist
+**eine** Streitfrage — und meldet je Streitfrage genau das Geforderte: **Positionen**, **gemeinsame Prämissen** (die
+Inhaltswörter, die die Seiten teilen), und den **entscheidenden fehlenden Beleg** (welche Positionen auf keiner
+unabhängigen externen Quelle ruhen). Sichtbar in `docs/streitfragen.md` als „N Paar-Konflikte → wenige Streitfragen".
+Read-only; löst nichts (das bleibt beim Operator über `to_resolve.md`); kein Layer-9-Schreiben, kein Modell.
+
+**[Die Kopplung, die den Trigger repariert]** Statt der hunderten roher Paar-Konflikte werden jetzt die **wenigen
+verdichteten Streitfragen** als taggbare `open_contradiction` (Aufmerksamkeit 0.6) in den Provisorien-Layer eingespeist.
+Damit taggt endlich etwas Sinnvolles, und ein späteres salientes Ereignis reaktiviert es zu `contradiction_detected` —
+der retroaktive Review-Trigger läuft an *echtem*, verdichtetem Material an, nicht an Rauschen. So schließt #5 zugleich
+die HindsightTag-Schleife (H2/H3), die im Leerlauf beobachtet wurde.
+
+**[Ehrliche Grenze — Zyklustempo]** Nebenbefund des Beobachtens: das Fenster ist **sehr langsam** — ~4–5 Runs in ~13 h,
+grob ~3 h pro Zyklus (viel langsame Online-Arbeit). Datenpunkte kommen also spärlich; ein Trigger-Dispatch bringt keine
+schnellen Daten, weil die Zykluszeit dominiert. Für ein aussagekräftiges Beobachtungsfenster müssten wir später die
+langsamsten Arme drosseln (Council/Doktores-Kadenz).
+
+**[Stand der fünf Prioritäten]** #1 (messen) ✅, #3 (Wortrekurrenz-Gate + Score) ✅, #4 (Zustandswechsel — in H3) ✅,
+#5 (Streitfragen) ✅. **Offen:** #2 (Intake↔Verdauung koppeln) und der Erzeuger-Fix (emerge/invent an der Quelle, gegen
+die 90 % Musterhinweise — der direkteste Hebel gegen die ursprüngliche Kritik). (PR #277.)
