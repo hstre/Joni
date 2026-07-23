@@ -113,6 +113,12 @@ class Paths:
         return self.root / "state" / "episodes.jsonl"
 
     @property
+    def provisional(self) -> Path:
+        # HindsightTag H0: the provisional-episodic layer (staging between working memory and Layer
+        # 9). Append-only entries with a lifecycle stage + two salience values. Not a record store.
+        return self.root / "state" / "provisional.jsonl"
+
+    @property
     def scoreboard_series(self) -> Path:
         # Priority 1: append-only per-cycle Consolidator scoreboard (episodes/skills/re-trials/
         # recommendations/valid-vs-discarded). Success measured at the output, not claim growth.
