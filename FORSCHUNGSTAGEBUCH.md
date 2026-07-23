@@ -3468,3 +3468,52 @@ offen:** heute speist nur die Trial-Quelle S0; PR-Outcomes und Layer-9-Statusüb
 auf demselben Objekt (die anderen zwei Quellen der Design-Note). **S2** (Policy-Induktion) baut darauf auf — das ist
 der nächste echte Schritt. Weiter zurückgestellt: zeit-basierter Verfall in S4, reflection-weighted backfilling.
 (PR #266.)
+
+### Eintrag 2026-07-23 (LII) — Fünf Operator-Prioritäten, ein gemessener Befund, und HindsightTag als Dach: Kurzzeitgedächtnis bekommt einen Lebenszyklus
+
+**[Eingriff]** Der Operator legt eine scharfe Kritik vor — *„viele sichtbare Hypothesen sind bloße
+Wortwiederholungen in einer festen Schablone … das ist keine Synthese, sondern lexikalische Rekurrenz"* — mit fünf
+Prioritäten fürs laufende Fenster. Abgearbeitet, messbar, einzeln:
+
+- **Prio 1 — am Output messen, nicht am Claim-Wachstum** (PR #269): ein read-only Consolidator-Scoreboard
+  (`docs/consolidator.md`) über S0-Episoden, kristallisierte Skills, Re-Trials, Promote/Hold/Archive und das
+  Verhältnis *valide Tests : verworfene Zuordnungen*. Dafür emittiert `lifecycle.run` jetzt einen Trial-Funnel.
+- **Prio 3 — Wortrekurrenz ≠ Hypothese** (PR #270): ein deterministisches, transparent-lexikalisches Gate
+  (`hypothesis_form.py`). Es misst **jede** Hypothese auf vier Komponenten (Mechanismus/Geltungsbereich/erwartete
+  Beobachtung/Widerlegung, 0–4-Score im Scoreboard) und **sperrt** die klare Schablonen-Rekurrenz aus dem
+  Reflexionszyklus — substanzielle, schlicht formulierte Hypothesen reflektieren weiter (die vom Operator gewählte
+  Gezielt-+-Score-Variante statt strikt-literal).
+
+**[Der gemessene Befund — die Kritik in Zahlen]** Das Live-Scoreboard bestätigte den Operator hart: **515 Hypothesen,
+0 wohlgeformt (4/4)**, Verteilung `{0:121, 1:393, 2:1, 3:0, 4:0}`, **462 (90 %) als lexikalische Rekurrenz gesperrt**.
+Zugleich: der prozedurale Pfad ausgehungert (`considered 266, matched 0` — keine Regal-Methode matcht die drei
+Mikro-Benchmarks), 273 Live-Konflikte. Die Masse und das Problem sitzen auf der **deklarativen** Seite. Das ist kein
+Nebenbefund, sondern die Richtungsentscheidung: dort liegt der Hebel.
+
+**[HindsightTag als Dach]** Der Operator legt ein Paper vor (Dudhat, *synaptic tagging-and-capture*) plus eine
+gemeinsame Idee. Wir extrahieren das Prinzip, nicht die (selbst als „limited-scale" deklarierten) Zahlen
+(Design-Note #271). Der entscheidende Move ist die Governance-Übersetzung: der **Rescue-Operator** des Papers (spätes
+salientes Ereignis → Erinnerung wird gerettet *und konsolidiert*) wird für Joni zum **Review-Trigger** (spätes
+Ereignis → früherer Eintrag wird zur *Prüfung reaktiviert*; die Konsolidierungslogik entscheidet erst dann). Das macht
+sogar die inhaltsunabhängige temporale Ko-Allokation sicher — zeitliche Nähe ist ein Prüfanlass, keine Behauptung.
+Gebaut in fünf Stufen (PRs #272–#275):
+
+- **H0** — der Provisorien-Layer (`ProvisionalEntry`): voller Lebenszyklus-Enum, append-only, und — die zentrale
+  Verfeinerung — **zwei getrennte Größen**: Aufmerksamkeitssalienz (billig) vs. epistemische Bedeutung (gemessen).
+- **H1+H2** — Tag + capture-Fenster und der Review-Trigger, **mit echtem Produzenten**: die 462 gesperrten
+  Musterhinweise + eröffnete Konflikte fließen als Provisorien ein; ein salientes späteres Ereignis (benefit-Trial,
+  Skill, aufgelöster Konflikt) reaktiviert In-Fenster-Tags zu `review_due`, jeder Trigger mit Provenienz-Record.
+- **H3** — die Entscheidung: ein reaktivierter Eintrag wird deterministisch, auf **gemessener** epistemischer Bedeutung
+  (Anteil live-Refs), in genau einen Ausgang überführt. Hier verschmelzen zwei Operator-Prioritäten in den Lebenszyklus:
+  **#4** (nach 2 evidenzfreien Neubewertungen → `expired`/ARCHIVE; graduiert → `hypothesis_opened`/TEST; sonst re-tag/
+  WAIT) und **#5** (live-Widerspruch → `contradiction_detected`). **Nichts konsolidiert sich** — das Stärkste ist eine
+  prüfbare Proposition, nie ein stiller Claim.
+- **H4** — die Messung: eine Scoreboard-Zeile über die Review-Ausgangsverteilung und den **Koinzidenz-Anteil**
+  (Reviews, die nichts fanden). Genau die offene Frage des Papers: rettet der Trigger Signal oder reaktiviert er nur
+  Rauschen? Bleibt der Anteil hoch, ist der Mechanismus zu locker.
+
+**[Ehrlich offen]** Die eigentliche **#5**-Streitfragen-Verdichtung (273 Paar-Konflikte → wenige Streitfragen) über den
+`contradiction_detected`-Zufluss steht noch aus, ebenso **#2** (Intake↔Verdauung koppeln) und der Erzeuger-Fix, der
+die Musterhinweise *an der Quelle* (emerge/invent) verhindert. Und der prozedurale Pfad braucht mehr/andere Benchmarks,
+sonst bleibt er ausgehungert. **Reifegrad:** Bausteine gebaut, getestet, gemerged (`verify` grün, Core unberührt); die
+*Wirkung* misst sich jetzt im Fenster an `docs/consolidator.md` + `docs/hindsight.md`. (PRs #269–#275.)
