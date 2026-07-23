@@ -74,6 +74,39 @@ def _hypothesis_stats(cs) -> dict:
             "by_score": by_score}
 
 
+def _hindsight_stats(paths) -> dict:
+    """H4: measure the retroactive review-trigger. Current provisional entries by stage, plus the
+    window-cumulative review outcomes read from the append-only provenance - and the honest
+    headline: the 'coincidence share' (reviews that found nothing -> rejected), i.e. is the trigger
+    surfacing signal or just reactivating noise? Read-only over the stores."""
+    from . import provisional as pv
+    entries = pv.load(getattr(paths, "provisional", None))
+    by_stage: dict[str, int] = {}
+    for e in entries:
+        by_stage[e.stage.value] = by_stage.get(e.stage.value, 0) + 1
+    reviews = 0
+    outcomes: dict[str, int] = {}
+    prov_path = getattr(paths, "hindsight_provenance", None)
+    if prov_path is not None:
+        with contextlib.suppress(OSError):
+            for raw in prov_path.read_text(encoding="utf-8").splitlines():
+                line = raw.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                for r in rec.get("reactivated", []):
+                    if isinstance(r, dict):
+                        reviews += 1
+                        oc = r.get("outcome", "")
+                        outcomes[oc] = outcomes.get(oc, 0) + 1
+    coincidence = round(outcomes.get("rejected", 0) / reviews, 4) if reviews else 0.0
+    return {"entries_total": len(entries), "by_stage": by_stage, "reviews": reviews,
+            "outcomes": outcomes, "coincidence_share": coincidence}
+
+
 def _recommendation_counts(extensions: dict) -> dict:
     counts = {"promote": 0, "hold": 0, "archive": 0}
     for a in (extensions.get("skill_lifecycle") or []):
@@ -118,6 +151,7 @@ def compute(cs, extensions: dict, *, paths, cycle: int, run: int) -> dict:
         "retrials_this_cycle": retrials,
         "recommendations": _recommendation_counts(extensions),
         "hypotheses": _hypothesis_stats(cs),
+        "hindsight": _hindsight_stats(paths),
         "trial_funnel": funnel,
         "window": _window_totals(getattr(paths, "scoreboard_series", None), funnel),
     }
@@ -127,6 +161,9 @@ def render_summary(rec: dict) -> str:
     ep, sk = rec["episodes"], rec["skills"]
     rc, w = rec["recommendations"], rec["window"]
     hy = rec.get("hypotheses", {"total": 0, "well_formed": 0, "reflection_barred": 0})
+    hs = rec.get("hindsight", {"entries_total": 0, "reviews": 0, "outcomes": {},
+                               "coincidence_share": 0.0})
+    hs_out = " · ".join(f"{k} {v}" for k, v in sorted(hs["outcomes"].items())) or "—"
     status = " · ".join(f"{k} {v}" for k, v in sorted(sk["by_status"].items())) or "—"
     lines = [
         "# Joni — Consolidator-Scoreboard",
@@ -148,6 +185,8 @@ def render_summary(rec: dict) -> str:
         f"wohlgeformt (4/4) · {hy['reflection_barred']} als Musterhinweis gesperrt |",
         f"| Valide Tests : verworfene Zuordnungen | {w['valid_tests']} : {w['discarded_mappings']} "
         f"= **{w['valid_to_discarded']}** (Fenster; {w['matched']} gematcht) |",
+        f"| HindsightTag (Provisorien) | {hs['entries_total']} Einträge · {hs['reviews']} Reviews "
+        f"→ {hs_out}; Koinzidenz-Anteil **{hs['coincidence_share']}** |",
         "",
     ]
     return "\n".join(lines) + "\n"

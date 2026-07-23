@@ -13,6 +13,8 @@ def _paths(tmp_path):
     return SimpleNamespace(
         episodes=tmp_path / "episodes.jsonl",
         skill_candidates=tmp_path / "skill_candidates.jsonl",
+        provisional=tmp_path / "provisional.jsonl",
+        hindsight_provenance=tmp_path / "hindsight_provenance.jsonl",
         scoreboard_series=tmp_path / "consolidator_series.jsonl",
         scoreboard_panel=tmp_path / "consolidator.md")
 
@@ -105,6 +107,29 @@ def test_scoreboard_scores_hypothesis_well_formedness(tmp_path):
     assert hy["total"] == 3 and hy["well_formed"] == 1 and hy["reflection_barred"] == 1
     # H-1 'electrical' and H-2 plain claim both score 0/4; only H-1 is barred (H-2 is substantive)
     assert hy["by_score"][0] == 2 and hy["by_score"][4] == 1
+
+
+def test_scoreboard_measures_the_hindsight_review_outcomes(tmp_path):
+    p = _paths(tmp_path)
+    # a provisional store with a couple of entries at different stages
+    from joni.method_trial import provisional as pv
+    e1 = pv.ProvisionalEntry(kind=pv.EntryKind.WEAK_HINT, content="a", source="s", refs=("X",),
+                             created_cycle=1, stage=pv.LifecycleStage.TAGGED, tagged_cycle=1)
+    e2 = pv.ProvisionalEntry(kind=pv.EntryKind.OPEN_CONTRADICTION, content="b", source="s",
+                             refs=("Y",), created_cycle=1,
+                             stage=pv.LifecycleStage.CONTRADICTION_DETECTED)
+    pv.record([e1, e2], store_path=p.provisional)
+    # provenance: three reviews - two rejected (coincidence), one contradiction_detected
+    p.hindsight_provenance.write_text("\n".join(json.dumps(r) for r in [
+        {"cycle": 2, "reactivated": [{"entry_id": "a", "outcome": "rejected"},
+                                     {"entry_id": "b", "outcome": "contradiction_detected"}]},
+        {"cycle": 3, "reactivated": [{"entry_id": "c", "outcome": "rejected"}]},
+    ]) + "\n")
+    rec = scoreboard.compute(None, {}, paths=p, cycle=4, run=4)
+    hs = rec["hindsight"]
+    assert hs["entries_total"] == 2 and hs["reviews"] == 3
+    assert hs["outcomes"]["rejected"] == 2 and hs["outcomes"]["contradiction_detected"] == 1
+    assert hs["coincidence_share"] == round(2 / 3, 4)          # honest: 2/3 found nothing
 
 
 def test_empty_cycle_is_all_zeros(tmp_path):
