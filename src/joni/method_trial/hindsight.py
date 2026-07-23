@@ -91,6 +91,52 @@ def _settle_and_tag(entries: list, *, cycle: int) -> list:
     return [pv.tag(pv.settle(e), cycle) for e in entries]
 
 
+_ARCHIVE_AFTER_REVIEWS = 2               # #4: two evidence-free re-evaluations -> archive
+_LINK_SIGNIFICANCE = 0.9                 # strongly anchored but not a claim -> associative note
+
+
+def measure_significance(cs, entry) -> float:
+    """H3, the MEASURED (not estimated) epistemic quantity: the fraction of the entry's referenced
+    ids that are still live in the core (not rejected/superseded/expired). 0.0 means the thing it
+    pointed at is gone. Deterministic, read-only - rules for logic, never a model's guess."""
+    refs = entry.refs
+    get = getattr(getattr(cs, "core", None), "get", None)
+    if not refs or get is None:
+        return 0.0
+    live = 0
+    for r in refs:
+        obj = None
+        with contextlib.suppress(Exception):
+            obj = get(r)
+        if obj is None:
+            continue
+        st = getattr(getattr(obj, "status", None), "value", None) or getattr(obj, "status", "")
+        if str(st) not in ("rejected", "superseded", "expired"):
+            live += 1
+    return round(live / len(refs), 4)
+
+
+def decide(cs, entry, *, cycle: int):
+    """H3: move a REVIEW_DUE entry to exactly one typed outcome, deterministically, on measured
+    state. This is where #4 (state transition after evidence-free re-evaluations) and #5 (a live
+    contradiction) become lifecycle transitions. Consolidation is never auto here: an entry that
+    graduates becomes ``hypothesis_opened`` (a real testable proposition, gated elsewhere), never a
+    silent claim."""
+    from ..autonomy import hypothesis_form
+    sig = measure_significance(cs, entry)
+    if sig <= 0.0:                                       # what it pointed at is gone -> reject
+        return pv.resolve(entry, pv.LifecycleStage.REJECTED, significance=sig)
+    if hypothesis_form.well_formed(entry.content):       # became testable -> #4 TEST (graduated)
+        return pv.resolve(entry, pv.LifecycleStage.HYPOTHESIS_OPENED, significance=sig)
+    if entry.kind is pv.EntryKind.OPEN_CONTRADICTION:    # a live contradiction -> feed #5
+        return pv.resolve(entry, pv.LifecycleStage.CONTRADICTION_DETECTED, significance=sig)
+    if entry.review_count >= _ARCHIVE_AFTER_REVIEWS:     # #4 ARCHIVE: 2 evidence-free re-evals
+        return pv.resolve(entry, pv.LifecycleStage.EXPIRED, significance=sig)
+    if sig >= _LINK_SIGNIFICANCE:                        # strongly anchored but not a claim
+        return pv.resolve(entry, pv.LifecycleStage.LINKED_ONLY, significance=sig)
+    return pv.re_tag_for_wait(entry, cycle)              # #4 WAIT: re-tag, count persists
+
+
 def run(cs, extensions: dict, proto, cycle: int = 0, *, paths=None, store_path=None,
         provenance_path=None, panel_path=None) -> dict:
     """One cycle of the provisional layer: ingest -> settle+tag -> (on a salient event) reactivate
@@ -107,50 +153,56 @@ def run(cs, extensions: dict, proto, cycle: int = 0, *, paths=None, store_path=N
         changed = list(fresh)                              # entries to append this cycle
 
         salience = event_salience(extensions)
-        reviewed: list = []
+        resolved: list = []                                # H3: reactivated entries, decided
         if salience >= EVENT_SALIENCE_THRESHOLD:
             for e in stored:
-                if len(reviewed) >= MAX_REVIEW_PER_EVENT:
+                if len(resolved) >= MAX_REVIEW_PER_EVENT:
                     break
                 if pv.in_capture_window(e, cycle):
-                    reviewed.append(pv.mark_review_due(e))
-            changed.extend(reviewed)
+                    resolved.append(decide(cs, pv.mark_review_due(e), cycle=cycle))
+            changed.extend(resolved)
 
         expired: list = []                                 # lived-out non-terminal entries retire
         _terminal = {pv.LifecycleStage.EXPIRED, pv.LifecycleStage.CONSOLIDATED,
-                     pv.LifecycleStage.REJECTED, pv.LifecycleStage.LINKED_ONLY}
-        reviewed_ids = {e.entry_id() for e in reviewed}
+                     pv.LifecycleStage.REJECTED, pv.LifecycleStage.LINKED_ONLY,
+                     pv.LifecycleStage.CONTRADICTION_DETECTED, pv.LifecycleStage.HYPOTHESIS_OPENED}
+        touched_ids = {e.entry_id() for e in resolved}
         for e in stored:
-            if e.entry_id() in reviewed_ids or e.stage in _terminal:
+            if e.entry_id() in touched_ids or e.stage in _terminal:
                 continue
             if pv.is_expired(e, cycle):
                 expired.append(pv.expire(e))
         changed.extend(expired)
 
         pv.record(changed, store_path=store_path)
-        if reviewed:
-            _write_provenance(provenance_path, cycle, salience, reviewed, extensions)
-        counts = _stage_counts(stored, fresh, reviewed, expired)
+        if resolved:
+            _write_provenance(provenance_path, cycle, salience, resolved, extensions)
+        counts = _stage_counts(stored, fresh, resolved, expired)
         _write_panel(panel_path, cycle, counts, salience)
         extensions["hindsight"] = counts
         proto.record(cycle, "hindsight",
                      f"ingested {len(fresh)} · tagged {counts['tagged_now']} · "
-                     f"salience {salience} · reviews {len(reviewed)} · expired {len(expired)}")
-        return {"ingested": len(fresh), "reviewed": len(reviewed), "expired": len(expired),
-                "event_salience": salience}
+                     f"salience {salience} · reviews {len(resolved)} · "
+                     f"outcomes {counts['outcomes']} · expired {len(expired)}")
+        return {"ingested": len(fresh), "reviewed": len(resolved), "expired": len(expired),
+                "event_salience": salience, "outcomes": counts["outcomes"]}
     except Exception as exc:  # noqa: BLE001 - a read-only staging layer must never break the cycle
         with contextlib.suppress(Exception):
             proto.record(cycle, "hindsight", f"[hindsight error, skipped] {type(exc).__name__}")
         return {"ingested": 0, "reviewed": 0, "expired": 0, "event_salience": 0.0}
 
 
-def _stage_counts(stored: list, fresh: list, reviewed: list, expired: list) -> dict:
+def _stage_counts(stored: list, fresh: list, resolved: list, expired: list) -> dict:
     tagged_now = sum(1 for e in fresh if e.stage is pv.LifecycleStage.TAGGED)
     by_stage: dict[str, int] = {}
     for e in stored + fresh:
         by_stage[e.stage.value] = by_stage.get(e.stage.value, 0) + 1
-    return {"ingested": len(fresh), "tagged_now": tagged_now, "reviews_triggered": len(reviewed),
-            "expired": len(expired), "stored_total": len(stored), "by_stage": by_stage}
+    outcomes: dict[str, int] = {}                           # H3: this cycle's typed review outcomes
+    for e in resolved:
+        outcomes[e.stage.value] = outcomes.get(e.stage.value, 0) + 1
+    return {"ingested": len(fresh), "tagged_now": tagged_now, "reviews_triggered": len(resolved),
+            "outcomes": outcomes, "expired": len(expired), "stored_total": len(stored),
+            "by_stage": by_stage}
 
 
 def _write_provenance(path, cycle: int, salience: float, reviewed: list, extensions: dict) -> None:
@@ -161,11 +213,17 @@ def _write_provenance(path, cycle: int, salience: float, reviewed: list, extensi
     rec = {"cycle": cycle, "event_salience": round(float(salience), 4),
            "trigger": {"benefit_trials": benefit,
                        "skills_proposed": len(extensions.get("skills_proposed") or [])},
-           "reactivated": [e.entry_id() for e in reviewed]}
+           "reactivated": [{"entry_id": e.entry_id(), "outcome": e.stage.value,
+                            "epistemic_significance": e.epistemic_significance,
+                            "review_count": e.review_count} for e in reviewed]}
     with contextlib.suppress(OSError):
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+def _fmt_outcomes(outcomes: dict) -> str:
+    return " · ".join(f"{k} {v}" for k, v in sorted(outcomes.items())) or "—"
 
 
 def _write_panel(path, cycle: int, counts: dict, salience: float) -> None:
@@ -185,6 +243,7 @@ def _write_panel(path, cycle: int, counts: dict, salience: float) -> None:
         f"| Ingested (dieser Zyklus) | {counts['ingested']} ({counts['tagged_now']} getaggt) |",
         f"| Event-Salienz | {salience} |",
         f"| Reviews ausgelöst | {counts['reviews_triggered']} |",
+        f"| Outcomes (dieser Zyklus) | {_fmt_outcomes(counts.get('outcomes', {}))} |",
         f"| Verfallen | {counts['expired']} |",
         f"| Stages (Bestand) | {stages} |",
         "",
@@ -194,5 +253,5 @@ def _write_panel(path, cycle: int, counts: dict, salience: float) -> None:
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-__all__ = ["ingest", "event_salience", "run", "MAX_INGEST_PER_CYCLE", "MAX_REVIEW_PER_EVENT",
-           "EVENT_SALIENCE_THRESHOLD"]
+__all__ = ["ingest", "event_salience", "measure_significance", "decide", "run",
+           "MAX_INGEST_PER_CYCLE", "MAX_REVIEW_PER_EVENT", "EVENT_SALIENCE_THRESHOLD"]

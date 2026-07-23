@@ -65,33 +65,69 @@ def test_a_quiet_cycle_ingests_but_triggers_no_review(tmp_path):
     assert not p.hindsight_provenance.exists()                       # nothing reactivated
 
 
-def test_a_salient_later_event_reactivates_an_in_window_tag(tmp_path):
-    cs = _CS()
+def test_a_salient_event_reactivates_and_resolves_a_live_contradiction(tmp_path):
+    cs = _CS({"C-1": "claim one", "C-2": "claim two"})       # the conflict's claims are live
     p = _paths(tmp_path)
     # cycle 1: an opened contradiction is ingested and tagged (attention 0.6 >= bar)
     hindsight.run(cs, {"conflicts_opened": [("C-1", "C-2")]}, _Proto(), cycle=1, paths=p)
-    tagged = [e for e in pv.load(p.provisional) if e.stage is pv.LifecycleStage.TAGGED]
-    assert len(tagged) == 1
-    # cycle 2 (in window): a benefit trial is a salient event -> the tag is reactivated
+    assert any(e.stage is pv.LifecycleStage.TAGGED for e in pv.load(p.provisional))
+    # cycle 2 (in window): a benefit trial is a salient event -> the tag is reactivated AND resolved
     ev = {"sandbox_trials": [{"verdict": "benefit"}]}
     out = hindsight.run(cs, ev, _Proto(), cycle=2, paths=p)
     assert out["reviewed"] == 1
-    due = [e for e in pv.load(p.provisional) if e.stage is pv.LifecycleStage.REVIEW_DUE]
-    assert len(due) == 1
-    # provenance records WHY it was reactivated
+    # a live contradiction resolves to contradiction_detected (the #5 feed); review_due is transient
+    cd = [e for e in pv.load(p.provisional) if e.stage is pv.LifecycleStage.CONTRADICTION_DETECTED]
+    assert len(cd) == 1 and cd[0].epistemic_significance == 1.0
     prov = json.loads(p.hindsight_provenance.read_text().splitlines()[-1])
-    assert prov["cycle"] == 2 and due[0].entry_id() in prov["reactivated"]
+    assert prov["cycle"] == 2 and prov["reactivated"][0]["outcome"] == "contradiction_detected"
 
 
-def test_reactivation_never_touches_layer9_or_consolidates(tmp_path):
-    cs = _CS()
+def test_reactivation_never_consolidates(tmp_path):
+    cs = _CS({"C-1": "claim one", "C-2": "claim two"})
     p = _paths(tmp_path)
     hindsight.run(cs, {"conflicts_opened": [("C-1", "C-2")]}, _Proto(), cycle=1, paths=p)
     hindsight.run(cs, {"skills_proposed": [{"admissible": True}]}, _Proto(), cycle=2, paths=p)
     stages = {e.stage for e in pv.load(p.provisional)}
-    # the strongest state reached is review_due - never consolidated (that is H3, human-gated)
+    # a review NEVER auto-consolidates into Layer 9; the strongest outcome here is a typed feed
     assert pv.LifecycleStage.CONSOLIDATED not in stages
-    assert pv.LifecycleStage.REVIEW_DUE in stages
+    assert pv.LifecycleStage.CONTRADICTION_DETECTED in stages
+
+
+def test_measure_significance_counts_live_refs():
+    cs = _CS({"L-1": "live"})
+    live = pv.ProvisionalEntry(kind=pv.EntryKind.WEAK_HINT, content="x", source="s",
+                               refs=("L-1",), created_cycle=1)
+    dead = pv.ProvisionalEntry(kind=pv.EntryKind.WEAK_HINT, content="x", source="s",
+                               refs=("GONE",), created_cycle=1)
+    assert hindsight.measure_significance(cs, live) == 1.0
+    assert hindsight.measure_significance(cs, dead) == 0.0
+
+
+def _review_due(**over):
+    base = dict(kind=pv.EntryKind.WEAK_HINT, content="a bare hint", source="pattern_hint",
+                refs=("L-1",), created_cycle=1, stage=pv.LifecycleStage.REVIEW_DUE, review_count=1)
+    base.update(over)
+    return pv.ProvisionalEntry(**base)
+
+
+def test_decide_maps_measured_state_to_typed_outcomes():
+    cs = _CS({"L-1": "live"})
+    assert hindsight.decide(cs, _review_due(refs=("GONE",)), cycle=5).stage \
+        is pv.LifecycleStage.REJECTED                        # gone refs -> rejected
+    wf = ("Because load drives retries, when traffic is heavy we should observe errors; refuted "
+          "if flat.")
+    assert hindsight.decide(cs, _review_due(content=wf), cycle=5).stage \
+        is pv.LifecycleStage.HYPOTHESIS_OPENED               # became testable -> #4 TEST
+    assert hindsight.decide(cs, _review_due(kind=pv.EntryKind.OPEN_CONTRADICTION), cycle=5).stage \
+        is pv.LifecycleStage.CONTRADICTION_DETECTED          # live contradiction -> #5 feed
+    # fully anchored (sig 1.0) but not a claim -> an associative note only
+    assert hindsight.decide(cs, _review_due(), cycle=5).stage is pv.LifecycleStage.LINKED_ONLY
+    # partial significance, first review, no new evidence -> WAIT (re-tagged, count persists)
+    waited = hindsight.decide(cs, _review_due(refs=("L-1", "GONE"), review_count=1), cycle=5)
+    assert waited.stage is pv.LifecycleStage.TAGGED and waited.review_count == 1   # #4 WAIT
+    # #4 ARCHIVE: after two evidence-free re-evaluations -> expired
+    assert hindsight.decide(cs, _review_due(refs=("L-1", "GONE"), review_count=2), cycle=5).stage \
+        is pv.LifecycleStage.EXPIRED
 
 
 def test_run_is_fail_open_on_a_bad_paths(tmp_path):

@@ -57,7 +57,7 @@ class LifecycleStage(StrEnum):
 
 _ENTRY_FIELDS = frozenset({
     "kind", "content", "topic", "refs", "source", "stage", "created_cycle", "ttl",
-    "tagged_cycle", "attention_salience", "epistemic_significance", "detail",
+    "tagged_cycle", "review_count", "attention_salience", "epistemic_significance", "detail",
 })
 
 
@@ -84,6 +84,7 @@ class ProvisionalEntry:
     created_cycle: int = 0
     ttl: int = DEFAULT_TTL
     tagged_cycle: int = -1                          # H1: cycle the tag was applied (-1 = untagged)
+    review_count: int = 0                           # H3/#4: how many times reactivated for review
     attention_salience: float = 0.0                # cheap/heuristic - how striking (may be 0)
     epistemic_significance: float = 0.0            # MEASURED later - how much it moves the graph
     detail: str = ""                               # bounded, pre-cleaned; no prose/secrets
@@ -109,6 +110,9 @@ class ProvisionalEntry:
         if not isinstance(self.tagged_cycle, int) or isinstance(self.tagged_cycle, bool) \
                 or self.tagged_cycle < -1:
             raise ValueError("tagged_cycle must be an int >= -1")
+        if not isinstance(self.review_count, int) or isinstance(self.review_count, bool) \
+                or self.review_count < 0:
+            raise ValueError("review_count must be an int >= 0")
         _sal("attention_salience", self.attention_salience)
         _sal("epistemic_significance", self.epistemic_significance)
         if not isinstance(self.detail, str):
@@ -124,7 +128,7 @@ class ProvisionalEntry:
                 "kind": self.kind.value, "content": self.content, "source": self.source,
                 "topic": self.topic, "refs": list(self.refs), "stage": self.stage.value,
                 "created_cycle": self.created_cycle, "ttl": self.ttl,
-                "tagged_cycle": self.tagged_cycle,
+                "tagged_cycle": self.tagged_cycle, "review_count": self.review_count,
                 "attention_salience": round(float(self.attention_salience), 4),
                 "epistemic_significance": round(float(self.epistemic_significance), 4),
                 "detail": self.detail[:200]}
@@ -141,7 +145,7 @@ class ProvisionalEntry:
             topic=d.get("topic", ""), refs=tuple(d.get("refs", ())),
             stage=LifecycleStage(d.get("stage", "ephemeral")),
             created_cycle=int(d.get("created_cycle", 0)), ttl=int(d.get("ttl", DEFAULT_TTL)),
-            tagged_cycle=int(d.get("tagged_cycle", -1)),
+            tagged_cycle=int(d.get("tagged_cycle", -1)), review_count=int(d.get("review_count", 0)),
             attention_salience=d.get("attention_salience", 0.0),
             epistemic_significance=d.get("epistemic_significance", 0.0),
             detail=d.get("detail", ""))
@@ -183,11 +187,40 @@ def in_capture_window(entry: ProvisionalEntry, cycle: int,
 
 
 def mark_review_due(entry: ProvisionalEntry) -> ProvisionalEntry:
-    """H2: a later event reactivated this tagged entry - move it to REVIEW_DUE. Pure. This is only a
-    reactivation for review; whether a real relationship exists is decided later (H3), not here."""
+    """H2: a later event reactivated this tagged entry - move it to REVIEW_DUE and count the review.
+    Pure. This is only a reactivation for review; the typed outcome is decided in H3, not here. The
+    review_count carries #4's 'after 2 evidence-free re-evaluations' rule."""
     if entry.stage is not LifecycleStage.TAGGED:
         return entry
-    return replace(entry, stage=LifecycleStage.REVIEW_DUE)
+    return replace(entry, stage=LifecycleStage.REVIEW_DUE, review_count=entry.review_count + 1)
+
+
+_REVIEW_OUTCOMES = frozenset({
+    LifecycleStage.EXPIRED, LifecycleStage.CONSOLIDATED, LifecycleStage.REJECTED,
+    LifecycleStage.LINKED_ONLY, LifecycleStage.CONTRADICTION_DETECTED,
+    LifecycleStage.HYPOTHESIS_OPENED,
+})
+
+
+def resolve(entry: ProvisionalEntry, outcome: LifecycleStage, *,
+            significance: float | None = None) -> ProvisionalEntry:
+    """H3: move a REVIEW_DUE entry to a typed outcome (rejected / linked_only /
+    contradiction_detected / hypothesis_opened / consolidated / expired), recording the MEASURED
+    significance the decision rested on. Pure. A non-review_due entry, or a non-outcome target, is
+    returned unchanged - the decision itself (which outcome) is the caller's deterministic logic."""
+    if entry.stage is not LifecycleStage.REVIEW_DUE or outcome not in _REVIEW_OUTCOMES:
+        return entry
+    sig = entry.epistemic_significance if significance is None else float(significance)
+    return replace(entry, stage=outcome, epistemic_significance=sig)
+
+
+def re_tag_for_wait(entry: ProvisionalEntry, cycle: int) -> ProvisionalEntry:
+    """H3 WAIT: a reviewed entry with no new evidence yet, but not past the re-evaluation limit,
+    goes back to TAGGED with a fresh capture window - it keeps its review_count, so a later review
+    still counts toward the #4 archive rule. Only acts on a REVIEW_DUE entry."""
+    if entry.stage is not LifecycleStage.REVIEW_DUE:
+        return entry
+    return replace(entry, stage=LifecycleStage.TAGGED, tagged_cycle=cycle)
 
 
 def is_expired(entry: ProvisionalEntry, current_cycle: int) -> bool:
@@ -247,5 +280,6 @@ def load(store_path) -> list[ProvisionalEntry]:
 
 
 __all__ = ["EntryKind", "LifecycleStage", "ProvisionalEntry", "settle", "tag", "in_capture_window",
-           "mark_review_due", "is_expired", "expire", "record", "load", "SETTLE_THRESHOLD",
-           "TAG_THRESHOLD", "CAPTURE_WINDOW", "DEFAULT_TTL", "PROVISIONAL_VERSION"]
+           "mark_review_due", "resolve", "re_tag_for_wait", "is_expired", "expire", "record",
+           "load", "SETTLE_THRESHOLD", "TAG_THRESHOLD", "CAPTURE_WINDOW", "DEFAULT_TTL",
+           "PROVISIONAL_VERSION"]
