@@ -91,6 +91,22 @@ def test_run_scoreboard_is_fail_open(tmp_path):
     assert scoreboard.run_scoreboard(None, {}, proto, 1, run=1, paths=SimpleNamespace()) == {}
 
 
+def test_scoreboard_scores_hypothesis_well_formedness(tmp_path):
+    p = _paths(tmp_path)
+    hyps = [
+        SimpleNamespace(id="H-1", text="electrical"),                        # bare -> barred, 0/4
+        SimpleNamespace(id="H-2", text="routing is always local-first"),     # substantive, not 4/4
+        SimpleNamespace(id="H-3", text=("Because latency drives retries, when load is heavy we "
+                                        "should observe errors rising; refuted if flat.")),
+    ]
+    cs = SimpleNamespace(hypotheses=lambda: hyps)
+    rec = scoreboard.compute(cs, {}, paths=p, cycle=1, run=1)
+    hy = rec["hypotheses"]
+    assert hy["total"] == 3 and hy["well_formed"] == 1 and hy["reflection_barred"] == 1
+    # H-1 'electrical' and H-2 plain claim both score 0/4; only H-1 is barred (H-2 is substantive)
+    assert hy["by_score"][0] == 2 and hy["by_score"][4] == 1
+
+
 def test_empty_cycle_is_all_zeros(tmp_path):
     p = _paths(tmp_path)
     rec = scoreboard.compute(None, {}, paths=p, cycle=0, run=0)
