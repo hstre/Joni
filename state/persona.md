@@ -6,17 +6,17 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 856 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 629 Lehre(n)._
+_Stand: Tick 25 · 858 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 630 Lehre(n)._
 
-## attention · Tiefe 86 (threshold)
+## attention · Tiefe 87 (threshold)
 
 **Beurteile jede Annahme in deinen Aufmerksamkeitsansprüchen kritisch, da wiederkehrende Begriffe wie "Mechanismus" ohne empirische Überprüfung zu Fehlern führen können.**
 
-_deterministisch:_ Auf 'attention': 86 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 86× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 87 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 87× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
-- _volle Spur (86):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-10296, C-10332, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
+- _volle Spur (87):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-10296, C-10332, C-10359, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
 
 ## memory · Tiefe 83 (threshold)
 
@@ -5463,6 +5463,29 @@ _deterministisch:_ Auf 'architectures': 1 korrigierte(r) Irrtum/Irrtümer (0× e
 
 - Anker: „'architectures' keeps recurring across 2 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-1312
+
+## architecture+tools · Tiefe 1 (self_review)
+
+**Bei der Bewertung von Architekturressourcen und Tools ist es entscheidend, sowohl technische als auch menschliche und soziale Dimensionen zu berücksichtigen.**
+
+_deterministisch:_ Auf 'architecture+tools': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Die Quellen sollten nicht nur technische Aspekte abdecken, sondern auch menschliche und soziale维度：
+uptools
+维度：
+- 技术方面：建筑材料、结构设计、施工方法等。
+- 人文方面：建筑的历史背景、文化意义、使用人群的需求等。
+- 社会方面：建筑对社区的影响、可持续性、环境保护等。
+
+在评估建筑相关资源时，不应仅关注技术细节，还应考虑建筑如何反映和影响社会与文化。' (from architecture) might also apply to tools.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Die Quellen sollten nicht nur technische Aspekte abdecken, sondern auch menschliche und soziale维度：
+uptools
+维度：
+- 技术方面：建筑材料、结构设计、施工方法等。
+- 人文方面：建筑的历史背景、文化意义、使用人群的需求等。
+- 社会方面：建筑对社区的影响、可持续性、环境保护等。
+
+在评估建筑相关资源时，不应仅关注技术细节，还应考虑建筑如何反映和影响社会与文化。' (from architecture) might also apply to tools.“ → verworfen — verworfen
+- _volle Spur (1):_ C-10358
 
 ## architecture+methodology · Tiefe 1 (self_review)
 
