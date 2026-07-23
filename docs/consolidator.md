@@ -1,6 +1,6 @@
 # Joni — Consolidator-Scoreboard
 
-**Cycle 652 · Run 3**  
+**Cycle 653 · Run 4**  
 
 _Erfolg am Output des Consolidators gemessen, nicht am Claim-Wachstum. Read-only; nichts aktiviert sich selbst — Layer 9 bleibt die Autorität._
 
