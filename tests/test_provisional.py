@@ -81,3 +81,26 @@ def test_record_missing_store_is_a_clean_noop(tmp_path):
     assert pv.record([_entry()], store_path=None) == 0
     assert pv.record([], store_path=tmp_path / "x.jsonl") == 0
     assert pv.load(tmp_path / "nope.jsonl") == []
+
+
+# ---- H1: tag + capture window; H2: review reactivation ---------------------------------------- #
+
+def test_tagging_needs_provisional_and_clears_the_bar():
+    tagged = pv.tag(pv.settle(_entry(attention_salience=0.6)), cycle=5)   # settled then tagged
+    assert tagged.stage is pv.LifecycleStage.TAGGED and tagged.tagged_cycle == 5
+    # a provisional entry below the tag bar stays provisional
+    mild = pv.tag(_entry(attention_salience=0.3, stage=pv.LifecycleStage.PROVISIONAL), cycle=5)
+    assert mild.stage is pv.LifecycleStage.PROVISIONAL
+    # an ephemeral entry cannot be tagged directly - it must survive the step (settle) first
+    assert pv.tag(_entry(attention_salience=0.9), cycle=5).stage is pv.LifecycleStage.EPHEMERAL
+
+
+def test_capture_window_and_review_reactivation():
+    tagged = pv.tag(pv.settle(_entry(attention_salience=0.6, created_cycle=5)), cycle=5)
+    assert pv.in_capture_window(tagged, 5 + pv.CAPTURE_WINDOW) is True     # still in window
+    assert pv.in_capture_window(tagged, 6 + pv.CAPTURE_WINDOW) is False    # past the window
+    due = pv.mark_review_due(tagged)
+    assert due.stage is pv.LifecycleStage.REVIEW_DUE
+    # only a tagged entry reactivates; a provisional one is untouched
+    assert pv.mark_review_due(pv.settle(_entry(attention_salience=0.6))).stage \
+        is pv.LifecycleStage.PROVISIONAL

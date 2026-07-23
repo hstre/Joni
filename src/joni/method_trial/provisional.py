@@ -57,7 +57,7 @@ class LifecycleStage(StrEnum):
 
 _ENTRY_FIELDS = frozenset({
     "kind", "content", "topic", "refs", "source", "stage", "created_cycle", "ttl",
-    "attention_salience", "epistemic_significance", "detail",
+    "tagged_cycle", "attention_salience", "epistemic_significance", "detail",
 })
 
 
@@ -83,6 +83,7 @@ class ProvisionalEntry:
     stage: LifecycleStage = LifecycleStage.EPHEMERAL
     created_cycle: int = 0
     ttl: int = DEFAULT_TTL
+    tagged_cycle: int = -1                          # H1: cycle the tag was applied (-1 = untagged)
     attention_salience: float = 0.0                # cheap/heuristic - how striking (may be 0)
     epistemic_significance: float = 0.0            # MEASURED later - how much it moves the graph
     detail: str = ""                               # bounded, pre-cleaned; no prose/secrets
@@ -105,6 +106,9 @@ class ProvisionalEntry:
             raise ValueError("created_cycle must be an int >= 0")
         if not isinstance(self.ttl, int) or isinstance(self.ttl, bool) or self.ttl < 1:
             raise ValueError("ttl must be an int >= 1")
+        if not isinstance(self.tagged_cycle, int) or isinstance(self.tagged_cycle, bool) \
+                or self.tagged_cycle < -1:
+            raise ValueError("tagged_cycle must be an int >= -1")
         _sal("attention_salience", self.attention_salience)
         _sal("epistemic_significance", self.epistemic_significance)
         if not isinstance(self.detail, str):
@@ -120,6 +124,7 @@ class ProvisionalEntry:
                 "kind": self.kind.value, "content": self.content, "source": self.source,
                 "topic": self.topic, "refs": list(self.refs), "stage": self.stage.value,
                 "created_cycle": self.created_cycle, "ttl": self.ttl,
+                "tagged_cycle": self.tagged_cycle,
                 "attention_salience": round(float(self.attention_salience), 4),
                 "epistemic_significance": round(float(self.epistemic_significance), 4),
                 "detail": self.detail[:200]}
@@ -136,6 +141,7 @@ class ProvisionalEntry:
             topic=d.get("topic", ""), refs=tuple(d.get("refs", ())),
             stage=LifecycleStage(d.get("stage", "ephemeral")),
             created_cycle=int(d.get("created_cycle", 0)), ttl=int(d.get("ttl", DEFAULT_TTL)),
+            tagged_cycle=int(d.get("tagged_cycle", -1)),
             attention_salience=d.get("attention_salience", 0.0),
             epistemic_significance=d.get("epistemic_significance", 0.0),
             detail=d.get("detail", ""))
@@ -150,6 +156,38 @@ def settle(entry: ProvisionalEntry, *, threshold: float = SETTLE_THRESHOLD) -> P
     if entry.attention_salience >= threshold:
         return replace(entry, stage=LifecycleStage.PROVISIONAL)
     return entry
+
+
+TAG_THRESHOLD = 0.5                   # attention-salience bar to earn a short-lived tag (H1)
+CAPTURE_WINDOW = 6                    # cycles a tag stays live and reactivatable (H1/H2)
+
+
+def tag(entry: ProvisionalEntry, cycle: int, *,
+        threshold: float = TAG_THRESHOLD) -> ProvisionalEntry:
+    """H1: a PROVISIONAL entry that clears the attention bar earns a short-lived tag - it becomes
+    TAGGED and anchors its capture window at ``cycle``. Deterministic, pure. Only a PROVISIONAL
+    entry tags (it must survive the step before carrying a tag); others return unchanged."""
+    if entry.stage is not LifecycleStage.PROVISIONAL:
+        return entry
+    if entry.attention_salience >= threshold:
+        return replace(entry, stage=LifecycleStage.TAGGED, tagged_cycle=cycle)
+    return entry
+
+
+def in_capture_window(entry: ProvisionalEntry, cycle: int,
+                      *, window: int = CAPTURE_WINDOW) -> bool:
+    """H2: is this TAGGED entry still within its bounded capture window at ``cycle``? Only a tagged
+    entry inside its window can be reactivated by a later event."""
+    return (entry.stage is LifecycleStage.TAGGED and entry.tagged_cycle >= 0
+            and cycle <= entry.tagged_cycle + window)
+
+
+def mark_review_due(entry: ProvisionalEntry) -> ProvisionalEntry:
+    """H2: a later event reactivated this tagged entry - move it to REVIEW_DUE. Pure. This is only a
+    reactivation for review; whether a real relationship exists is decided later (H3), not here."""
+    if entry.stage is not LifecycleStage.TAGGED:
+        return entry
+    return replace(entry, stage=LifecycleStage.REVIEW_DUE)
 
 
 def is_expired(entry: ProvisionalEntry, current_cycle: int) -> bool:
@@ -208,5 +246,6 @@ def load(store_path) -> list[ProvisionalEntry]:
     return list(latest.values())
 
 
-__all__ = ["EntryKind", "LifecycleStage", "ProvisionalEntry", "settle", "is_expired", "expire",
-           "record", "load", "SETTLE_THRESHOLD", "DEFAULT_TTL", "PROVISIONAL_VERSION"]
+__all__ = ["EntryKind", "LifecycleStage", "ProvisionalEntry", "settle", "tag", "in_capture_window",
+           "mark_review_due", "is_expired", "expire", "record", "load", "SETTLE_THRESHOLD",
+           "TAG_THRESHOLD", "CAPTURE_WINDOW", "DEFAULT_TTL", "PROVISIONAL_VERSION"]

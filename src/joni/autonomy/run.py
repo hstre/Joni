@@ -229,7 +229,9 @@ def one_cycle() -> dict:
                                   online=online(), max_papers=max_papers,
                                   budget=budget, runs_per_week=runs_per_week())
 
-    for conflict_id in cs.detect_and_open_conflicts():
+    _opened = list(cs.detect_and_open_conflicts())
+    extensions["conflicts_opened"] = _opened      # HindsightTag: this cycle's open contradictions
+    for conflict_id in _opened:
         proto.record(cycle, "conflict_open",
                      f"opened {conflict_id} - two claims held open, not smoothed away")
 
@@ -513,6 +515,18 @@ def one_cycle() -> dict:
     #        surface the currently-decidable conflicts. This is what fills the persona's real
     #        "X -> Y, weil Z" revisions instead of bare rejections.
     conflict_resolution.interact(cs, extensions, proto, cycle, paths=p)
+
+    # 4i-c. HindsightTag (H1+H2): the provisional-episodic layer. Ingest this cycle's provisional
+    #       material (barred pattern hints, opened contradictions), tag the salient ones with a
+    #       capture window, and - if a sufficiently salient later event occurred (benefit trial,
+    #       crystallised skill, resolved conflict) - reactivate in-window tags to review_due
+    #       (content-independent temporal co-allocation). A review TRIGGER, not a rescue: nothing
+    #       consolidates here (H3 decides). Read-only wrt Layer 9; append-only; fail-open.
+    try:
+        from ..method_trial import hindsight as _hindsight
+        _hindsight.run(cs, extensions, proto, cycle, paths=p)
+    except Exception:  # noqa: BLE001 - the staging layer must never break a cycle
+        pass
 
     # 4i-b. Personal Store (docs/PERSONAL_STATE.md): the operator's own statements enter as
     #       CONFIRMED self-claims (the operator is the trusted HUMAN, not a forum SOURCE), the
