@@ -33,6 +33,13 @@ on:
   # measured evidence. With that draining, metabolism ENFORCE is safe (JONI_METABOLISM=1): while the
   # pile is being drained the intake gate ignores that one pressure, so enforce reflects real
   # overload, not the standing backlog. Observing this window. To re-park: re-comment the schedule.
+  # RETIRED ~2026-07-20 (2-day window from 07-18 elapsed). RESUMED 2026-07-23 (operator request):
+  # a FRESH observed 2-day window (run_window.json reset: start = 2026-07-23T03:48Z, runs = 0,
+  # retired = false). Since 07-20 the Procedural Skill Consolidator's whole procedural axis landed -
+  # S0 episodes (read-only from measured signals), S1 SkillCandidate schema, the crystallisation
+  # bridge, and S4 lifecycle (re-trials mature probationary skills toward a human-gated promotion).
+  # This window observes whether real skills crystallise and episodes accumulate. To re-park:
+  # re-comment the schedule.
   schedule:
     - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
@@ -112,7 +119,7 @@ jobs:
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
-          JONI_RUNTIME_DAYS: "2"      # observed resume: fresh 2-day window (start 2026-07-18), retiring ~2026-07-20
+          JONI_RUNTIME_DAYS: "2"      # observed resume: fresh 2-day window (start 2026-07-23), retiring ~2026-07-25
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           # Router shadow (observation-only): after each cycle, run the external DESi router over the
