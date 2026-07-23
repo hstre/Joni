@@ -39,14 +39,22 @@ def _paths(tmp_path):
                            hindsight_panel=tmp_path / "hindsight.md")
 
 
-def test_ingest_forms_weak_hints_and_open_contradictions():
+def _dispute(**over):
+    base = dict(claim_ids=["C-1", "C-2"], topic="routing", size=3)
+    base.update(over)
+    return base
+
+
+def test_ingest_forms_weak_hints_and_condensed_disputes():
     cs = _CS({"H-1": "the term 'x' recurs; shared mechanism remains untested"})
-    ext = {"hyp_pattern_hints": ["H-1"], "conflicts_opened": [("C-1", "C-2")]}
+    ext = {"hyp_pattern_hints": ["H-1"], "disputes": [_dispute()]}
     entries = hindsight.ingest(cs, ext, cycle=4)
     kinds = {e.kind for e in entries}
     assert pv.EntryKind.WEAK_HINT in kinds and pv.EntryKind.OPEN_CONTRADICTION in kinds
     hint = next(e for e in entries if e.kind is pv.EntryKind.WEAK_HINT)
     assert hint.refs == ("H-1",) and "recurs" in hint.content       # real content, real ref
+    dispute = next(e for e in entries if e.kind is pv.EntryKind.OPEN_CONTRADICTION)
+    assert dispute.refs == ("C-1", "C-2") and dispute.topic == "routing"   # the condensed dispute
 
 
 def test_event_salience_counts_later_learning_events():
@@ -58,7 +66,7 @@ def test_event_salience_counts_later_learning_events():
 def test_a_quiet_cycle_ingests_but_triggers_no_review(tmp_path):
     cs = _CS()
     p = _paths(tmp_path)
-    ext = {"conflicts_opened": [("C-1", "C-2")]}                     # ingest, but no salient event
+    ext = {"disputes": [_dispute()]}                     # ingest, but no salient event
     out = hindsight.run(cs, ext, _Proto(), cycle=1, paths=p)
     assert out["ingested"] == 1 and out["reviewed"] == 0
     assert p.provisional.exists()
@@ -69,7 +77,7 @@ def test_a_salient_event_reactivates_and_resolves_a_live_contradiction(tmp_path)
     cs = _CS({"C-1": "claim one", "C-2": "claim two"})       # the conflict's claims are live
     p = _paths(tmp_path)
     # cycle 1: an opened contradiction is ingested and tagged (attention 0.6 >= bar)
-    hindsight.run(cs, {"conflicts_opened": [("C-1", "C-2")]}, _Proto(), cycle=1, paths=p)
+    hindsight.run(cs, {"disputes": [_dispute()]}, _Proto(), cycle=1, paths=p)
     assert any(e.stage is pv.LifecycleStage.TAGGED for e in pv.load(p.provisional))
     # cycle 2 (in window): a benefit trial is a salient event -> the tag is reactivated AND resolved
     ev = {"sandbox_trials": [{"verdict": "benefit"}]}
@@ -85,7 +93,7 @@ def test_a_salient_event_reactivates_and_resolves_a_live_contradiction(tmp_path)
 def test_reactivation_never_consolidates(tmp_path):
     cs = _CS({"C-1": "claim one", "C-2": "claim two"})
     p = _paths(tmp_path)
-    hindsight.run(cs, {"conflicts_opened": [("C-1", "C-2")]}, _Proto(), cycle=1, paths=p)
+    hindsight.run(cs, {"disputes": [_dispute()]}, _Proto(), cycle=1, paths=p)
     hindsight.run(cs, {"skills_proposed": [{"admissible": True}]}, _Proto(), cycle=2, paths=p)
     stages = {e.stage for e in pv.load(p.provisional)}
     # a review NEVER auto-consolidates into Layer 9; the strongest outcome here is a typed feed

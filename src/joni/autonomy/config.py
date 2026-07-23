@@ -130,6 +130,16 @@ class Paths:
         return self.root / "docs" / "hindsight.md"
 
     @property
+    def disputes_sheet(self) -> Path:
+        # Priority 5: the human view of the condensed Streitfragen (few disputes, not 273 pairs).
+        return self.root / "docs" / "streitfragen.md"
+
+    @property
+    def disputes_series(self) -> Path:
+        # Priority 5: append-only per-cycle count row (conflicts -> disputes, largest tangle).
+        return self.root / "state" / "disputes_series.jsonl"
+
+    @property
     def scoreboard_series(self) -> Path:
         # Priority 1: append-only per-cycle Consolidator scoreboard (episodes/skills/re-trials/
         # recommendations/valid-vs-discarded). Success measured at the output, not claim growth.
