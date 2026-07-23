@@ -119,6 +119,17 @@ class Paths:
         return self.root / "state" / "provisional.jsonl"
 
     @property
+    def hindsight_provenance(self) -> Path:
+        # HindsightTag H2: append-only provenance of every review-trigger (event, cycle, capture
+        # strength, reactivated entries) - a human can reconstruct WHY an entry was reactivated.
+        return self.root / "state" / "hindsight_provenance.jsonl"
+
+    @property
+    def hindsight_panel(self) -> Path:
+        # HindsightTag: the short human/site view of the provisional layer (stages, tags, reviews).
+        return self.root / "docs" / "hindsight.md"
+
+    @property
     def scoreboard_series(self) -> Path:
         # Priority 1: append-only per-cycle Consolidator scoreboard (episodes/skills/re-trials/
         # recommendations/valid-vs-discarded). Success measured at the output, not claim growth.
