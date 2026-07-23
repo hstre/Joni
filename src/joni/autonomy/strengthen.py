@@ -145,9 +145,24 @@ def strengthen(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     # correction history RAISE the promotion bar below. Fail-open ({} = normal behaviour).
     from . import persona
     burned = persona.burned_themes(cs)
-    hyps = cs.hypotheses()
+    # Priority 3: lexical recurrence is not a hypothesis. The targeted bar holds the clear junk out
+    # of the reflection loop - a fixed recurrence template or a bare word-repetition (the emerge/
+    # invent "term X recurs" / "pattern behind X might apply to Y" shapes the operator flagged). A
+    # substantive but plainly-phrased hypothesis still earns reflection; only the recurrence does
+    # not. The full 4-component well-formedness is measured per hypothesis (the scoreboard shows
+    # it), but is not the reflection gate here (see hypothesis_form for why the two are apart).
+    from . import hypothesis_form
+    all_hyps = cs.hypotheses()
+    hyps = [h for h in all_hyps if not hypothesis_form.is_reflection_barred(h.text)]
+    reflected_ids = {h.id for h in hyps}
+    pattern_hints = [h for h in all_hyps if h.id not in reflected_ids]
+    extensions["hyp_pattern_hints"] = [h.id for h in pattern_hints]
+    if pattern_hints:
+        proto.record(cycle, "pattern_hint",
+                     f"{len(pattern_hints)} of {len(all_hyps)} hypotheses held as pattern hints "
+                     "(lexical recurrence, not testable) - no reflection cycle spent on them")
     out = {"tested": 0, "supported": 0, "challenged": 0, "survived": 0,
-           "promoted": 0, "rejected": 0, "insufficient": 0}
+           "promoted": 0, "rejected": 0, "insufficient": 0, "pattern_hints": len(pattern_hints)}
     if not hyps:
         return out
 

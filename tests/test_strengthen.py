@@ -71,6 +71,26 @@ def test_circular_same_source_support_does_not_promote(monkeypatch):
     assert out["promoted"] == 0
 
 
+def test_a_recurrence_template_hypothesis_is_held_as_a_pattern_hint(monkeypatch):
+    """Priority 3: a lexical-recurrence 'hypothesis' (the emerge template shape) is barred from the
+    reflection loop - it stays in the graph but earns no strengthening - while a substantive,
+    plainly-phrased hypothesis in the same cycle is still reflected on."""
+    monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
+    cs = CoreState(l9.Layer9())
+    p = cs.learn("routing decisions drive lower latency overall", "routing", source_id="arxiv:1")
+    cs.learn("routing reduces latency under heavy load", "routing", source_id="arxiv:2")
+    cs.learn("routing locally reduces latency on small tasks", "routing", source_id="arxiv:3")
+    real = cs.hypothesize("Hypothesis: routing locally reduces latency", "routing", parents=(p,))
+    junk = cs.hypothesize(
+        "Across my routing claims, the term 'routing' recurs; whether this reflects a shared "
+        "mechanism remains untested.", "routing", parents=(p,))
+    ext: dict = {}
+    out = strengthen.strengthen(cs, ext, _Proto(), layer=StubSemanticLayer())
+    assert junk in ext["hyp_pattern_hints"]                  # the recurrence junk is held out...
+    assert real not in ext["hyp_pattern_hints"]              # ...the real one is reflected on
+    assert out["pattern_hints"] == 1
+
+
 def test_a_contradicted_idea_is_challenged_not_promoted(monkeypatch):
     monkeypatch.setattr(strengthen, "_kevin_verdict", lambda text, topic: "promising")
     cs, h = _cs_with_a_hypothesis()

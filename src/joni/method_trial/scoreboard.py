@@ -52,6 +52,28 @@ def _skill_stats(paths, extensions: dict) -> dict:
     return {"total": len(cands), "by_status": by_status, "new_admissible": new_admissible}
 
 
+def _hypothesis_stats(cs) -> dict:
+    """Priority 3, made visible: score every current hypothesis 0-4 on well-formedness (mechanism/
+    scope/expected-observation/refutation) and count how many are reflection-barred lexical
+    recurrence. Read-only over the core; independent of cycle ordering."""
+    from ..autonomy import hypothesis_form
+    hyps = []
+    if cs is not None:
+        with contextlib.suppress(Exception):
+            hyps = list(cs.hypotheses())
+    by_score = {i: 0 for i in range(5)}
+    well_formed = barred = 0
+    for h in hyps:
+        text = getattr(h, "text", "")
+        by_score[hypothesis_form.completeness(text)] += 1
+        if hypothesis_form.well_formed(text):
+            well_formed += 1
+        if hypothesis_form.is_reflection_barred(text):
+            barred += 1
+    return {"total": len(hyps), "well_formed": well_formed, "reflection_barred": barred,
+            "by_score": by_score}
+
+
 def _recommendation_counts(extensions: dict) -> dict:
     counts = {"promote": 0, "hold": 0, "archive": 0}
     for a in (extensions.get("skill_lifecycle") or []):
@@ -95,6 +117,7 @@ def compute(cs, extensions: dict, *, paths, cycle: int, run: int) -> dict:
         "skills": _skill_stats(paths, extensions),
         "retrials_this_cycle": retrials,
         "recommendations": _recommendation_counts(extensions),
+        "hypotheses": _hypothesis_stats(cs),
         "trial_funnel": funnel,
         "window": _window_totals(getattr(paths, "scoreboard_series", None), funnel),
     }
@@ -103,6 +126,7 @@ def compute(cs, extensions: dict, *, paths, cycle: int, run: int) -> dict:
 def render_summary(rec: dict) -> str:
     ep, sk = rec["episodes"], rec["skills"]
     rc, w = rec["recommendations"], rec["window"]
+    hy = rec.get("hypotheses", {"total": 0, "well_formed": 0, "reflection_barred": 0})
     status = " · ".join(f"{k} {v}" for k, v in sorted(sk["by_status"].items())) or "—"
     lines = [
         "# Joni — Consolidator-Scoreboard",
@@ -120,6 +144,8 @@ def render_summary(rec: dict) -> str:
         f"{sk['new_admissible']} neu diesen Zyklus |",
         f"| Re-Trials (Reifung) | {rec['retrials_this_cycle']} diesen Zyklus |",
         f"| Empfehlungen | {rc['promote']} promote · {rc['hold']} hold · {rc['archive']} archive |",
+        f"| Hypothesen-Wohlgeformtheit (0-4) | {hy['total']} gesamt · {hy['well_formed']} "
+        f"wohlgeformt (4/4) · {hy['reflection_barred']} als Musterhinweis gesperrt |",
         f"| Valide Tests : verworfene Zuordnungen | {w['valid_tests']} : {w['discarded_mappings']} "
         f"= **{w['valid_to_discarded']}** (Fenster; {w['matched']} gematcht) |",
         "",
