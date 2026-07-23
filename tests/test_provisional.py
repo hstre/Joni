@@ -100,7 +100,23 @@ def test_capture_window_and_review_reactivation():
     assert pv.in_capture_window(tagged, 5 + pv.CAPTURE_WINDOW) is True     # still in window
     assert pv.in_capture_window(tagged, 6 + pv.CAPTURE_WINDOW) is False    # past the window
     due = pv.mark_review_due(tagged)
-    assert due.stage is pv.LifecycleStage.REVIEW_DUE
+    assert due.stage is pv.LifecycleStage.REVIEW_DUE and due.review_count == 1   # #4 counter moved
     # only a tagged entry reactivates; a provisional one is untouched
     assert pv.mark_review_due(pv.settle(_entry(attention_salience=0.6))).stage \
         is pv.LifecycleStage.PROVISIONAL
+
+
+def test_h3_resolve_and_wait_transitions():
+    due = pv.mark_review_due(pv.tag(pv.settle(_entry(attention_salience=0.6)), cycle=5))
+    # resolve to a typed outcome records the measured significance
+    out = pv.resolve(due, pv.LifecycleStage.CONTRADICTION_DETECTED, significance=0.75)
+    assert out.stage is pv.LifecycleStage.CONTRADICTION_DETECTED
+    assert out.epistemic_significance == 0.75
+    # resolve only acts on review_due, and only to a real outcome stage
+    assert pv.resolve(due, pv.LifecycleStage.TAGGED) is due          # not an outcome -> unchanged
+    prov = pv.settle(_entry(attention_salience=0.6))
+    assert pv.resolve(prov, pv.LifecycleStage.REJECTED) is prov      # not review_due -> unchanged
+    # WAIT re-tags a review_due entry with a fresh window, keeping its review_count
+    waited = pv.re_tag_for_wait(due, cycle=9)
+    assert waited.stage is pv.LifecycleStage.TAGGED and waited.tagged_cycle == 9
+    assert waited.review_count == due.review_count
