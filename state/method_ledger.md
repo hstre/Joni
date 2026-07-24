@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 657 · 353 Methoden** — proposed 283 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
+**Cycle 658 · 355 Methoden** — proposed 285 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -253,6 +253,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | global-as-a-lens | **proposed** | candidate | 0 | — |
 | ENTRAP-VL: A Taxonomic Probe for Dual Contextual Entrainment in Vision-Language  | **proposed** | candidate | 0 | — |
 | PIDE MCP: Connecting AI Agents to Isabelle | **proposed** | candidate | 0 | — |
+| 3D-Aware VLMs with Implicit and Explicit Geometries | **proposed** | candidate | 0 | — |
+| Streaming Multi-Agent Autoregressive Diffusion Model with World State Registers | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
 | Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **proposed** | candidate | 0 | — |
