@@ -142,7 +142,7 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     live = cs.active_claims()
     idx = _term_index(live)
     known_topics = set(cs.topics())
-    out = {"topic": None, "synthesis": 0, "method": None}
+    out = {"topic": None, "synthesis": 0, "method": None, "pattern_hints": 0}
     # a Layer-9 non-judgment (layer absent/invalid) must not permanently consume a cluster
     insuff = dict(extensions.get("emerge_insufficient", {}))
 
@@ -195,6 +195,7 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
     # -- 2. emergent synthesis: a within-topic cluster -> a higher-order candidate ------ #
     done_syn = set(extensions.get("synthesized", []))
     made_syn = 0
+    made_hints = 0
     by_topic_term: dict[tuple, list] = defaultdict(list)
     for c in live:
         if not c.topic or _is_synthetic(c.text):
@@ -251,9 +252,23 @@ def emerge(cs, extensions: dict, proto, cycle: int = 0, *, layer=None,
         if sc.semantic_state is not SemanticState.SYNTHESIS_ELIGIBLE:
             continue                                        # Layer 9 did not clear it
         parents = tuple(sorted(c.id for c in cluster))[:5]
-        cs.hypothesize(
-            f"Across my {topic} claims, the term '{term}' recurs; whether this reflects a "
-            "shared mechanism remains untested.", topic, parents=parents)
+        text = (f"Across my {topic} claims, the term '{term}' recurs; whether this reflects a "
+                "shared mechanism remains untested.")
+        # Priority 3, at the source: a bare recurrence observation is a *pattern hint*, not a
+        # hypothesis. If it would be barred from reflection anyway, do NOT mint it as a candidate
+        # claim (that is what floods the graph and the 'hypotheses' with lexical recurrence) -
+        # record it as a hint. A future non-recurrence synthesis (well-formed) would still mint.
+        from . import hypothesis_form
+        if hypothesis_form.is_reflection_barred(text):
+            made_hints += 1
+            out["pattern_hints"] = made_hints
+            extensions.setdefault("emerge_pattern_hints", []).append(
+                {"topic": topic, "term": term, "parents": list(parents)})
+            proto.record(cycle, "pattern_hint",
+                         f"recurrence on {topic}: '{term}' - held as a pattern hint, not minted "
+                         "as a hypothesis (lexical recurrence)")
+            continue
+        cs.hypothesize(text, topic, parents=parents)
         made_syn += 1
         out["synthesis"] = made_syn
         proto.record(cycle, "emerged",

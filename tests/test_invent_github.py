@@ -23,26 +23,24 @@ def _cs_two_topics():
     return cs
 
 
-def test_invention_makes_a_candidate_hypothesis_derived_from_two_claims():
+def test_a_cross_topic_bridge_is_held_as_a_pattern_hint_not_a_hypothesis():
+    # Priority 3 at the source: a bare "pattern behind X might also apply to Y" bridge is lexical
+    # recurrence, so it is filed as a pattern hint - NOT minted as a candidate hypothesis.
     cs = _cs_two_topics()
-    out = invent.invent(cs, {}, _Proto())
-    assert out["hypotheses"] == 1
-    hyps = cs.hypotheses()
-    assert len(hyps) == 1
-    h = hyps[0]
-    assert h.status is l9.Status.CANDIDATE                 # a guess, never auto-active
-    assert h.authority is not l9.Authority.AUTHORITATIVE
-    assert len(h.derived_from) == 2                        # bridges two parent claims
-    assert "Hypothesis" in h.text
+    ext: dict = {}
+    out = invent.invent(cs, ext, _Proto())
+    assert out["hypotheses"] == 0 and out["pattern_hints"] == 1    # a hint, not a hypothesis
+    assert cs.hypotheses() == []                                   # nothing minted into the graph
+    assert ext.get("invent_pattern_hints")                        # the bridge is recorded
 
 
 def test_invention_dedupes_per_topic_pair():
     cs = _cs_two_topics()
-    ext = {}
+    ext: dict = {}
     invent.invent(cs, ext, _Proto())
-    before = len(cs.hypotheses())
+    assert len(ext.get("invent_pattern_hints", [])) == 1
     invent.invent(cs, ext, _Proto())                      # same topic pair -> nothing new
-    assert len(cs.hypotheses()) == before
+    assert len(ext.get("invent_pattern_hints", [])) == 1
 
 
 def test_a_hypothesis_is_never_confirmed_automatically():
