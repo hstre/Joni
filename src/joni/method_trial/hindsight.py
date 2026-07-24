@@ -27,6 +27,7 @@ import json
 from . import provisional as pv
 
 MAX_INGEST_PER_CYCLE = 8
+MAX_DISPUTES_INGEST = 6          # reserve for the FEW taggable disputes so the hints can't crowd
 MAX_REVIEW_PER_EVENT = 5
 EVENT_SALIENCE_THRESHOLD = 0.5
 
@@ -49,23 +50,16 @@ def _text_of(cs, cid: str) -> str:
 
 
 def ingest(cs, extensions: dict, *, cycle: int) -> list:
-    """Form this cycle's ephemeral provisional entries from real signals (read-only). Capped."""
+    """Form this cycle's ephemeral provisional entries from real signals (read-only). Capped.
+
+    Order matters: the FEW condensed disputes are ingested FIRST (they are the taggable, valuable
+    material - attention 0.6), so the hundreds of barred pattern hints (attention 0.3) cannot fill
+    the per-cycle budget and crowd them out - the live-window bug that left the trigger idle. A
+    reserve (``MAX_DISPUTES_INGEST``) guarantees the disputes a place; hints fill what remains."""
     out: list = []
-    # barred pattern hints (Priority 3) -> weak hints worth keeping briefly checkable
-    for hid in (extensions.get("hyp_pattern_hints") or []):
-        if len(out) >= MAX_INGEST_PER_CYCLE:
-            break
-        text = _text_of(cs, str(hid)) or f"barred hypothesis {hid}"
-        with contextlib.suppress(ValueError):
-            out.append(pv.ProvisionalEntry(
-                kind=pv.EntryKind.WEAK_HINT, content=text[:200], source="pattern_hint",
-                refs=(str(hid),), created_cycle=cycle,
-                attention_salience=_ATTENTION[pv.EntryKind.WEAK_HINT]))
-    # condensed Streitfragen (Priority 5) -> open contradictions worth staging and re-reviewing.
-    # The FEW condensed disputes carry real refs and are taggable (attention 0.6), so the review
-    # trigger has genuine material - not the hundreds of raw pairs.
+    # condensed Streitfragen (Priority 5) FIRST -> open contradictions worth staging + re-reviewing
     for d in (extensions.get("disputes") or []):
-        if len(out) >= MAX_INGEST_PER_CYCLE:
+        if len(out) >= MAX_DISPUTES_INGEST:
             break
         if not isinstance(d, dict):
             continue
@@ -80,6 +74,16 @@ def ingest(cs, extensions: dict, *, cycle: int) -> list:
                         f"{len(refs)} positions"[:200],
                 source="streitfrage", refs=refs, topic=topic, created_cycle=cycle,
                 attention_salience=_ATTENTION[pv.EntryKind.OPEN_CONTRADICTION]))
+    # barred pattern hints (Priority 3) fill the remaining budget -> weak hints, briefly checkable
+    for hid in (extensions.get("hyp_pattern_hints") or []):
+        if len(out) >= MAX_INGEST_PER_CYCLE:
+            break
+        text = _text_of(cs, str(hid)) or f"barred hypothesis {hid}"
+        with contextlib.suppress(ValueError):
+            out.append(pv.ProvisionalEntry(
+                kind=pv.EntryKind.WEAK_HINT, content=text[:200], source="pattern_hint",
+                refs=(str(hid),), created_cycle=cycle,
+                attention_salience=_ATTENTION[pv.EntryKind.WEAK_HINT]))
     return out
 
 

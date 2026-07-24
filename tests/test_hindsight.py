@@ -57,6 +57,19 @@ def test_ingest_forms_weak_hints_and_condensed_disputes():
     assert dispute.refs == ("C-1", "C-2") and dispute.topic == "routing"   # the condensed dispute
 
 
+def test_disputes_are_not_crowded_out_by_the_flood_of_pattern_hints():
+    # the live-window bug: 462 pattern hints filled the budget before any dispute reached the layer,
+    # so nothing taggable was staged and the trigger stayed idle. Disputes must be ingested first.
+    cs = _CS({f"H-{i}": f"'x{i}' recurs" for i in range(50)})
+    ext = {"hyp_pattern_hints": [f"H-{i}" for i in range(50)],     # a flood of junk
+           "disputes": [_dispute(claim_ids=["C-1", "C-2"], topic="a"),
+                        _dispute(claim_ids=["C-3", "C-4"], topic="b")]}
+    entries = hindsight.ingest(cs, ext, cycle=1)
+    contradictions = [e for e in entries if e.kind is pv.EntryKind.OPEN_CONTRADICTION]
+    assert len(contradictions) == 2                # both disputes reached the layer (not crowded)
+    assert all(e.attention_salience >= pv.TAG_THRESHOLD for e in contradictions)   # taggable
+
+
 def test_event_salience_counts_later_learning_events():
     assert hindsight.event_salience({}) == 0.0                        # quiet cycle -> no trigger
     assert hindsight.event_salience({"sandbox_trials": [{"verdict": "benefit"}]}) >= 0.5
