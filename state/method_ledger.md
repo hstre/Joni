@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 660 · 357 Methoden** — proposed 287 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
+**Cycle 661 · 359 Methoden** — proposed 289 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -257,6 +257,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Streaming Multi-Agent Autoregressive Diffusion Model with World State Registers | **proposed** | candidate | 0 | — |
 | QCFlash: Bulk Bitwise Processing in 3D NAND with Dynamic Sensing and Quad-level  | **proposed** | candidate | 0 | — |
 | AI Study Assistant Using Vector Database and Large Language Models for Intellige | **proposed** | candidate | 0 | — |
+| Dataset Distillation by Influence Matching | **proposed** | candidate | 0 | — |
+| SANA-Video 2.0: Hybrid Linear Attention with Attention Residuals for Efficient V | **proposed** | candidate | 0 | — |
 | LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
 | Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **proposed** | candidate | 0 | — |
