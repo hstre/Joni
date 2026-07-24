@@ -58,15 +58,15 @@ X-413 | <gewinner: C-8552 oder C-7370> | <grund>
 X-335 | <gewinner: C-6482 oder C-6458> | <grund>
 ```
 
-## X-549 · Thema: memory
+## X-561 · Thema: memory
 
-- **C-10267** (0 stützend · 0 Kontext): QFI serves as a momentum-resolved probe of entanglement, offering a novel perspective on quantum critical phenomena beyond being a lower bound for entanglement depth.
-  - _Quelle:_ granite:joni-c650:b469c1511347
-- **C-10279** (0 stützend · 0 Kontext): Taken together, QFI is not only helpful as a lower bound for entanglement depth, but serves as a momentum-resolved probe of entanglement that offers a novel perspective on quantum critical phenomena.
-  - _Quelle:_ arxiv:2607.20424v1
-- _Evidenzlage (C-10267 vs C-10279): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz Modell/selbst vs extern_
+- **C-10385** (0 stützend · 0 Kontext): Stop Spatializing Time: Machine Learning Agents Should Learn Through Time, Not About Time
+  - _Quelle:_ zenodo:21513844
+- **C-10539** (0 stützend · 0 Kontext): Machine learning agents should learn through time rather than about time to improve learning efficiency.
+  - _Quelle:_ granite:joni-c659:cdf83cc20253
+- _Evidenzlage (C-10385 vs C-10539): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
 
 ```
-X-549 | <gewinner: C-10267 oder C-10279> | <grund>
+X-561 | <gewinner: C-10385 oder C-10539> | <grund>
 ```
 

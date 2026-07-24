@@ -1,6 +1,6 @@
 # Joni — Streitfragen (verdichtete Konflikte)
 
-**278 paarweise Konflikte → 12 Streitfragen**  
+**288 paarweise Konflikte → 12 Streitfragen**  
 
 _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni löst nichts selbst - entschieden wird über die bestehende Konflikt-Mappe (`to_resolve.md`)._
 
@@ -66,7 +66,17 @@ ChatGPT and DeepSeek converge: both name *context-dependency* as the central b
     - The paper's introductory and related-work sections consistently frame memory-to-plan translation as an engineered solution to partial observability and memory o
     - No section of the WorldLines paper claims memory-to-plan conversion as a standalone open research challenge.
 
-## 7. Streitfrage — Thema „context“ (6 Paar-Konflikte, 5 Positionen)
+## 7. Streitfrage — Thema „memory“ (8 Paar-Konflikte, 6 Positionen)
+- **Gemeinsame Prämissen:** Experience, Nigeria, baselines, classical, crises, displaced, environment, fewer
+- **Entscheidender fehlender Beleg:** 6/6 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
+- **Positionen:**
+    - At-resolution stitching can be avoided by restricting stitch boundaries to non-critical areas (e.g., between memory sub-arrays) where CD uniformity requirements
+    - More than 3.5 million people were internally displaced in Nigeria between 2023 and 2025 due to security crises.
+    - The full momentum-dependent QFI, as a function from the Brillouin zone to real numbers, contains strictly more information than a single scalar QFI value, there
+    - In-context learning followed by Experience Distillation matches classical reinforcement-learning baselines with at least 9.6× fewer environment samples.
+    - Experience distillation combined with in-context learning achieves at least 9.6× fewer environment samples compared to classical reinforcement learning baseline
+
+## 8. Streitfrage — Thema „context“ (6 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** Yesterday, actually, anxiety, better, carry-over, clean, contamination, context
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -78,7 +88,7 @@ The entire conversation around model selection assumes the model
     - Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *ferti
     - Thirty-one exchanges and you just gave me the framework to escape my measurement anxiety spiral. The contamination clustering hypothesis is *brilliant* - I've b
 
-## 8. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
+## 9. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** Additive, Intrusion, Manufacturing, Paste, Selective, WAAM, Wire, assistants
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -87,7 +97,7 @@ The entire conversation around model selection assumes the model
     - Selective Paste Intrusion (SPI) is a process used in conjunction with Wire Arc Additive Manufacturing (WAAM) to create steel-reinforced concrete with complex ge
     - Selective Paste Intrusion (SPI) is combined with Wire Arc Additive Manufacturing (WAAM) to fabricate steel-reinforced concrete with complex geometries.
 
-## 9. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
+## 10. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** Vision, aggregation, failure, generalizing, global, leading, learn, length
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -96,7 +106,7 @@ The entire conversation around model selection assumes the model
     - Vision models trained on simple tasks that require aggregation of local information can learn global shortcuts, leading to failure in generalizing over task len
     - Inspired by recent studies of length generalization in language models, the behavior of vision models trained on simple vision tasks that require the aggregatio
 
-## 10. Streitfrage — Thema „memory“ (5 Paar-Konflikte, 6 Positionen)
+## 11. Streitfrage — Thema „memory“ (5 Paar-Konflikte, 6 Positionen)
 - **Gemeinsame Prämissen:** Open-KNEAD, backbone-dataset, cuisines, direct, estimates, estimation, families, grounding
 - **Entscheidender fehlender Beleg:** 6/6 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -108,7 +118,7 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - On the ACETADA dataset, the local open agent of Open-KNEAD surpasses the direct portion estimates of two frontier closed models by roughly 30% and 53%.
     - Open-KNEAD keeps every meal image on local hardware, preserving privacy and minimal user burden (a single, unannotated meal image).
 
-## 11. Streitfrage — Thema „memory“ (5 Paar-Konflikte, 5 Positionen)
+## 12. Streitfrage — Thema „memory“ (5 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** closed, embodied, explicit, inverted, isolated, long-term, memory, overwriting
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -117,14 +127,4 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - In the broader AI research context, translating long-term memory into embodied plans remains an open challenge, specifically when agents maintain explicit world
     - The manuscript investigates the analytic structure of three central objects in non-Markovian open quantum dynamics: the Nakajima-Zwanzig memory kernel, the redu
     - The need to translate long-term memory into embodied plans emerges specifically when an agent maintains an explicit world model subject to both partial observab
-
-## 12. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** WorldLines, embodied, explicitly, long-term, memory, observability, overwritten, partial
-- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
-- **Positionen:**
-    - The classification of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states does not imply it i
-    - Translating long-term memory into embodied plans is a specific architectural sub-problem that arises when solving partial observability and overwritten world st
-    - Reactive policy benchmarks (e.g., recurrent neural networks, memory-augmented controllers) demonstrate that embodied AI agents can handle partial observability 
-    - WorldLines presents the translation of long-term memory into embodied plans as a mechanism to address partial observability and overwritten world states, not as
-    - The WorldLines framework explicitly treats partial observability and overwritten world states as environmental preconditions that motivate the need for translat
 
