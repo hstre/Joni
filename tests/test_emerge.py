@@ -138,24 +138,26 @@ def test_no_method_for_kevin_when_layer9_does_not_clear_the_cluster():
     assert cs.core.all(l9.ObjectType.SEMANTIC_CLUSTER)
 
 
-def test_a_within_topic_cluster_yields_a_higher_order_synthesis_when_eligible():
+def test_a_recurring_term_is_held_as_a_pattern_hint_not_a_hypothesis():
+    # Priority 3 at the source: a bare "term X recurs" observation is lexical recurrence, so it is
+    # filed as a pattern hint - NOT minted as a candidate hypothesis that would flood the graph.
     cs = CoreState(l9.Layer9())
     cs.learn("latency budgets shape routing choices", "routing")
     cs.learn("memory pressure changes how routing is decided", "routing")
     cs.learn("load spikes shift routing toward cheaper paths", "routing")
-    out = emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
-    assert out["synthesis"] == 1
-    syn = [c for c in cs.core.all(l9.ObjectType.CLAIM)
-           if c.status is l9.Status.CANDIDATE and c.derived_from
-           and c.text.startswith("Across my")]
-    assert syn and syn[0].derived_from            # derived from the cluster it abstracts
+    ext: dict = {}
+    out = emerge.emerge(cs, ext, _Proto(), layer=StubSemanticLayer())
+    assert out["synthesis"] == 0 and out["pattern_hints"] == 1     # a hint, not a hypothesis
+    minted = [c for c in cs.core.all(l9.ObjectType.CLAIM) if c.text.startswith("Across my")]
+    assert minted == []                                            # nothing minted into the graph
+    assert ext.get("emerge_pattern_hints")                         # the recurrence is recorded
 
 
 def test_quiet_when_nothing_recurs():
     cs = CoreState(l9.Layer9())
     cs.learn("a one-off observation about onboarding", "ux")
     out = emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
-    assert out == {"topic": None, "synthesis": 0, "method": None}
+    assert out == {"topic": None, "synthesis": 0, "method": None, "pattern_hints": 0}
 
 
 def test_a_non_judgment_cluster_is_retried_then_synthesises_when_eligible():
@@ -171,9 +173,10 @@ def test_a_non_judgment_cluster_is_retried_then_synthesises_when_eligible():
     assert out1["synthesis"] == 0
     assert not ext.get("synthesized")                        # cluster NOT permanently marked done
     assert ext.get("emerge_insufficient")                    # queued for retry
-    # 2) the layer is available -> the same cluster now yields a higher-order synthesis
+    # 2) the layer is available -> the same cluster is now judged, and its recurrence is filed as a
+    #    pattern hint (not minted as a hypothesis - the source-level Priority 3 fix)
     out2 = emerge.emerge(cs, ext, _Proto(), layer=StubSemanticLayer())
-    assert out2["synthesis"] == 1
+    assert out2["synthesis"] == 0 and out2["pattern_hints"] == 1
 
 
 def test_synthesis_blocked_when_two_cluster_claims_live_contradict():
@@ -198,14 +201,10 @@ def test_synthesis_over_a_sink_topic_is_not_minted():
     assert out["synthesis"] == 0
 
 
-def test_synthesis_wording_is_neutral_and_still_detected_as_synthetic():
-    # B1: no 'single underlying factor' causal claim; still starts 'Across my' so the core's
-    # synthetic detector keeps excluding it from the vocabulary.
-    cs = CoreState(l9.Layer9())
-    cs.learn("latency budgets shape routing choices", "routing")
-    cs.learn("memory pressure changes how routing is decided", "routing")
-    cs.learn("load spikes shift routing toward cheaper paths", "routing")
-    emerge.emerge(cs, {}, _Proto(), layer=StubSemanticLayer())
-    syn = [c for c in cs.core.all(l9.ObjectType.CLAIM) if c.text.startswith("Across my")]
-    assert syn and "single underlying factor" not in syn[0].text
-    assert emerge._is_synthetic(syn[0].text)
+def test_the_recurrence_wording_is_still_detected_as_synthetic():
+    # B1: no 'single underlying factor' causal claim; the recurrence wording is no longer minted
+    # (source-level Priority 3 fix), but the core's synthetic detector still recognises it.
+    text = ("Across my routing claims, the term 'latency' recurs; whether this reflects a "
+            "shared mechanism remains untested.")
+    assert "single underlying factor" not in text
+    assert emerge._is_synthetic(text)

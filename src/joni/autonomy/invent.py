@@ -35,9 +35,9 @@ def invent(cs, extensions: dict, proto, cycle: int = 0) -> dict:
     # noise the review flagged - Joni invents fewer, but better-grounded, cross-domain leaps.
     research = set(cs.research_topics())
     topics = sorted(t for t in by_topic if t in research)
-    made = 0
+    made = hints = 0
     for i, ta in enumerate(topics):
-        if made:
+        if made or hints:                        # at most one invention OR one hint per cycle
             break
         for tb in topics[i + 1:]:
             key = f"{ta}|{tb}"
@@ -46,8 +46,21 @@ def invent(cs, extensions: dict, proto, cycle: int = 0) -> dict:
             a, b = by_topic[ta], by_topic[tb]
             text = (f"Hypothesis: the pattern behind '{a.text}' (from {ta}) might also "
                     f"apply to {tb}.")
-            cs.hypothesize(text, f"{ta}+{tb}", parents=(a.id, b.id))
             invented.add(key)
+            # Priority 3, at the source: a bare "pattern X might also apply to Y" bridge is a
+            # pattern hint, not a hypothesis. If it would be barred from reflection anyway, do NOT
+            # mint it as a candidate claim - record it as a hint (a real, testable cross-domain
+            # hypothesis would be well-formed and still mint).
+            from . import hypothesis_form
+            if hypothesis_form.is_reflection_barred(text):
+                hints += 1
+                extensions.setdefault("invent_pattern_hints", []).append(
+                    {"bridge": f"{ta}+{tb}", "parents": [a.id, b.id]})
+                proto.record(cycle, "pattern_hint",
+                             f"cross-topic bridge {ta} x {tb} - held as a pattern hint, not minted "
+                             "as a hypothesis (lexical recurrence)")
+                break
+            cs.hypothesize(text, f"{ta}+{tb}", parents=(a.id, b.id))
             made += 1
             proto.record(cycle, "invented",
                          f"new hypothesis bridging {ta} x {tb} (candidate, derived from "
@@ -55,4 +68,4 @@ def invent(cs, extensions: dict, proto, cycle: int = 0) -> dict:
             break
 
     extensions["invented"] = sorted(invented)[-500:]
-    return {"hypotheses": made}
+    return {"hypotheses": made, "pattern_hints": hints}
