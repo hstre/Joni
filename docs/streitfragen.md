@@ -1,6 +1,6 @@
 # Joni — Streitfragen (verdichtete Konflikte)
 
-**276 paarweise Konflikte → 12 Streitfragen**  
+**278 paarweise Konflikte → 12 Streitfragen**  
 
 _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni löst nichts selbst - entschieden wird über die bestehende Konflikt-Mappe (`to_resolve.md`)._
 

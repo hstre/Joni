@@ -6,17 +6,17 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 869 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 635 Lehre(n)._
+_Stand: Tick 25 · 871 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 636 Lehre(n)._
 
-## attention · Tiefe 91 (threshold)
+## attention · Tiefe 92 (threshold)
 
-**Beurteile jede Annahme in deinen Aufmerksamkeitsansprüchen kritisch, da wiederkehrende Begriffe wie "Mechanismus" ohne empirische Überprüfung zu Fehlern führen können.**
+**Beurteile jede Annahme in deinen Aufmerksamkeitsansprüchen kritisch, da wiederkehrende Begriffe wie "Mechanismus" ohne empirische Überprüfung irreführend sein können.**
 
-_deterministisch:_ Auf 'attention': 91 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 91× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 92 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 92× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
-- _volle Spur (91):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-10296, C-10332, C-10359, C-10382, C-10409, C-10436, C-10455, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
+- _volle Spur (92):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-10296, C-10332, C-10359, C-10382, C-10409, C-10436, C-10455, C-10476, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
 
 ## memory · Tiefe 85 (threshold)
 
@@ -5265,6 +5265,15 @@ _deterministisch:_ Auf 'attention+rusty-neat': 1 korrigierte(r) Irrtum/Irrtümer
 
 - Anker: „Hypothesis: the pattern behind 'Bidirectional attention enables short multi-view synthesis in video diffusion models. The key-value cache in attention mechanisms for autoregressive decoding grows linearly with context length, creating memory and bandwidth bottlenecks, and existing eviction methods poorly track future token utility.' (from attention) might also apply to rusty-neat.“ → verworfen — verworfen
 - _volle Spur (1):_ C-4982
+
+## attention+review · Tiefe 1 (self_review)
+
+**Verwerfen von Annahmen, die Muster zwischen "Attention" und "Review" ableiten, um genaue Interpretationen zu gewährleisten.**
+
+_deterministisch:_ Auf 'attention+review': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'Attention is conceptualized as the concentration of awareness on a particular task or phenomenon while largely excluding others. This directedness is understood differently across disciplines, with cognitive psychology framing it as the allocation of limited cognitive processing resources.' (from attention) might also apply to review.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'Attention is conceptualized as the concentration of awareness on a particular task or phenomenon while largely excluding others. This directedness is understood differently across disciplines, with cognitive psychology framing it as the allocation of limited cognitive processing resources.' (from attention) might also apply to review.“ → verworfen — verworfen
+- _volle Spur (1):_ C-10475
 
 ## attention+retrieval · Tiefe 1 (self_review)
 
