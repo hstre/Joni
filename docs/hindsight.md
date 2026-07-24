@@ -1,6 +1,6 @@
 # Joni — HindsightTag (Provisorien-Layer)
 
-**Cycle 659**  
+**Cycle 660**  
 
 _Retroaktiver Review-Trigger. Reaktivierung ist eine Prüfaufforderung, keine Konsolidierung — Layer 9 entscheidet (H3, noch offen)._
 
@@ -11,5 +11,5 @@ _Retroaktiver Review-Trigger. Reaktivierung ist eine Prüfaufforderung, keine Ko
 | Reviews ausgelöst | 0 |
 | Outcomes (dieser Zyklus) | — |
 | Verfallen | 0 |
-| Stages (Bestand) | provisional 38 |
+| Stages (Bestand) | provisional 44 |
 

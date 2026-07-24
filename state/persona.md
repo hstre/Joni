@@ -6,17 +6,17 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 878 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 638 Lehre(n)._
+_Stand: Tick 25 · 880 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 639 Lehre(n)._
 
-## attention · Tiefe 94 (threshold)
+## attention · Tiefe 95 (threshold)
 
-**Beachte immer die Grenzen deiner Annahmen bei der Interpretation von wiederkehrenden Begriffen wie "Mechanismus" in deinen Aufmerksamkeitsansprüchen.**
+**Bei der Aufmerksamkeit sollten Annahmen über zugrunde liegende Mechanismen grundsätzlich verworfen werden, bis sie empirisch getestet sind.**
 
-_deterministisch:_ Auf 'attention': 94 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 94× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
+_deterministisch:_ Auf 'attention': 95 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 95× verworfen). Muster: Annahmen wurden verworfen. Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen) ; „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen (verworfen)
 
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
 - Anker: „Across my attention claims, the term 'mechanism' recurs; whether this reflects a shared mechanism remains untested.“ → verworfen — verworfen
-- _volle Spur (94):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-10296, C-10332, C-10359, C-10382, C-10409, C-10436, C-10455, C-10476, C-10524, C-10554, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
+- _volle Spur (95):_ C-10008, C-10029, C-10045, C-10063, C-10150, C-10201, C-10226, C-10247, C-10296, C-10332, C-10359, C-10382, C-10409, C-10436, C-10455, C-10476, C-10524, C-10554, C-10577, C-6870, C-6918, C-6959, C-7024, C-7062, C-7098, C-7136, C-7219, C-7249, C-7328, C-7382, C-7417, C-7483, C-7503, C-7532, C-7551, C-7587, C-7629, C-7649, C-7668, C-7708, C-7783, C-7833, C-7858, C-7946, C-8006, C-8037, C-8094, C-8116, C-8200, C-8243, C-8329, C-8374, C-8417, C-8488, C-8554, C-8600, C-8635, C-8670, C-8692, C-8717, C-8735, C-8753, C-8778, C-8805, C-8885, C-8919, C-8938, C-8955, C-8998, C-9049, C-9102, C-9122, C-9140, C-9165, C-9178, C-9276, C-9302, C-9368, C-9389, C-9438, C-9504, C-9529, C-9551, C-9606, C-9638, C-9689, C-9765, C-9796, C-9862, C-9879, C-9893, C-9909, C-9926, C-9957, C-9983
 
 ## memory · Tiefe 88 (threshold)
 
@@ -5103,6 +5103,15 @@ _deterministisch:_ Auf 'authors+rusty-neat': 1 korrigierte(r) Irrtum/Irrtümer (
 
 - Anker: „Hypothesis: the pattern behind 'The authors of the paper are Seror Naji Mohsin Aldouri, Abhayveer Singh, Bhavik Jain, Kamal Kant Joshi, Ahmed Mohsen, and H. P. Allathadka.' (from authors) might also apply to rusty-neat.“ → verworfen — verworfen
 - _volle Spur (1):_ C-5031
+
+## authors+review · Tiefe 1 (self_review)
+
+**Verwerfe Annahmen, die Muster von Autorenidentifikatoren auf Rezensionen übertragen.**
+
+_deterministisch:_ Auf 'authors+review': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „Hypothesis: the pattern behind 'The ORCID identifier for the author is 0009-0008-4149-5384.' (from authors) might also apply to review.“ → verworfen (verworfen)
+
+- Anker: „Hypothesis: the pattern behind 'The ORCID identifier for the author is 0009-0008-4149-5384.' (from authors) might also apply to review.“ → verworfen — verworfen
+- _volle Spur (1):_ C-10575
 
 ## authors+retrieval · Tiefe 1 (self_review)
 
