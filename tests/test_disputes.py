@@ -81,6 +81,39 @@ def test_a_dispute_reports_premises_and_the_decisive_gap():
     assert "keiner unabhängigen externen Quelle" in big.missing_evidence
 
 
+def _cs_bridged_megacomponent():
+    # two content-coherent tangles (routing/latency and attention/recall) transitively fused by ONE
+    # polysemous bridge claim X that shares only a single word with each side.
+    claims = [
+        _claim("A-1", "routing reduces latency under heavy load"),
+        _claim("A-2", "routing increases latency under heavy load"),
+        _claim("A-3", "routing has no effect on latency under load"),
+        _claim("B-1", "attention improves recall on long context", topic="attention"),
+        _claim("B-2", "attention harms recall on long context", topic="attention"),
+        _claim("B-3", "attention has no effect on recall context", topic="attention"),
+        _claim("X", "the framework couples routing with attention"),
+    ]
+    conflicts = [
+        _conflict("R-1", ["A-1", "A-2"]), _conflict("R-2", ["A-2", "A-3"]),
+        _conflict("R-3", ["A-1", "A-3"]),
+        _conflict("T-1", ["B-1", "B-2"]), _conflict("T-2", ["B-2", "B-3"]),
+        _conflict("T-3", ["B-1", "B-3"]),
+        _conflict("Z-1", ["X", "A-1"]), _conflict("Z-2", ["X", "B-1"]),   # weak bridge edges
+    ]
+    return _CS(conflicts, claims)
+
+
+def test_a_bridged_megacomponent_is_sub_split_into_real_questions():
+    disp = disputes.condense(_cs_bridged_megacomponent())
+    # 7 claims in one coarse tangle -> sub-split into the two content-coherent questions;
+    # the bridge claim X (no strong conflict) is dropped, not fused into either.
+    assert len(disp) == 2
+    claimsets = sorted(tuple(sorted(d.claim_ids)) for d in disp)
+    assert claimsets == [("A-1", "A-2", "A-3"), ("B-1", "B-2", "B-3")]
+    assert all(d.size == 3 for d in disp)              # each keeps only its 3 strong conflicts
+    assert all("X" not in d.claim_ids for d in disp)   # the polysemous bridge did not fuse them
+
+
 def test_only_live_conflicts_are_condensed():
     claims = [_claim("C-1", "a"), _claim("C-2", "b")]
     cs = _CS([_conflict("X-1", ["C-1", "C-2"], status="resolved")], claims)

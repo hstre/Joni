@@ -30,6 +30,9 @@ from . import quality
 _LIVE = frozenset({"open", "under_review"})
 MAX_DISPUTES = 12                 # surface the biggest tangles; the rest are summarised as a count
 MAX_POSITIONS = 5                 # positions shown per Streitfrage (representative, not exhaustive)
+MAX_COMPONENT_CLAIMS = 6          # a coarse tangle larger than this is sub-split by content overlap
+MIN_EDGE_OVERLAP = 2              # a conflict is a STRONG (same-subject) edge iff its claims share
+                                  # this many content words; weaker 'bridge' edges are cut on split
 
 
 @dataclass(frozen=True)
@@ -60,8 +63,12 @@ def _live_conflicts(cs) -> list:
     return out
 
 
-def _components(conflicts: list) -> list:
-    """Union-find over claim ids linked by a conflict. Each component: (claim_ids, conflict_ids)."""
+def _claim_ids(cf) -> list:
+    return [str(x) for x in (getattr(cf, "claim_ids", None) or [])]
+
+
+def _grouping(claim_ids, edges: list):
+    """Union-find over ``claim_ids`` with the given (a, b) edges; returns (find, root -> claims)."""
     parent: dict = {}
 
     def find(x):
@@ -71,28 +78,53 @@ def _components(conflicts: list) -> list:
             x = parent[x]
         return x
 
-    def union(a, b):
+    for cid in claim_ids:
+        find(cid)
+    for a, b in edges:
         parent[find(a)] = find(b)
+    groups: dict = defaultdict(set)
+    for cid in claim_ids:
+        groups[find(cid)].add(cid)
+    return find, groups
 
-    # pass 1: union every claim pair that shares a conflict (must finish before grouping)
+
+def _coarse_components(conflicts: list) -> list:
+    """Group by ALL conflict edges (transitive closure). Each: (claim_ids, [conflict objects])."""
+    all_claims: set = set()
+    edges: list = []
     for cf in conflicts:
-        ids = [str(x) for x in (getattr(cf, "claim_ids", None) or [])]
+        ids = _claim_ids(cf)
+        all_claims.update(ids)
         for i in range(len(ids)):
             for j in range(i + 1, len(ids)):
-                union(ids[i], ids[j])
-    # pass 2: group claims and conflicts by their FINAL root
-    claim_groups: dict = defaultdict(set)
-    conflict_groups: dict = defaultdict(list)
+                edges.append((ids[i], ids[j]))
+    find, groups = _grouping(all_claims, edges)
+    by_root: dict = defaultdict(list)
     for cf in conflicts:
-        ids = [str(x) for x in (getattr(cf, "claim_ids", None) or [])]
-        if not ids:
-            continue
-        root = find(ids[0])
-        conflict_groups[root].append(str(getattr(cf, "id", "")))
-        for cid in ids:
-            claim_groups[root].add(cid)
-    return [(frozenset(claim_groups[root]), tuple(conflict_groups[root]))
-            for root in claim_groups]
+        ids = _claim_ids(cf)
+        if ids:
+            by_root[find(ids[0])].append(cf)
+    return [(frozenset(groups[root]), by_root.get(root, [])) for root in groups]
+
+
+def _subsplit(claim_ids: frozenset, conflicts: list, terms: dict) -> list:
+    """Sub-split an over-merged tangle: keep only STRONG conflict edges (claims sharing >=
+    MIN_EDGE_OVERLAP content words) - a polysemous bridge claim that weakly links two unrelated
+    subjects no longer fuses them. Returns the sub-groups that still hold a strong conflict."""
+    strong: list = []
+    for cf in conflicts:
+        ids = [c for c in _claim_ids(cf) if c in claim_ids]
+        for i in range(len(ids)):
+            for j in range(i + 1, len(ids)):
+                if len(terms.get(ids[i], set()) & terms.get(ids[j], set())) >= MIN_EDGE_OVERLAP:
+                    strong.append((ids[i], ids[j]))
+    find, groups = _grouping(claim_ids, strong)
+    by_root: dict = defaultdict(list)
+    for cf in conflicts:
+        ids = [c for c in _claim_ids(cf) if c in claim_ids]
+        if len(ids) >= 2 and len({find(c) for c in ids}) == 1:   # both ends in one sub-group
+            by_root[find(ids[0])].append(cf)
+    return [(frozenset(groups[root]), confs) for root, confs in by_root.items() if confs]
 
 
 def _family_map(cs) -> dict:
@@ -123,33 +155,50 @@ def _shared_premises(texts: list) -> tuple:
     return tuple(sorted(w for w, n in counts.items() if n >= 2))[:8]
 
 
+def _build_streitfrage(cs, claim_ids: frozenset, conflicts: list, fam: dict):
+    """Assemble one Streitfrage from a (sub-)group of claims and its conflicts. None if empty."""
+    claims = [c for c in (cs.core.get(cid) for cid in sorted(claim_ids)) if c is not None]
+    conflict_ids = tuple(str(getattr(cf, "id", "")) for cf in conflicts if getattr(cf, "id", ""))
+    if not claims or not conflict_ids:
+        return None
+    texts = [str(getattr(c, "text", "")) for c in claims]
+    topics = Counter(getattr(c, "topic", "") for c in claims if getattr(c, "topic", ""))
+    no_ext = [c.id for c in claims if len(fam.get(str(c.id), ())) == 0]
+    if no_ext:
+        missing = (f"{len(no_ext)}/{len(claims)} Positionen ruhen auf keiner unabhängigen "
+                   "externen Quelle - das ist die entscheidende Lücke")
+    else:
+        missing = "beide Seiten extern gestützt - ein direkter Vergleich entscheidet"
+    return Streitfrage(
+        dispute_id=_dispute_id(claim_ids),
+        topic=(topics.most_common(1)[0][0] if topics else ""),
+        claim_ids=tuple(sorted(str(c.id) for c in claims)),
+        positions=tuple(dict.fromkeys(t for t in texts if t))[:MAX_POSITIONS],
+        shared_premises=_shared_premises(texts), missing_evidence=missing,
+        conflict_ids=conflict_ids, size=len(conflict_ids))
+
+
 def condense(cs, *, max_disputes: int = MAX_DISPUTES) -> list:
-    """Group the live conflicts into thematic Streitfragen, biggest tangle first. Read-only."""
+    """Group the live conflicts into thematic Streitfragen, biggest tangle first. A coarse tangle
+    with more than ``MAX_COMPONENT_CLAIMS`` claims is sub-split by content coherence, so an
+    over-merged giant graph component becomes real single questions instead of one grab-bag.
+    Read-only."""
     conflicts = _live_conflicts(cs)
     if not conflicts:
         return []
     fam = _family_map(cs)
-    disputes = []
-    for claim_ids, conflict_ids in _components(conflicts):
-        claims = [c for c in (cs.core.get(cid) for cid in sorted(claim_ids)) if c is not None]
-        if not claims:
-            continue
-        texts = [str(getattr(c, "text", "")) for c in claims]
-        topics = Counter(getattr(c, "topic", "") for c in claims if getattr(c, "topic", ""))
-        positions = tuple(dict.fromkeys(t for t in texts if t))[:MAX_POSITIONS]
-        no_ext = [c.id for c in claims if len(fam.get(str(c.id), ())) == 0]
-        if no_ext:
-            missing = (f"{len(no_ext)}/{len(claims)} Positionen ruhen auf keiner unabhängigen "
-                       "externen Quelle - das ist die entscheidende Lücke")
+    all_ids: set = set()
+    for cf in conflicts:
+        all_ids.update(_claim_ids(cf))
+    terms = {cid: set(quality.content_terms(str(getattr(cs.core.get(cid), "text", "") or "")))
+             for cid in all_ids}
+    units: list = []                                   # (claim_ids, [conflict objects])
+    for claim_ids, comp_conflicts in _coarse_components(conflicts):
+        if len(claim_ids) <= MAX_COMPONENT_CLAIMS:
+            units.append((claim_ids, comp_conflicts))
         else:
-            missing = "beide Seiten extern gestützt - ein direkter Vergleich entscheidet"
-        disputes.append(Streitfrage(
-            dispute_id=_dispute_id(claim_ids),
-            topic=(topics.most_common(1)[0][0] if topics else ""),
-            claim_ids=tuple(sorted(str(c.id) for c in claims)),
-            positions=positions, shared_premises=_shared_premises(texts),
-            missing_evidence=missing, conflict_ids=tuple(c for c in conflict_ids if c),
-            size=len([c for c in conflict_ids if c])))
+            units.extend(_subsplit(claim_ids, comp_conflicts, terms))
+    disputes = [d for d in (_build_streitfrage(cs, cids, confs, fam) for cids, confs in units) if d]
     disputes.sort(key=lambda d: (-d.size, -len(d.claim_ids)))
     return disputes[:max_disputes]
 
