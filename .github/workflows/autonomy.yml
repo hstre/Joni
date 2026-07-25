@@ -40,6 +40,16 @@ on:
   # bridge, and S4 lifecycle (re-trials mature probationary skills toward a human-gated promotion).
   # This window observes whether real skills crystallise and episodes accumulate. To re-park:
   # re-comment the schedule.
+  # RETIRED ~2026-07-25 (2-day window from 07-23 elapsed). RESUMED 2026-07-25 (operator request):
+  # a FRESH observed *7-day* window (run_window.json reset: start = 2026-07-25T21:47Z, runs = 0,
+  # retired = false; JONI_RUNTIME_DAYS=7 -> retiring ~2026-08-01). Since 07-23 the operator's five
+  # priorities all landed: output scoreboard (#269), hypothesis well-formedness gate (#270) + the
+  # emerge/invent producer fix (#281), the HindsightTag lifecycle H0-H4 (#271-#275, trigger now
+  # fires live), Streitfragen condensation + mega-split (#277/#280), intake<->digestion coupling
+  # (#282), and the method-breakdown diagnostic (#283). The sandbox synthesises solvers via DeepSeek
+  # Pro (joni-hard, DEEPSEEK_API_KEY). This week observes: does the method-breakdown show missing
+  # benchmarks or non-procedures, does the hypothesis backlog drain, does the review-trigger lead to
+  # real digestion. To re-park: re-comment the schedule.
   schedule:
     - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
@@ -119,7 +129,7 @@ jobs:
         env:
           JONI_ONLINE: "1"
           JONI_WEEKLY_BUDGET_EUR: "20"
-          JONI_RUNTIME_DAYS: "2"      # observed resume: fresh 2-day window (start 2026-07-23), retiring ~2026-07-25
+          JONI_RUNTIME_DAYS: "7"      # observed resume: fresh 7-day window (start 2026-07-25), retiring ~2026-08-01
           JONI_RUNS_PER_WEEK: "672"   # paces the per-run model allowance (budget is the hard cap)
           JONI_USE_DESI: "1"          # use the real DESi router + tools if _desi checked out
           # Router shadow (observation-only): after each cycle, run the external DESi router over the
