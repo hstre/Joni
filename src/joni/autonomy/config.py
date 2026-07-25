@@ -130,6 +130,11 @@ class Paths:
         return self.root / "docs" / "hindsight.md"
 
     @property
+    def digestion(self) -> Path:
+        # Priority 2: the intake<->digestion coupling marker (last cycle real digestion happened).
+        return self.root / "state" / "digestion.json"
+
+    @property
     def disputes_sheet(self) -> Path:
         # Priority 5: the human view of the condensed Streitfragen (few disputes, not 273 pairs).
         return self.root / "docs" / "streitfragen.md"

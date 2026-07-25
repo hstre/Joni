@@ -266,10 +266,16 @@ def one_cycle() -> dict:
     # methods/topics/syntheses; the shedding/conflict passes still run). The metabolism only gates
     # when overloaded; this makes the pre-restart consolidation an explicit switch, not a wait.
     consolidate_only = os.getenv("JONI_CONSOLIDATE_ONLY") == "1"
-    intake_ok = not consolidate_only and (
+    # Priority 2: intake<->digestion coupling. New claims/methods enter only when digestion (a test,
+    # a Streitfrage worked, or a Hindsight review) happened in the last cycle; deterministic
+    # backpressure that engages only when digestion stalls, never a deadlock. OFF unless enabled.
+    from . import digestion
+    digestion_ok = not digestion.enabled() or digestion.intake_permitted(cycle, path=p.digestion)
+    intake_ok = not consolidate_only and digestion_ok and (
         os.getenv("JONI_METABOLISM") != "1" or metabolism.intake_allowed(metabolic))
     if not intake_ok:
         why = ("consolidation-only mode" if consolidate_only
+               else "digestion stalled - intake coupled to processing" if not digestion_ok
                else f"metabolism sated (load {metabolic['load']:.2f})")
         proto.record(cycle, "note", f"{why} - intake suppressed this cycle; consolidation only")
 
@@ -536,6 +542,14 @@ def one_cycle() -> dict:
         from ..method_trial import hindsight as _hindsight
         _hindsight.run(cs, extensions, proto, cycle, paths=p)
     except Exception:  # noqa: BLE001 - the staging layer must never break a cycle
+        pass
+
+    # 4i-d. Priority 2: record whether real digestion happened this cycle (a test / Streitfrage /
+    #       Hindsight review) - the marker the NEXT cycle's intake gate reads. Read-only; fail-open.
+    try:
+        from . import digestion as _dig
+        _dig.note(cycle, extensions, path=p.digestion)
+    except Exception:  # noqa: BLE001 - the digestion marker must never break a cycle
         pass
 
     # 4i-b. Personal Store (docs/PERSONAL_STATE.md): the operator's own statements enter as
