@@ -3551,3 +3551,40 @@ langsamsten Arme drosseln (Council/Doktores-Kadenz).
 **[Stand der fünf Prioritäten]** #1 (messen) ✅, #3 (Wortrekurrenz-Gate + Score) ✅, #4 (Zustandswechsel — in H3) ✅,
 #5 (Streitfragen) ✅. **Offen:** #2 (Intake↔Verdauung koppeln) und der Erzeuger-Fix (emerge/invent an der Quelle, gegen
 die 90 % Musterhinweise — der direkteste Hebel gegen die ursprüngliche Kritik). (PR #277.)
+
+### Eintrag 2026-07-25 (LIV) — Fünf Prioritäten geschlossen, der Trigger feuert live, und der ehrliche Endbefund: die prozedurale Achse ist der Engpass
+
+**[Eingriff]** Die letzten offenen Punkte der Operator-Diagnose gebaut: der **Erzeuger-Fix** (PR #281) —
+emerge/invent minten die Rekurrenz-Schablonen nicht mehr als Hypothese, sondern legen sie als Musterhinweis ab; der
+90-%-Müllzufluss ist damit **an der Quelle abgeschnitten**, nicht nur reflexions-gesperrt. **Priorität 2**
+(PR #282) — Intake ist jetzt an Verdauung gekoppelt: neue Claims/Methoden werden nur voll aufgenommen, wenn im
+Grace-Fenster ein Test, eine Streitfrage oder ein Hindsight-Review stattfand; deterministische Backpressure, die nur
+bei echtem Stillstand greift und nie deadlockt. Und **Maßnahme 2** (PR #283) — ein read-only **Methoden-Breakdown**,
+der jede der 360 Kandidaten in fünf Buckets klassifiziert (`testbereit / kein_benchmark / nicht_ausfuehrbar /
+scope_unklar / duplikat`), damit *sichtbar* wird, ob Benchmarks fehlen oder die „Methoden" gar keine Verfahren sind.
+Damit sind **alle fünf Operator-Prioritäten geschlossen**.
+
+**[Der Live-Befund am Fenster-Ende]** Erstmals arbeitet die deklarative Verdauung sichtbar: der **HindsightTag-Trigger
+feuert** — im letzten Zyklus **6 Streitfragen getaggt, 5 Reviews ausgelöst, alle 5 → `contradiction_detected`, und der
+Koinzidenz-Anteil 0.0**. Die offene Frage des Papers (Signal oder Rauschen?) ist damit beantwortet: **Signal.** Der
+Ingest-Fix (Streitfragen zuerst, damit die 462 Musterhinweise sie nicht verdrängen) war die Voraussetzung — vorher
+0 getaggt/0 Reviews. Konflikte verdichten sich stabil (288 → 12 Streitfragen). **Aber ehrlich:** Reaktivierung ist
+noch keine *Auflösung* — `contradiction_detected` speist die Verdichtung zurück, entschieden wird weiter über den
+Operator.
+
+**[Der Engpass, klar benannt]** Die **prozedurale Achse steht: 360 Methoden → 14 alte Trials → 0 Aktivierungen.**
+Trial-Funnel: `considered 266, matched 0`. Die Sandbox ist voll angeschlossen (Flag an, Hook verdrahtet, P0-Executor
+grün, Solver-Synthese auf **DeepSeek Pro**/`joni-hard`, Key gesetzt) — sie wird nur **nie erreicht**, weil keine
+Methode auf eines der 3 Mikro-Benchmarks passt. Kein Anschlussproblem, sondern Matching-Hunger; genau das quantifiziert
+`method_breakdown.md`. Hypothesen weiter 523 gesamt / 0 wohlgeformt / 462 gesperrt — der Zufluss ist jetzt gestoppt,
+der Altbestand aber noch nicht abgebaut. Gesamtstatus: 🟡 WARN (Bucket/Entropie/Konfliktlast).
+
+**[Ein Detail, das zählt]** `method_breakdown.md` und `digestion.json` **fehlten** am Fenster-Ende — weil ein
+*retired* Zyklus früh abbricht, bevor diese späten Hooks laufen. Der Code ist gemergt, aber die Daten kommen erst mit
+einem frischen Lauf.
+
+**[Nächster Schritt]** Deshalb auf Operator-Wunsch ein **frisches, beobachtetes 7-Tage-Fenster** (PR #284,
+`JONI_RUNTIME_DAYS=7`, Retirement ~01.08.). Diese Woche liefert die entscheidenden Daten: zeigt der Breakdown fehlende
+Benchmarks oder keine Verfahren, baut sich der Hypothesen-Rückstau ab, wird aus Reaktivierung echte Verdauung — und,
+falls doch etwas matcht, die ersten echten **DeepSeek-Solver-Trials**. **Reifegrad:** alles gebaut/getestet/gemerged
+(`verify` grün, Core unberührt); die prozedurale Wirkung misst sich jetzt am 7-Tage-Fenster. (PRs #281–#284.)
