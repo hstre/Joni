@@ -327,6 +327,14 @@ def one_cycle() -> dict:
         extensions["episodes_new"] = [e.to_record() for e in _eps]
     except Exception:  # noqa: BLE001 - the episode extractor must never break a cycle
         pass
+    # 3c-breakdown. Operator measure 2: classify every candidate method into 5 buckets (testbereit /
+    #     kein_benchmark / nicht_ausfuehrbar / scope_unklar / duplikat), so it is VISIBLE whether
+    #     trial pipeline is starved for benchmarks or for real procedures. Read-only; fail-open.
+    try:
+        from ..method_trial import method_breakdown as _breakdown
+        _breakdown.run_breakdown(cs, extensions, proto, cycle, paths=p)
+    except Exception:  # noqa: BLE001 - the breakdown diagnostic must never break a cycle
+        pass
     # 3c-scoreboard. Priority 1: measure success at the CONSOLIDATOR's output (episodes, crystal-
     #     lised skills, re-trials, promote/hold/archive recs, valid:discarded mappings) - not the
     #     claim count. Read-only; writes only its own two artefacts; never Layer 9. Fail-open.
