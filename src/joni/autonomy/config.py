@@ -145,6 +145,16 @@ class Paths:
         return self.root / "state" / "disputes_series.jsonl"
 
     @property
+    def method_breakdown_sheet(self) -> Path:
+        # Operator measure 2: the human view of WHY the trial pipeline is starved (5 buckets).
+        return self.root / "docs" / "method_breakdown.md"
+
+    @property
+    def method_breakdown_series(self) -> Path:
+        # Operator measure 2: append-only per-cycle bucket counts over the candidate methods.
+        return self.root / "state" / "method_breakdown.jsonl"
+
+    @property
     def scoreboard_series(self) -> Path:
         # Priority 1: append-only per-cycle Consolidator scoreboard (episodes/skills/re-trials/
         # recommendations/valid-vs-discarded). Success measured at the output, not claim growth.

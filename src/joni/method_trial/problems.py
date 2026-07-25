@@ -77,6 +77,13 @@ def match(name: str, summary: str) -> Problem | None:
     return None
 
 
+def is_short_procedure_name(name: str) -> bool:
+    """Whether ``name`` reads as a SHORT procedure/lens rather than a harvested paper title - the
+    same gate ``match`` applies. Exposed so a diagnostic can tell 'not a procedure' (a long title)
+    apart from 'a real short procedure that just has no benchmark'."""
+    return len(_name_core(name or "").split()) <= _MAX_NAME_TOKENS
+
+
 def by_task_set(task_set: str) -> Problem | None:
     """The library problem whose frozen task set has this name, else None. S4 uses it to re-trial a
     probationary skill against its **own** stored verification (``SkillCandidate.verification`` is
@@ -87,4 +94,4 @@ def by_task_set(task_set: str) -> Problem | None:
     return None
 
 
-__all__ = ["Problem", "LIBRARY", "match", "by_task_set"]
+__all__ = ["Problem", "LIBRARY", "match", "by_task_set", "is_short_procedure_name"]
