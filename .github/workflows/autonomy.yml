@@ -213,6 +213,11 @@ jobs:
           # dimension (metabolism.observe draining=1), so enforce reflects REAL overload (backlog /
           # conflict growth / stagnation), currently low, not the standing pile. Won't freeze.
           JONI_METABOLISM: "1"
+          # Priority 2: intake is COUPLED to digestion - new claims/methods enter only when a test,
+          # a Streitfrage, or a Hindsight review happened in the last cycle. Deterministic
+          # backpressure; engages only when digestion fully stalls, never a deadlock (tests/reviews
+          # run on the existing shelf/store). Stops the shelf growing faster than it is processed.
+          JONI_INTAKE_COUPLING: "1"
           # Fast-load (#120) is back ON via the SIDECAR design (#152): the snapshot is written to a
           # git-ignored state/layer9.snapshot.json, never into the committed layer9.json. So the
           # committed file stays journal-only (small, no 100 MB push failures) AND cycles skip the
