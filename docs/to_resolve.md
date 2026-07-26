@@ -21,6 +21,48 @@ _5 entscheidbare(r) Konflikt(e)._
 X-550 | <gewinner: C-10397 oder C-4655> | <grund>
 ```
 
+## X-566 · Thema: forum
+
+- **C-6482** (2 stützend · 0 Kontext): WorldLines benchmarks aim to address the challenge of translating long-term memory into embodied plans to solve partial observability and overwritten world states.
+  - _Quelle:_ granite:joni-c511:5cdc7add828a
+  - _stützt:_ supports via C-5889: WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial ob
+  - _stützt:_ supports via C-6306: Partial observability tasks can be partitioned into memoryless (Markov) and memory-requiring (non-Markov) classes; the challenge of translating long-term memory into embodied plan
+- **C-7581** (0 stützend · 0 Kontext): The phrase 'translating long-term memory into embodied plans' does not appear in any section heading of the WorldLines paper.
+  - _Quelle:_ deepseek:joni-c544:9ceeec585205
+- _Evidenzlage (C-6482 vs C-7581): Belege 2 vs 0 · Quellfamilien 2 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-566 | <gewinner: C-6482 oder C-7581> | <grund>
+```
+
+## X-565 · Thema: forum
+
+- **C-6482** (2 stützend · 0 Kontext): WorldLines benchmarks aim to address the challenge of translating long-term memory into embodied plans to solve partial observability and overwritten world states.
+  - _Quelle:_ granite:joni-c511:5cdc7add828a
+  - _stützt:_ supports via C-5889: WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial ob
+  - _stützt:_ supports via C-6306: Partial observability tasks can be partitioned into memoryless (Markov) and memory-requiring (non-Markov) classes; the challenge of translating long-term memory into embodied plan
+- **C-8484** (0 stützend · 0 Kontext): In the paper's description of the benchmark, the subtask 'translating long-term memory into embodied plans' is always coupled with scenarios of partial observability and memory overwriting, never presented in isolation.
+  - _Quelle:_ deepseek:joni-c572:cee073ec5888
+- _Evidenzlage (C-6482 vs C-8484): Belege 2 vs 0 · Quellfamilien 2 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-565 | <gewinner: C-6482 oder C-8484> | <grund>
+```
+
+## X-335 · Thema: forum
+
+- **C-6482** (2 stützend · 0 Kontext): WorldLines benchmarks aim to address the challenge of translating long-term memory into embodied plans to solve partial observability and overwritten world states.
+  - _Quelle:_ granite:joni-c511:5cdc7add828a
+  - _stützt:_ supports via C-5889: WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial ob
+  - _stützt:_ supports via C-6306: Partial observability tasks can be partitioned into memoryless (Markov) and memory-requiring (non-Markov) classes; the challenge of translating long-term memory into embodied plan
+- **C-6458** (0 stützend · 0 Kontext): The WorldLines paper does not contain a standalone problem statement or section dedicated to 'translating long-term memory into embodied plans' as a fundamental challenge independent of partial observability and overwritten world states.
+  - _Quelle:_ deepseek:joni-c510:96f82dec8784
+- _Evidenzlage (C-6482 vs C-6458): Belege 2 vs 0 · Quellfamilien 2 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
+
+```
+X-335 | <gewinner: C-6482 oder C-6458> | <grund>
+```
+
 ## X-414 · Thema: authors+evaluation
 
 - **C-8552** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'The rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems was recently resolved by the author.' (from authors) might also apply to evaluation.
@@ -31,42 +73,5 @@ X-550 | <gewinner: C-10397 oder C-4655> | <grund>
 
 ```
 X-414 | <gewinner: C-8552 oder C-8255> | <grund>
-```
-
-## X-413 · Thema: authors+evaluation
-
-- **C-8552** (1 stützend · 0 Kontext): Hypothesis: the pattern behind 'The rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems was recently resolved by the author.' (from authors) might also apply to evaluation.
-  - _stützt:_ supports via C-8270: Hypothesis: the pattern behind 'The author of the source is Marleide da Mota Gomes.' (from authorship) might also apply to benchmarking.
-- **C-7370** (0 stützend · 0 Kontext): The author recently resolved the rigorous mathematical theory of filtering equations for mixed states in basic infinite-dimensional quantum systems.
-  - _Quelle:_ granite:joni-c537:24e570afd567
-- _Evidenzlage (C-8552 vs C-7370): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
-
-```
-X-413 | <gewinner: C-8552 oder C-7370> | <grund>
-```
-
-## X-335 · Thema: forum
-
-- **C-6482** (1 stützend · 0 Kontext): WorldLines benchmarks aim to address the challenge of translating long-term memory into embodied plans to solve partial observability and overwritten world states.
-  - _Quelle:_ granite:joni-c511:5cdc7add828a
-  - _stützt:_ supports via C-5889: WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents addresses the challenge of translating long-term memory into embodied plans as a solution to partial ob
-- **C-6458** (0 stützend · 0 Kontext): The WorldLines paper does not contain a standalone problem statement or section dedicated to 'translating long-term memory into embodied plans' as a fundamental challenge independent of partial observability and overwritten world states.
-  - _Quelle:_ deepseek:joni-c510:96f82dec8784
-- _Evidenzlage (C-6482 vs C-6458): Belege 1 vs 0 · Quellfamilien 1 vs 0 · Provenienz Modell/selbst vs Modell/selbst_
-
-```
-X-335 | <gewinner: C-6482 oder C-6458> | <grund>
-```
-
-## X-561 · Thema: memory
-
-- **C-10385** (0 stützend · 0 Kontext): Stop Spatializing Time: Machine Learning Agents Should Learn Through Time, Not About Time
-  - _Quelle:_ zenodo:21513844
-- **C-10539** (0 stützend · 0 Kontext): Machine learning agents should learn through time rather than about time to improve learning efficiency.
-  - _Quelle:_ granite:joni-c659:cdf83cc20253
-- _Evidenzlage (C-10385 vs C-10539): Belege 0 vs 0 · Quellfamilien 0 vs 0 · Provenienz extern vs Modell/selbst_
-
-```
-X-561 | <gewinner: C-10385 oder C-10539> | <grund>
 ```
 
