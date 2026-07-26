@@ -32,11 +32,24 @@ def test_github_repo_is_stored_as_a_candidate_method():
     assert m.name == "react-router" and m.origin.startswith("https://github.com")
 
 
-def test_paper_with_method_language_is_stored():
+def test_a_long_paper_title_is_not_shelved_as_a_method():
+    # the breakdown finding: ~68% of shelved 'methods' were long harvested paper titles, never
+    # trialable. A paper's TITLE is not a procedure - it is rejected, not shelved.
     cs = CoreState(l9.Layer9())
     cs.learn("routing matters", "routing")
-    item = Item("arxiv", "1", "A new framework for cheap routing",
+    item = Item("arxiv", "1", "A new framework for cheap routing in LLM agents",
                 "http://x", "we propose a method and algorithm for routing", 0.0)
+    out = methods.harvest(cs, _judged(cs, [item]), {}, _Proto())
+    assert out["methods"] == 0 and out["titles_rejected"] == 1
+    assert cs.core.all(l9.ObjectType.METHOD) == []
+
+
+def test_a_short_named_procedure_is_still_shelved():
+    # a real short procedure/lens (not a paper title) still passes the title filter
+    cs = CoreState(l9.Layer9())
+    cs.learn("routing matters", "routing")
+    item = Item("arxiv", "1b", "unit-normalisation-lens", "http://x",
+                "a method to normalise the unit before comparing", 0.0)
     out = methods.harvest(cs, _judged(cs, [item]), {}, _Proto())
     assert out["methods"] == 1
 
@@ -101,7 +114,8 @@ def test_on_domain_method_is_still_harvested(monkeypatch):
     _fake_domain(monkeypatch)
     cs = CoreState(l9.Layer9())
     cs.learn("routing matters", "routing")
-    item = Item("arxiv", "9", "A framework for model routing in LLM agents",
+    # a SHORT procedure name (passes the title filter) that is on-domain -> still harvested
+    item = Item("arxiv", "9", "model-routing-lens",
                 "http://x", "a method for routing and inference in agent systems", 0.0)
     out = methods.harvest(cs, _judged(cs, [item]), {}, _Proto())
     assert out["methods"] == 1
