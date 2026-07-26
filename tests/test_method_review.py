@@ -43,9 +43,13 @@ def test_harvest_shelves_only_gate_approved_methods(monkeypatch, tmp_path):
     cs = CoreState(seed_core())
     ext: dict = {}
     proto = _Proto()
+    # short procedure names (they pass the title filter and reach the Granite gate); the stub keys
+    # on 'Cosmological' (reject) and 'speculative decoding' (approve) in the judged text.
     out = methods.harvest(cs, [
-        (_item("Cosmological equations from a vorton vacuum framework", key="k1"), _rel()),
-        (_item("A speculative decoding pipeline for LLM serving", key="k2"), _rel()),
+        (_item("Cosmological vorton framework", key="k1",
+               summary="Cosmological equations framework"), _rel()),
+        (_item("speculative decoding pipeline", key="k2",
+               summary="a speculative decoding method"), _rel()),
     ], ext, proto, 1)
     names = [m.name for m in cs.core.all(l9.ObjectType.METHOD)]
     assert out["methods"] == 1

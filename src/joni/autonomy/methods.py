@@ -27,13 +27,26 @@ def _looks_like_method(item) -> bool:
 
 def harvest(cs, judged, extensions: dict, proto, cycle: int = 0, *, max_methods: int = 2,
             budget=None, runs_per_week: int = 0) -> dict:
+    from ..method_trial import problems
     from . import method_review, quality
     seen = set(extensions.get("methods_seen", []))
-    found = 0
+    found = rejected_titles = 0
     for item, rel in judged:
         if found >= max_methods:
             break
         if item.key in seen or not _looks_like_method(item):
+            continue
+        # A paper's TITLE is not a procedure. The breakdown showed ~68% of shelved 'methods' were
+        # long harvested paper titles ('MemoryWAM: Efficient World Action Modeling ...'), never
+        # trialable. Only shelve a source-derived method whose title reads as a SHORT procedure name
+        # (a repo name, a named technique) - the same short-name gate the trial matcher applies. A
+        # GitHub repo is exempt: a repo IS a tool. (Extracting the real procedure FROM a paper is a
+        # separate feature; this just stops shelving the title as if it were the method.)
+        if item.source != "github" and not problems.is_short_procedure_name(item.title):
+            seen.add(item.key)                 # a paper title, not a procedure - never re-asked
+            rejected_titles += 1
+            proto.record(cycle, "method",
+                         f"not a procedure (paper title), not shelved: {item.title[:70]}")
             continue
         # Domain gate: a GitHub repo is treated as a method by default, but generic off-domain
         # tooling (e.g. C++ coding guidelines) is not Joni's subject - don't shelve it for Kevin.
@@ -65,4 +78,4 @@ def harvest(cs, judged, extensions: dict, proto, cycle: int = 0, *, max_methods:
         proto.record(cycle, "method",
                      f"stored method candidate for Kevin: {item.title[:70]} (from {item.source})")
     extensions["methods_seen"] = sorted(seen)[-1000:]
-    return {"methods": found}
+    return {"methods": found, "titles_rejected": rejected_titles}
