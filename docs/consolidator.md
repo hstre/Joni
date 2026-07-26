@@ -1,6 +1,6 @@
 # Joni — Consolidator-Scoreboard
 
-**Cycle 665 · Run 1**  
+**Cycle 666 · Run 2**  
 
 _Erfolg am Output des Consolidators gemessen, nicht am Claim-Wachstum. Read-only; nichts aktiviert sich selbst — Layer 9 bleibt die Autorität._
 
@@ -12,5 +12,5 @@ _Erfolg am Output des Consolidators gemessen, nicht am Claim-Wachstum. Read-only
 | Empfehlungen | 0 promote · 0 hold · 0 archive |
 | Hypothesen-Wohlgeformtheit (0-4) | 522 gesamt · 0 wohlgeformt (4/4) · 462 als Musterhinweis gesperrt |
 | Valide Tests : verworfene Zuordnungen | 0 : 0 = **0.0** (Fenster; 0 gematcht) |
-| HindsightTag (Provisorien) | 63 Einträge · 10 Reviews → contradiction_detected 10; Koinzidenz-Anteil **0.0** |
+| HindsightTag (Provisorien) | 70 Einträge · 15 Reviews → contradiction_detected 15; Koinzidenz-Anteil **0.0** |
 

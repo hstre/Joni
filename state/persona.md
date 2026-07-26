@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 881 korrigierte(r) Irrtum/Irrtümer (+5304 Housekeeping in Sink-Themen) · 639 Lehre(n)._
+_Stand: Tick 25 · 882 korrigierte(r) Irrtum/Irrtümer (+5309 Housekeeping in Sink-Themen) · 640 Lehre(n)._
 
 ## attention · Tiefe 95 (threshold)
 
@@ -1414,6 +1414,15 @@ _deterministisch:_ Auf 'related': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt
 
 - Anker: „'related' keeps recurring across 4 of my topics, so I am tracking it as its own topic.“ → verworfen — verworfen
 - _volle Spur (1):_ C-736
+
+## region · Tiefe 1 (self_review)
+
+**In der Forschung werden Annahmen über spezifische Regionen verworfen, um die Zuverlässigkeit der Ergebnisse zu gewährleisten.**
+
+_deterministisch:_ Auf 'region': 1 korrigierte(r) Irrtum/Irrtümer (0× ersetzt, 1× verworfen). Muster: Annahmen wurden verworfen. Anker: „The research focuses on the Loess Plateau to investigate ecosystem vulnerability to compound hot-dry shocks.“ → verworfen (verworfen)
+
+- Anker: „The research focuses on the Loess Plateau to investigate ecosystem vulnerability to compound hot-dry shocks.“ → verworfen — verworfen
+- _volle Spur (1):_ C-10682
 
 ## refers · Tiefe 1 (self_review)
 
