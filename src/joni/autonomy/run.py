@@ -292,6 +292,9 @@ def one_cycle() -> dict:
     #     a method that has been trialed enough times without a measurable gain is discarded, so
     #     the shelf does not grow without ever maturing. Pass = activation-ready (unchanged).
     trialed["retired"] = trials.retire_unproductive(cs, proto, cycle, extensions=extensions)
+    # Drain the standing pile of harvested paper-title 'methods' (the breakdown's ~68%): they never
+    # get trialed, so retire_unproductive never reaches them. Capped per cycle - a rolling cleanup.
+    trialed["retired_titles"] = trials.retire_paper_title_methods(cs, proto, cycle)
     # 3c-real. The REAL method-trial protocol (measured: frozen task set, baseline vs intervention,
     #     predefined metric, negative control, provenance) - kept separate from, and honest about,
     #     the synthetic simulator above. Decision rests on the metric, not a model's opinion.

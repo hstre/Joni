@@ -251,3 +251,34 @@ def test_run_trials_records_kevin_conditions_into_the_ledger(monkeypatch):
     assert led["method-1"]["last_condition_passed"] is True
     assert led["method-2"]["last_condition"] == "vision"          # a fail records the condition too
     assert led["method-2"].get("passed_conditions", []) == []     # but not as a passed one
+
+
+def test_retire_paper_title_methods_drains_titles_but_keeps_real_procedures():
+    cs = CoreState(l9.Layer9())
+    # a harvested paper title (long name, not a github repo) -> retired
+    title = cs.propose_method(
+        name="MemoryWAM: Efficient World Action Modeling with Persistent Memory",
+        summary="a paper", applicable_to=("memory",), origin="http://arxiv.org/x")
+    # a short procedure name -> kept
+    proc = cs.propose_method(name="unit-normalisation-lens",
+                             summary="normalise the unit before comparing",
+                             applicable_to=("routing",), origin="http://x")
+    # a github repo with a long path -> exempt (a repo is a tool)
+    repo = cs.propose_method(name="phylyc/somatic_workflow/PhylogicNDT full pipeline tool",
+                             summary="a tool", applicable_to=("bio",),
+                             origin="https://github.com/phylyc/somatic_workflow")
+    n = trials.retire_paper_title_methods(cs, _Proto(), 1)
+    assert n == 1                                              # only the paper title
+    live = {m.id: m.status for m in cs.core.all(l9.ObjectType.METHOD)}
+    assert live[title] is l9.Status.REJECTED                  # the title is gone
+    assert live[proc] is l9.Status.CANDIDATE                  # the real procedure stays
+    assert live[repo] is l9.Status.CANDIDATE                  # the repo stays
+
+
+def test_retire_paper_titles_is_capped():
+    cs = CoreState(l9.Layer9())
+    for i in range(5):
+        cs.propose_method(name=f"A Long Harvested Paper Title Number {i} About Things",
+                          summary="p", applicable_to=("x",), origin=f"http://arxiv/{i}")
+    n = trials.retire_paper_title_methods(cs, _Proto(), 1, max_retire=2)
+    assert n == 2                                             # capped per cycle -> rolling cleanup

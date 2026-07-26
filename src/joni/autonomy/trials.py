@@ -248,3 +248,40 @@ def retire_unproductive(cs, proto, cycle: int = 0, *, max_retire: int = 5,
     if isinstance(extensions, dict):
         extensions["method_ledger"] = ledger
     return retired
+
+
+def retire_paper_title_methods(cs, proto, cycle: int = 0, *, max_retire: int | None = None) -> int:
+    """Drain the standing pile of harvested PAPER TITLES the breakdown surfaced (~68% of the shelf):
+    candidate methods whose *name* is a long paper title, not a procedure - never trialable, so the
+    trial-based ``retire_unproductive`` never reaches them and they sit forever.
+
+    The harvest gate now stops NEW ones; this retires the existing ones through the gate
+    (``reject_method`` - a real negative result), CAPPED per cycle so it is a rolling cleanup, not a
+    mass delete. Exempt: a GitHub-origin method (a repo IS a tool), a short-named procedure, or a
+    method that has already earned a trial (left to ``retire_unproductive``). Never auto-confirms.
+    """
+    import contextlib
+
+    import desi_layer9 as l9
+
+    from ..method_trial import problems
+    cap = int(os.getenv("JONI_METHOD_TITLE_SWEEP", "8")) if max_retire is None else max_retire
+    retired = 0
+    for m in cs.core.all(l9.ObjectType.METHOD):
+        if retired >= cap:
+            break
+        if m.status not in (l9.Status.CANDIDATE, l9.Status.PROVISIONAL):
+            continue
+        if int(getattr(m, "trial_count", 0)) > 0:
+            continue                                   # earned a trial -> retire_unproductive's job
+        if "github.com" in str(getattr(m, "origin", "") or ""):
+            continue                                   # a repo is a tool - keep it
+        name = str(getattr(m, "name", "") or "")
+        if problems.is_short_procedure_name(name):
+            continue                                   # a real short procedure name - keep it
+        with contextlib.suppress(Exception):
+            cs.reject_method(m.id)
+            retired += 1
+            proto.record(cycle, "method",
+                         f"retired paper-title method (not a procedure): {name[:70]}")
+    return retired
