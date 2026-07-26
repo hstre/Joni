@@ -38,6 +38,19 @@ def test_an_idle_extension_is_auto_deactivated(monkeypatch, tmp_path):
     assert any("deactivated" in s for _, s in proto.events)
 
 
+def test_a_capped_log_that_rotates_new_content_is_kept(monkeypatch, tmp_path):
+    # the live bug: a busy extension's activity log is capped ([-60:]), so its LENGTH saturates and
+    # never grows again - the old len-based review then wrongly auto-disabled it. New content (a
+    # rotating tail) is real activity and must keep the extension alive.
+    _env(monkeypatch, tmp_path)
+    ext = {"doktores_review": [{"c": i} for i in range(60)]}    # already at the cap
+    extension_review.review(ext, _Proto(), 0)                  # window opens; len is 60
+    ext["doktores_review"] = (ext["doktores_review"] + [{"c": 999}])[-60:]   # rotate new content in
+    out = extension_review.review(ext, _Proto(), 100)          # len STILL 60 - but content changed
+    assert "doktores" not in out["disabled"]                   # kept: rotation is activity
+    assert extension_review.active("doktores") is True
+
+
 def test_disabled_state_persists_and_arm_honours_it(monkeypatch, tmp_path):
     _env(monkeypatch, tmp_path)
     from joni.autonomy import doktores

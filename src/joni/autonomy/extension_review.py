@@ -11,8 +11,15 @@ can fix and re-enable it, or delete it for good. This delivers "the extension is
 running) without Joni rewriting his own code.
 
 Failure = an extension that has been ACTIVE for a full review window yet produced **no** measurable
-contribution in that window (its activity log did not grow). A delivering extension simply gets a
-fresh window. The review never touches the protected core or anything not in its small registry.
+contribution in that window (its activity log's newest content did not change). A delivering
+extension simply gets a fresh window. The review never touches the protected core or anything not
+in its small registry.
+
+Contribution is measured by whether the activity log's newest content CHANGED across the window, not
+by whether its length grew - the activity logs are capped (``[-40:]`` / ``[-60:]`` / ``[-200:]``).
+Once a busy extension fills its cap the length saturates and would never 'grow' again, so measuring
+the length wrongly auto-disabled every extension whose log was full (the doktores / facet_decomp /
+ocr live finding). A rotating (content-changing) capped log is real activity; a static one is not.
 """
 
 from __future__ import annotations
@@ -56,14 +63,20 @@ def active(name: str) -> bool:
     return name not in _load_disabled()
 
 
-def _activity(extensions: dict, keys) -> int:
-    return sum(len(extensions.get(k, []) or []) for k in keys)
+def _fingerprint(extensions: dict, keys) -> list:
+    """A cheap signal of each activity log's newest CONTENT (length + last entry). It changes when
+    the extension appends anything new - even to a full, capped log whose length no longer grows."""
+    out = []
+    for k in keys:
+        log = extensions.get(k) or []
+        out.append([len(log), str(log[-1])[:160] if log else ""])
+    return out
 
 
 def review(extensions: dict, proto, cycle: int = 0) -> dict:
     """Review each registered extension; auto-deactivate one that has been active a full window
     with no contribution. Returns the disabled set. Deterministic, bounded, never a core touch."""
-    state = extensions.setdefault("ext_review", {})       # name -> {since, count}
+    state = extensions.setdefault("ext_review", {})       # name -> {since, fp}
     disabled = _load_disabled()
     proj = projection.enabled()
     changed = False
@@ -72,20 +85,20 @@ def review(extensions: dict, proto, cycle: int = 0) -> dict:
         if not running:
             state.pop(name, None)                         # not active -> no window running
             continue
-        cur = _activity(extensions, keys)
+        fp = _fingerprint(extensions, keys)
         st = state.get(name)
         if not isinstance(st, dict) or "since" not in st:
-            state[name] = {"since": cycle, "count": cur}  # open a fresh review window
+            state[name] = {"since": cycle, "fp": fp}       # open a fresh review window
             continue
         if cycle - int(st["since"]) >= window:
-            if cur <= int(st.get("count", 0)):            # no growth in a full window = no benefit
+            if fp == st.get("fp"):                        # content unchanged all window = idle
                 disabled.add(name)
                 changed = True
                 proto.record(cycle, "note",
                              f"extension-review: '{name}' deactivated - no measurable contribution "
                              f"in {window} cycles (auto-pruned; code kept, re-enable after a fix)")
             else:
-                state[name] = {"since": cycle, "count": cur}   # it delivered -> new window
+                state[name] = {"since": cycle, "fp": fp}       # it delivered -> new window
     if changed:
         p = _disabled_path()
         p.parent.mkdir(parents=True, exist_ok=True)
