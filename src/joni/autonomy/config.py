@@ -130,6 +130,12 @@ class Paths:
         return self.root / "docs" / "hindsight.md"
 
     @property
+    def ext_disabled(self) -> Path:
+        # Self-regulation sensor: which extensions the benefit-review has auto-deactivated. Surfaced
+        # on the scoreboard so a wrong disable is visible immediately, not weeks later.
+        return self.root / "state" / "ext_disabled.json"
+
+    @property
     def digestion(self) -> Path:
         # Priority 2: the intake<->digestion coupling marker (last cycle real digestion happened).
         return self.root / "state" / "digestion.json"

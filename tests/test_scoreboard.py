@@ -15,8 +15,22 @@ def _paths(tmp_path):
         skill_candidates=tmp_path / "skill_candidates.jsonl",
         provisional=tmp_path / "provisional.jsonl",
         hindsight_provenance=tmp_path / "hindsight_provenance.jsonl",
+        ext_disabled=tmp_path / "ext_disabled.json",
         scoreboard_series=tmp_path / "consolidator_series.jsonl",
         scoreboard_panel=tmp_path / "consolidator.md")
+
+
+def test_scoreboard_surfaces_auto_disabled_extensions(tmp_path):
+    p = _paths(tmp_path)
+    # no file / empty -> healthy
+    rec = scoreboard.compute(None, {}, paths=p, cycle=1, run=1)
+    assert rec["extensions"]["disabled"] == []
+    assert "alle aktiv" in scoreboard.render_summary(rec)
+    # a wrong auto-disable is visible immediately (the doktores-offline-for-weeks failure mode)
+    p.ext_disabled.write_text(json.dumps(["doktores", "ocr_openrouter"]))
+    rec2 = scoreboard.compute(None, {}, paths=p, cycle=2, run=2)
+    assert rec2["extensions"]["disabled"] == ["doktores", "ocr_openrouter"]
+    assert "deaktiviert: doktores" in scoreboard.render_summary(rec2)
 
 
 def _seed_episode(store, cycle):

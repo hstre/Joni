@@ -74,6 +74,18 @@ def _hypothesis_stats(cs) -> dict:
             "by_score": by_score}
 
 
+def _extension_stats(paths) -> dict:
+    """Self-regulation sensor, made visible: which extensions the benefit-review has auto-disabled.
+    An empty list is healthy; a non-empty one is a warning (the capped-log false-positive that took
+    doktores offline for weeks would have shown here the same cycle it happened)."""
+    disabled: list = []
+    p = getattr(paths, "ext_disabled", None)
+    if p is not None:
+        with contextlib.suppress(OSError, json.JSONDecodeError):
+            disabled = sorted(json.loads(p.read_text(encoding="utf-8")))
+    return {"disabled": disabled}
+
+
 def _hindsight_stats(paths) -> dict:
     """H4: measure the retroactive review-trigger. Current provisional entries by stage, plus the
     window-cumulative review outcomes read from the append-only provenance - and the honest
@@ -152,6 +164,7 @@ def compute(cs, extensions: dict, *, paths, cycle: int, run: int) -> dict:
         "recommendations": _recommendation_counts(extensions),
         "hypotheses": _hypothesis_stats(cs),
         "hindsight": _hindsight_stats(paths),
+        "extensions": _extension_stats(paths),
         "trial_funnel": funnel,
         "window": _window_totals(getattr(paths, "scoreboard_series", None), funnel),
     }
@@ -164,6 +177,9 @@ def render_summary(rec: dict) -> str:
     hs = rec.get("hindsight", {"entries_total": 0, "reviews": 0, "outcomes": {},
                                "coincidence_share": 0.0})
     hs_out = " · ".join(f"{k} {v}" for k, v in sorted(hs["outcomes"].items())) or "—"
+    ex = rec.get("extensions", {"disabled": []})
+    ex_cell = ("🟢 alle aktiv" if not ex["disabled"]
+               else "⚠️ deaktiviert: " + ", ".join(ex["disabled"]))
     status = " · ".join(f"{k} {v}" for k, v in sorted(sk["by_status"].items())) or "—"
     lines = [
         "# Joni — Consolidator-Scoreboard",
@@ -187,6 +203,7 @@ def render_summary(rec: dict) -> str:
         f"= **{w['valid_to_discarded']}** (Fenster; {w['matched']} gematcht) |",
         f"| HindsightTag (Provisorien) | {hs['entries_total']} Einträge · {hs['reviews']} Reviews "
         f"→ {hs_out}; Koinzidenz-Anteil **{hs['coincidence_share']}** |",
+        f"| Selbstregulation (Extensions) | {ex_cell} |",
         "",
     ]
     return "\n".join(lines) + "\n"
