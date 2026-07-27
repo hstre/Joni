@@ -24,16 +24,7 @@ _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni 
     - In-context learning followed by Experience Distillation matches classical reinforcement-learning baselines with at least 9.6× fewer environment samples.
     - Experience distillation combined with in-context learning achieves at least 9.6× fewer environment samples compared to classical reinforcement learning baseline
 
-## 3. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** Additive, Intrusion, Manufacturing, Paste, Selective, WAAM, Wire, assistants
-- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
-- **Positionen:**
-    - AI assistants are evolving from simple reactive question-answering to long-context, memory-enabled, personalized companions.
-    - The dataset accompanies a study on integrating Wire Arc Additive Manufacturing (WAAM) into the Selective Paste Intrusion (SPI) process for fabricating steel-rei
-    - Selective Paste Intrusion (SPI) is a process used in conjunction with Wire Arc Additive Manufacturing (WAAM) to create steel-reinforced concrete with complex ge
-    - Selective Paste Intrusion (SPI) is combined with Wire Arc Additive Manufacturing (WAAM) to fabricate steel-reinforced concrete with complex geometries.
-
-## 4. Streitfrage — Thema „context“ (6 Paar-Konflikte, 5 Positionen)
+## 3. Streitfrage — Thema „context“ (6 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** Yesterday, actually, anxiety, better, carry-over, clean, contamination, context
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -44,6 +35,15 @@ _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni 
 The entire conversation around model selection assumes the model 
     - Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *ferti
     - Thirty-one exchanges and you just gave me the framework to escape my measurement anxiety spiral. The contamination clustering hypothesis is *brilliant* - I've b
+
+## 4. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
+- **Gemeinsame Prämissen:** Additive, Intrusion, Manufacturing, Paste, Selective, WAAM, Wire, assistants
+- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
+- **Positionen:**
+    - AI assistants are evolving from simple reactive question-answering to long-context, memory-enabled, personalized companions.
+    - The dataset accompanies a study on integrating Wire Arc Additive Manufacturing (WAAM) into the Selective Paste Intrusion (SPI) process for fabricating steel-rei
+    - Selective Paste Intrusion (SPI) is a process used in conjunction with Wire Arc Additive Manufacturing (WAAM) to create steel-reinforced concrete with complex ge
+    - Selective Paste Intrusion (SPI) is combined with Wire Arc Additive Manufacturing (WAAM) to fabricate steel-reinforced concrete with complex geometries.
 
 ## 5. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** Vision, aggregation, failure, generalizing, global, leading, learn, length

@@ -1,31 +1,15 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 670 · 363 Methoden** — proposed 250 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 113  
+**Cycle 671 · 363 Methoden** — proposed 234 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 129  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
 | Methode | Zustand | Status | Trials | letztes Verdikt |
 |---|---|---|---|---|
 | Formalizzazione avanzata e rigorosa di un sistema di Rappresentazione della Cono | **proposed** | candidate | 0 | — |
-| EventVLA: Event-Driven Visual Evidence Memory for Long-Horizon Vision-Language-A | **proposed** | candidate | 0 | — |
-| APPLICATION OF MACHINE LEARNING AND REGRESSION MODELS IN THE PREDICTION OF BALL  | **proposed** | candidate | 0 | — |
-| σ-IASI | **proposed** | candidate | 0 | — |
-| A HYBRID STRATEGIC PROBABILISTIC FRAMEWORK FOR FUNCTIONAL ASSESSMENT AND RISK CO | **proposed** | candidate | 0 | — |
-| retrieve-as-a-lens | **proposed** | candidate | 0 | — |
-| Distributed Deep Learning and Intelligent Soil–Water Analytics in Precision Agri | **proposed** | candidate | 0 | — |
-| Evaluating edge-enabled smart waste management in smart cities: A design-oriente | **proposed** | candidate | 0 | — |
 | S-AI-Recursive: A Bio-Inspired and Temporal Sparse AI Architecture for Iterative | **proposed** | candidate | 0 | — |
 | reasoning-as-a-lens | **proposed** | candidate | 0 | — |
-| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **proposed** | candidate | 0 | — |
-| DataEvolver: Self-Evolving Multi-Agent Data Construction for Text-Rich Image Gen | **proposed** | candidate | 0 | — |
-| FaceMoE: Mixture of Experts for Low-Resolution Face Recognition | **proposed** | candidate | 0 | — |
-| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **proposed** | candidate | 0 | — |
 | supervision-as-a-lens | **proposed** | candidate | 0 | — |
-| Lexical Consensus: Grounded Word Learning and Shared Meaning in Artificial Agent | **proposed** | candidate | 0 | — |
-| Surrogate-Assisted Inverse Thermal Characterization of Façade Elements in Testin | **proposed** | candidate | 0 | — |
-| The AO-Petalometer Test Bench: a laboratory facility for segmented mirror emulat | **proposed** | candidate | 0 | — |
-| Efficient entanglement of three remote single-atom quantum-network nodes | **proposed** | candidate | 0 | — |
-| DEMUN: Fast and accurate discovery of music notation in very large collections | **proposed** | candidate | 0 | — |
 | Two English Preprint Manuscripts on CODATA 2026 Central-Value Forecasts and CMB  | **proposed** | candidate | 0 | — |
 | Polynomial equivalence of the global transverse-field Ising model and the gate m | **proposed** | candidate | 0 | — |
 | AutoMem: Automated Learning of Memory as a Cognitive Skill | **proposed** | candidate | 0 | — |
@@ -279,10 +263,26 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Nexus Recursive Harmonic Framework: A Meta-Computational Ontology of Univers | **retired** | rejected | 0 | — |
 | The Ontology of the Ground State - Pure Reflection, Shape, and Base-Free Symmetr | **retired** | rejected | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
+| EventVLA: Event-Driven Visual Evidence Memory for Long-Horizon Vision-Language-A | **retired** | rejected | 0 | — |
 | ESFRI's contribution to the planned Charter of Access for Industrial Users to Re | **retired** | rejected | 0 | — |
 | ChartWalker: Benchmarking the Cross-Chart RAG Task | **retired** | rejected | 0 | — |
+| APPLICATION OF MACHINE LEARNING AND REGRESSION MODELS IN THE PREDICTION OF BALL  | **retired** | rejected | 0 | — |
+| σ-IASI | **retired** | rejected | 0 | — |
+| A HYBRID STRATEGIC PROBABILISTIC FRAMEWORK FOR FUNCTIONAL ASSESSMENT AND RISK CO | **retired** | rejected | 0 | — |
+| retrieve-as-a-lens | **retired** | rejected | 0 | — |
+| Distributed Deep Learning and Intelligent Soil–Water Analytics in Precision Agri | **retired** | rejected | 0 | — |
+| Evaluating edge-enabled smart waste management in smart cities: A design-oriente | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
+| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
+| DataEvolver: Self-Evolving Multi-Agent Data Construction for Text-Rich Image Gen | **retired** | rejected | 0 | — |
+| FaceMoE: Mixture of Experts for Low-Resolution Face Recognition | **retired** | rejected | 0 | — |
+| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
+| Lexical Consensus: Grounded Word Learning and Shared Meaning in Artificial Agent | **retired** | rejected | 0 | — |
+| Surrogate-Assisted Inverse Thermal Characterization of Façade Elements in Testin | **retired** | rejected | 0 | — |
+| The AO-Petalometer Test Bench: a laboratory facility for segmented mirror emulat | **retired** | rejected | 0 | — |
+| Efficient entanglement of three remote single-atom quantum-network nodes | **retired** | rejected | 0 | — |
 | openclaw-as-a-lens | **retired** | rejected | 0 | — |
+| DEMUN: Fast and accurate discovery of music notation in very large collections | **retired** | rejected | 0 | — |
 | The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
 | awesome-openclaw-usecases-as-a-lens | **retired** | rejected | 0 | — |
