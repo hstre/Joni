@@ -16,6 +16,7 @@ def _paths(tmp_path):
         provisional=tmp_path / "provisional.jsonl",
         hindsight_provenance=tmp_path / "hindsight_provenance.jsonl",
         ext_disabled=tmp_path / "ext_disabled.json",
+        sleep_state=tmp_path / "sleep_state.json",
         scoreboard_series=tmp_path / "consolidator_series.jsonl",
         scoreboard_panel=tmp_path / "consolidator.md")
 
@@ -31,6 +32,19 @@ def test_scoreboard_surfaces_auto_disabled_extensions(tmp_path):
     rec2 = scoreboard.compute(None, {}, paths=p, cycle=2, run=2)
     assert rec2["extensions"]["disabled"] == ["doktores", "ocr_openrouter"]
     assert "deaktiviert: doktores" in scoreboard.render_summary(rec2)
+
+
+def test_scoreboard_shows_the_sleep_state_and_whether_it_ripened_anything(tmp_path):
+    p = _paths(tmp_path)
+    rec = scoreboard.compute(None, {}, paths=p, cycle=1, run=1)
+    assert rec["sleep"]["state"] == "AWAKE" and "🟢 wach" in scoreboard.render_summary(rec)
+    # asleep, gate still off (observation), and the last window matured nothing - all three visible
+    p.sleep_state.write_text(json.dumps(
+        {"state": "SLEEP_DEEP", "since": 12, "reason": "Druck hält an", "gate": False,
+         "last_wake": {"slept_cycles": 4, "matured": False}}))
+    out = scoreboard.render_summary(scoreboard.compute(None, {}, paths=p, cycle=2, run=2))
+    assert "😴 SLEEP_DEEP seit Zyklus 12" in out
+    assert "Beobachtung (drosselt nicht)" in out and "**nichts gereift**" in out
 
 
 def _seed_episode(store, cycle):

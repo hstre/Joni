@@ -141,6 +141,12 @@ class Paths:
         return self.root / "state" / "digestion.json"
 
     @property
+    def sleep_state(self) -> Path:
+        # Schlafmodus S0: the four-state machine (AWAKE/SLEEP_LIGHT/SLEEP_DEEP/WAKE_TRANSITION),
+        # its trigger reason, and the maturation delta of the last sleep window.
+        return self.root / "state" / "sleep_state.json"
+
+    @property
     def disputes_sheet(self) -> Path:
         # Priority 5: the human view of the condensed Streitfragen (few disputes, not 273 pairs).
         return self.root / "docs" / "streitfragen.md"
