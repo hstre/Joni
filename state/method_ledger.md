@@ -1,21 +1,13 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 669 · 363 Methoden** — proposed 265 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 98  
+**Cycle 670 · 363 Methoden** — proposed 250 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 113  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
 | Methode | Zustand | Status | Trials | letztes Verdikt |
 |---|---|---|---|---|
 | Formalizzazione avanzata e rigorosa di un sistema di Rappresentazione della Cono | **proposed** | candidate | 0 | — |
-| FedOT: Ownership Verification and Leakage Tracing via Watermarks for Federated L | **proposed** | candidate | 0 | — |
-| DiffusionBench: On Holistic Evaluation of Diffusion Transformers | **proposed** | candidate | 0 | — |
-| The Mathematical and Architectural Specifications of the NEXUS Computational Fra | **proposed** | candidate | 0 | — |
-| LingxiDiagBench: A Multi-Agent Framework for Benchmarking LLMs in Chinese Psychi | **proposed** | candidate | 0 | — |
-| The Nexus Recursive Harmonic Framework: A Meta-Computational Ontology of Univers | **proposed** | candidate | 0 | — |
-| The Ontology of the Ground State - Pure Reflection, Shape, and Base-Free Symmetr | **proposed** | candidate | 0 | — |
 | EventVLA: Event-Driven Visual Evidence Memory for Long-Horizon Vision-Language-A | **proposed** | candidate | 0 | — |
-| ESFRI's contribution to the planned Charter of Access for Industrial Users to Re | **proposed** | candidate | 0 | — |
-| ChartWalker: Benchmarking the Cross-Chart RAG Task | **proposed** | candidate | 0 | — |
 | APPLICATION OF MACHINE LEARNING AND REGRESSION MODELS IN THE PREDICTION OF BALL  | **proposed** | candidate | 0 | — |
 | σ-IASI | **proposed** | candidate | 0 | — |
 | A HYBRID STRATEGIC PROBABILISTIC FRAMEWORK FOR FUNCTIONAL ASSESSMENT AND RISK CO | **proposed** | candidate | 0 | — |
@@ -261,16 +253,9 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | embodied-as-a-lens | **proposed** | candidate | 0 | — |
 | converts-as-a-lens | **proposed** | candidate | 0 | — |
 | appearance-as-a-lens | **proposed** | candidate | 0 | — |
-| Drift-free Visual SLAM using Digital Twins | **proposed** | candidate | 0 | — |
-| Application of LSTM models and recurrent neural networks in flood detection usin | **proposed** | candidate | 0 | — |
-| The Unreasonable Effectiveness of VLMs for Zero-shot Procedural Mistake Detectio | **proposed** | candidate | 0 | — |
-| A Correlation Aware Quantum Feature Map for Variational Quantum Classification | **proposed** | candidate | 0 | — |
 | generative-as-a-lens | **proposed** | candidate | 0 | — |
-| PaperClaw: Harnessing Agents for Autonomous Research and Human-in-the-Loop Refin | **proposed** | candidate | 0 | — |
 | SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation | **proposed** | candidate | 0 | — |
 | west-as-a-lens | **proposed** | candidate | 0 | — |
-| AC-ODM: Actor--Critic Online Data Mixing for Sample-Efficient LLM Pretraining | **proposed** | candidate | 0 | — |
-| Vera: A Layered Diffusion Model for Content-Preserving Video Editing | **proposed** | candidate | 0 | — |
 | MemoryWAM: Efficient World Action Modeling with Persistent Memory | **retired** | rejected | 0 | — |
 | FlowEdit: Associative Memory for Lifelong Pronunciation Adaptation in Flow-Match | **retired** | rejected | 0 | — |
 | Stone Programming Paradigm: Language Abstraction | **retired** | rejected | 0 | — |
@@ -286,8 +271,16 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | amnesia-as-a-lens | **retired** | rejected | 0 | — |
 | autonomous-as-a-lens | **retired** | rejected | 0 | — |
 | DREAM: Dense Retrieval Embeddings via Autoregressive Modeling | **retired** | rejected | 0 | — |
+| FedOT: Ownership Verification and Leakage Tracing via Watermarks for Federated L | **retired** | rejected | 0 | — |
+| DiffusionBench: On Holistic Evaluation of Diffusion Transformers | **retired** | rejected | 0 | — |
 | BenchX: Benchmarking AI Models for Cancer Detection and Localization with Demogr | **retired** | rejected | 0 | — |
+| The Mathematical and Architectural Specifications of the NEXUS Computational Fra | **retired** | rejected | 0 | — |
+| LingxiDiagBench: A Multi-Agent Framework for Benchmarking LLMs in Chinese Psychi | **retired** | rejected | 0 | — |
+| The Nexus Recursive Harmonic Framework: A Meta-Computational Ontology of Univers | **retired** | rejected | 0 | — |
+| The Ontology of the Ground State - Pure Reflection, Shape, and Base-Free Symmetr | **retired** | rejected | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
+| ESFRI's contribution to the planned Charter of Access for Industrial Users to Re | **retired** | rejected | 0 | — |
+| ChartWalker: Benchmarking the Cross-Chart RAG Task | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | openclaw-as-a-lens | **retired** | rejected | 0 | — |
 | The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups | **retired** | rejected | 0 | — |
@@ -361,11 +354,18 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Benchmark of quantum algorithms for ground state preparation in the presence of  | **retired** | rejected | 0 | — |
 | Failure is a Moving Target: Subspace Drift Theory and the Dynamics of Evolving F | **retired** | rejected | 0 | — |
 | SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for Long-Doc | **retired** | rejected | 0 | — |
+| Drift-free Visual SLAM using Digital Twins | **retired** | rejected | 0 | — |
+| Application of LSTM models and recurrent neural networks in flood detection usin | **retired** | rejected | 0 | — |
+| The Unreasonable Effectiveness of VLMs for Zero-shot Procedural Mistake Detectio | **retired** | rejected | 0 | — |
+| A Correlation Aware Quantum Feature Map for Variational Quantum Classification | **retired** | rejected | 0 | — |
 | Deep Research in Physical Sciences: A Multi-Agent Framework and Comprehensive Be | **retired** | rejected | 0 | — |
+| PaperClaw: Harnessing Agents for Autonomous Research and Human-in-the-Loop Refin | **retired** | rejected | 0 | — |
 | Sub-Billion, Super-Frontier: Small Language Models Rival Zero-Shot Frontier LLMs | **retired** | rejected | 0 | — |
 | Randomized YaRN Improves Length Generalization for Long-Context Reasoning | **retired** | rejected | 0 | — |
 | LIBERO-Safety: A Comprehensive Benchmark for Physical and Semantic Safety in Vis | **retired** | rejected | 0 | — |
 | ENHANCING THE COMPETITIVENESS OF INDUSTRIAL ENTERPRISES IN THE CONTEXT OF THE DI | **retired** | rejected | 0 | — |
+| AC-ODM: Actor--Critic Online Data Mixing for Sample-Efficient LLM Pretraining | **retired** | rejected | 0 | — |
 | Deeper is Not Always Better: Mitigating the Alignment Tax via Confident Layer De | **retired** | rejected | 0 | — |
+| Vera: A Layered Diffusion Model for Content-Preserving Video Editing | **retired** | rejected | 0 | — |
 | Shared Tradition, Local Network: An Interaction Model for the Lake District in L | **retired** | rejected | 0 | — |
 | COSMOLOGICAL EQUATIONS AND EMERGENT SPACETIME FROM A COMPRESSIBLE VORTON VACUUM | **retired** | rejected | 0 | — |
