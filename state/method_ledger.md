@@ -1,20 +1,14 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 668 · 363 Methoden** — proposed 279 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 84  
+**Cycle 669 · 363 Methoden** — proposed 265 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 98  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
 | Methode | Zustand | Status | Trials | letztes Verdikt |
 |---|---|---|---|---|
 | Formalizzazione avanzata e rigorosa di un sistema di Rappresentazione della Cono | **proposed** | candidate | 0 | — |
-| ignacioi-as-a-lens | **proposed** | candidate | 0 | — |
-| kiskalla-as-a-lens | **proposed** | candidate | 0 | — |
-| amnesia-as-a-lens | **proposed** | candidate | 0 | — |
-| autonomous-as-a-lens | **proposed** | candidate | 0 | — |
-| DREAM: Dense Retrieval Embeddings via Autoregressive Modeling | **proposed** | candidate | 0 | — |
 | FedOT: Ownership Verification and Leakage Tracing via Watermarks for Federated L | **proposed** | candidate | 0 | — |
 | DiffusionBench: On Holistic Evaluation of Diffusion Transformers | **proposed** | candidate | 0 | — |
-| BenchX: Benchmarking AI Models for Cancer Detection and Localization with Demogr | **proposed** | candidate | 0 | — |
 | The Mathematical and Architectural Specifications of the NEXUS Computational Fra | **proposed** | candidate | 0 | — |
 | LingxiDiagBench: A Multi-Agent Framework for Benchmarking LLMs in Chinese Psychi | **proposed** | candidate | 0 | — |
 | The Nexus Recursive Harmonic Framework: A Meta-Computational Ontology of Univers | **proposed** | candidate | 0 | — |
@@ -253,8 +247,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | TogoMCP: Natural Language Querying of Life-Science Knowledge Graphs via Schema-G | **proposed** | candidate | 0 | — |
 | sparse-as-a-lens | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
-| A Formal C-Based Simulation Framework for Comparative Analysis of Paging and Seg | **proposed** | candidate | 0 | — |
-| One to Three-Day Lead Streamflow Forecast Using Multi-Head Attention with Long S | **proposed** | candidate | 0 | — |
 | retrieval-as-a-lens | **proposed** | candidate | 0 | — |
 | short-term-as-a-lens | **proposed** | candidate | 0 | — |
 | spatial-as-a-lens | **proposed** | candidate | 0 | — |
@@ -265,16 +257,10 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Mustatil: An Open-Source AI and GIS Framework for Archaeological Feature Detecti | **proposed** | candidate | 0 | — |
 | long-term-as-a-lens | **proposed** | candidate | 0 | — |
 | loss-as-a-lens | **proposed** | candidate | 0 | — |
-| $\Theta$-Control: Memory as a Control Resource | **proposed** | candidate | 0 | — |
 | redesign-as-a-lens | **proposed** | candidate | 0 | — |
-| WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents | **proposed** | candidate | 0 | — |
 | embodied-as-a-lens | **proposed** | candidate | 0 | — |
-| GateMem: Benchmarking Memory Governance in Multi-Principal Shared-Memory Agents | **proposed** | candidate | 0 | — |
-| MemSlides: A Hierarchical Memory Driven Agent Framework for Personalized Slide G | **proposed** | candidate | 0 | — |
 | converts-as-a-lens | **proposed** | candidate | 0 | — |
 | appearance-as-a-lens | **proposed** | candidate | 0 | — |
-| Failure is a Moving Target: Subspace Drift Theory and the Dynamics of Evolving F | **proposed** | candidate | 0 | — |
-| SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for Long-Doc | **proposed** | candidate | 0 | — |
 | Drift-free Visual SLAM using Digital Twins | **proposed** | candidate | 0 | — |
 | Application of LSTM models and recurrent neural networks in flood detection usin | **proposed** | candidate | 0 | — |
 | The Unreasonable Effectiveness of VLMs for Zero-shot Procedural Mistake Detectio | **proposed** | candidate | 0 | — |
@@ -293,8 +279,14 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | RFC-ATF-13: Agent Trust Fabric -- Agent Capability Emergence Engine (ACEE). Clos | **retired** | rejected | 0 | — |
 | governance-as-a-lens | **retired** | rejected | 0 | — |
 | compressed-as-a-lens | **retired** | rejected | 0 | — |
+| ignacioi-as-a-lens | **retired** | rejected | 0 | — |
+| kiskalla-as-a-lens | **retired** | rejected | 0 | — |
 | ed-lau/riana: RIANA v1.0.0 | **retired** | rejected | 0 | — |
 | existing-as-a-lens | **retired** | rejected | 0 | — |
+| amnesia-as-a-lens | **retired** | rejected | 0 | — |
+| autonomous-as-a-lens | **retired** | rejected | 0 | — |
+| DREAM: Dense Retrieval Embeddings via Autoregressive Modeling | **retired** | rejected | 0 | — |
+| BenchX: Benchmarking AI Models for Cancer Detection and Localization with Demogr | **retired** | rejected | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | openclaw-as-a-lens | **retired** | rejected | 0 | — |
@@ -340,6 +332,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **retired** | rejected | 0 | — |
 | Design and Implementation of a Multi-Protocol IoT Gateway Using PIC18 Controller | **retired** | rejected | 0 | — |
 | Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **retired** | rejected | 0 | — |
+| A Formal C-Based Simulation Framework for Comparative Analysis of Paging and Seg | **retired** | rejected | 0 | — |
+| One to Three-Day Lead Streamflow Forecast Using Multi-Head Attention with Long S | **retired** | rejected | 0 | — |
 | METHODOLOGY FOR COMPREHENSIVE DIAGNOSTICS OF MILITARY EQUIPMENT ELECTRICAL SYSTE | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
 | Usai ChromoChess: An End-to-End Pipeline for Training a Visual Chess AI | **retired** | rejected | 0 | — |
@@ -358,9 +352,15 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Hidden Logic of Storytelling  A Simple Model for Understanding Stories and C | **retired** | rejected | 0 | — |
 | From Perception to Cognition: Distinguishing World Models and Worldviews in Huma | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
+| $\Theta$-Control: Memory as a Control Resource | **retired** | rejected | 0 | — |
 | PerceptionDLM: Parallel Region Perception with Multimodal Diffusion Language Mod | **retired** | rejected | 0 | — |
+| WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents | **retired** | rejected | 0 | — |
+| GateMem: Benchmarking Memory Governance in Multi-Principal Shared-Memory Agents | **retired** | rejected | 0 | — |
+| MemSlides: A Hierarchical Memory Driven Agent Framework for Personalized Slide G | **retired** | rejected | 0 | — |
 | No Resource, No Benchmarks, No Problem? Evaluating and Improving LLMs for Code G | **retired** | rejected | 0 | — |
 | Benchmark of quantum algorithms for ground state preparation in the presence of  | **retired** | rejected | 0 | — |
+| Failure is a Moving Target: Subspace Drift Theory and the Dynamics of Evolving F | **retired** | rejected | 0 | — |
+| SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for Long-Doc | **retired** | rejected | 0 | — |
 | Deep Research in Physical Sciences: A Multi-Agent Framework and Comprehensive Be | **retired** | rejected | 0 | — |
 | Sub-Billion, Super-Frontier: Small Language Models Rival Zero-Shot Frontier LLMs | **retired** | rejected | 0 | — |
 | Randomized YaRN Improves Length Generalization for Long-Context Reasoning | **retired** | rejected | 0 | — |

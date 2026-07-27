@@ -1,6 +1,6 @@
 # Joni — Consolidator-Scoreboard
 
-**Cycle 668 · Run 1**  
+**Cycle 669 · Run 2**  
 
 _Erfolg am Output des Consolidators gemessen, nicht am Claim-Wachstum. Read-only; nichts aktiviert sich selbst — Layer 9 bleibt die Autorität._
 
@@ -10,7 +10,9 @@ _Erfolg am Output des Consolidators gemessen, nicht am Claim-Wachstum. Read-only
 | Kristallisierte Skills | 0 gesamt (—); 0 neu diesen Zyklus |
 | Re-Trials (Reifung) | 0 diesen Zyklus |
 | Empfehlungen | 0 promote · 0 hold · 0 archive |
-| Hypothesen-Wohlgeformtheit (0-4) | 523 gesamt · 0 wohlgeformt (4/4) · 462 als Musterhinweis gesperrt |
+| Hypothesen-Wohlgeformtheit (0-4) | 524 gesamt · 0 wohlgeformt (4/4) · 462 als Musterhinweis gesperrt |
 | Valide Tests : verworfene Zuordnungen | 0 : 0 = **0.0** (Fenster; 0 gematcht) |
-| HindsightTag (Provisorien) | 84 Einträge · 25 Reviews → contradiction_detected 25; Koinzidenz-Anteil **0.0** |
+| HindsightTag (Provisorien) | 91 Einträge · 30 Reviews → contradiction_detected 30; Koinzidenz-Anteil **0.0** |
+| Selbstregulation (Extensions) | 🟢 alle aktiv |
+| Schlafmodus | 🟢 wach seit Zyklus 669 · Beobachtung (drosselt nicht) |
 
