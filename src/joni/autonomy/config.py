@@ -147,6 +147,31 @@ class Paths:
         return self.root / "state" / "sleep_state.json"
 
     @property
+    def refragment(self) -> Path:
+        # Schlafmodus S1: append-only proposed associative links between provisional entries.
+        return self.root / "state" / "refragment.jsonl"
+
+    @property
+    def sleep_audit(self) -> Path:
+        # Schlafmodus S2: append-only per-cycle procedural-structure scores over candidate methods.
+        return self.root / "state" / "sleep_audit.jsonl"
+
+    @property
+    def sleep_revisions(self) -> Path:
+        # Schlafmodus S3: append-only, versioned defect reports. Nothing here is ever applied.
+        return self.root / "state" / "sleep_revisions.jsonl"
+
+    @property
+    def wake_queue(self) -> Path:
+        # Schlafmodus S4: the handover - what the waking Joni should look at first.
+        return self.root / "state" / "wake_queue.json"
+
+    @property
+    def sleep_report(self) -> Path:
+        # Schlafmodus S4: the human view, led by the maturation delta, not the activity count.
+        return self.root / "docs" / "sleep_report.md"
+
+    @property
     def disputes_sheet(self) -> Path:
         # Priority 5: the human view of the condensed Streitfragen (few disputes, not 273 pairs).
         return self.root / "docs" / "streitfragen.md"

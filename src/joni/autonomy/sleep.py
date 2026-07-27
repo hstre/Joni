@@ -149,6 +149,18 @@ def wake_report(st: dict, cycle: int, paths) -> dict:
             "delta": delta, "matured": any(v > 0 for v in delta.values())}
 
 
+def is_asleep(st: dict) -> bool:
+    """Whether the sleep PASSES should run this cycle. Independent of the gate on purpose: in
+    observation mode Joni does the sleep work without the sleep fast, so the question 'does sleep
+    work ripen anything?' can be answered before intake is ever actually stopped."""
+    return bool(st) and st.get("state") in (SLEEP_LIGHT, SLEEP_DEEP)
+
+
+def woke_this_cycle(st: dict, prev_state: str) -> bool:
+    """True on exactly the cycle the machine returned to AWAKE - when S4 writes the handover."""
+    return bool(st) and prev_state == WAKE_TRANSITION and st.get("state") == AWAKE
+
+
 def intake_suppressed(st: dict) -> bool:
     """Whether THIS cycle's intake is actually held back. Only ever true with the gate switched on -
     in observation mode the machine may report SLEEP_DEEP and still let every intake through."""
@@ -178,6 +190,7 @@ def step(extensions: dict, proto, cycle: int, *, paths) -> dict:
             shadow = "" if enabled() else " [Beobachtung - Aufnahme wird nicht gedrosselt]"
             proto.record(cycle, "sleep", f"{prev} -> {new}: {st['reason']}{shadow}")
         st["cycle"] = cycle
+        st["prev"] = prev                                      # S4 reads this to spot the wake
         st["pressure"] = under
         st["gate"] = enabled()
         if path is not None:
@@ -190,4 +203,5 @@ def step(extensions: dict, proto, cycle: int, *, paths) -> dict:
 
 
 __all__ = ["AWAKE", "SLEEP_LIGHT", "SLEEP_DEEP", "WAKE_TRANSITION", "ASLEEP", "enabled",
-           "pressure", "decide", "wake_report", "intake_suppressed", "step"]
+           "pressure", "decide", "wake_report", "intake_suppressed", "is_asleep",
+           "woke_this_cycle", "step"]

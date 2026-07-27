@@ -88,11 +88,47 @@ ob der letzte Schlaf etwas gebracht hat.
 | Phase | Inhalt | Status |
 |---|---|---|
 | **S0** | Zustandsmaschine, Trigger, Intake-Unterdrückung, Sichtbarkeit, Reifungsmessung | **gebaut** |
-| S1 | Read-only Refragmentierungs-Pass über die vorhandenen Stores | offen |
-| S2 | DESi-Struktur-Audit der Methoden | offen |
-| S3 | Doktores-Revision nur bei konkretem DESi-Defekt (versionierte Diffs, hartes Revisions-Limit) | offen |
-| S4 | `wake_queue.json` + `sleep_report.md` als Übergabe an den Wachzustand | offen |
+| **S1** | Read-only Refragmentierung der Provisorien → Assoziationsvorschläge | **gebaut** |
+| **S2** | Struktur-Audit: Auslöser / Schritte / Prüfkriterium je Kandidatenmethode | **gebaut** |
+| **S3** | Defektberichte, nur bei genau **einer** fehlenden Komponente; nichts angewendet | **gebaut** |
+| **S4** | `state/wake_queue.json` + `docs/sleep_report.md` als Übergabe | **gebaut** |
 
-S0 führt bewusst **keinen** neuen Denk-Pass ein. Erst wenn die Beobachtungsdaten zeigen,
-dass Schlaffenster überhaupt Reifung erzeugen, docken S1–S4 an — und auch dann schlägt
-alles nur vor: Layer 9 und der Mensch entscheiden.
+## Arbeit ≠ Fasten
+
+Die Pässe S1–S3 laufen, wenn die Zustandsmaschine **Schlaf sagt** — unabhängig davon, ob
+das Intake-Gate scharf ist. Im Beobachtungsmodus tut Joni also die Schlaf-*Arbeit* ohne
+das Schlaf-*Fasten*. Damit ist die Frage „bringt Schlafarbeit überhaupt Reifung?"
+beantwortbar, **bevor** die Aufnahme je gestoppt wird.
+
+## Was die erste Messung an echten Daten ergab
+
+Beide Befunde stammen aus einem Lauf gegen den Live-Bestand, nicht aus Testdaten:
+
+**S1 hätte 100 % Müll produziert.** Alle sechs gefundenen „Verknüpfungen" waren dieselbe
+generierte Schablone mit einem ausgetauschten Wort (*„across my forum claims **X** recurs
+through line worth testing…"*). Geteilt war die Satzform, nicht der Inhalt — und
+ausgerechnet das einzige bedeutungstragende Token war das, das sich unterschied. Daraus
+zwei zusätzliche Sperren, beide gezählt und sichtbar:
+
+* **Grad-Deckel** — ein Fragment in mehr als `MAX_LINK_DEGREE` Einträgen ist eine Form,
+  kein Fund. Eine echte Assoziation ist *selten*.
+* **Schablonenfamilie** — mehrere Fragmente, die sich in genau einem Token unterscheiden,
+  werden als Familie komplett verworfen.
+
+Danach: **0 statt 6** Verknüpfungen. Das ist die ehrliche Antwort — im Provisorien-Store
+steht derzeit keine echte Assoziation, nur Boilerplate.
+
+**S2 erklärt, warum die Trial-Pipeline hungert.** Von 250 Kandidatenmethoden sind 176
+Papertitel (übersprungen). Von den 74 echten Verfahrensnamen erreichen **73 einen Score
+von 0/3** und einer 1/3 — **keine einzige** ist als Verfahren geformt. Es fehlt also nicht
+am Benchmark, sondern an der Quelle: was auf dem Regal liegt, sind keine Verfahren.
+
+Deshalb ist genau dieser Befund der oberste Posten der Wach-Warteschlange
+(`structural_finding`, Priorität 0) — er rangiert über jedem Einzelposten, weil er
+verändert, woran überhaupt zu arbeiten ist.
+
+S3 feuert auf diesen Daten folgerichtig **nie**: ein Defektbericht setzt genau *eine*
+fehlende Komponente voraus, hier fehlen überall alle drei. Das ist kein Fehler der
+Mechanik, sondern ihr Urteil über den Bestand.
+
+Alles bleibt Vorschlag: Layer 9 und der Mensch entscheiden.
