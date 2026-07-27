@@ -278,6 +278,18 @@ def one_cycle() -> dict:
     from . import sleep as _sleep
     sleep_state = _sleep.step(extensions, proto, cycle, paths=p)
     sleeping = _sleep.intake_suppressed(sleep_state)
+    # S1-S3: the passes that run WHILE asleep - refragmentation of the provisional store, the
+    # procedural-structure audit of the candidate methods, and the defect reports it grounds. They
+    # fire on the machine's state, not on the gate: in observation mode Joni does the sleep work
+    # without the sleep fast, so 'does sleep work ripen anything?' is answerable before intake is
+    # ever actually stopped. All read-only; nothing is applied. S4 hands over on the wake cycle.
+    if _sleep.is_asleep(sleep_state):
+        from . import sleep_passes as _sleep_passes
+        _sleep_passes.run_passes(cs, extensions, proto, cycle, paths=p)
+    elif _sleep.woke_this_cycle(sleep_state, sleep_state.get("prev", "")):
+        from . import sleep_report as _sleep_report
+        _sleep_report.run_report(sleep_state, extensions.get("sleep_passes") or {},
+                                 proto, cycle, paths=p)
     intake_ok = not consolidate_only and digestion_ok and not sleeping and (
         os.getenv("JONI_METABOLISM") != "1" or metabolism.intake_allowed(metabolic))
     if not intake_ok:
