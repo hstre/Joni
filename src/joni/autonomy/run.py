@@ -271,11 +271,19 @@ def one_cycle() -> dict:
     # backpressure that engages only when digestion stalls, never a deadlock. OFF unless enabled.
     from . import digestion
     digestion_ok = not digestion.enabled() or digestion.intake_permitted(cycle, path=p.digestion)
-    intake_ok = not consolidate_only and digestion_ok and (
+    # Schlafmodus S0: the four-state machine (AWAKE/SLEEP_LIGHT/SLEEP_DEEP/WAKE_TRANSITION) with
+    # deterministic pressure + time triggers. It runs and is measured EVERY cycle, but only gates
+    # intake when JONI_SLEEP=1 - otherwise pure observation (how often would he sleep, and did those
+    # windows mature anything?). No new thinking pass: the internal arms below simply keep running.
+    from . import sleep as _sleep
+    sleep_state = _sleep.step(extensions, proto, cycle, paths=p)
+    sleeping = _sleep.intake_suppressed(sleep_state)
+    intake_ok = not consolidate_only and digestion_ok and not sleeping and (
         os.getenv("JONI_METABOLISM") != "1" or metabolism.intake_allowed(metabolic))
     if not intake_ok:
         why = ("consolidation-only mode" if consolidate_only
                else "digestion stalled - intake coupled to processing" if not digestion_ok
+               else f"sleep mode ({sleep_state.get('state')})" if sleeping
                else f"metabolism sated (load {metabolic['load']:.2f})")
         proto.record(cycle, "note", f"{why} - intake suppressed this cycle; consolidation only")
 

@@ -86,6 +86,20 @@ def _extension_stats(paths) -> dict:
     return {"disabled": disabled}
 
 
+def _sleep_stats(paths) -> dict:
+    """Schlafmodus S0, made visible: which state, since when, why - and whether the LAST sleep
+    window actually ripened anything. ``gate`` false means the machine is only observing (it reports
+    a state but suppresses no intake), so a reader is never misled about what is enforced."""
+    st: dict = {}
+    p = getattr(paths, "sleep_state", None)
+    if p is not None:
+        with contextlib.suppress(OSError, json.JSONDecodeError):
+            st = json.loads(p.read_text(encoding="utf-8"))
+    return {"state": st.get("state", "AWAKE"), "since": st.get("since"),
+            "reason": st.get("reason", ""), "gate": bool(st.get("gate")),
+            "last_wake": st.get("last_wake") or {}}
+
+
 def _hindsight_stats(paths) -> dict:
     """H4: measure the retroactive review-trigger. Current provisional entries by stage, plus the
     window-cumulative review outcomes read from the append-only provenance - and the honest
@@ -165,6 +179,7 @@ def compute(cs, extensions: dict, *, paths, cycle: int, run: int) -> dict:
         "hypotheses": _hypothesis_stats(cs),
         "hindsight": _hindsight_stats(paths),
         "extensions": _extension_stats(paths),
+        "sleep": _sleep_stats(paths),
         "trial_funnel": funnel,
         "window": _window_totals(getattr(paths, "scoreboard_series", None), funnel),
     }
@@ -180,6 +195,18 @@ def render_summary(rec: dict) -> str:
     ex = rec.get("extensions", {"disabled": []})
     ex_cell = ("🟢 alle aktiv" if not ex["disabled"]
                else "⚠️ deaktiviert: " + ", ".join(ex["disabled"]))
+    sl = rec.get("sleep", {"state": "AWAKE", "since": None, "reason": "", "gate": False,
+                           "last_wake": {}})
+    lw = sl.get("last_wake") or {}
+    sl_cell = ("🟢 wach" if sl["state"] == "AWAKE" else f"😴 {sl['state']}")
+    if sl.get("since") is not None:
+        sl_cell += f" seit Zyklus {sl['since']}"
+    if sl.get("reason"):
+        sl_cell += f" ({sl['reason']})"
+    sl_cell += " · **Gate aktiv**" if sl.get("gate") else " · Beobachtung (drosselt nicht)"
+    if lw:
+        sl_cell += (f"; letzter Schlaf {lw.get('slept_cycles', 0)} Zyklen → "
+                    + ("**gereift**" if lw.get("matured") else "**nichts gereift**"))
     status = " · ".join(f"{k} {v}" for k, v in sorted(sk["by_status"].items())) or "—"
     lines = [
         "# Joni — Consolidator-Scoreboard",
@@ -204,6 +231,7 @@ def render_summary(rec: dict) -> str:
         f"| HindsightTag (Provisorien) | {hs['entries_total']} Einträge · {hs['reviews']} Reviews "
         f"→ {hs_out}; Koinzidenz-Anteil **{hs['coincidence_share']}** |",
         f"| Selbstregulation (Extensions) | {ex_cell} |",
+        f"| Schlafmodus | {sl_cell} |",
         "",
     ]
     return "\n".join(lines) + "\n"
