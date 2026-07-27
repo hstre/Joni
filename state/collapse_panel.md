@@ -1,6 +1,6 @@
 # Joni — Collapse-Resistance-Panel
 
-**Cycle 667 · Run 3 · 3706 aktive Claims**  
+**Cycle 668 · Run 1 · 3734 aktive Claims**  
 **Gesamtstatus: 🟡 WARN**  
 
 _Read-only Frühwarnung. Das Panel misst und warnt — es repariert nichts; Korrekturen laufen weiter über die bestehenden Gates._
@@ -8,12 +8,12 @@ _Read-only Frühwarnung. Das Panel misst und warnt — es repariert nichts; Korr
 | Metrik | Wert | Status |
 |---|---|---|
 | 1 Top-Bucket-Dominanz | memory 66% | 🟡 |
-| 2 Entropy brutto/netto | 0.35 / 0.34 (146 echte) | 🟡 |
+| 2 Entropy brutto/netto | 0.35 / 0.33 (146 echte) | 🟡 |
 | 3 Weak-Claim (hohl) | 0% von 0 präsentiert-stark, 0 reviewed-gestützt | 🟢 |
-| 4 Degen/undecidable | degen 0, decidable 88%, 0 unsupp. | 🟢 |
-| 5 Conflict-Tiefe | 292 live (open+review), 276 toleriert, 0 closed; max Tangle 19, 9 zyklisch | 🟡 |
-| 6 Novelty (7/30) | 4.33 / 4.33, 0% leer | 🟢 |
-| 7 Repetition | dup-dev 59%, self-model 0% (30 obj) | 🟢 |
-| 8 Cold-Replay | 26.4s | 🟢 |
+| 4 Degen/undecidable | degen 0, decidable 87%, 0 unsupp. | 🟢 |
+| 5 Conflict-Tiefe | 293 live (open+review), 276 toleriert, 0 closed; max Tangle 19, 9 zyklisch | 🟡 |
+| 6 Novelty (7/30) | 4.00 / 4.00, 0% leer | 🟢 |
+| 7 Repetition | dup-dev 69%, self-model 0% (30 obj) | 🟢 |
+| 8 Cold-Replay | 55.3s | 🟡 |
 | 9 Guard-Liveness | alle Wächter messen | 🟢 |
 

@@ -1,20 +1,14 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 667 · 362 Methoden** — proposed 292 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 70  
+**Cycle 668 · 363 Methoden** — proposed 279 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 84  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
 | Methode | Zustand | Status | Trials | letztes Verdikt |
 |---|---|---|---|---|
-| MemoryWAM: Efficient World Action Modeling with Persistent Memory | **proposed** | candidate | 0 | — |
-| FlowEdit: Associative Memory for Lifelong Pronunciation Adaptation in Flow-Match | **proposed** | candidate | 0 | — |
-| RFC-ATF-13: Agent Trust Fabric -- Agent Capability Emergence Engine (ACEE). Clos | **proposed** | candidate | 0 | — |
-| governance-as-a-lens | **proposed** | candidate | 0 | — |
-| compressed-as-a-lens | **proposed** | candidate | 0 | — |
 | Formalizzazione avanzata e rigorosa di un sistema di Rappresentazione della Cono | **proposed** | candidate | 0 | — |
 | ignacioi-as-a-lens | **proposed** | candidate | 0 | — |
 | kiskalla-as-a-lens | **proposed** | candidate | 0 | — |
-| ed-lau/riana: RIANA v1.0.0 | **proposed** | candidate | 0 | — |
 | amnesia-as-a-lens | **proposed** | candidate | 0 | — |
 | autonomous-as-a-lens | **proposed** | candidate | 0 | — |
 | DREAM: Dense Retrieval Embeddings via Autoregressive Modeling | **proposed** | candidate | 0 | — |
@@ -55,7 +49,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Long Short-Term Memory | **proposed** | candidate | 0 | — |
 | Ultrafast and memory-efficient alignment of short DNA sequences to the human gen | **proposed** | candidate | 0 | — |
 | Building to the Test: Coding Agents Deliver What You Check, Not What You Request | **proposed** | candidate | 0 | — |
-| The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups | **proposed** | candidate | 0 | — |
 | HEFT: Heavy-Payload Full-size Humanoid Teleoperation with Privileged Motion Guid | **proposed** | candidate | 0 | — |
 | Grounded autonomous research: a fault-tolerant LLM pipeline from corpus to manus | **proposed** | candidate | 0 | — |
 | Morphing into Hybrid Attention Models | **proposed** | candidate | 0 | — |
@@ -108,7 +101,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question A | **proposed** | candidate | 0 | — |
 | A Multidimensional Cybercrime Annotation Dataset for a Closed-Access Russian–Eng | **proposed** | candidate | 0 | — |
 | Trust and Performance Data | **proposed** | candidate | 0 | — |
-| From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **proposed** | candidate | 0 | — |
 | From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **proposed** | candidate | 0 | — |
 | rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | hacking-as-a-lens | **proposed** | candidate | 0 | — |
@@ -128,7 +120,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Sparse space-time spectral methods can time-step by peel and pass | **proposed** | candidate | 0 | — |
 | ELSA3D: Elastic Semantic Anchoring for Unified 3D Understanding and Generation | **proposed** | candidate | 0 | — |
 | Hierarchical Sparse Attention Done Right: Toward Infinite Context Modeling | **proposed** | candidate | 0 | — |
-| When silence is safer: a review and decision-theoretic framework for LLM abstent | **proposed** | candidate | 0 | — |
 | Fractional action hamiltonian neural networks: Long-term memory, sequential lear | **proposed** | candidate | 0 | — |
 | When Classic Cache Policies Fail: Learning-Augmented Replacement for Semantic Re | **proposed** | candidate | 0 | — |
 | claude-mem | **proposed** | candidate | 0 | — |
@@ -139,7 +130,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | SWE-Review: Closing the Loop on Issue Resolution with Agentic Code Review | **proposed** | candidate | 0 | — |
 | Dual Latent Memory in Vision-Language-Action Models for Robotic Manipulation | **proposed** | candidate | 0 | — |
 | RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Gener | **proposed** | candidate | 0 | — |
-| CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **proposed** | candidate | 0 | — |
 | Co-LMLM: Continuous-Query Limited Memory Language Models | **proposed** | candidate | 0 | — |
 | The Key to Going Linear: Analysis-Driven Transformer Linearization | **proposed** | candidate | 0 | — |
 | Sparse Delta Memory: Scaling the State of Linear RNNs through Sparsity | **proposed** | candidate | 0 | — |
@@ -150,7 +140,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | code-as-a-lens | **proposed** | candidate | 0 | — |
 | UniClawBench: A Universal Benchmark for Proactive Agents on Real-World Tasks | **proposed** | candidate | 0 | — |
 | Video-Oasis: Rethinking Evaluation of Video Understanding | **proposed** | candidate | 0 | — |
-| Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **proposed** | candidate | 0 | — |
 | Enhancing In-context Panoramic Generation via Geometric-aware Pretraining | **proposed** | candidate | 0 | — |
 | A Quantized Native Runtime for On-Device Semantic Audio Generation | **proposed** | candidate | 0 | — |
 | Wat3R: Underwater 3D Geometry Learning without Annotations | **proposed** | candidate | 0 | — |
@@ -259,12 +248,11 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | AI Study Assistant Using Vector Database and Large Language Models for Intellige | **proposed** | candidate | 0 | — |
 | Dataset Distillation by Influence Matching | **proposed** | candidate | 0 | — |
 | SANA-Video 2.0: Hybrid Linear Attention with Attention Residuals for Efficient V | **proposed** | candidate | 0 | — |
-| LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **proposed** | candidate | 0 | — |
 | CMU-SAFARI/Virtuoso: AE_MICRO_2026_TRAIL | **proposed** | candidate | 0 | — |
 | OpenForgeRL: Train Harness-native Agents in Any Environment | **proposed** | candidate | 0 | — |
 | TogoMCP: Natural Language Querying of Life-Science Knowledge Graphs via Schema-G | **proposed** | candidate | 0 | — |
+| sparse-as-a-lens | **proposed** | candidate | 0 | — |
 | autoregressive-as-a-lens | **proposed** | candidate | 0 | — |
-| Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **proposed** | candidate | 0 | — |
 | A Formal C-Based Simulation Framework for Comparative Analysis of Paging and Seg | **proposed** | candidate | 0 | — |
 | One to Three-Day Lead Streamflow Forecast Using Multi-Head Attention with Long S | **proposed** | candidate | 0 | — |
 | retrieval-as-a-lens | **proposed** | candidate | 0 | — |
@@ -285,7 +273,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | MemSlides: A Hierarchical Memory Driven Agent Framework for Personalized Slide G | **proposed** | candidate | 0 | — |
 | converts-as-a-lens | **proposed** | candidate | 0 | — |
 | appearance-as-a-lens | **proposed** | candidate | 0 | — |
-| No Resource, No Benchmarks, No Problem? Evaluating and Improving LLMs for Code G | **proposed** | candidate | 0 | — |
 | Failure is a Moving Target: Subspace Drift Theory and the Dynamics of Evolving F | **proposed** | candidate | 0 | — |
 | SproutRAG: Attention-Guided Tree Search with Progressive Embeddings for Long-Doc | **proposed** | candidate | 0 | — |
 | Drift-free Visual SLAM using Digital Twins | **proposed** | candidate | 0 | — |
@@ -298,18 +285,29 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | west-as-a-lens | **proposed** | candidate | 0 | — |
 | AC-ODM: Actor--Critic Online Data Mixing for Sample-Efficient LLM Pretraining | **proposed** | candidate | 0 | — |
 | Vera: A Layered Diffusion Model for Content-Preserving Video Editing | **proposed** | candidate | 0 | — |
+| MemoryWAM: Efficient World Action Modeling with Persistent Memory | **retired** | rejected | 0 | — |
+| FlowEdit: Associative Memory for Lifelong Pronunciation Adaptation in Flow-Match | **retired** | rejected | 0 | — |
 | Stone Programming Paradigm: Language Abstraction | **retired** | rejected | 0 | — |
 | Closed-Loop Targeted Memory Reactivation during Slow-Wave Sleep Enhances Fear-Ex | **retired** | rejected | 0 | — |
 | RFC-ATF-14: Agent Trust Fabric -- Assumption Renewal Governance Protocol (ARGP). | **retired** | rejected | 0 | — |
+| RFC-ATF-13: Agent Trust Fabric -- Agent Capability Emergence Engine (ACEE). Clos | **retired** | rejected | 0 | — |
+| governance-as-a-lens | **retired** | rejected | 0 | — |
+| compressed-as-a-lens | **retired** | rejected | 0 | — |
+| ed-lau/riana: RIANA v1.0.0 | **retired** | rejected | 0 | — |
 | existing-as-a-lens | **retired** | rejected | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | openclaw-as-a-lens | **retired** | rejected | 0 | — |
+| The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
 | awesome-openclaw-usecases-as-a-lens | **retired** | rejected | 0 | — |
+| From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **retired** | rejected | 0 | — |
 | FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |
 | Major-project-list | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
+| When silence is safer: a review and decision-theoretic framework for LLM abstent | **retired** | rejected | 0 | — |
+| CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **retired** | rejected | 0 | — |
+| Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **retired** | rejected | 0 | — |
 | oder-as-a-lens | **retired** | rejected | 0 | — |
 | sein-as-a-lens | **retired** | rejected | 0 | — |
 | sind-as-a-lens | **retired** | rejected | 0 | — |
@@ -334,12 +332,14 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Configurable Clinical Information Extraction with Agentic RAG: What Works, What  | **retired** | rejected | 0 | — |
 | wird-as-a-lens | **retired** | rejected | 0 | — |
 | High-Resolution Daily PM2.5 Dataset for the Contiguous US (2005–2021) | **retired** | rejected | 0 | — |
+| LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents | **retired** | rejected | 0 | — |
 | LegalHalluLens: Typed Hallucination Auditing and Calibrated Multi-Agent Debate f | **retired** | rejected | 0 | — |
 | relevant-as-a-lens | **retired** | rejected | 0 | — |
 | RON-27 - Rete di Osservazione di Riferimento - Costruzione, Convergenza e Congel | **retired** | rejected | 0 | — |
 | How Transparent is DiffusionGemma? | **retired** | rejected | 0 | — |
 | The Mathematical and Topological Substrate of Reversible Dynamics: Expanding the | **retired** | rejected | 0 | — |
 | Design and Implementation of a Multi-Protocol IoT Gateway Using PIC18 Controller | **retired** | rejected | 0 | — |
+| Design and FPGA Implementation of a RISC-V Processor Core with Low-Power Enhance | **retired** | rejected | 0 | — |
 | METHODOLOGY FOR COMPREHENSIVE DIAGNOSTICS OF MILITARY EQUIPMENT ELECTRICAL SYSTE | **retired** | rejected | 0 | — |
 | Structuring and Tokenizing Distributed User Interest Context for Generative Reco | **retired** | rejected | 0 | — |
 | Usai ChromoChess: An End-to-End Pipeline for Training a Visual Chess AI | **retired** | rejected | 0 | — |
@@ -359,6 +359,7 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | From Perception to Cognition: Distinguishing World Models and Worldviews in Huma | **retired** | rejected | 0 | — |
 | Optimal Deterministic Multicalibration and Omniprediction | **retired** | rejected | 0 | — |
 | PerceptionDLM: Parallel Region Perception with Multimodal Diffusion Language Mod | **retired** | rejected | 0 | — |
+| No Resource, No Benchmarks, No Problem? Evaluating and Improving LLMs for Code G | **retired** | rejected | 0 | — |
 | Benchmark of quantum algorithms for ground state preparation in the presence of  | **retired** | rejected | 0 | — |
 | Deep Research in Physical Sciences: A Multi-Agent Framework and Comprehensive Be | **retired** | rejected | 0 | — |
 | Sub-Billion, Super-Frontier: Small Language Models Rival Zero-Shot Frontier LLMs | **retired** | rejected | 0 | — |
