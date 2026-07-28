@@ -1,0 +1,362 @@
+[
+  {
+    "title": "Multi-phase agent-driven paper processing and claim projection environment",
+    "domain_tags": [
+      "agent-phases",
+      "paper-sources",
+      "claim-models",
+      "decision-layer"
+    ],
+    "environment": [
+      {
+        "label": "Agent Phases",
+        "description": "The environment organizes agent activity into distinct phases: fetched, judged, projected, read, escalated, among others.",
+        "evidenceIds": [
+          "po_1",
+          "po_2",
+          "po_3",
+          "po_4",
+          "po_5"
+        ]
+      },
+      {
+        "label": "External Data Sources",
+        "description": "External repositories including huggingface, github, zenodo, openalex, openclaw, and wikipedia provide items (metadata or records) via designated access methods.",
+        "evidenceIds": [
+          "po_1",
+          "tr_fetched_670"
+        ]
+      },
+      {
+        "label": "Source Identifier Formats",
+        "description": "Sources are identified with prefixes like 'zenodo:', 'huggingface:', and 'arxiv:'. Other formats are not recognized by the system.",
+        "evidenceIds": [
+          "po_3",
+          "tr_projected_668",
+          "tr_projected_669",
+          "tr_projected_670"
+        ]
+      },
+      {
+        "label": "Language Models",
+        "description": "The environment includes specific language models: ibm-granite/granite-4.1-8b-20260429 and deepseek-v4-pro. These models have internal gates that can filter outputs.",
+        "evidenceIds": [
+          "po_3",
+          "po_5",
+          "tr_projected_668",
+          "tr_escalated_662"
+        ]
+      },
+      {
+        "label": "Paper Queue",
+        "description": "During the read phase, papers to be processed are held in a queue.",
+        "evidenceIds": [
+          "po_4",
+          "tr_read_650"
+        ]
+      },
+      {
+        "label": "Decision Authority Layer",
+        "description": "A distinct decision authority (Layer 9) has final say over claims, rejecting proposals deemed insufficient or incorrect.",
+        "evidenceIds": [
+          "po_5",
+          "tr_escalated_662",
+          "tr_escalated_666",
+          "tr_escalated_667"
+        ]
+      }
+    ],
+    "inference": [
+      {
+        "label": "Partial Source Return",
+        "description": "If a source cannot provide the full requested quantity of items, it returns fewer items, causing a shortfall in the fetch.",
+        "evidenceIds": [
+          "po_1",
+          "tr_fetched_670"
+        ]
+      },
+      {
+        "label": "Source Access Failure",
+        "description": "Rate limits, authentication requirements, or permission errors cause fetch requests to fail, preventing item retrieval from that source.",
+        "evidenceIds": [
+          "po_1",
+          "tr_fetched_670"
+        ]
+      },
+      {
+        "label": "Abstract Retrieval Dependency",
+        "description": "Accurate paper relevance assessment requires the paper's abstract; if abstract retrieval fails or times out, automated relevance verification is blocked.",
+        "evidenceIds": [
+          "po_2",
+          "tr_judged_670"
+        ]
+      },
+      {
+        "label": "Identifier Parsing Failure",
+        "description": "If a source identifier does not match expected prefix formats, the Granite model fails to parse it, resulting in zero proposal generation.",
+        "evidenceIds": [
+          "po_3",
+          "tr_projected_668"
+        ]
+      },
+      {
+        "label": "Model Gate Filtering",
+        "description": "The Granite model's internal gate can filter out all generated candidates, causing an empty projection output.",
+        "evidenceIds": [
+          "po_3",
+          "tr_projected_669"
+        ]
+      },
+      {
+        "label": "Resource Intensity of Reading",
+        "description": "Reading full text of papers consumes significant computational resources, potentially leading to bottlenecks.",
+        "evidenceIds": [
+          "po_4",
+          "tr_read_650"
+        ]
+      },
+      {
+        "label": "Downstream Integration Requirement",
+        "description": "Text extracted during the read phase is not automatically consumed; downstream modules must be integrated, otherwise reading yields zero utility.",
+        "evidenceIds": [
+          "po_4",
+          "tr_read_658"
+        ]
+      },
+      {
+        "label": "Layer 9 Rejection Resets Proposal Cycle",
+        "description": "When Layer 9 rejects all proposed claims as insufficient or incorrect, the proposal cycle must be repeated.",
+        "evidenceIds": [
+          "po_5",
+          "tr_escalated_662"
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "label": "Title-Only Relevance Insufficiency",
+        "description": "Paper relevance cannot be accurately determined from title alone; abstract content is necessary for reliable assessment.",
+        "evidenceIds": [
+          "po_2",
+          "tr_judged_670"
+        ]
+      },
+      {
+        "label": "Source Identifier Format Requirement",
+        "description": "Source identifiers must conform to recognized prefixes (e.g., zenodo:, huggingface:, arxiv:); other formats are invalid and cause parsing failures.",
+        "evidenceIds": [
+          "po_3",
+          "tr_projected_668"
+        ]
+      },
+      {
+        "label": "Rate and Permission Limits",
+        "description": "External sources enforce rate limits and authentication requirements; requests that exceed these limits or lack proper credentials fail.",
+        "evidenceIds": [
+          "po_1",
+          "tr_fetched_670"
+        ]
+      },
+      {
+        "label": "Model Proposals Not Authoritative",
+        "description": "Claims proposed by language models in the projected or escalated phases are candidates only; they do not have decision authority, which rests with Layer 9.",
+        "evidenceIds": [
+          "po_3",
+          "po_5",
+          "tr_projected_670",
+          "tr_escalated_662"
+        ]
+      }
+    ],
+    "body": "## Environment\n\nThe agent operates in a multi-phase pipeline (fetched, judged, projected, read, escalated) interacting with external repositories: huggingface, github, zenodo, openalex, openclaw, and wikipedia. Each source provides items via specific access methods and is identified by prefixes (zenodo:, huggingface:, arxiv:). Two language models, ibm-granite/granite-4.1-8b-20260429 and deepseek-v4-pro, are available for proposal generation, each with internal output filtering. A queue holds papers during the read phase, and a separate authority (Layer 9) controls final claim decisions.\n\n## Inference Rules\n\n- Sources may return fewer items than requested, causing shortfalls.\n- Rate limits, missing authentication, or permission errors cause fetch failures.\n- Relevance assessment depends on abstract availability; retrieval failures block it.\n- Misformatted source identifiers cause Granite model to produce no proposals.\n- The Granite model’s gate can filter all candidates, yielding an empty projection.\n- Full-text reading is resource‑intensive and useless unless downstream modules are integrated.\n- Layer 9 rejection of all proposed claims necessitates a new proposal cycle.\n\n## Constraints\n\n- Title alone is insufficient for relevance; abstract content is mandatory.\n- Source identifiers must use recognized prefixes; others are invalid.\n- External sources enforce rate and permission boundaries; exceeding them causes failures.\n- Language model outputs are non‑authoritative; only Layer 9 can finalize claims.",
+    "confidence": 0.8,
+    "supersedes_world_ids": [],
+    "id": "world_live_1",
+    "policyIds": [
+      "po_1",
+      "po_2",
+      "po_3",
+      "po_4",
+      "po_5"
+    ],
+    "sourceEpisodeIds": [
+      "tr_escalated_662",
+      "tr_escalated_666",
+      "tr_escalated_667",
+      "tr_escalated_668",
+      "tr_escalated_669",
+      "tr_escalated_670",
+      "tr_fetched_670",
+      "tr_judged_670",
+      "tr_projected_668",
+      "tr_projected_669",
+      "tr_projected_670",
+      "tr_read_650",
+      "tr_read_658",
+      "tr_read_670"
+    ],
+    "structure": {
+      "environment": [
+        {
+          "label": "Agent Phases",
+          "description": "The environment organizes agent activity into distinct phases: fetched, judged, projected, read, escalated, among others.",
+          "evidenceIds": [
+            "po_1",
+            "po_2",
+            "po_3",
+            "po_4",
+            "po_5"
+          ]
+        },
+        {
+          "label": "External Data Sources",
+          "description": "External repositories including huggingface, github, zenodo, openalex, openclaw, and wikipedia provide items (metadata or records) via designated access methods.",
+          "evidenceIds": [
+            "po_1",
+            "tr_fetched_670"
+          ]
+        },
+        {
+          "label": "Source Identifier Formats",
+          "description": "Sources are identified with prefixes like 'zenodo:', 'huggingface:', and 'arxiv:'. Other formats are not recognized by the system.",
+          "evidenceIds": [
+            "po_3",
+            "tr_projected_668",
+            "tr_projected_669",
+            "tr_projected_670"
+          ]
+        },
+        {
+          "label": "Language Models",
+          "description": "The environment includes specific language models: ibm-granite/granite-4.1-8b-20260429 and deepseek-v4-pro. These models have internal gates that can filter outputs.",
+          "evidenceIds": [
+            "po_3",
+            "po_5",
+            "tr_projected_668",
+            "tr_escalated_662"
+          ]
+        },
+        {
+          "label": "Paper Queue",
+          "description": "During the read phase, papers to be processed are held in a queue.",
+          "evidenceIds": [
+            "po_4",
+            "tr_read_650"
+          ]
+        },
+        {
+          "label": "Decision Authority Layer",
+          "description": "A distinct decision authority (Layer 9) has final say over claims, rejecting proposals deemed insufficient or incorrect.",
+          "evidenceIds": [
+            "po_5",
+            "tr_escalated_662",
+            "tr_escalated_666",
+            "tr_escalated_667"
+          ]
+        }
+      ],
+      "inference": [
+        {
+          "label": "Partial Source Return",
+          "description": "If a source cannot provide the full requested quantity of items, it returns fewer items, causing a shortfall in the fetch.",
+          "evidenceIds": [
+            "po_1",
+            "tr_fetched_670"
+          ]
+        },
+        {
+          "label": "Source Access Failure",
+          "description": "Rate limits, authentication requirements, or permission errors cause fetch requests to fail, preventing item retrieval from that source.",
+          "evidenceIds": [
+            "po_1",
+            "tr_fetched_670"
+          ]
+        },
+        {
+          "label": "Abstract Retrieval Dependency",
+          "description": "Accurate paper relevance assessment requires the paper's abstract; if abstract retrieval fails or times out, automated relevance verification is blocked.",
+          "evidenceIds": [
+            "po_2",
+            "tr_judged_670"
+          ]
+        },
+        {
+          "label": "Identifier Parsing Failure",
+          "description": "If a source identifier does not match expected prefix formats, the Granite model fails to parse it, resulting in zero proposal generation.",
+          "evidenceIds": [
+            "po_3",
+            "tr_projected_668"
+          ]
+        },
+        {
+          "label": "Model Gate Filtering",
+          "description": "The Granite model's internal gate can filter out all generated candidates, causing an empty projection output.",
+          "evidenceIds": [
+            "po_3",
+            "tr_projected_669"
+          ]
+        },
+        {
+          "label": "Resource Intensity of Reading",
+          "description": "Reading full text of papers consumes significant computational resources, potentially leading to bottlenecks.",
+          "evidenceIds": [
+            "po_4",
+            "tr_read_650"
+          ]
+        },
+        {
+          "label": "Downstream Integration Requirement",
+          "description": "Text extracted during the read phase is not automatically consumed; downstream modules must be integrated, otherwise reading yields zero utility.",
+          "evidenceIds": [
+            "po_4",
+            "tr_read_658"
+          ]
+        },
+        {
+          "label": "Layer 9 Rejection Resets Proposal Cycle",
+          "description": "When Layer 9 rejects all proposed claims as insufficient or incorrect, the proposal cycle must be repeated.",
+          "evidenceIds": [
+            "po_5",
+            "tr_escalated_662"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "label": "Title-Only Relevance Insufficiency",
+          "description": "Paper relevance cannot be accurately determined from title alone; abstract content is necessary for reliable assessment.",
+          "evidenceIds": [
+            "po_2",
+            "tr_judged_670"
+          ]
+        },
+        {
+          "label": "Source Identifier Format Requirement",
+          "description": "Source identifiers must conform to recognized prefixes (e.g., zenodo:, huggingface:, arxiv:); other formats are invalid and cause parsing failures.",
+          "evidenceIds": [
+            "po_3",
+            "tr_projected_668"
+          ]
+        },
+        {
+          "label": "Rate and Permission Limits",
+          "description": "External sources enforce rate limits and authentication requirements; requests that exceed these limits or lack proper credentials fail.",
+          "evidenceIds": [
+            "po_1",
+            "tr_fetched_670"
+          ]
+        },
+        {
+          "label": "Model Proposals Not Authoritative",
+          "description": "Claims proposed by language models in the projected or escalated phases are candidates only; they do not have decision authority, which rests with Layer 9.",
+          "evidenceIds": [
+            "po_3",
+            "po_5",
+            "tr_projected_670",
+            "tr_escalated_662"
+          ]
+        }
+      ]
+    }
+  }
+]

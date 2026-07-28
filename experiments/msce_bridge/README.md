@@ -203,6 +203,73 @@ Stufe 2 verweigert, Stufe 3 produziert überwiegend Falschmeldungen.
 Dem MSCE-Team „DESi validiert eure L3-Abstraktionen" zu schreiben, wäre damit **nicht gedeckt**.
 Gedeckt ist: eine Provenienz- und Typisierungsdisziplin, die ihr strukturelles Tor heute nicht hat.
 
+---
+
+# Nachtrag 2: der **echte** End-to-End-Lauf — und was er widerlegt
+
+Mit einem LLM-Schlüssel fiel auch die letzte Einschränkung. `live_run.py` extrahiert MSCEs L2- und
+L3-Prompts **verbatim aus ihrem Quelltext** (nicht paraphrasiert), wendet sie auf **echte L1-Traces**
+an — Jonis eigenes Protokoll, reale Langzeit-Agenten-Erfahrung, genau MSCEs Zieldomäne — und lässt
+sie von `deepseek-v4-pro` ausführen. Ergebnis: 5 echte L2-Policies → 1 echtes L3-Weltmodell mit
+18 Einträgen (`live_l2.json`, `live_l3.json`).
+
+## Was der echte Lauf widerlegt
+
+**Die Verankerungs-Zahl aus dem Fixture-Korpus hält nicht.**
+
+| | Fixtures | echte Ausgabe |
+|---|---|---|
+| verankert (`evidenceIds` auflösbar) | 1 / 11 | **18 / 18** |
+
+Das LLM hat auf echten Daten **jeden einzelnen Eintrag** mit auflösbaren Belegen versehen. Die
+„1 von 11" war ein Artefakt handgeschriebener Test-Fixtures, **kein Befund über MSCEs Pipeline.**
+C1 — die Prüfung, die ich für die stärkste hielt — findet auf echter Ausgabe nichts zu beanstanden.
+
+## Und die restlichen Flags sind Fehler *meines* Prüfers
+
+Auf den 18 echten Einträgen meldete der Adjudikator 4 × Schichtfehler und 4 × Fehltypisierung.
+Ich habe alle acht im Volltext geprüft. **Praktisch alle sind Falschmeldungen:**
+
+| Text (echte MSCE-Ausgabe) | mein Urteil | tatsächlich |
+|---|---|---|
+| „they **do not have** decision authority, which rests with Layer 9" | Handlungsanweisung | reine Tatsache — `do not` als Verneinung, nicht als Verbot |
+| „Source identifiers **must conform** to recognized prefixes" | Handlungsanweisung | Umwelt-Anforderung, beschreibende Modalität |
+| „the proposal cycle **must be repeated**" | Handlungsanweisung | beschreibt eine Systemfolge |
+| „…returns fewer items, **causing** a shortfall" | fehltypisiert | ist kausal — mein Muster kennt `cause`, nicht `causing` |
+| „…**leading to** bottlenecks" | fehltypisiert | ist kausal — Muster kennt `lead`, nicht `leading` |
+
+Zwei getrennte Defekte in meinem Code: `_CAUSAL` erfasst die **-ing-Formen nicht**, und
+`_PRESCRIPTIVE` verwechselt **beschreibende Modalität** („must conform", „do not have") mit einer
+Anweisung an den Agenten. Zusätzlich war meine Annahme falsch, `constraints` müssten
+„observation"-Sprache haben — MSCEs eigenes GOOD-Beispiel für `constraints` ist selbst kausal.
+
+## Der ehrliche Stand nach dem echten Lauf
+
+**Wir haben keinen belastbaren Befund gegen MSCEs Pipeline.** Auf echter Ausgabe findet der
+Prototyp im Moment nichts, was nach Prüfung standhält:
+
+- C1 (Verankerung): 18/18 sauber — nichts zu beanstanden
+- C2 / C3: melden, aber ihre Meldungen sind überwiegend eigene Fehler
+- Semantic Layer: trägt gar nichts bei (siehe Nachtrag 1)
+
+Das aus Nachtrag 1 bleibt bestehen, weil es *nicht* von diesen Prüfungen abhängt: der Semantic
+Layer differenziert auf freistehenden Behauptungen nicht, und die Widerspruchsregel produziert bei
+aktivem Embedding 43 % Falschmeldungen. Das ist ein Befund über **DESi**, nicht über MSCE.
+
+## Das eigentliche Muster
+
+Das ist innerhalb dieses einen Experiments der **sechste** Fall, in dem eine lexikalische Prüfung
+übertriggert: Rekurrenz-Hypothesen, Papertitel-Methoden, Refragmentierungs-Schablonen, „npm
+install", die Negations-Asymmetrie in `_polarity_clash`, und jetzt `must` / `do not` / `-ing`.
+
+Die Konsequenz ist nicht, das Muster ein siebtes Mal zu flicken. Sie lautet: **eine lexikalische
+Regel kann dieses Urteil nicht tragen.** Wer Beobachtung von Schlussfolgerung von Anweisung
+trennen will, braucht dafür eine semantische Messung — und genau die ist das, was DESi heute für
+freistehende Behauptungen nicht liefert.
+
+Damit ist die Frage an das MSCE-Team klarer, aber auch bescheidener geworden, als sie vor dem
+Ausprobieren aussah.
+
 ## Was als Nächstes zu messen wäre
 
 Nicht Benchmarks. Zuerst: einen Satz **echter** L3-Zeilen aus einem MSCE-Lauf durch C1–C4 schicken

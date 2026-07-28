@@ -1,0 +1,140 @@
+[
+  {
+    "title": "Fetch 4 Items from Multiple Sources in Fetched Phase",
+    "trigger": "agent is in the 'fetched' phase and a list of target sources (e.g., huggingface, github, zenodo, openalex, openclaw, wikipedia) is available for item retrieval",
+    "action": "for each source in the target list, fetch exactly 4 items (metadata or records) via the source's designated access method",
+    "rationale": "retrieving a fixed quota from multiple, diverse sources ensures a broad and balanced initial item pool, mitigating dependence on a single repository",
+    "caveats": [
+      "if a source returns fewer than 4 items (e.g., due to exhaustion or filtering), accept the reduced count and log the shortfall for potential later retry",
+      "some sources may impose rate limits or require authentication; if a fetch fails with a permission/rate error, skip the source and flag it for the next cycle"
+    ],
+    "confidence": 0.7,
+    "support_trace_ids": [
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670"
+    ],
+    "id": "po_1",
+    "_bucket": "fetched",
+    "_trace_ids": [
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670",
+      "tr_fetched_670"
+    ]
+  },
+  {
+    "title": "Do Not Blindly Label Papers as Relevant in Judging Phase",
+    "trigger": "Agent is in phase 'judged' and about to assess a paper's relevance to a topic",
+    "action": "Instead of immediately outputting 'relevant: <title>', first retrieve the paper's abstract and verify that its content genuinely matches the target topic. Only if the match is clear, output the 'relevant' label; otherwise, mark it as 'needs manual review' or 'not relevant'.",
+    "rationale": "All input traces show that labeling papers as relevant based solely on title led to zero utility, indicating systematic misclassification. A preceding abstract check can prevent this failure.",
+    "caveats": [
+      "If abstract retrieval fails or times out, mark the paper as 'needs manual review' rather than assuming relevance.",
+      "Ensure the topic definition is precise enough to avoid ambiguous matches during abstract verification."
+    ],
+    "confidence": 0.7,
+    "support_trace_ids": [
+      "tr_judged_670"
+    ],
+    "id": "po_2",
+    "_bucket": "judged",
+    "_trace_ids": [
+      "tr_judged_670",
+      "tr_judged_670",
+      "tr_judged_670",
+      "tr_judged_670",
+      "tr_judged_670",
+      "tr_judged_670"
+    ]
+  },
+  {
+    "title": "Project claim proposals from a source using the Granite model",
+    "trigger": "Agent is in the 'projected' phase and a source identifier (e.g., zenodo:ID, huggingface:ID, arxiv:ID) is present in the state.",
+    "action": "Project claim proposals from $SOURCE across $NUM_FACETS facets using the model ibm-granite/granite-4.1-8b-20260429, outputting candidates via the gate.",
+    "rationale": "Across multiple cycles, the same model successfully projected proposals from various sources (zenodo, huggingface, arxiv) with different facet counts, indicating a reliable templated action for this phase.",
+    "caveats": [
+      "If the source identifier format does not match expected prefixes (zenodo:, huggingface:, arxiv:), the model may fail to parse the source and produce no proposals.",
+      "Ensure that the model's internal gate does not filter out all candidates, which would result in an empty projection."
+    ],
+    "confidence": 0.8,
+    "support_trace_ids": [
+      "tr_projected_668",
+      "tr_projected_669",
+      "tr_projected_670"
+    ],
+    "id": "po_3",
+    "_bucket": "projected",
+    "_trace_ids": [
+      "tr_projected_668",
+      "tr_projected_668",
+      "tr_projected_669",
+      "tr_projected_669",
+      "tr_projected_670",
+      "tr_projected_670"
+    ]
+  },
+  {
+    "title": "Read queued papers during read phase",
+    "trigger": "agent is in phase 'read' and has a non-empty queue of papers to process",
+    "action": "for each paper in the queue, execute: read full text of <paper_title>: <N> claim(s) [<arxiv_id>]",
+    "rationale": "In all traces, the agent consistently reads full texts of queued papers when in the read phase, which is the designated behavior for this stage.",
+    "caveats": [
+      "Reading full text may be resource-intensive; consider pre-filtering or prioritizing papers based on abstract or metadata to avoid unnecessary processing",
+      "Utility from reading alone may be zero if downstream tasks cannot utilize the extracted text; ensure integration with analysis or memory modules is active"
+    ],
+    "confidence": 0.95,
+    "support_trace_ids": [
+      "tr_read_650",
+      "tr_read_650",
+      "tr_read_658",
+      "tr_read_658",
+      "tr_read_670",
+      "tr_read_670"
+    ],
+    "id": "po_4",
+    "_bucket": "read",
+    "_trace_ids": [
+      "tr_read_650",
+      "tr_read_650",
+      "tr_read_658",
+      "tr_read_658",
+      "tr_read_670",
+      "tr_read_670"
+    ]
+  },
+  {
+    "title": "Propose Contested Claims via DeepSeek When Phase is Escalated",
+    "trigger": "agent's phase is 'escalated' and there are contested claims requiring resolution",
+    "action": "Propose N claims via DeepSeek escalation using model deepseek-v4-pro with replayed=False; claims are candidates, authoritative decision deferred to Layer 9",
+    "rationale": "Specialized model generation provides diverse candidate solutions while preserving separation of proposal and decision authority, suitable for escalated states with unresolved claims.",
+    "caveats": [
+      "If proposed claims are insufficient or incorrect, Layer 9 may reject all, necessitating a new proposal cycle",
+      "Number of proposed claims may vary; ensure at least one claim is generated to avoid empty escalation",
+      "This step yields zero direct utility; it is procedural—follow up with claim evaluation and selection to realize value"
+    ],
+    "confidence": 0.9,
+    "support_trace_ids": [
+      "tr_escalated_662",
+      "tr_escalated_666",
+      "tr_escalated_667",
+      "tr_escalated_668",
+      "tr_escalated_669",
+      "tr_escalated_670"
+    ],
+    "id": "po_5",
+    "_bucket": "escalated",
+    "_trace_ids": [
+      "tr_escalated_662",
+      "tr_escalated_666",
+      "tr_escalated_667",
+      "tr_escalated_668",
+      "tr_escalated_669",
+      "tr_escalated_670"
+    ]
+  }
+]
