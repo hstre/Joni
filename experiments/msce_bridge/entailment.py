@@ -80,6 +80,10 @@ class Structure:
     quantifier: str = "singular"
     scope_level: str = "instance"
     conditions: tuple[str, ...] = field(default_factory=tuple)
+    #: Spricht die Aussage über die EVIDENZLAGE statt über die Sache? "No evidence of X was found"
+    #: ist eine Aussage über die Suche, nicht über X. Abwesenheit von Evidenz ist kein Beweis der
+    #: Abwesenheit - ohne dieses Feld ging genau dieser Schluss als `entailed` durch (DEV-017).
+    epistemic_hedge: bool = False
     source_id: str = ""
     #: Felder, bei denen die k Ziehungen keine strikte Mehrheit ergaben. Sie sind NICHT bestimmt -
     #: ein Urteil, das auf ihnen ruht, wäre geraten.
@@ -115,9 +119,14 @@ Fill every field from the CLOSED vocabularies. Do not invent values.
                HERE. "The build succeeds when headers are installed" is relation about the
                build succeeding, with "headers are installed" as a condition.
 
+  epistemic_hedge : true if the statement reports the STATE OF EVIDENCE rather than asserting
+               the fact itself. "No evidence of X was found", "X was not observed", "no reports
+               of X" -> true (these are claims about a search, not about X). "X did not happen"
+               -> false (that asserts the fact). Also true for "the log states that ...".
+
 Return JSON exactly:
 {{"subject":"...","relation":"<key>","object":"...","modality":"...","quantifier":"...",
-  "scope_level":"...","conditions":["..."]}}"""
+  "scope_level":"...","conditions":["..."],"epistemic_hedge":false}}"""
 
 
 _SPLIT_SYSTEM = """You split ONE statement into its atomic propositions. You judge nothing.
@@ -254,6 +263,7 @@ def _draw(text: str, builder: str) -> dict | None:
         "quantifier": _pick(raw.get("quantifier"), QUANTIFIER, "singular"),
         "scope_level": _pick(raw.get("scope_level"), SCOPE, "instance"),
         "conditions": tuple(str(c)[:80] for c in (raw.get("conditions") or [])[:6]),
+        "epistemic_hedge": bool(raw.get("epistemic_hedge")),
     }
 
 
@@ -279,7 +289,8 @@ def parse(text: str, *, source_id: str = "", builder: str = PARSER,
     chosen: dict = {}
     undetermined: list[str] = []
     agreement: list[tuple[str, float]] = []
-    for f in ("subject", "relation", "object", "modality", "quantifier", "scope_level"):
+    for f in ("subject", "relation", "object", "modality", "quantifier", "scope_level",
+              "epistemic_hedge"):
         counts: dict = {}
         for d in draws:
             counts[d[f]] = counts.get(d[f], 0) + 1
@@ -299,6 +310,7 @@ def parse(text: str, *, source_id: str = "", builder: str = PARSER,
 
     return Structure(text=text, source_id=source_id, conditions=conditions,
                      undetermined=tuple(undetermined), agreement=tuple(agreement),
+                     epistemic_hedge=bool(chosen.get("epistemic_hedge")),
                      **{f: chosen[f] for f in
                         ("subject", "relation", "object", "modality", "quantifier",
                          "scope_level")})
@@ -345,12 +357,67 @@ def check(claim: Structure, evidence: list[Structure],
     # with musl", obwohl der Beleg den Claim STUETZT. (Live an der HTTP-Schnittstelle gefunden -
     # derselbe Fehlermodus wie _polarity_clash in DESi: negative Valenz als Verneinung gelesen.)
     for e in evidence:
+        # Ein gehedgter Beleg ("keine Hinweise auf X gefunden") kann nichts widerlegen - er sagt
+        # nichts über X, sondern über die Suche danach.
+        if e.epistemic_hedge and not claim.epistemic_hedge:
+            continue
         same = (e.relation == claim.relation
                 and _overlaps(e.subject, claim.subject)
                 and _overlaps(e.object, claim.object))
         if same and (e.modality == "negated") != (claim.modality == "negated"):
             return "contradicted", [], [
                 f"Beleg '{e.source_id or e.text[:40]}' behauptet dieselbe Relation negiert"]
+
+    # ── Positive Stützung, nicht bloss Abwesenheit von Verstössen ───────────────────────────────
+    #
+    # Die frühere Logik lautete "keine Verstösse gefunden ⇒ entailed". Das ist falsch:
+    # **Abwesenheit erkannter Verstösse ist nicht Anwesenheit von Stützung.** Die externe
+    # Blind-Evaluation hat das an drei Fällen zugleich aufgedeckt (7/20 auf dem Dev-Satz):
+    #
+    #   DEV-012  "A cannot be installed" aus "A depends on B" + "C is unavailable" — die Belege
+    #            müssten zu einer Kette komponieren, B und C sind aber verschieden.
+    #   DEV-014  "Birne war defekt" aus "Lampe ging nicht" + "getauscht, ging wieder" — Abduktion,
+    #            kein Entailment; alternative Ursachen bleiben offen.
+    #   DEV-017  "Data loss did not occur" aus "no evidence of data loss was found" — Abwesenheit
+    #            von Evidenz ist kein Beweis der Abwesenheit.
+    #
+    # Alle drei sind dieselbe Wurzel: kein Beleg BEHAUPTET die Proposition des Claims, und die
+    # Regeln fanden trotzdem nichts zu beanstanden. `entailed` verlangt deshalb ab jetzt einen
+    # Beleg, der den Claim tatsächlich trägt.
+    def _asserts(e: Structure) -> bool:
+        rel_ok = (e.relation == claim.relation
+                  or (claim.relation in CAUSAL and e.relation in CAUSAL))
+        return (rel_ok and _overlaps(e.subject, claim.subject)
+                and _overlaps(e.object, claim.object))
+
+    support = [e for e in evidence if _asserts(e)]
+
+    # Ein gehedgter Beleg ("no evidence of X was found") trägt keine Aussage ÜBER X. Er kann einen
+    # ungehedgten Claim nicht stützen - die dafür nötige Prämisse ("wäre X eingetreten, hätte man
+    # Evidenz gefunden") ist nicht angegeben.
+    hedged_only = bool(support) and all(e.epistemic_hedge for e in support) \
+        and not claim.epistemic_hedge
+    if hedged_only:
+        violations.append("missing_premise")
+        notes.append("Beleg spricht über die Evidenzlage ('keine Hinweise gefunden'), nicht über "
+                     "die Sache - Abwesenheit von Evidenz ist kein Beweis der Abwesenheit")
+        support = []
+
+    if not support:
+        # Berührt die Evidenz den Claim überhaupt? Wenn nicht, ist die Kette gerissen bzw. die
+        # Evidenz spricht über andere Entitäten - dann wird nicht 'nicht gedeckt', sondern
+        # 'nicht entscheidbar' gemeldet.
+        touching = [e for e in evidence
+                    if _overlaps(e.subject, claim.subject) or _overlaps(e.object, claim.object)
+                    or _overlaps(e.subject, claim.object) or _overlaps(e.object, claim.subject)]
+        if "missing_premise" not in violations:
+            violations.append("missing_premise")
+        if not touching:
+            notes.append("kein Beleg berührt die Entitäten des Claims - Ableitungskette gerissen")
+            return "insufficient", violations, notes
+        notes.append("kein Beleg behauptet die Proposition des Claims; die Belege sind damit "
+                     "vereinbar, tragen sie aber nicht (alternative Erklärungen bleiben offen)")
+        return "compatible_not_entailed", violations, notes
 
     # Kausal-Aufwertung: kausaler Claim, aber nur assoziative Evidenz.
     if claim.relation in CAUSAL and not any(e.relation in CAUSAL for e in evidence) \
@@ -359,24 +426,7 @@ def check(claim: Structure, evidence: list[Structure],
         notes.append(f"Claim behauptet '{claim.relation}', Evidenz nur assoziativ "
                      f"({', '.join(sorted({e.relation for e in evidence}))})")
 
-    # Nur Belege, die die BEHAUPTETE RELATION berühren, dürfen Modalität/Quantor/Reichweite
-    # decken. Sonst entsteht unerlaubte Komposition: die Relation aus Beleg A, die Reichweite
-    # aus Beleg B - obwohl kein einzelner Beleg die Kombination trägt. (Live gefunden an einer
-    # MSCE-Kontrolle, die dadurch faelschlich als 'entailed' durchging.)
-    #
-    # Relevanz verlangt AUCH Entitaetsbezug, nicht nur Relationsgleichheit. Ohne das war der
-    # Auditor durch **Evidenz-Auffuellen** angreifbar: zwei voellig unverwandte Belege mit
-    # universellem Quantor ("Every container image has a base layer") hoben das Maximum und
-    # kippten "Binary wheels fail on all musl systems" von compatible_not_entailed auf
-    # ENTAILED. Mehr Evidenz war damit monoton besser - und da ein L3-Generator seine
-    # evidenceIds selbst waehlt, ist das eine ausnutzbare Flaeche, kein Randfall.
-    relevant = [e for e in evidence
-                if (e.relation == claim.relation
-                    or (claim.relation in CAUSAL and e.relation in CAUSAL))
-                and (_overlaps(e.subject, claim.subject) or _overlaps(e.object, claim.object)
-                     or _overlaps(e.subject, claim.object) or _overlaps(e.object, claim.subject))]
-    if not relevant:
-        relevant = evidence          # keine passende Relation -> unten faengt missing_premise
+    relevant = support   # nur tatsächlich stützende Belege dürfen decken
     ev_modal = max(MODAL_RANK.get(e.modality, 4) for e in relevant)
     if MODAL_RANK.get(claim.modality, 4) > ev_modal:
         violations.append("modal_strengthening")

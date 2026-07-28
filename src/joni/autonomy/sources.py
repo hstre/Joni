@@ -60,6 +60,25 @@ class Fetcher(Protocol):
         ...
 
 
+class SourceDegraded(RuntimeError):
+    """Jede Anfrage einer Quelle ist fehlgeschlagen - die Quelle ist AUS, nicht leer.
+
+    Ohne diese Unterscheidung meldete ein Rate-Limit oder Netzausfall sich als ``0 item(s)``: der
+    Fetcher fing seine Ausnahmen je Suchbegriff selbst ab und gab eine leere Liste zurueck, sodass
+    der DEGRADED-Pfad in ``run.py`` nie erreicht wurde. Dessen Kommentar sagt die Absicht woertlich
+    ("a source outage must show as DEGRADED, not '0 items'") - die Umsetzung hebelte sie aus.
+
+    Gefunden, als OpenAlex sein Tagesbudget erschoepft hatte (HTTP 429). Joni laeuft stuendlich und
+    OpenAlex rechnet pro Tag ab, das trifft also regelmaessig. Es ist derselbe Fehlermodus wie beim
+    capped-log-Sensor: ein Ausfall, der sich als leerer Erfolg tarnt."""
+
+
+def _all_failed(attempts: int, failures: int, name: str) -> None:
+    """Hebt ab, wenn KEINE Anfrage durchkam. Teilausfaelle bleiben stumm - das ist gewollt."""
+    if attempts and failures == attempts:
+        raise SourceDegraded(f"{name}: alle {attempts} Anfragen fehlgeschlagen")
+
+
 def _get(url: str, headers: dict | None = None) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": _UA, **(headers or {})})
     with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # noqa: S310 - fixed hosts
@@ -314,15 +333,18 @@ class OpenAlexFetcher:
     def fetch(self, queries: list[str], *, limit: int) -> list[Item]:
         terms = [q for q in queries if q][:4] or ["machine learning"]
         merged: dict[str, Item] = {}
+        attempts = failures = 0
         mailto = "joni-autonomy@users.noreply.github.com"   # OpenAlex polite-pool identifier
         for term in terms:
+            attempts += 1
             url = "https://api.openalex.org/works?" + urllib.parse.urlencode(
                 {"search": term, "per_page": max(2, limit // 2),
                  "filter": "type:article,has_abstract:true",
                  "sort": "relevance_score:desc", "mailto": mailto})
             try:
                 results = json.loads(_get(url)).get("results", [])
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: BLE001 - einzelner Begriff faellt aus; Totalausfall unten
+                failures += 1
                 continue
             for work in results:
                 wid = str(work.get("id") or "").rsplit("/", 1)[-1]
@@ -336,6 +358,7 @@ class OpenAlexFetcher:
                 merged[wid] = Item("openalex", wid, title, link, summary,
                                    float(work.get("cited_by_count") or 0),
                                    _openalex_pdf_url(work))
+        _all_failed(attempts, failures, "openalex")
         return sorted(merged.values(), key=lambda it: -it.score)[:limit]
 
 

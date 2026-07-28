@@ -2,6 +2,8 @@
 
 import json
 
+import pytest
+
 from joni.autonomy import sources
 
 
@@ -116,4 +118,36 @@ def test_a_failing_source_degrades_quietly(monkeypatch):
         raise OSError("network down")
     monkeypatch.setattr(sources, "_get", _boom)
     assert sources.ZenodoFetcher().fetch(["x"], limit=4) == []
-    assert sources.OpenAlexFetcher().fetch(["x"], limit=4) == []
+
+
+def test_a_totally_dead_source_is_loud_not_empty(monkeypatch):
+    """Ein Ausfall darf sich nicht als leerer Erfolg tarnen.
+
+    run.py haelt die Absicht woertlich fest ("a source outage must show as DEGRADED, not
+    '0 items'"), aber der Fetcher fing seine Ausnahmen je Suchbegriff selbst ab und gab [] zurueck -
+    der DEGRADED-Pfad war damit toter Code. Gefunden, als OpenAlex sein Tagesbudget erschoepft
+    hatte (HTTP 429); Joni laeuft stuendlich, OpenAlex rechnet taeglich ab, das trifft regelmaessig.
+
+    Die Unterscheidung, die beide Absichten vereint: **Teilausfall still, Totalausfall laut.**"""
+    def _boom(url, headers=None):
+        raise OSError("network down")
+    monkeypatch.setattr(sources, "_get", _boom)
+    with pytest.raises(sources.SourceDegraded):
+        sources.OpenAlexFetcher().fetch(["x"], limit=4)
+
+
+def test_a_partially_failing_source_still_returns_what_it_got(monkeypatch):
+    """Nur ein Begriff faellt aus: das ist kein Ausfall der Quelle, also bleibt es still."""
+    calls = {"n": 0}
+    payload = {"results": [{"id": "https://openalex.org/W1", "title": "Ein Treffer",
+                            "abstract_inverted_index": {"text": [0]}}]}
+
+    def _flaky(url, headers=None):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise OSError("erster Begriff scheitert")
+        return json.dumps(payload).encode()
+
+    monkeypatch.setattr(sources, "_get", _flaky)
+    items = sources.OpenAlexFetcher().fetch(["a", "b"], limit=4)
+    assert len(items) == 1 and items[0].source == "openalex"
