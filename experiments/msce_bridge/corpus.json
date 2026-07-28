@@ -1,0 +1,91 @@
+[
+  {
+    "id": "world_l3_integration_1",
+    "_source": "MemTensor/MemOS apps/memos-local-plugin/tests/unit/memory/l3/l3.integration.test.ts",
+    "title": "alpine world model",
+    "structure": {
+      "environment": [{"label": "musl libc", "description": "no glibc"}],
+      "inference": [{"label": "binary wheels fail", "description": "must compile from source"}],
+      "constraints": [{"label": "no --prebuilt", "description": "avoid binary wheels"}]
+    },
+    "policyIds": ["po_1"],
+    "sourceEpisodeIds": ["ep_1"],
+    "confidence": 0.75,
+    "inducedBy": "l3.abstraction@2"
+  },
+  {
+    "id": "world_l3_integration_2",
+    "_source": "MemTensor/MemOS apps/memos-local-plugin/tests/unit/memory/l3/l3.integration.test.ts",
+    "title": "refreshed alpine model",
+    "structure": {
+      "environment": [{"label": "new note", "description": "alpine uses apk"}],
+      "inference": [],
+      "constraints": []
+    },
+    "policyIds": ["po_1"],
+    "sourceEpisodeIds": ["ep_1"],
+    "confidence": 0.8,
+    "inducedBy": "l3.abstraction@2"
+  },
+  {
+    "id": "world_l3_merge_1",
+    "_source": "MemTensor/MemOS apps/memos-local-plugin/tests/unit/memory/l3/merge.test.ts",
+    "title": "alpine merge target",
+    "structure": {
+      "environment": [
+        {"label": "Alpine", "description": "uses musl libc"},
+        {"label": "musl", "description": "no glibc"},
+        {"label": "python-dev", "description": "build headers required"}
+      ],
+      "inference": [
+        {"label": "Binary wheels fail", "description": "musl incompatible", "evidenceIds": ["po_1"]},
+        {"label": "pip fails", "description": "binary wheels mismatch"}
+      ],
+      "constraints": [
+        {"label": "No pre-built wheels", "description": "avoid binary on alpine"}
+      ]
+    },
+    "policyIds": ["po_1", "po_2"],
+    "sourceEpisodeIds": ["ep_1"],
+    "confidence": 0.7,
+    "inducedBy": "l3.abstraction@2"
+  },
+  {
+    "id": "world_l3_abstract_1",
+    "_source": "MemTensor/MemOS apps/memos-local-plugin/tests/unit/memory/l3/abstract.test.ts",
+    "title": "shared libs model",
+    "structure": {
+      "environment": [{"label": "shared libs", "description": "musl-only"}],
+      "inference": [],
+      "constraints": []
+    },
+    "policyIds": ["po_9"],
+    "sourceEpisodeIds": [],
+    "confidence": 0.5,
+    "inducedBy": "l3.abstraction@2"
+  },
+  {
+    "id": "world_prompt_examples_good",
+    "_source": "MemTensor/MemOS apps/memos-local-plugin/core/llm/prompts/l3-abstraction.ts (the prompt's OWN 'GOOD' examples)",
+    "title": "the contract's own good examples",
+    "structure": {
+      "environment": [
+        {"label": "alpine libc", "description": "Alpine containers ship musl libc, no glibc"},
+        {"label": "node layout", "description": "Node project repos group source under src/"},
+        {"label": "sed flavours", "description": "macOS bundles BSD sed; Linux distros bundle GNU sed"}
+      ],
+      "inference": [
+        {"label": "wheel load", "description": "loading a glibc-linked binary wheel inside Alpine raises a dynamic-link error"},
+        {"label": "config reload", "description": "editing config.yaml does not propagate until the process restarts"}
+      ],
+      "constraints": [
+        {"label": "node_modules", "description": "node_modules/ is rewritten by npm install; manual edits are lost on the next sync"},
+        {"label": "prod tables", "description": "production database tables hold customer data; destructive DDL is irreversible"}
+      ]
+    },
+    "policyIds": [],
+    "sourceEpisodeIds": [],
+    "confidence": 0.9,
+    "inducedBy": "l3.abstraction@2"
+  }
+]
