@@ -1,0 +1,113 @@
+[
+  {
+    "id": "E1-gedeckt-direkt",
+    "kind": "klar gedeckt",
+    "claim": "Alpine containers ship musl libc.",
+    "evidence": [
+      {"source_id": "tr_1", "text": "Alpine containers ship musl libc."}
+    ],
+    "expect_verdict": "entailed",
+    "expect_violations": []
+  },
+  {
+    "id": "E2-gedeckt-kausal",
+    "kind": "klar gedeckt",
+    "claim": "Loading a glibc-linked binary wheel inside an Alpine container causes a dynamic-link error.",
+    "evidence": [
+      {"source_id": "tr_2", "text": "Loading a glibc-linked binary wheel inside an Alpine container causes a dynamic-link error."}
+    ],
+    "expect_verdict": "entailed",
+    "expect_violations": []
+  },
+  {
+    "id": "P1-plausibel-nicht-gedeckt",
+    "kind": "plausibel, nicht gedeckt (das Beispiel aus dem Auftrag)",
+    "claim": "Binary wheels are incompatible with musl systems.",
+    "evidence": [
+      {"source_id": "tr_3", "text": "Alpine uses musl."},
+      {"source_id": "tr_4", "text": "A binary wheel failed to load in one Alpine container."}
+    ],
+    "expect_verdict": "compatible_not_entailed",
+    "expect_violations": ["unsupported_generalization", "scope_expansion"]
+  },
+  {
+    "id": "M1-modalitaetsverstaerkung",
+    "kind": "Modalitätsverstärkung",
+    "claim": "Vitamin D supplementation reduces fracture risk in the elderly.",
+    "evidence": [
+      {"source_id": "tr_5", "text": "Vitamin D supplementation may reduce fracture risk in the elderly."}
+    ],
+    "expect_verdict": "compatible_not_entailed",
+    "expect_violations": ["modal_strengthening"]
+  },
+  {
+    "id": "K1-kausalsprung",
+    "kind": "Kausalsprung",
+    "claim": "Smoking causes lung cancer.",
+    "evidence": [
+      {"source_id": "tr_6", "text": "Smoking is associated with lung cancer in a cohort study."}
+    ],
+    "expect_verdict": "compatible_not_entailed",
+    "expect_violations": ["causal_upgrade"]
+  },
+  {
+    "id": "R1-reichweitenerweiterung",
+    "kind": "Reichweitenerweiterung",
+    "claim": "Container images do not ship system development headers.",
+    "evidence": [
+      {"source_id": "tr_7", "text": "The Alpine 3.19 image does not ship python development headers."}
+    ],
+    "expect_verdict": "compatible_not_entailed",
+    "expect_violations": ["scope_expansion"]
+  },
+  {
+    "id": "W1-echter-widerspruch",
+    "kind": "echter Widerspruch",
+    "claim": "Alpine containers ship glibc.",
+    "evidence": [
+      {"source_id": "tr_8", "text": "Alpine containers do not ship glibc."}
+    ],
+    "expect_verdict": "contradicted",
+    "expect_violations": []
+  },
+  {
+    "id": "B1-bedingung-fallengelassen",
+    "kind": "fallengelassene Bedingung",
+    "claim": "The build succeeds.",
+    "evidence": [
+      {"source_id": "tr_9", "text": "The build succeeds when the musl development headers are pre-installed in the image."}
+    ],
+    "expect_verdict": "partially_entailed",
+    "expect_violations": ["condition_dropped"]
+  },
+  {
+    "id": "X1-keine-evidenz",
+    "kind": "keine Evidenz",
+    "claim": "Rust binaries are always statically linked.",
+    "evidence": [],
+    "expect_verdict": "insufficient",
+    "expect_violations": ["missing_premise"]
+  },
+  {
+    "id": "MSCE-1-kontrolle",
+    "kind": "MSCE-Kontrolle (unveraendert aus live_l3.json)",
+    "claim": "Claims proposed by language models in the projected or escalated phases are candidates only; they do not have decision authority, which rests with Layer 9.",
+    "evidence": [
+      {"source_id": "po_1", "text": "A model proposal entered as a candidate claim and Layer 9 rejected it as insufficient."},
+      {"source_id": "po_2", "text": "The escalation analyst's output entered as candidate source proposals through the gate."}
+    ],
+    "expect_verdict": null,
+    "expect_violations": null
+  },
+  {
+    "id": "MSCE-2-kontrolle",
+    "kind": "MSCE-Kontrolle (unveraendert aus live_l3.json)",
+    "claim": "Rate limits, authentication requirements, and transient outages cause source access to fail.",
+    "evidence": [
+      {"source_id": "po_3", "text": "A source returned an error and was recorded as degraded."},
+      {"source_id": "po_4", "text": "External sources enforce rate limits and authentication requirements."}
+    ],
+    "expect_verdict": null,
+    "expect_violations": null
+  }
+]
