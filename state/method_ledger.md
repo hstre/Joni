@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 674 · 363 Methoden** — proposed 187 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 176  
+**Cycle 675 · 363 Methoden** — proposed 172 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 191  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -13,11 +13,6 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Morphing into Hybrid Attention Models | **proposed** | candidate | 0 | — |
 | Parameter-Efficient Quantum-Inspired Fast Weight Programmers for Traffic-Matrix  | **proposed** | candidate | 0 | — |
 | When Should Experience Become Parameters? Selection, Not Volume, Governs Online  | **proposed** | candidate | 0 | — |
-| shared-memory-as-a-lens | **proposed** | candidate | 0 | — |
-| acceleration-as-a-lens | **proposed** | candidate | 0 | — |
-| skills-as-a-lens | **proposed** | candidate | 0 | — |
-| multi-objective-as-a-lens | **proposed** | candidate | 0 | — |
-| effort-as-a-lens | **proposed** | candidate | 0 | — |
 | pitta-as-a-lens | **proposed** | candidate | 0 | — |
 | sadhaka-as-a-lens | **proposed** | candidate | 0 | — |
 | bids-validator | **proposed** | candidate | 0 | — |
@@ -25,18 +20,8 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | nassl-as-a-lens | **proposed** | candidate | 0 | — |
 | VLA-Corrector: Lightweight Detect-and-Correct Inference for Adaptive Action Hori | **proposed** | candidate | 0 | — |
 | adaptive-as-a-lens | **proposed** | candidate | 0 | — |
-| rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | hacking-as-a-lens | **proposed** | candidate | 0 | — |
-| GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation | **proposed** | candidate | 0 | — |
-| ResearchStudio-Reel: Automate the Last Mile of Research from Paper to Poster, Vi | **proposed** | candidate | 0 | — |
-| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **proposed** | candidate | 0 | — |
-| REDDIT: Correcting Model-Generated Timestamp Drift in ASR without Forgetting via | **proposed** | candidate | 0 | — |
-| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **proposed** | candidate | 0 | — |
-| OmniOpt: Taxonomy, Geometry, and Benchmarking of Modern Optimizers | **proposed** | candidate | 0 | — |
-| KVpop -- Key-Value Cache Compression with Predictive Online Pruning | **proposed** | candidate | 0 | — |
-| XIN-Annotations: A Multidimensional Cybercrime Annotation Dataset for a Closed-A | **proposed** | candidate | 0 | — |
 | A Triphasic Sleep-Consolidated Neuro-Symbolic Framework for Lifelong Agent Auton | **proposed** | candidate | 0 | — |
-| Deform360: A Massive Multi-view Visuotactile Dataset for Deformable World Models | **proposed** | candidate | 0 | — |
 | InFlux++: Real and Synthetic Data for Estimating Dynamic Camera Intrinsics | **proposed** | candidate | 0 | — |
 | rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | Andha-Dhun: A First Look at Audio Descriptions in Hindi | **proposed** | candidate | 0 | — |
@@ -271,10 +256,15 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | ARTIFICIAL INTELLIGENCE AS A DRIVER OF BANKING SERVICES DEVELOPMENT: MODERN APPR | **retired** | rejected | 0 | — |
 | quispe-colca-as-a-lens | **retired** | rejected | 0 | — |
 | Scaling Laws for Grid-Based Approximate Nearest Neighbor Search in High Dimensio | **retired** | rejected | 0 | — |
+| shared-memory-as-a-lens | **retired** | rejected | 0 | — |
+| acceleration-as-a-lens | **retired** | rejected | 0 | — |
 | Master Equation Revisited: Reflected Kähler Flow and the Viability Body. A singl | **retired** | rejected | 0 | — |
 | Operator Geometries, Hankel Matrices, and the Transference of Computational Cons | **retired** | rejected | 0 | — |
+| skills-as-a-lens | **retired** | rejected | 0 | — |
 | github.com/phylyc/somatic_workflow/PhylogicNDT | **retired** | rejected | 0 | — |
+| multi-objective-as-a-lens | **retired** | rejected | 0 | — |
 | CVE-2026-14440: Cloudflare Universal SSL, CAA, RFC 8657, and the 2023 jabber.ru  | **retired** | rejected | 0 | — |
+| effort-as-a-lens | **retired** | rejected | 0 | — |
 | PEDAGOGICAL CONDITIONS FOR THE FORMATION OF COGNITIVE SKILLS IN PRESCHOOL CHILDR | **retired** | rejected | 0 | — |
 | Pre-Geometric Information Networks versus String Theory as Foundations for Emerg | **retired** | rejected | 0 | — |
 | Cutting-Edge Cybersecurity Methods for Protecting IoT-Based Networks and Devices | **retired** | rejected | 0 | — |
@@ -288,8 +278,18 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **retired** | rejected | 0 | — |
 | FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |
 | From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **retired** | rejected | 0 | — |
+| rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **retired** | rejected | 0 | — |
+| GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation | **retired** | rejected | 0 | — |
+| ResearchStudio-Reel: Automate the Last Mile of Research from Paper to Poster, Vi | **retired** | rejected | 0 | — |
+| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **retired** | rejected | 0 | — |
+| REDDIT: Correcting Model-Generated Timestamp Drift in ASR without Forgetting via | **retired** | rejected | 0 | — |
+| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **retired** | rejected | 0 | — |
+| OmniOpt: Taxonomy, Geometry, and Benchmarking of Modern Optimizers | **retired** | rejected | 0 | — |
+| KVpop -- Key-Value Cache Compression with Predictive Online Pruning | **retired** | rejected | 0 | — |
 | Major-project-list | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
+| XIN-Annotations: A Multidimensional Cybercrime Annotation Dataset for a Closed-A | **retired** | rejected | 0 | — |
+| Deform360: A Massive Multi-view Visuotactile Dataset for Deformable World Models | **retired** | rejected | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **retired** | rejected | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **retired** | rejected | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **retired** | rejected | 0 | — |

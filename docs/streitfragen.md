@@ -1,6 +1,6 @@
 # Joni — Streitfragen (verdichtete Konflikte)
 
-**332 paarweise Konflikte → 12 Streitfragen**  
+**336 paarweise Konflikte → 12 Streitfragen**  
 
 _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni löst nichts selbst - entschieden wird über die bestehende Konflikt-Mappe (`to_resolve.md`)._
 
@@ -37,15 +37,6 @@ The entire conversation around model selection assumes the model
     - Thirty-one exchanges and you just gave me the framework to escape my measurement anxiety spiral. The contamination clustering hypothesis is *brilliant* - I've b
 
 ## 4. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** Additive, Intrusion, Manufacturing, Paste, Selective, WAAM, Wire, assistants
-- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
-- **Positionen:**
-    - AI assistants are evolving from simple reactive question-answering to long-context, memory-enabled, personalized companions.
-    - The dataset accompanies a study on integrating Wire Arc Additive Manufacturing (WAAM) into the Selective Paste Intrusion (SPI) process for fabricating steel-rei
-    - Selective Paste Intrusion (SPI) is a process used in conjunction with Wire Arc Additive Manufacturing (WAAM) to create steel-reinforced concrete with complex ge
-    - Selective Paste Intrusion (SPI) is combined with Wire Arc Additive Manufacturing (WAAM) to fabricate steel-reinforced concrete with complex geometries.
-
-## 5. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** Vision, aggregation, failure, generalizing, global, leading, learn, length
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -53,6 +44,15 @@ The entire conversation around model selection assumes the model
     - Streaming autoregressive diffusion models are limited in reasoning and struggle to achieve logical consistency and low-latency streaming for complex reasoning t
     - Vision models trained on simple tasks that require aggregation of local information can learn global shortcuts, leading to failure in generalizing over task len
     - Inspired by recent studies of length generalization in language models, the behavior of vision models trained on simple vision tasks that require the aggregatio
+
+## 5. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
+- **Gemeinsame Prämissen:** Additive, Intrusion, Manufacturing, Paste, Selective, WAAM, Wire, assistants
+- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
+- **Positionen:**
+    - AI assistants are evolving from simple reactive question-answering to long-context, memory-enabled, personalized companions.
+    - The dataset accompanies a study on integrating Wire Arc Additive Manufacturing (WAAM) into the Selective Paste Intrusion (SPI) process for fabricating steel-rei
+    - Selective Paste Intrusion (SPI) is a process used in conjunction with Wire Arc Additive Manufacturing (WAAM) to create steel-reinforced concrete with complex ge
+    - Selective Paste Intrusion (SPI) is combined with Wire Arc Additive Manufacturing (WAAM) to fabricate steel-reinforced concrete with complex geometries.
 
 ## 6. Streitfrage — Thema „memory“ (5 Paar-Konflikte, 6 Positionen)
 - **Gemeinsame Prämissen:** Open-KNEAD, backbone-dataset, cuisines, direct, estimates, estimation, families, grounding
@@ -77,16 +77,6 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - The need to translate long-term memory into embodied plans emerges specifically when an agent maintains an explicit world model subject to both partial observab
 
 ## 8. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** behavior, contexts, making, providing, thereby
-- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
-- **Positionen:**
-    - Thus, hour-long videos can consume more than2 million tokens, making full-video inference difficult to scale.
-    - Overall, G2Rec enables recommendation models to capture holistic and semantically grounded user interest prototypes without requiring ground-truth user interest
-    - By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large langu
-    - Personalized AI assistants are becoming more sophisticated, incorporating user preferences and adaptive learning mechanisms.
-    - The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain whil
-
-## 9. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** WorldLines, distinct, embodied, keywords, long-term, memory, plans, problem
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -95,6 +85,16 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - The abstract of the WorldLines paper does not contain any statement that frames 'translating long-term memory into embodied plans' as a standalone research prob
     - No section heading in the WorldLines paper explicitly mentions or implies 'translating long-term memory into embodied plans' as an independent research problem.
     - The keywords listed in the WorldLines paper (if any) do not include a term that isolates 'translating long-term memory into embodied plans' as a distinct resear
+
+## 9. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
+- **Gemeinsame Prämissen:** behavior, contexts, making, providing, thereby
+- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
+- **Positionen:**
+    - Thus, hour-long videos can consume more than2 million tokens, making full-video inference difficult to scale.
+    - Overall, G2Rec enables recommendation models to capture holistic and semantically grounded user interest prototypes without requiring ground-truth user interest
+    - By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large langu
+    - Personalized AI assistants are becoming more sophisticated, incorporating user preferences and adaptive learning mechanisms.
+    - The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain whil
 
 ## 10. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** WorldLines, embodied, explicitly, long-term, memory, observability, overwritten, partial
@@ -116,11 +116,11 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - High-NA EUV lithography can be applied to logic and DRAM without needing at-resolution field stitching through innovative design strategies.
 
 ## 12. Streitfrage — Thema „memory“ (3 Paar-Konflikte, 4 Positionen)
-- **Gemeinsame Prämissen:** JarvisHub, action, artifacts, canvas, dependencies, editable, external, feedback
+- **Gemeinsame Prämissen:** —
 - **Entscheidender fehlender Beleg:** 4/4 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
-    - Many training-based visual token compression methods introduce external compression modules that force the VLM backbone to adapt, incurring substantial retraini
-    - Local Validity and Contextual Holonomy: A Structural Formulation of the Copenhagen Principle (v3)
-    - JarvisHub treats an editable canvas as the user workspace, the agent's external memory, action space, and shared project state, representing multimodal artifact
-    - JarvisHub treats an editable canvas as the user workspace, external memory, action space, and shared project state for multimodal artifacts, dependencies, versi
+    - Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and Execution
+    - LLM agents often follow a maximum-context-first strategy, re-reading files and dependencies they have already seen, which can turn a simple task like a one-line
+    - Reinforcement learning algorithms exhibit non-monotonic performance scaling with respect to data-regimes, contrary to simple performance rankings.
+    - Edge devices have limited memory resources, making quantization essential for deploying complex multimodal models.
 
