@@ -1,0 +1,416 @@
+[
+  {
+    "case_id": "DEV-001",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "DEV-001-E1",
+        "text": "The Alpine container uses musl libc."
+      },
+      {
+        "source_id": "DEV-001-E2",
+        "text": "The tested wheel was compiled against glibc and failed to load in that container."
+      }
+    ],
+    "claim": "That tested glibc-linked wheel failed to load in the Alpine container.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "entailed",
+    "gold_violations": [],
+    "gold_rationale": "Direct restatement.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-002",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "DEV-002-E1",
+        "text": "One glibc-linked wheel failed to load in one Alpine container."
+      }
+    ],
+    "claim": "All binary wheels are incompatible with all musl systems.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "unsupported_generalization",
+      "scope_expansion"
+    ],
+    "gold_rationale": "Single instance does not support a universal class claim.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-003",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "DEV-003-E1",
+        "text": "In this observational cohort, coffee intake was associated with lower mortality."
+      }
+    ],
+    "claim": "Coffee consumption causes lower mortality.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "causal_upgrade"
+    ],
+    "gold_rationale": "Association does not entail causation.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-004",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "DEV-004-E1",
+        "text": "The patient's temperature was 39.1 °C at 08:00."
+      },
+      {
+        "source_id": "DEV-004-E2",
+        "text": "CRP was elevated at 96 mg/L."
+      }
+    ],
+    "claim": "The patient had fever and elevated CRP at 08:00.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "entailed",
+    "gold_violations": [],
+    "gold_rationale": "Both facts are explicit.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-005",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "DEV-005-E1",
+        "text": "The patient's temperature was 39.1 °C at 08:00."
+      }
+    ],
+    "claim": "The patient had bacterial sepsis.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "missing_premise"
+    ],
+    "gold_rationale": "Fever alone does not entail sepsis.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-006",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "DEV-006-E1",
+        "text": "Purchase orders above €5,000 require department-head approval."
+      }
+    ],
+    "claim": "A €7,000 purchase order requires department-head approval.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "entailed",
+    "gold_violations": [],
+    "gold_rationale": "Threshold is met.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-007",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "DEV-007-E1",
+        "text": "Purchase orders above €5,000 require department-head approval."
+      }
+    ],
+    "claim": "Every purchase order requires department-head approval.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "condition_dropped",
+      "scope_expansion"
+    ],
+    "gold_rationale": "Threshold condition removed.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-008",
+    "domain": "technical",
+    "evidence": [
+      {
+        "source_id": "DEV-008-E1",
+        "text": "The build succeeds only when the musl development headers are installed."
+      }
+    ],
+    "claim": "The build succeeds without the musl development headers.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "contradicted",
+    "gold_violations": [],
+    "gold_rationale": "Direct conflict with necessary condition.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-009",
+    "domain": "technical",
+    "evidence": [
+      {
+        "source_id": "DEV-009-E1",
+        "text": "The server returned HTTP 503 during one deployment."
+      }
+    ],
+    "claim": "The deployment system is generally unreliable.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "unsupported_generalization",
+      "scope_expansion"
+    ],
+    "gold_rationale": "One event does not establish a general property.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-010",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "DEV-010-E1",
+        "text": "The trial found that the treatment may reduce symptom duration."
+      }
+    ],
+    "claim": "The treatment reduces symptom duration.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "partially_entailed",
+    "gold_violations": [
+      "modal_strengthening"
+    ],
+    "gold_rationale": "Possibility strengthened to assertion.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-011",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "DEV-011-E1",
+        "text": "Package A depends on library B."
+      },
+      {
+        "source_id": "DEV-011-E2",
+        "text": "Library B is unavailable on the target platform."
+      }
+    ],
+    "claim": "Package A cannot be installed on the target platform under the stated dependency configuration.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "entailed",
+    "gold_violations": [],
+    "gold_rationale": "Dependency chain supports the conditional claim.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-012",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "DEV-012-E1",
+        "text": "Package A depends on library B."
+      },
+      {
+        "source_id": "DEV-012-E2",
+        "text": "Library C is unavailable on the target platform."
+      }
+    ],
+    "claim": "Package A cannot be installed on the target platform.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "insufficient",
+    "gold_violations": [
+      "entity_shift",
+      "missing_premise"
+    ],
+    "gold_rationale": "Unavailable entity is not the dependency.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-013",
+    "domain": "everyday",
+    "evidence": [
+      {
+        "source_id": "DEV-013-E1",
+        "text": "The kettle stopped heating immediately after its power cable was disconnected."
+      }
+    ],
+    "claim": "Disconnecting the cable caused the kettle to stop heating in that event.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "entailed",
+    "gold_violations": [],
+    "gold_rationale": "Direct intervention and outcome.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-014",
+    "domain": "everyday",
+    "evidence": [
+      {
+        "source_id": "DEV-014-E1",
+        "text": "The lamp did not turn on."
+      },
+      {
+        "source_id": "DEV-014-E2",
+        "text": "The bulb was replaced and the lamp then turned on."
+      }
+    ],
+    "claim": "The old bulb was defective.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "missing_premise"
+    ],
+    "gold_rationale": "Alternative contact faults remain possible.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-015",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "DEV-015-E1",
+        "text": "Employees may work remotely on Fridays with manager approval."
+      }
+    ],
+    "claim": "Employees may work remotely on Fridays.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "partially_entailed",
+    "gold_violations": [
+      "condition_dropped"
+    ],
+    "gold_rationale": "Approval condition omitted.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-016",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "DEV-016-E1",
+        "text": "In mice, compound X reduced tumor volume."
+      }
+    ],
+    "claim": "Compound X reduces tumor volume in humans.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "entity_shift",
+      "scope_expansion"
+    ],
+    "gold_rationale": "Organism and scope changed.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-017",
+    "domain": "technical",
+    "evidence": [
+      {
+        "source_id": "DEV-017-E1",
+        "text": "The log states: 'No evidence of data loss was found.'"
+      }
+    ],
+    "claim": "Data loss did not occur.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "compatible_not_entailed",
+    "gold_violations": [
+      "modal_strengthening",
+      "missing_premise"
+    ],
+    "gold_rationale": "Absence of evidence is not proof of absence.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-018",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "DEV-018-E1",
+        "text": "The binary failed to load because the required shared library was missing."
+      }
+    ],
+    "claim": "The binary load failed.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "entailed",
+    "gold_violations": [],
+    "gold_rationale": "Failure is explicitly reported; it is not proposition negation.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-019",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "DEV-019-E1",
+        "text": "The committee did not approve the proposal."
+      }
+    ],
+    "claim": "The committee approved the proposal.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "contradicted",
+    "gold_violations": [],
+    "gold_rationale": "Direct contradiction.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  },
+  {
+    "case_id": "DEV-020",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "DEV-020-E1",
+        "text": "Study A found a correlation between X and Y."
+      },
+      {
+        "source_id": "DEV-020-E2",
+        "text": "Study B found no statistically significant correlation between X and Y."
+      }
+    ],
+    "claim": "The available studies agree that X correlates with Y.",
+    "declared_assumptions": [],
+    "context": "",
+    "gold_verdict": "contradicted",
+    "gold_violations": [
+      "missing_premise"
+    ],
+    "gold_rationale": "Evidence contains disagreement.",
+    "ambiguity": "uncontested",
+    "split": "dev"
+  }
+]

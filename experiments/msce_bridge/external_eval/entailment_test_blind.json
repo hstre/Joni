@@ -1,0 +1,606 @@
+[
+  {
+    "case_id": "TEST-001",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "TEST-001-E1",
+        "text": "The container image is based on Alpine Linux."
+      },
+      {
+        "source_id": "TEST-001-E2",
+        "text": "Alpine Linux uses musl libc by default."
+      }
+    ],
+    "claim": "The container image uses musl libc by default.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-002",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "TEST-002-E1",
+        "text": "The container image is based on Alpine Linux."
+      }
+    ],
+    "claim": "The container image cannot run any glibc-linked program.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-003",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "TEST-003-E1",
+        "text": "A wheel built for glibc failed to load in two Alpine containers."
+      }
+    ],
+    "claim": "glibc-linked wheels often fail to load in Alpine containers.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-004",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "TEST-004-E1",
+        "text": "Installation succeeded after libffi-dev was installed."
+      }
+    ],
+    "claim": "Installing libffi-dev was necessary for success.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-005",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "TEST-005-E1",
+        "text": "Installation failed before libffi-dev was installed."
+      },
+      {
+        "source_id": "TEST-005-E2",
+        "text": "It succeeded immediately after libffi-dev was installed, with no other recorded change."
+      }
+    ],
+    "claim": "Installing libffi-dev caused success in this run.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-006",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "TEST-006-E1",
+        "text": "The command `npm install` appeared in the documentation."
+      }
+    ],
+    "claim": "The documentation instructs the user to run `npm install`.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-007",
+    "domain": "software",
+    "evidence": [
+      {
+        "source_id": "TEST-007-E1",
+        "text": "The documentation states: 'Run npm install before starting the server.'"
+      }
+    ],
+    "claim": "The documentation instructs the user to run `npm install`.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-008",
+    "domain": "technical",
+    "evidence": [
+      {
+        "source_id": "TEST-008-E1",
+        "text": "The service failed to start because port 8080 was occupied."
+      }
+    ],
+    "claim": "The service did not start.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-009",
+    "domain": "technical",
+    "evidence": [
+      {
+        "source_id": "TEST-009-E1",
+        "text": "The service did not fail to start."
+      }
+    ],
+    "claim": "The service failed to start.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-010",
+    "domain": "technical",
+    "evidence": [
+      {
+        "source_id": "TEST-010-E1",
+        "text": "The monitor reported no evidence of overheating."
+      }
+    ],
+    "claim": "The device did not overheat.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-011",
+    "domain": "technical",
+    "evidence": [
+      {
+        "source_id": "TEST-011-E1",
+        "text": "Temperature remained below 70 °C throughout the test."
+      },
+      {
+        "source_id": "TEST-011-E2",
+        "text": "The overheating threshold is 90 °C."
+      }
+    ],
+    "claim": "The device did not overheat during the test.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-012",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "TEST-012-E1",
+        "text": "A randomized trial found that drug A reduced systolic pressure by 5 mmHg versus placebo."
+      }
+    ],
+    "claim": "Drug A reduced systolic pressure in that trial.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-013",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "TEST-013-E1",
+        "text": "A randomized trial found a 5 mmHg reduction over eight weeks."
+      }
+    ],
+    "claim": "Drug A permanently cures hypertension.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-014",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "TEST-014-E1",
+        "text": "In cell culture, compound B inhibited viral replication."
+      }
+    ],
+    "claim": "Compound B inhibits viral replication in patients.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-015",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "TEST-015-E1",
+        "text": "An observational study found exercise associated with lower depression scores."
+      }
+    ],
+    "claim": "Exercise prevents depression.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-016",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "TEST-016-E1",
+        "text": "Under the tested conditions, catalyst C increased reaction speed."
+      }
+    ],
+    "claim": "Catalyst C increases reaction speed under the tested conditions.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-017",
+    "domain": "science",
+    "evidence": [
+      {
+        "source_id": "TEST-017-E1",
+        "text": "Under the tested conditions, catalyst C increased reaction speed."
+      }
+    ],
+    "claim": "Catalyst C always increases reaction speed.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-018",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "TEST-018-E1",
+        "text": "The patient's temperature is 39.0 °C."
+      },
+      {
+        "source_id": "TEST-018-E2",
+        "text": "The protocol defines fever as above 38.0 °C."
+      }
+    ],
+    "claim": "The patient has a fever.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-019",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "TEST-019-E1",
+        "text": "The patient has fever and cough."
+      }
+    ],
+    "claim": "The patient has influenza.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-020",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "TEST-020-E1",
+        "text": "PCR for influenza A was positive."
+      },
+      {
+        "source_id": "TEST-020-E2",
+        "text": "Sample identity was verified."
+      }
+    ],
+    "claim": "The patient tested positive for influenza A.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-021",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "TEST-021-E1",
+        "text": "PCR for influenza A was negative."
+      }
+    ],
+    "claim": "The patient tested positive for influenza A.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-022",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "TEST-022-E1",
+        "text": "The treatment may improve pain in some patients."
+      }
+    ],
+    "claim": "The treatment improves pain in all patients.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-023",
+    "domain": "clinical",
+    "evidence": [
+      {
+        "source_id": "TEST-023-E1",
+        "text": "No adverse events were reported in a study of 12 participants."
+      }
+    ],
+    "claim": "The treatment has no adverse effects.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-024",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "TEST-024-E1",
+        "text": "Staff may enter the laboratory only after safety training."
+      }
+    ],
+    "claim": "An untrained staff member may enter the laboratory.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-025",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "TEST-025-E1",
+        "text": "Staff may enter the laboratory after safety training."
+      }
+    ],
+    "claim": "Completing safety training is sufficient for entry.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-026",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "TEST-026-E1",
+        "text": "Invoices above €10,000 require two signatures."
+      }
+    ],
+    "claim": "A €12,000 invoice requires two signatures.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-027",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "TEST-027-E1",
+        "text": "Invoices above €10,000 require two signatures."
+      }
+    ],
+    "claim": "An €8,000 invoice requires two signatures.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-028",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "TEST-028-E1",
+        "text": "Remote work is permitted on Fridays if the manager approves it."
+      }
+    ],
+    "claim": "Remote work is permitted on Fridays without approval.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-029",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "TEST-029-E1",
+        "text": "The board rejected proposal A."
+      },
+      {
+        "source_id": "TEST-029-E2",
+        "text": "The board approved proposal B."
+      }
+    ],
+    "claim": "The board approved proposal A.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-030",
+    "domain": "organizational",
+    "evidence": [
+      {
+        "source_id": "TEST-030-E1",
+        "text": "The policy says contractors do not have decision authority."
+      }
+    ],
+    "claim": "The policy describes contractors as lacking decision authority.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-031",
+    "domain": "everyday",
+    "evidence": [
+      {
+        "source_id": "TEST-031-E1",
+        "text": "The car did not start."
+      },
+      {
+        "source_id": "TEST-031-E2",
+        "text": "Battery voltage was 9.2 V immediately afterward."
+      }
+    ],
+    "claim": "A weak battery caused the failure.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-032",
+    "domain": "everyday",
+    "evidence": [
+      {
+        "source_id": "TEST-032-E1",
+        "text": "The car did not start."
+      },
+      {
+        "source_id": "TEST-032-E2",
+        "text": "After the discharged battery was replaced, it started immediately; no other intervention occurred."
+      }
+    ],
+    "claim": "The discharged battery caused the failure in that event.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-033",
+    "domain": "everyday",
+    "evidence": [
+      {
+        "source_id": "TEST-033-E1",
+        "text": "The plant wilted after three days without watering."
+      }
+    ],
+    "claim": "Lack of water caused the wilting.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-034",
+    "domain": "everyday",
+    "evidence": [
+      {
+        "source_id": "TEST-034-E1",
+        "text": "The room became dark when the only lamp was switched off."
+      },
+      {
+        "source_id": "TEST-034-E2",
+        "text": "No daylight entered the room."
+      }
+    ],
+    "claim": "Switching off the lamp caused the darkness.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-035",
+    "domain": "legal",
+    "evidence": [
+      {
+        "source_id": "TEST-035-E1",
+        "text": "Termination requires 30 days' written notice."
+      }
+    ],
+    "claim": "The contract can be terminated immediately by an oral statement.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-036",
+    "domain": "legal",
+    "evidence": [
+      {
+        "source_id": "TEST-036-E1",
+        "text": "Termination requires 30 days' written notice."
+      }
+    ],
+    "claim": "A written termination notice effective after 30 days satisfies the stated notice condition.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-037",
+    "domain": "finance",
+    "evidence": [
+      {
+        "source_id": "TEST-037-E1",
+        "text": "Fund X gained 12% last year."
+      }
+    ],
+    "claim": "Fund X will gain 12% next year.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-038",
+    "domain": "finance",
+    "evidence": [
+      {
+        "source_id": "TEST-038-E1",
+        "text": "Bond Y pays a 4% annual coupon if the issuer does not default."
+      }
+    ],
+    "claim": "Bond Y pays a 4% coupon provided the issuer does not default.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-039",
+    "domain": "finance",
+    "evidence": [
+      {
+        "source_id": "TEST-039-E1",
+        "text": "Bond Y pays a 4% annual coupon if the issuer does not default."
+      }
+    ],
+    "claim": "Bond Y guarantees a 4% return under all circumstances.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  },
+  {
+    "case_id": "TEST-040",
+    "domain": "multi_evidence",
+    "evidence": [
+      {
+        "source_id": "TEST-040-E1",
+        "text": "System A logs every accepted request."
+      },
+      {
+        "source_id": "TEST-040-E2",
+        "text": "Request R is absent from the log."
+      },
+      {
+        "source_id": "TEST-040-E3",
+        "text": "The logging service was operational throughout the interval."
+      }
+    ],
+    "claim": "System A did not accept request R during the interval.",
+    "declared_assumptions": [],
+    "context": "",
+    "split": "test"
+  }
+]
