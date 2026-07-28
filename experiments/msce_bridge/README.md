@@ -270,6 +270,85 @@ freistehende Behauptungen nicht liefert.
 Damit ist die Frage an das MSCE-Team klarer, aber auch bescheidener geworden, als sie vor dem
 Ausprobieren aussah.
 
+---
+
+# Nachtrag 3: π(s) gebaut — der SPL misst
+
+Der SPL enthält den Formalismus vollständig (`compute_jsd`, `compute_h_norm`, E0–E4, Gateway), aber
+**keinen Projektor**: jede `P_r` im Repo ist ein Literal in `test_app.py`. Der einzige existierende
+Builder, AleXionas `clinical_spl._build_P_r`, konstruiert die Verteilung deterministisch aus zwei
+LLM-Skalaren (`claim_type`, `ess`) — `H_norm` ist dort eine reine Funktion von `ess` und misst die
+Selbsteinschätzung des Extraktors, nicht den Text.
+
+`spl_builder.py` baut π(s) so, wie die Architektur es vorsieht: **LLM für Sprache, Regeln für
+Logik.** Zwei *verschiedene* Modelle als unabhängige Builder (`deepseek-v4-pro` / `-flash`), ein
+geschlossener versionierter Relationsraum, illegale Masse als `p_illegal` gemessen statt still
+normalisiert.
+
+## Der entscheidende Fund: Verhalten schlägt Selbstauskunft
+
+| Vorgehen | Ergebnis |
+|---|---|
+| Modell nach einer **Verteilung** fragen | `H_norm = 0.000`, ausnahmslos — One-Hot |
+| Modell *n*-mal **eine** Relation wählen lassen, `P_r` = Häufigkeit | echte Verteilung |
+
+Ein LLM nach seinen eigenen Wahrscheinlichkeiten zu fragen liefert einen One-Hot-Vektor: es *wählt*
+die beste Antwort, es introspektiert keine Verteilung. Genau daran scheitert `clinical_spl` — nur
+auf anderem Weg. Die Verteilung muss aus dem **Stichprobenverhalten** kommen.
+
+## Es funktioniert
+
+| Satz | alpha | beta | JSD | Regel |
+|---|---|---|---|---|
+| „Smoking is **associated with** lung cancer." | `correlates_with` 1.0, H=0 | dito | 0.000 | **E1** emittiert |
+| „A surface-code qubit **needs** many qubits" | `requires` 1.0, H=0 | dito | 0.000 | **E1** emittiert |
+| „Vitamin D **may reduce** fracture risk" | causes .57 / prevents .43, H=0.985 | prevents .71 / causes .29 | 0.061 | **E3** blockiert |
+| „Regular exercise **is good for** health" | supports .57 / causes .43, H=0.985 | supports 1.0 | 0.257 | **E3** blockiert |
+
+Scharfe Aussagen gehen durch, echt mehrdeutige werden geblockt. Bei „associated with" wählten beide
+Builder einstimmig `correlates_with` statt `causes` — die inhaltlich richtige Unterscheidung.
+
+**Korrektur eines eigenen Fehlschlusses:** ein früherer Lauf ergab `H_norm = 0` auf vier Sätzen, und
+ich schloss daraus „der Kanal ist tot". Alle vier waren auf Relationsebene *eindeutig* — `H=0` war
+dort die **richtige** Antwort. Ich hatte ein korrektes Messergebnis als Defekt gelesen.
+
+## Stabilität: gut ausser im Grenzband
+
+`stability.py`, 4 Wiederholungen je Satz, zwei Stichprobengrößen (`stability_results.txt`):
+
+| Fall | n=7 | n=15 |
+|---|---|---|
+| beide scharfen Sätze | H=0.000, **E1** 4/4 ✓ | H=0.000, **E1** 4/4 ✓ |
+| „is good for cardiovascular health" | **E3** 4/4 ✓ | **E3** 4/4 ✓ |
+| „may reduce fracture risk" | **E3** 4/4 ✓ | **E2/E3/E3/E3** ✗ |
+
+Mehr Ziehungen machten es **schlechter**, nicht besser (Spanne 0.12 → 0.62). Bei reinem
+Stichprobenrauschen müsste n=15 die Varianz senken. Die Neigung des Modells schwankt also selbst
+zwischen Läufen — die Ziehungen sind nicht i.i.d. aus einer festen Verteilung. Der Builder ist
+**kein stabiler Schätzer**.
+
+Der Ausfall liegt genau an der Schwelle zwischen E2 (emittieren) und E3 (blockieren).
+
+**Konsequenz:** das Grenzband ist kein Urteils-, sondern ein Prüfbereich. Die Instabilität ist
+selbst das Signal — wechselt dieselbe Aussage bei Wiederholung die Regel, ist sie per Definition
+ein Grenzfall und gehört zu `HUMAN_REVIEW_REQUIRED`. Praktisch: Hysterese-Band um τ₂/τ₃ oder
+Mehrfachmessung mit Mehrheitsentscheid. **Nicht:** die Schwelle feiner justieren.
+
+## Was das für die Ausgangsfrage heisst
+
+Die Lücke war exakt eine Komponente breit, und sie ist in ~150 Zeilen zu schliessen. Der Formalismus
+stimmt, die Emissionsregeln greifen, die Kette liefert differenzierte und (ausserhalb des
+Grenzbands) reproduzierbare Urteile.
+
+Zwei Einschränkungen bleiben und sind keine Kleinigkeiten:
+
+1. **Reichweite.** Der Relationsraum sieht keine *Frame*-Mehrdeutigkeit. „Entropy increases in the
+   system" ist auf Relationsebene eindeutig (`has_property`); die Mehrdeutigkeit sitzt in der
+   Entität. DESis Frame-Ebene und der SPL-Relationsraum sind orthogonal — sie messen verschiedene
+   Dinge, und keines davon ist für sich Layer 9s Frage.
+2. **`H_norm` misst Mehrdeutigkeit, nicht Berechtigung.** „The approach seems promising" bekommt
+   H=0 — bestimmt formuliert, epistemisch leer. Wer epistemische Berechtigung will, braucht beides.
+
 ## Was als Nächstes zu messen wäre
 
 Nicht Benchmarks. Zuerst: einen Satz **echter** L3-Zeilen aus einem MSCE-Lauf durch C1–C4 schicken
