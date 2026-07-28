@@ -1,6 +1,6 @@
 # Joni — Streitfragen (verdichtete Konflikte)
 
-**301 paarweise Konflikte → 12 Streitfragen**  
+**322 paarweise Konflikte → 12 Streitfragen**  
 
 _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni löst nichts selbst - entschieden wird über die bestehende Konflikt-Mappe (`to_resolve.md`)._
 
@@ -87,16 +87,6 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - The keywords listed in the WorldLines paper (if any) do not include a term that isolates 'translating long-term memory into embodied plans' as a distinct resear
 
 ## 9. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** WorldLines, embodied, explicitly, long-term, memory, observability, overwritten, partial
-- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
-- **Positionen:**
-    - The classification of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states does not imply it i
-    - Translating long-term memory into embodied plans is a specific architectural sub-problem that arises when solving partial observability and overwritten world st
-    - Reactive policy benchmarks (e.g., recurrent neural networks, memory-augmented controllers) demonstrate that embodied AI agents can handle partial observability 
-    - WorldLines presents the translation of long-term memory into embodied plans as a mechanism to address partial observability and overwritten world states, not as
-    - The WorldLines framework explicitly treats partial observability and overwritten world states as environmental preconditions that motivate the need for translat
-
-## 10. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** behavior, contexts, making, providing, thereby
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -105,6 +95,16 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large langu
     - Personalized AI assistants are becoming more sophisticated, incorporating user preferences and adaptive learning mechanisms.
     - The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain whil
+
+## 10. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
+- **Gemeinsame Prämissen:** WorldLines, embodied, explicitly, long-term, memory, observability, overwritten, partial
+- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
+- **Positionen:**
+    - The classification of translating long-term memory into embodied plans as a subproblem of partial observability and overwritten world states does not imply it i
+    - Translating long-term memory into embodied plans is a specific architectural sub-problem that arises when solving partial observability and overwritten world st
+    - Reactive policy benchmarks (e.g., recurrent neural networks, memory-augmented controllers) demonstrate that embodied AI agents can handle partial observability 
+    - WorldLines presents the translation of long-term memory into embodied plans as a mechanism to address partial observability and overwritten world states, not as
+    - The WorldLines framework explicitly treats partial observability and overwritten world states as environmental preconditions that motivate the need for translat
 
 ## 11. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 4 Positionen)
 - **Gemeinsame Prämissen:** DRAM, applications, design, innovative, lithography, logic, stitching, strategies
@@ -116,11 +116,11 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - High-NA EUV lithography can be applied to logic and DRAM without needing at-resolution field stitching through innovative design strategies.
 
 ## 12. Streitfrage — Thema „memory“ (3 Paar-Konflikte, 4 Positionen)
-- **Gemeinsame Prämissen:** —
+- **Gemeinsame Prämissen:** WorldLines, challenge, embodied, long-term, memory, observability, overwritten, partial
 - **Entscheidender fehlender Beleg:** 4/4 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
-    - Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and Execution
-    - LLM agents often follow a maximum-context-first strategy, re-reading files and dependencies they have already seen, which can turn a simple task like a one-line
-    - Reinforcement learning algorithms exhibit non-monotonic performance scaling with respect to data-regimes, contrary to simple performance rankings.
-    - Edge devices have limited memory resources, making quantization essential for deploying complex multimodal models.
+    - The WorldLines paper does not contain a standalone problem statement or section dedicated to 'translating long-term memory into embodied plans' as a fundamental
+    - WorldLines benchmarks aim to address the challenge of translating long-term memory into embodied plans to solve partial observability and overwritten world stat
+    - The phrase 'translating long-term memory into embodied plans' does not appear in any section heading of the WorldLines paper.
+    - In the paper's description of the benchmark, the subtask 'translating long-term memory into embodied plans' is always coupled with scenarios of partial observab
 

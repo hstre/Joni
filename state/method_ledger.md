@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 672 · 363 Methoden** — proposed 219 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 144  
+**Cycle 673 · 363 Methoden** — proposed 203 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 160  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -8,36 +8,20 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 |---|---|---|---|---|
 | Formalizzazione avanzata e rigorosa di un sistema di Rappresentazione della Cono | **proposed** | candidate | 0 | — |
 | S-AI-Recursive: A Bio-Inspired and Temporal Sparse AI Architecture for Iterative | **proposed** | candidate | 0 | — |
-| memory-dependent-as-a-lens | **proposed** | candidate | 0 | — |
-| maintaining-as-a-lens | **proposed** | candidate | 0 | — |
-| Long Short-Term Memory | **proposed** | candidate | 0 | — |
 | Ultrafast and memory-efficient alignment of short DNA sequences to the human gen | **proposed** | candidate | 0 | — |
 | HEFT: Heavy-Payload Full-size Humanoid Teleoperation with Privileged Motion Guid | **proposed** | candidate | 0 | — |
 | Morphing into Hybrid Attention Models | **proposed** | candidate | 0 | — |
-| mrflow-as-a-lens | **proposed** | candidate | 0 | — |
-| ResNet Architectures and Applications: A Practical Guide From Theoretical Optimi | **proposed** | candidate | 0 | — |
-| ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning | **proposed** | candidate | 0 | — |
-| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **proposed** | candidate | 0 | — |
-| ELiSE: A tool to support algorithmic design for HPC co-scheduling | **proposed** | candidate | 0 | — |
 | query-conditioned-as-a-lens | **proposed** | candidate | 0 | — |
-| DuoMem: Towards Capable On-Device Memory Agents via Dual-Space Distillation | **proposed** | candidate | 0 | — |
 | gatemem-as-a-lens | **proposed** | candidate | 0 | — |
-| AutoMem: Automated Learning of Memory as a Cognitive Skill | **proposed** | candidate | 0 | — |
 | distillation-as-a-lens | **proposed** | candidate | 0 | — |
 | Parameter-Efficient Quantum-Inspired Fast Weight Programmers for Traffic-Matrix  | **proposed** | candidate | 0 | — |
 | When Should Experience Become Parameters? Selection, Not Volume, Governs Online  | **proposed** | candidate | 0 | — |
 | multi-principal-as-a-lens | **proposed** | candidate | 0 | — |
-| ARTIFICIAL INTELLIGENCE AS A DRIVER OF BANKING SERVICES DEVELOPMENT: MODERN APPR | **proposed** | candidate | 0 | — |
 | quispe-colca-as-a-lens | **proposed** | candidate | 0 | — |
-| Scaling Laws for Grid-Based Approximate Nearest Neighbor Search in High Dimensio | **proposed** | candidate | 0 | — |
 | shared-memory-as-a-lens | **proposed** | candidate | 0 | — |
 | acceleration-as-a-lens | **proposed** | candidate | 0 | — |
-| Master Equation Revisited: Reflected Kähler Flow and the Viability Body. A singl | **proposed** | candidate | 0 | — |
-| Operator Geometries, Hankel Matrices, and the Transference of Computational Cons | **proposed** | candidate | 0 | — |
 | skills-as-a-lens | **proposed** | candidate | 0 | — |
-| github.com/phylyc/somatic_workflow/PhylogicNDT | **proposed** | candidate | 0 | — |
 | multi-objective-as-a-lens | **proposed** | candidate | 0 | — |
-| CVE-2026-14440: Cloudflare Universal SSL, CAA, RFC 8657, and the 2023 jabber.ru  | **proposed** | candidate | 0 | — |
 | effort-as-a-lens | **proposed** | candidate | 0 | — |
 | PEDAGOGICAL CONDITIONS FOR THE FORMATION OF COGNITIVE SKILLS IN PRESCHOOL CHILDR | **proposed** | candidate | 0 | — |
 | pitta-as-a-lens | **proposed** | candidate | 0 | — |
@@ -273,11 +257,15 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Two English Preprint Manuscripts on CODATA 2026 Central-Value Forecasts and CMB  | **retired** | rejected | 0 | — |
 | Polynomial equivalence of the global transverse-field Ising model and the gate m | **retired** | rejected | 0 | — |
 | AutoMem: Automated Learning of Memory as a Cognitive Skill | **retired** | rejected | 0 | — |
+| memory-dependent-as-a-lens | **retired** | rejected | 0 | — |
+| maintaining-as-a-lens | **retired** | rejected | 0 | — |
 | Women's Education from the Perspective of Islamic Philosophy of Education: Betwe | **retired** | rejected | 0 | — |
+| Long Short-Term Memory | **retired** | rejected | 0 | — |
 | Building to the Test: Coding Agents Deliver What You Check, Not What You Request | **retired** | rejected | 0 | — |
 | The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups | **retired** | rejected | 0 | — |
 | Grounded autonomous research: a fault-tolerant LLM pipeline from corpus to manus | **retired** | rejected | 0 | — |
 | Multi-Resolution Flow Matching: Training-Free Diffusion Acceleration via Staged  | **retired** | rejected | 0 | — |
+| mrflow-as-a-lens | **retired** | rejected | 0 | — |
 | WorldDirector: Building Controllable World Simulators with Persistent Dynamic Me | **retired** | rejected | 0 | — |
 | Alignment Is All You Need For X-to-4D Generation | **retired** | rejected | 0 | — |
 | AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
@@ -285,7 +273,19 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Static and Dynamic Geographical Distribution and the Spatial Construction of | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
 | Memory Models And Information Processing As Foundations Of Artificial Intelligen | **retired** | rejected | 0 | — |
+| ResNet Architectures and Applications: A Practical Guide From Theoretical Optimi | **retired** | rejected | 0 | — |
+| ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning | **retired** | rejected | 0 | — |
+| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **retired** | rejected | 0 | — |
+| ELiSE: A tool to support algorithmic design for HPC co-scheduling | **retired** | rejected | 0 | — |
+| DuoMem: Towards Capable On-Device Memory Agents via Dual-Space Distillation | **retired** | rejected | 0 | — |
+| AutoMem: Automated Learning of Memory as a Cognitive Skill | **retired** | rejected | 0 | — |
 | awesome-openclaw-usecases-as-a-lens | **retired** | rejected | 0 | — |
+| ARTIFICIAL INTELLIGENCE AS A DRIVER OF BANKING SERVICES DEVELOPMENT: MODERN APPR | **retired** | rejected | 0 | — |
+| Scaling Laws for Grid-Based Approximate Nearest Neighbor Search in High Dimensio | **retired** | rejected | 0 | — |
+| Master Equation Revisited: Reflected Kähler Flow and the Viability Body. A singl | **retired** | rejected | 0 | — |
+| Operator Geometries, Hankel Matrices, and the Transference of Computational Cons | **retired** | rejected | 0 | — |
+| github.com/phylyc/somatic_workflow/PhylogicNDT | **retired** | rejected | 0 | — |
+| CVE-2026-14440: Cloudflare Universal SSL, CAA, RFC 8657, and the 2023 jabber.ru  | **retired** | rejected | 0 | — |
 | From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **retired** | rejected | 0 | — |
 | FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |
 | Major-project-list | **retired** | rejected | 0 | — |
