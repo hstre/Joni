@@ -28,7 +28,41 @@ Bevor wir zusagen, wurde gemessen.
 
 ---
 
-## 1. Der Frame-Detector ist eine Stichwortliste
+## 0b. Zwei Wege — und welcher hier gemessen wurde
+
+Diese Unterscheidung ist für alles Folgende entscheidend und war in einer früheren Fassung dieses
+Berichts nicht sauber gezogen.
+
+**Vorgesehene Architektur (Alexandria):**
+
+```
+Text → LLM-Builder → SPL (P_r → H_norm / JSD → E0-E4) → ClaimCandidate → Protokoll / Layer 9
+```
+
+Der SPL ist ausdrücklich die *„Formal Bridge between Natural Language and Epistemic Protocol"*.
+**DESi bekommt in diesem Weg gar keinen Rohtext.** Die LLMs speisen den SPL, nicht DESi.
+
+**Was Joni tatsächlich fährt:**
+
+```
+Text → desi_semantics (FrameDetector + LogicalAuditor + Embedding) → Layer 9
+```
+
+Kein SPL. `analyse_pair(a_text=…, b_text=…)` nimmt Rohtext entgegen.
+
+Und `desi_semantics.py` benennt selbst, dass das ein **Notbetrieb** ist: `_alexandria_jsd()`
+versucht `from spl import compute_jsd` zu laden, `_general_projector()` gibt `None` zurück mit dem
+Kommentar *„None today, by honest finding … there is no general projector"*. Die Datei **wartet auf
+den SPL-Projektor** und läuft in dessen Abwesenheit auf Frames plus Embedding-Kosinus.
+
+> **Konsequenz für die Lektüre:** §1 und §3 messen den **Notbetrieb**, nicht die vorgesehene
+> Architektur. §4–§6b messen die vorgesehene Brücke. Das ist unten jeweils gekennzeichnet.
+
+---
+
+## 1. Der Frame-Detector — als Klassifikator getestet, was er nicht ist
+
+> *Gemessen wird hier Jonis Notbetrieb (§0b), nicht die vorgesehene Architektur.*
 
 `desi.frames.detector.FrameDetector` erkennt einen Frame auf genau zwei Wegen:
 
@@ -50,12 +84,27 @@ liefert der Detektor ausnahmslos `frame_undeclared` (confidence 0.0, *„no mark
 matched"*). Der `LogicalAuditor` liefert ausnahmslos `gap_detected` (*„no 'Therefore' marker
 found"*), weil er Argumentketten prüft, nicht freistehende Behauptungen.
 
-> **`frame_undeclared` ist nicht das Versagen des Detektors, sondern sein Normalfall.**
-> Für jeden Text außerhalb dieser 69 Wörter ist „unbekannt" die konstruktionsbedingte Antwort.
-
 Wichtig: Das ist **kein Domänenproblem**. Klinische Sätze („The patient has a fever of 39 degrees
 and elevated CRP") liefern dieselben Werte. Der Semantic Layer wurde nie für Klinik gebaut, nur
 dort eingebaut.
+
+### Korrektur: Rolle verfehlt
+
+Eine frühere Fassung schloss hieraus, der Detektor „messe nichts". **Das ist ein Urteil über eine
+Rolle, die er nicht hat.**
+
+Wenn Frames stromaufwärts vom Protokoll **deklariert** werden — und darauf deutet alles hin: die
+expliziten Marker suchen die wörtliche Zeichenkette `"frame: thermodynamic"` —, dann ist der
+Detektor ein **Leser von Deklarationen**, kein Rater. Die 69 Stichwörter sind dann ein Rückfall für
+undeklarierten Alttext, nicht der Hauptmechanismus. Ich habe ihn als Klassifikator getestet
+(Rohtext rein, Frame raus), also in einer Funktion, die im vorgesehenen Weg gar nicht vorkommt.
+
+**Was stehen bleibt:** In Jonis Verdrahtung *wird* er mit Rohtext gespeist, und dort liefert er
+konstruktionsbedingt für alles `frame_undeclared`. Das ist ein Befund über den Notbetrieb — nicht
+über den Detektor und nicht über DESi.
+
+> **`frame_undeclared` ist im Notbetrieb der Normalfall**, weil dort niemand Frames deklariert.
+> Das ist ein Symptom der fehlenden Brücke, nicht eines defekten Bauteils.
 
 ---
 
@@ -79,7 +128,12 @@ Die Kehrseite, unbequem formuliert:
 
 ---
 
-## 3. Die Widerspruchsregel ist defekt (43 % Falschmeldungen)
+## 3. Die Widerspruchsregel im Notbetrieb ist defekt (43 % Falschmeldungen)
+
+> *Gemessen wird hier Jonis Notbetrieb (§0b). Dieser Pfad umgeht den SPL — der Embedding-Kosinus
+> steht dort, wo Π/√JSD stehen sollten. Der Befund ist damit **keine** Aussage über die vorgesehene
+> Alexandria-Architektur, sondern darüber, was passiert, wenn man sie ohne Brücke betreibt. Er ist
+> trotzdem ernst: dieser Pfad läuft in Joni produktiv.*
 
 Sobald ein Embedding-Kanal verfügbar ist (`fastembed`, BAAI/bge-small-en-v1.5), *entscheidet*
 Layer 9 — und dann falsch.
@@ -129,6 +183,16 @@ einer Übereinstimmung nicht unterscheidbar — beide sind nah und negations-asy
 entscheidung, kein Nebenbefund. `decision.py` liegt übrigens **außerhalb** von `joni_core.lock`
 (gesperrt sind 17 Module direkt unter `desi_layer9/`, nicht das `semantics/`-Unterpaket) — dass
 ausgerechnet dort, wo die epistemischen Urteile fallen, der Schutz endet, ist selbst diskutabel.
+
+### Die naheliegendere Reihenfolge
+
+Alle drei hier gefundenen Defekte — Frame-*Rate*versuch (§1), Negations-Heuristik als
+Widerspruchsurteil (§3), Embedding statt Π/√JSD — sind Symptome **derselben** Ursache: der
+Notbetrieb tut, was der SPL tun sollte, mit Mitteln, die dafür nicht gedacht sind.
+
+Das legt eine andere Priorität nahe als „Widerspruchsregel patchen": **Joni auf den SPL-Pfad
+umstellen**, sobald ein kalibrierter Builder steht. Dann verschwindet die kaputte Regel nicht durch
+einen Flicken, sondern weil sie nicht mehr angesteuert wird.
 
 ---
 
@@ -316,14 +380,18 @@ An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
 | 4 | „npm install" | Verb im Kommandonamen ⇒ „Handlungsanweisung" |
 | 5 | `_polarity_clash` | Negationswort-Asymmetrie ⇒ „Widerspruch" |
 | 6 | `must` / `do not` / `-ing` | beschreibende Modalität ⇒ „Vorschrift" |
-| 7 | Frame-Detector | 69 Stichwörter ⇒ „Frame" |
+| 7 | Frame-Detector **im Notbetrieb** | 69 Stichwörter ⇒ „Frame" (§1: dort in einer Rolle, die er nicht hat) |
 | 8 | `clinical_spl._build_P_r` | ein Skalar ⇒ „Verteilung" |
 
 > **Eine lexikalische Regel kann ein semantisches Urteil nicht tragen.**
 > Und: Ein reicher Formalismus über einer dünnen Eingabe misst die Eingabe, nicht die Welt.
 
-Nr. 7 und 8 sind die eigentlich schmerzhaften — sie stehen nicht in der Peripherie, sondern im
-Fundament. Was sechsmal an den Rändern gefunden wurde, ist die Bauweise des Kerns.
+Nr. 8 ist die schmerzhafteste — sie steht nicht in der Peripherie, sondern im Fundament der
+*vorgesehenen* Architektur. Nr. 7 relativiert sich nach der Korrektur in §1: dort ist die
+Stichwortliste ein Rückfall, den erst der Notbetrieb zur Hauptsache macht.
+
+Die Nummern 1–6 teilen sich denselben Ursprung: **wo eine semantische Messung fehlt, tritt eine
+lexikalische Regel an ihre Stelle** — und niemand merkt es, weil sie plausible Ausgaben liefert.
 
 **Und die Gegenrichtung:** Einmal wurde zu früh in die andere Richtung geschlossen — aus vier
 Sätzen mit `H_norm = 0` wurde „der Kanal ist tot" gefolgert. Alle vier waren auf Relationsebene
@@ -334,17 +402,21 @@ Beide Fehler haben dieselbe Wurzel: Urteil auf zu wenig Daten.
 
 ## 9. Gesamturteil
 
-**DESi ist kein Fail — aber es war bis heute kein Messinstrument.**
+**DESi ist kein Fail. Die Brücke fehlt — und wo sie fehlt, wird improvisiert.**
 
-| Ebene | Status |
-|---|---|
-| Governance-Architektur (Modelle schlagen vor, Regeln entscheiden, bei Nichtmessbarkeit verweigern) | **funktioniert, unter echtem Test bestätigt** |
-| Ledger, Provenienz, Lock, `verify` | funktioniert |
-| SPL-Formalismus (JSD, H_norm, E0–E4) | korrekt und brauchbar |
-| Frame-/Logic-Layer | **misst nichts** auf freistehenden Behauptungen |
-| Widerspruchsregel | **defekt** (43 % Falschmeldungen) |
-| π(s) / Projektor | gebaut und lauffähig — aber **modellabhängig, nicht textabhängig** (§6b) |
-| E0 (strukturelle Zurückweisung) | funktioniert, im Gegentest bestätigt |
+| Ebene | Weg | Status |
+|---|---|---|
+| Governance-Architektur (Modelle schlagen vor, Regeln entscheiden, bei Nichtmessbarkeit verweigern) | beide | **funktioniert, unter echtem Test bestätigt** |
+| Ledger, Provenienz, Lock, `verify` | beide | funktioniert |
+| SPL-Formalismus (JSD, H_norm, E0–E4) | vorgesehen | korrekt und brauchbar |
+| E0 (strukturelle Zurückweisung) | vorgesehen | funktioniert, im Gegentest bestätigt |
+| π(s) / Projektor | vorgesehen | **fehlte**; gebaut und lauffähig, aber **modellabhängig** (§6b) |
+| Frame-Detector als Klassifikator | Notbetrieb | Rolle verfehlt — er liest Deklarationen (§1) |
+| Widerspruchsregel (Embedding + Negations-Heuristik) | Notbetrieb | **defekt**, 43 % Falschmeldungen (§3) |
+
+Die beiden „defekt"-Zeilen betreffen **den Notbetrieb, nicht die vorgesehene Architektur**. Sie sind
+trotzdem ernst, weil Joni diesen Pfad produktiv fährt. Und sie haben eine gemeinsame Ursache: ohne
+Brücke muss etwas anderes deren Arbeit tun.
 
 **Die entscheidende Einschränkung:** Der Builder liefert ein Ergebnis, aber `H_norm` misst die
 Entschiedenheit des Modells, nicht die Mehrdeutigkeit des Textes. Mit zwei unabhängigen Buildern
@@ -380,7 +452,8 @@ epistemische Berechtigung abbildet.** Weder der Frame-Layer, noch `H_norm`, noch
    Irrtum (Granites `prevents` statt `causes`) passiert die Kette ungebremst.
 
 4. **Der `_polarity_clash`-Fix** (66 → 0 Falschmeldungen, aber Verlust des einen echten
-   Widerspruchs): *anwenden? Er betrifft Jonis Konfliktbildung und AleXiona mit.*
+   Widerspruchs): *anwenden — oder überspringen?* Da der Defekt im Notbetrieb sitzt (§0b), wäre die
+   Alternative, Joni auf den SPL-Pfad umzustellen, statt die Umgehung zu flicken. *Was zuerst?*
 
 5. **Governance-Zuschnitt:** `desi_layer9/semantics/` — wo die epistemischen Urteile fallen — liegt
    außerhalb des Schutz-Locks. *Sollte es hinein?*
