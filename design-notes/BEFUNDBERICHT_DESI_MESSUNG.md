@@ -334,10 +334,54 @@ nicht. Und die Builderqualität wird nirgends gemessen. Die Zwei-Builder-JSD kan
 weil zwei schwache Builder sich auch einig sein können.
 
 **Ehrliche Asymmetrie:** Granite 4.1-8b (8 Mrd. Parameter) ist deutlich kleiner als
-`deepseek-v4-pro`. Der Unterschied kann Modellgrösse sein statt Anbieter — das ist kein
-grössenkontrollierter Vergleich. Grössere Granite-Versionen bietet OpenRouter nicht an
-(verfügbar sind nur `granite-4.0-h-micro` und `granite-4.1-8b`). Aber genau das ist der Punkt: wenn
-die Messung von der Modellgüte abhängt, ist sie keine Eigenschaft des Textes.
+`deepseek-v4-pro`. Der Unterschied könnte Modellgrösse sein statt Anbieter. → **Kontrolliert in
+§6c.**
+
+---
+
+## 6c. Kontrollversuch: es ist **kein** Grösseneffekt
+
+Um den Confound aus §6b zu trennen, derselbe Testsatz mit `deepseek-v4-flash` — **klein, aber
+dieselbe Familie**. Damit variiert nur die Grösse, nicht der Anbieter.
+
+| | **flash** (klein, DeepSeek) | **granite** (klein, IBM) | **pro** (gross, DeepSeek) |
+|---|---|---|---|
+| Relation korrekt (scharf) | **4/4** | 3/4 | 4/4 |
+| `H_norm` bei **scharf** | **0.000** ✓ | 0.650 ✗ | 0.000 ✓ |
+| `H_norm` bei **mehrdeutig** | **0.878** ✓ | 0.252 ✗ | 0.382 ✓ |
+| illegale Masse (`p_illegal`) | **0.000** | 0.127 (bis 0.889) | — |
+| JSD gegen `pro` | **Ø 0.070** (max 0.269) | Ø 0.508 (max 1.000) | — |
+
+**Die Inversion ist kein Grösseneffekt.** `deepseek-v4-flash` ist ebenfalls klein und verhält sich
+vollständig korrekt: null Entropie bei scharfen Aussagen, hohe bei mehrdeutigen, keine einzige
+Antwort ausserhalb des Relationsraums — und es trifft auch den Satz, den Granite invertiert hatte
+(`causes` statt `prevents`).
+
+Der Confound ist damit aufgelöst, aber anders als vermutet: **es liegt am konkreten Modell, nicht an
+der Kapazität.**
+
+### Was daraus für „einfach das bessere Modell nehmen" folgt
+
+Der Vorschlag wird **gestützt**, mit einer präzisen Auflage.
+
+*Gute Nachricht:* Es gibt keine Kapazitätsschwelle, die erst erklommen werden müsste. Ein kleines,
+billiges Modell reicht — Flash ist hier so gut wie Pro und in einem Punkt besser: bei „Vitamin D may
+reduce fracture risk" ist **Pro fälschlich sicher** (H=0.000 → E1 emittieren), während Flash die
+Mehrdeutigkeit korrekt sieht (H=0.991 → E3 blockieren).
+
+*Die Auflage:* **Eignung ist nicht aus Grösse oder Ruf ableitbar.** Granite-8b und Flash sind beide
+„klein"; eines funktioniert, das andere invertiert. „Das bessere Modell nehmen" ist richtig — aber
+„besser" muss **pro Modell gemessen** werden, nicht geschätzt. Ein Builder-Eignungstest gegen einen
+Gold-Standard wird damit ein **Pflichtschritt vor dem Einsatz**, kein optionaler.
+
+### Zwei Bestätigungen nebenbei
+
+- **Die Grenzfall-Instabilität (§6) bleibt.** „Vitamin D may reduce fracture risk" ist derselbe
+  Satz, der im Stabilitätslauf zwischen E2 und E3 sprang. Hier gibt Pro H=0.000, in früheren Läufen
+  0.35–0.97 — dasselbe Modell, derselbe Satz, verschiedene Ergebnisse.
+- **`H_norm` ≠ Berechtigung, jetzt an drei Modellen.** „The approach seems promising" → alle drei
+  geben H=0.000 und `has_property`. Alle sind sicher bei einer Aussage ohne Gehalt. **Kein
+  Modellwechsel behebt das**, weil es kein Modellproblem ist.
 
 ---
 
@@ -445,11 +489,15 @@ epistemische Berechtigung abbildet.** Weder der Frame-Layer, noch `H_norm`, noch
    **und nicht modellinvariant** (§6b: `H_norm` kehrt zwischen Anbietern das Vorzeichen um).
    *Ist die Sampling-Konstruktion überhaupt legitim? Wären Logprobs der bessere Weg?*
 
-3b. **Die härteste Frage, die aus §6b folgt:** Wenn die Messung von der Builderqualität abhängt —
-   **woran misst man den Builder?** Ein Gold-Standard für Relationszuordnungen wäre nötig, aber
-   dann ist der Gold-Standard das Instrument und der Builder nur seine Näherung. Die
-   Zwei-Builder-JSD löst es nicht: zwei schwache Builder können sich einig sein, und gemeinsamer
-   Irrtum (Granites `prevents` statt `causes`) passiert die Kette ungebremst.
+3b. **Die härteste Frage, die aus §6b/§6c folgt:** Die Messung hängt vom Builder ab, und Eignung ist
+   **nicht** aus Grösse ableitbar (§6c) — sie muss pro Modell gemessen werden. Also:
+   **woran misst man den Builder?** Ein Gold-Standard für Relationszuordnungen ist machbar
+   (linguistische Annotationsaufgabe, Menschen können sich einigen) — aber dann ist der
+   Gold-Standard das Instrument und der Builder nur seine Näherung. Die Zwei-Builder-JSD löst es
+   nicht: zwei schwache Builder können sich einig sein, und gemeinsamer Irrtum (Granites
+   `prevents` statt `causes`) passiert die Kette ungebremst.
+   *Konkret machbar wäre: 40–60 handannotierte Sätze als Eignungstest, den jeder Builder vor dem
+   Einsatz bestehen muss — und dessen Ergebnis mit der Builder-ID versiegelt wird.*
 
 4. **Der `_polarity_clash`-Fix** (66 → 0 Falschmeldungen, aber Verlust des einen echten
    Widerspruchs): *anwenden — oder überspringen?* Da der Defekt im Notbetrieb sitzt (§0b), wäre die

@@ -1,4 +1,4 @@
-"""Granite gegen DeepSeek: misst das Instrument den Text - oder das Modell?
+"""Builder-Vergleich: misst das Instrument den Text - oder das Modell?
 
 Bisher waren beide Builder aus derselben Familie (deepseek-v4-pro / -flash). Wenn JSD(alpha, beta)
 etwas über die *Aussage* sagen soll und nicht über die Modellwahl, muss sich das an wirklich
@@ -14,12 +14,15 @@ Drei Fragen:
 3. **Cross-Vendor-JSD.** Ist die Divergenz zwischen Häusern grösser als innerhalb einer Familie?
    Falls ja, wäre E4 (BRANCH_CANDIDATE) mit Geschwister-Buildern systematisch zu blind.
 
-**Ehrliche Asymmetrie:** Granite 4.1-8b ist mit 8B Parametern deutlich kleiner als deepseek-v4-pro.
-Ein Unterschied im Ergebnis kann Modellgrösse sein, nicht Anbieter. Das ist kein grössen-
-kontrollierter Vergleich und wird auch nicht als solcher berichtet.
+**Der Confound und seine Kontrolle.** Granite 4.1-8b ist deutlich kleiner als deepseek-v4-pro - ein
+Unterschied kann Modellgrösse sein statt Anbieter. Deshalb ist ``BUILDER_B`` umschaltbar:
+``granite`` misst ueber Anbietergrenzen, ``beta`` (deepseek-v4-flash) ist die **Kontrolle** -
+kleines Modell, aber dieselbe Familie. Zeigt beta dieselbe H_norm-Inversion, ist es ein Groessen-
+und kein Anbietereffekt.
 """
 from __future__ import annotations
 
+import os
 import statistics
 import sys
 from pathlib import Path
@@ -30,6 +33,12 @@ import spl_builder as sb  # noqa: E402
 from spl import EmissionEngine  # noqa: E402
 
 N = 9
+
+#: Welcher Builder gegen die Referenz (deepseek-v4-pro) geprüft wird. `granite` misst über
+#: Anbietergrenzen, `beta` (deepseek-v4-flash) ist die **Kontrolle**: kleines Modell, aber
+#: dieselbe Familie. Zeigt beta dieselbe H_norm-Inversion wie granite, ist es ein Grössen-,
+#: kein Anbietereffekt - und der Confound aus dem Granite-Lauf ist aufgelöst.
+BUILDER_B = os.getenv("BUILDER_B", "granite")
 
 CASES = [
     ("A surface-code qubit needs many physical qubits per logical one.", "scharf", "requires"),
@@ -50,13 +59,13 @@ def _proj(text: str, builder: str):
 
 
 def main() -> int:
-    print(f"Granite ({sb.BUILDERS['granite']}) vs DeepSeek ({sb.BUILDERS['alpha']}), "
+    print(f"B = {BUILDER_B} ({sb.BUILDERS[BUILDER_B]})  vs  A = alpha ({sb.BUILDERS['alpha']}), "
           f"n={N} Ziehungen\n")
     agree_crisp = total_crisp = 0
     jsd_cross: list[float] = []
     rows = []
     for text, kind, expected in CASES:
-        g = _proj(text, "granite")
+        g = _proj(text, BUILDER_B)
         d = _proj(text, "alpha")
         jsd = sb.compute_jsd(g.P_r, d.P_r) if (g.P_r and d.P_r) else float("nan")
         jsd_cross.append(jsd)
@@ -71,17 +80,17 @@ def main() -> int:
             ok_g = "✓" if gdom == expected else "✗"
             ok_d = "✓" if ddom == expected else "✗"
             print(f"    erwartet: {expected}")
-            print(f"    granite : {gdom:<16} {ok_g}  H={g.h_norm:.3f}  "
+            print(f"    B  {BUILDER_B:<8}: {gdom:<16} {ok_g}  H={g.h_norm:.3f}  "
                   f"{ {k: round(v, 2) for k, v in g.P_r.items()} }  p_ill={g.p_illegal}")
-            print(f"    deepseek: {ddom:<16} {ok_d}  H={d.h_norm:.3f}  "
+            print(f"    A  alpha   : {ddom:<16} {ok_d}  H={d.h_norm:.3f}  "
                   f"{ {k: round(v, 2) for k, v in d.P_r.items()} }")
         else:
-            print(f"    granite : H={g.h_norm:.3f}  "
+            print(f"    B  {BUILDER_B:<8}: H={g.h_norm:.3f}  "
                   f"{ {k: round(v, 2) for k, v in g.P_r.items()} }  p_ill={g.p_illegal}")
-            print(f"    deepseek: H={d.h_norm:.3f}  "
+            print(f"    A  alpha   : H={d.h_norm:.3f}  "
                   f"{ {k: round(v, 2) for k, v in d.P_r.items()} }")
-        print(f"    Regel granite={g.emission_rule.value if g.emission_rule else '-'} · "
-              f"deepseek={d.emission_rule.value if d.emission_rule else '-'} · "
+        print(f"    Regel B={g.emission_rule.value if g.emission_rule else '-'} · "
+              f"A={d.emission_rule.value if d.emission_rule else '-'} · "
               f"cross-JSD={jsd:.3f}")
         print()
 
@@ -90,16 +99,16 @@ def main() -> int:
     crisp_h = [(r[3].h_norm, r[4].h_norm) for r in rows if r[1] == "scharf"]
     amb_h = [(r[3].h_norm, r[4].h_norm) for r in rows if r[1] == "mehrdeutig"]
     if crisp_h:
-        print(f"H_norm scharf     - granite Ø {statistics.fmean(h for h, _ in crisp_h):.3f} · "
-              f"deepseek Ø {statistics.fmean(d for _, d in crisp_h):.3f}")
+        print(f"H_norm scharf     - B({BUILDER_B}) Ø "
+              f"{statistics.fmean(h for h, _ in crisp_h):.3f} · "
+              f"A(alpha) Ø {statistics.fmean(d for _, d in crisp_h):.3f}")
     if amb_h:
-        print(f"H_norm mehrdeutig - granite Ø {statistics.fmean(h for h, _ in amb_h):.3f} · "
-              f"deepseek Ø {statistics.fmean(d for _, d in amb_h):.3f}")
+        print(f"H_norm mehrdeutig - B({BUILDER_B}) Ø {statistics.fmean(h for h, _ in amb_h):.3f} · "
+              f"A(alpha) Ø {statistics.fmean(d for _, d in amb_h):.3f}")
     valid = [j for j in jsd_cross if j == j]
     if valid:
-        print(f"cross-vendor JSD  - Ø {statistics.fmean(valid):.3f} · max {max(valid):.3f}")
-    print(f"illegale Masse    - granite Ø "
-          f"{statistics.fmean(r[3].p_illegal for r in rows):.3f}")
+        print(f"JSD(A,B)          - Ø {statistics.fmean(valid):.3f} · max {max(valid):.3f}")
+    print(f"illegale Masse B  - Ø {statistics.fmean(r[3].p_illegal for r in rows):.3f}")
     return 0
 
 

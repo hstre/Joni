@@ -1,0 +1,47 @@
+B = beta (deepseek-v4-flash)  vs  A = alpha (deepseek-v4-pro), n=9 Ziehungen
+
+[scharf    ] A surface-code qubit needs many physical qubits per logi
+    erwartet: requires
+    B  beta    : requires         ✓  H=0.000  {'requires': 1.0}  p_ill=0.0
+    A  alpha   : requires         ✓  H=0.000  {'requires': 1.0}
+    Regel B=E1 · A=E1 · cross-JSD=0.000
+
+[scharf    ] Smoking is associated with lung cancer.
+    erwartet: correlates_with
+    B  beta    : correlates_with  ✓  H=0.000  {'correlates_with': 1.0}  p_ill=0.0
+    A  alpha   : correlates_with  ✓  H=0.000  {'correlates_with': 1.0}
+    Regel B=E1 · A=E1 · cross-JSD=0.000
+
+[scharf    ] Loading a glibc-linked binary wheel inside Alpine raises
+    erwartet: causes
+    B  beta    : causes           ✓  H=0.000  {'causes': 1.0}  p_ill=0.0
+    A  alpha   : causes           ✓  H=0.000  {'causes': 1.0}
+    Regel B=E1 · A=E1 · cross-JSD=0.000
+
+[scharf    ] Avoid binary wheels on Alpine.
+    erwartet: recommends
+    B  beta    : recommends       ✓  H=0.000  {'recommends': 1.0}  p_ill=0.0
+    A  alpha   : recommends       ✓  H=0.000  {'recommends': 1.0}
+    Regel B=E1 · A=E1 · cross-JSD=0.000
+
+[mehrdeutig] Vitamin D supplementation may reduce fracture risk in th
+    B  beta    : H=0.991  {'prevents': 0.56, 'causes': 0.44}  p_ill=0.0
+    A  alpha   : H=0.000  {'prevents': 1.0}
+    Regel B=E3 · A=E1 · cross-JSD=0.269
+
+[mehrdeutig] Regular exercise is good for cardiovascular health.
+    B  beta    : H=0.764  {'supports': 0.78, 'enables': 0.22}  p_ill=0.0
+    A  alpha   : H=0.764  {'supports': 0.78, 'causes': 0.22}
+    Regel B=E3 · A=E3 · cross-JSD=0.222
+
+[leer      ] The approach seems promising.
+    B  beta    : H=0.000  {'has_property': 1.0}  p_ill=0.0
+    A  alpha   : H=0.000  {'has_property': 1.0}
+    Regel B=E1 · A=E1 · cross-JSD=0.000
+
+========================================================================
+Einigkeit bei scharfen Aussagen: 4/4
+H_norm scharf     - B(beta) Ø 0.000 · A(alpha) Ø 0.000
+H_norm mehrdeutig - B(beta) Ø 0.878 · A(alpha) Ø 0.382
+JSD(A,B)          - Ø 0.070 · max 0.269
+illegale Masse B  - Ø 0.000
