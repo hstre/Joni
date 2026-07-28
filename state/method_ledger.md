@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 673 · 363 Methoden** — proposed 203 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 160  
+**Cycle 674 · 363 Methoden** — proposed 187 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 176  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -11,36 +11,20 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | Ultrafast and memory-efficient alignment of short DNA sequences to the human gen | **proposed** | candidate | 0 | — |
 | HEFT: Heavy-Payload Full-size Humanoid Teleoperation with Privileged Motion Guid | **proposed** | candidate | 0 | — |
 | Morphing into Hybrid Attention Models | **proposed** | candidate | 0 | — |
-| query-conditioned-as-a-lens | **proposed** | candidate | 0 | — |
-| gatemem-as-a-lens | **proposed** | candidate | 0 | — |
-| distillation-as-a-lens | **proposed** | candidate | 0 | — |
 | Parameter-Efficient Quantum-Inspired Fast Weight Programmers for Traffic-Matrix  | **proposed** | candidate | 0 | — |
 | When Should Experience Become Parameters? Selection, Not Volume, Governs Online  | **proposed** | candidate | 0 | — |
-| multi-principal-as-a-lens | **proposed** | candidate | 0 | — |
-| quispe-colca-as-a-lens | **proposed** | candidate | 0 | — |
 | shared-memory-as-a-lens | **proposed** | candidate | 0 | — |
 | acceleration-as-a-lens | **proposed** | candidate | 0 | — |
 | skills-as-a-lens | **proposed** | candidate | 0 | — |
 | multi-objective-as-a-lens | **proposed** | candidate | 0 | — |
 | effort-as-a-lens | **proposed** | candidate | 0 | — |
-| PEDAGOGICAL CONDITIONS FOR THE FORMATION OF COGNITIVE SKILLS IN PRESCHOOL CHILDR | **proposed** | candidate | 0 | — |
 | pitta-as-a-lens | **proposed** | candidate | 0 | — |
-| Pre-Geometric Information Networks versus String Theory as Foundations for Emerg | **proposed** | candidate | 0 | — |
 | sadhaka-as-a-lens | **proposed** | candidate | 0 | — |
-| Cutting-Edge Cybersecurity Methods for Protecting IoT-Based Networks and Devices | **proposed** | candidate | 0 | — |
 | bids-validator | **proposed** | candidate | 0 | — |
 | mex | **proposed** | candidate | 0 | — |
 | nassl-as-a-lens | **proposed** | candidate | 0 | — |
-| The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the  | **proposed** | candidate | 0 | — |
-| EFFECTIVENESS OF INTEGRATED SOCIAL WELFARE DATA CONTROL (DTKS) IN REALIZED TARGE | **proposed** | candidate | 0 | — |
 | VLA-Corrector: Lightweight Detect-and-Correct Inference for Adaptive Action Hori | **proposed** | candidate | 0 | — |
 | adaptive-as-a-lens | **proposed** | candidate | 0 | — |
-| IMPLEMENTATION OF THE ONE DATA INDONESIA POLICY IN MINAHASA REGENCY | **proposed** | candidate | 0 | — |
-| Interpretation-Oriented Cloud Removal via Observation-Anchored Residual Flow wit | **proposed** | candidate | 0 | — |
-| MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question A | **proposed** | candidate | 0 | — |
-| A Multidimensional Cybercrime Annotation Dataset for a Closed-Access Russian–Eng | **proposed** | candidate | 0 | — |
-| Trust and Performance Data | **proposed** | candidate | 0 | — |
-| From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **proposed** | candidate | 0 | — |
 | rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | hacking-as-a-lens | **proposed** | candidate | 0 | — |
 | GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation | **proposed** | candidate | 0 | — |
@@ -277,17 +261,33 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning | **retired** | rejected | 0 | — |
 | From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **retired** | rejected | 0 | — |
 | ELiSE: A tool to support algorithmic design for HPC co-scheduling | **retired** | rejected | 0 | — |
+| query-conditioned-as-a-lens | **retired** | rejected | 0 | — |
 | DuoMem: Towards Capable On-Device Memory Agents via Dual-Space Distillation | **retired** | rejected | 0 | — |
+| gatemem-as-a-lens | **retired** | rejected | 0 | — |
 | AutoMem: Automated Learning of Memory as a Cognitive Skill | **retired** | rejected | 0 | — |
+| distillation-as-a-lens | **retired** | rejected | 0 | — |
 | awesome-openclaw-usecases-as-a-lens | **retired** | rejected | 0 | — |
+| multi-principal-as-a-lens | **retired** | rejected | 0 | — |
 | ARTIFICIAL INTELLIGENCE AS A DRIVER OF BANKING SERVICES DEVELOPMENT: MODERN APPR | **retired** | rejected | 0 | — |
+| quispe-colca-as-a-lens | **retired** | rejected | 0 | — |
 | Scaling Laws for Grid-Based Approximate Nearest Neighbor Search in High Dimensio | **retired** | rejected | 0 | — |
 | Master Equation Revisited: Reflected Kähler Flow and the Viability Body. A singl | **retired** | rejected | 0 | — |
 | Operator Geometries, Hankel Matrices, and the Transference of Computational Cons | **retired** | rejected | 0 | — |
 | github.com/phylyc/somatic_workflow/PhylogicNDT | **retired** | rejected | 0 | — |
 | CVE-2026-14440: Cloudflare Universal SSL, CAA, RFC 8657, and the 2023 jabber.ru  | **retired** | rejected | 0 | — |
+| PEDAGOGICAL CONDITIONS FOR THE FORMATION OF COGNITIVE SKILLS IN PRESCHOOL CHILDR | **retired** | rejected | 0 | — |
+| Pre-Geometric Information Networks versus String Theory as Foundations for Emerg | **retired** | rejected | 0 | — |
+| Cutting-Edge Cybersecurity Methods for Protecting IoT-Based Networks and Devices | **retired** | rejected | 0 | — |
+| The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the  | **retired** | rejected | 0 | — |
+| EFFECTIVENESS OF INTEGRATED SOCIAL WELFARE DATA CONTROL (DTKS) IN REALIZED TARGE | **retired** | rejected | 0 | — |
+| IMPLEMENTATION OF THE ONE DATA INDONESIA POLICY IN MINAHASA REGENCY | **retired** | rejected | 0 | — |
+| Interpretation-Oriented Cloud Removal via Observation-Anchored Residual Flow wit | **retired** | rejected | 0 | — |
+| MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question A | **retired** | rejected | 0 | — |
+| A Multidimensional Cybercrime Annotation Dataset for a Closed-Access Russian–Eng | **retired** | rejected | 0 | — |
+| Trust and Performance Data | **retired** | rejected | 0 | — |
 | From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **retired** | rejected | 0 | — |
 | FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |
+| From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **retired** | rejected | 0 | — |
 | Major-project-list | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **retired** | rejected | 0 | — |
