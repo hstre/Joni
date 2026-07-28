@@ -152,6 +152,14 @@ def capabilities() -> dict:
             "verdict_variance_k5_with_split": (
                 "6/9 to 9/9 across 4 runs; violations 4/7 to 7/7. Splitting fixed a dangerous "
                 "defect but did NOT narrow the band — the split step adds its own variance."),
+            "fixed_defect_evidence_padding": (
+                "irrelevant evidence with a universal quantifier used to raise the aggregate "
+                "and flip a claim to 'entailed' — more evidence was monotonically better. "
+                "Relevance now requires entity overlap, not just a matching relation. Since a "
+                "generator picks its own evidence ids, this was exploitable."),
+            "known_gap_missing_evidence": (
+                "the auditor checks whether the CITED evidence carries the claim; it cannot see "
+                "relevant evidence that was NOT cited"),
             "fixed_defect_false_entailed": (
                 "before proposition splitting, a compound claim was normalised to its FIRST "
                 "conjunct only — a claim explicitly denying X could be reported 'entailed' by "

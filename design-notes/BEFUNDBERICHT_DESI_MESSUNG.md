@@ -724,6 +724,64 @@ gebaut.
 
 ---
 
+## 7g. Kostenweiche — und eine ausnutzbare Lücke, die das k*-Paper aufgedeckt hat
+
+### Die Vorprüfung
+
+`maybe_compound()` — deterministisch, kein Modellaufruf, vor der Zerlegung. Zweck: nur verdächtige
+Aussagen in den teuren Pfad schicken.
+
+Sie ist bewusst **übertriggernd** eingestellt, und das ist die *Umkehrung* der Lehre aus §8: dort
+stand eine Wortregel für ein **Urteil**, hier nur für eine **Kostenweiche**. Falsch positiv kostet
+k Aufrufe (der Splitter gibt korrekt eine Proposition zurück), falsch negativ bringt den
+gefährlichsten Fehler des Systems zurück. Asymmetrische Fehlerkosten rechtfertigen hier eine
+lexikalische Regel — anderswo nicht.
+
+**Die erste Fassung war wertlos.** 9/9 auf Kontrollfällen, die ich *selbst geschrieben* hatte —
+und auf echter MSCE-Ausgabe liess sie **5 von 8** Konjunktionen durch. Übersehen war die häufigste
+Bauform überhaupt: **Komma + Partizip**, das eine zweite Proposition anhängt:
+
+```
+"…filter out all candidates, CAUSING an empty output"
+"…fails to parse it, RESULTING IN zero generation"
+"…has final say over claims, REJECTING proposals deemed insufficient"
+```
+
+> Selbstgeschriebene Testfälle prüfen das eigene Modell der Sache, nicht die Sache.
+
+**Nach dem Fix ist sie sicher — spart aber kaum:** 16 von 18 echten L3-Einträgen gehen weiterhin in
+die Zerlegung, gespart werden **2 (11 %)**. Das ist ein Befund über die *Daten*: echte L3-Einträge
+sind fast immer zusammengesetzt. Genau deshalb war der Konjunktionsfehler so gravierend — und der
+Kostentreiber ist die Datenform, nicht der Splitter.
+
+### Die Lücke: Evidenz-Auffüllen
+
+Das k*-Paper (Rentschler, Juli 2026) behauptet: *mehr Kontext ist nicht monoton besser*. Das hat
+einen Test ausgelöst, auf den ich sonst nicht gekommen wäre:
+
+```
+Claim: "Binary wheels fail on all musl systems."
+  nur relevanter Beleg                        →  compatible_not_entailed   ✓
+  + "Every container image has a base layer."
+  + "All package managers have a cache."      →  ENTAILED                  ✗
+```
+
+Zwei **völlig unverwandte** Belege mit universellem Quantor kippten das Urteil. Ursache: die Regeln
+nehmen das **Maximum** über die Belege, und der Relevanzfilter prüfte nur die *Relation*, nicht die
+*Entitäten*. Damit war **mehr Evidenz monoton besser** — und da ein L3-Generator seine
+`evidenceIds` selbst wählt, ist das eine **ausnutzbare Fläche**, kein Randfall.
+
+Der Mechanismus ist ein anderer als im Paper (kein Kontextfenster, sondern max-Aggregation in den
+Regeln), die Form des Problems ist dieselbe.
+
+**Behoben:** Relevanz verlangt jetzt zusätzlich Entitätsbezug. Verifiziert — das Auffüllen wirkt
+nicht mehr. Regression: 3 Läufe, alle 8/9 (Verstösse 7/7, 6/7, 6/7). Nur drei Läufe.
+
+**Offen bleibt die Umkehrung:** fehlende *relevante* Evidenz erkennt der Auditor weiterhin nicht
+(§10.7). Er prüft, ob das Zitierte trägt — nicht, ob das Nichtzitierte widerspräche.
+
+---
+
 ## 8. Das Meta-Muster — der wichtigste Befund
 
 An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
@@ -740,6 +798,8 @@ An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
 | 8 | `clinical_spl._build_P_r` | ein Skalar ⇒ „Verteilung" |
 | 9 | Entailment-Parser (§7d) | „failed" ⇒ „negiert" — negative Valenz als Verneinung gelesen |
 | **10** | **Entailment-Schema (§7f)** | **Konjunktion ⇒ erster Konjunkt; der Rest fällt weg — kein lexikalischer, sondern ein REPRÄSENTATIONALER Fehler** |
+| 11 | Vorprüfung (§7g) | Marker-Liste aus selbst geschriebenen Testfällen ⇒ 5 von 8 echten Konjunktionen durchgelassen |
+| **12** | **Relevanzfilter (§7g)** | **Relationsgleichheit ohne Entitätsbezug ⇒ Evidenz-Auffüllen macht jeden Claim `entailed` — AUSNUTZBAR** |
 
 > **Eine lexikalische Regel kann ein semantisches Urteil nicht tragen.**
 > Und: Ein reicher Formalismus über einer dünnen Eingabe misst die Eingabe, nicht die Welt.

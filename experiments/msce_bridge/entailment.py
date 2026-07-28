@@ -31,6 +31,7 @@ Belege tragen ihn nicht vollständig* — eine Aussage über die Ableitung, nich
 from __future__ import annotations
 
 import os
+import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -144,6 +145,47 @@ Return JSON exactly: {"propositions": ["...", "..."]}"""
 K_DRAWS = int(os.getenv("ENTAIL_K", "5"))
 
 
+#: Koordinationsmarker, die auf eine zusammengesetzte Aussage hindeuten KÖNNEN.
+#
+# Die erste Fassung traf 9/9 auf selbst geschriebenen Kontrollfällen und liess auf ECHTER
+# MSCE-Ausgabe 5 von 8 Konjunktionen durch. Übersehen war die häufigste Bauform überhaupt:
+# **Komma + Partizip**, das eine zweite Proposition anhängt —
+#   "…filter out all candidates, CAUSING an empty output"
+#   "…fails to parse it, RESULTING IN zero generation"
+#   "…has final say over claims, REJECTING proposals deemed insufficient"
+# dazu disjunktive Subjektlisten mit "or". Die selbst geschriebenen Testfälle prüften nur das
+# eigene Modell der Sache, nicht die Sache.
+_COMPOUND_MARKERS = re.compile(
+    r"(;"
+    r"|\band\b|\bor\b|\bbut\b|\bwhile\b|\bwhereas\b|\bas well as\b|\bmoreover\b|\balso\b"
+    r"|,\s*(no|not|nor|which|who|whose|and|but|or)\b"
+    r"|,\s*\w*ing\b"                     # ", causing" / ", leading to" / ", rejecting"
+    r"|\bresulting in\b|\bleading to\b|\bthereby\b"
+    r"|\bthey\b|\bit\b\s+\w+s\b)", re.I)
+
+
+def maybe_compound(text: str) -> bool:
+    """Billige, deterministische Vorprüfung: KÖNNTE diese Aussage zusammengesetzt sein?
+
+    Zweck ist reine Kostenersparnis (§7f/§8 des Befundberichts): die Zerlegung kostet k
+    Modellaufrufe je Aussage, und die grosse Mehrheit der Aussagen ist atomar. Wer nur die
+    verdächtigen in den vollen Pfad schickt, spart den Rest.
+
+    **Diese Regel ist lexikalisch — und das ist hier ausnahmsweise vertretbar**, weil ihre
+    Fehlerrichtungen asymmetrisch sind:
+
+    * *falsch positiv* (atomare Aussage wird zur Zerlegung geschickt) kostet k Aufrufe, und der
+      Splitter gibt korrekt eine Proposition zurück. Kein inhaltlicher Schaden.
+    * *falsch negativ* (Konjunktion wird als atomar behandelt) bringt den gefährlichsten Fehler
+      des Systems zurück: ein weggefallener Konjunkt, der als ``entailed`` durchgeht.
+
+    Sie ist deshalb bewusst **übertriggernd** eingestellt. Das ist die Umkehrung der Lehre aus den
+    neun lexikalischen Fehlschlägen dieses Projekts: dort stand eine Wortregel für ein *Urteil*,
+    hier nur für eine *Kostenweiche*, deren teure Seite die sichere ist.
+    """
+    return bool(_COMPOUND_MARKERS.search(text or ""))
+
+
 def split_propositions(text: str, *, builder: str = None, k: int = None) -> tuple[list[str], bool]:
     """Zerlege eine Aussage in atomare Propositionen. Rückgabe: (Propositionen, unbestimmt).
 
@@ -158,6 +200,11 @@ def split_propositions(text: str, *, builder: str = None, k: int = None) -> tupl
     """
     builder = PARSER if builder is None else builder
     k = K_DRAWS if k is None else k
+
+    # Kostenweiche: ohne Koordinationsmarker gar nicht erst zerlegen. Spart k Aufrufe je atomarer
+    # Aussage; die Fehlerrichtung ist bewusst asymmetrisch (siehe maybe_compound).
+    if not maybe_compound(text):
+        return [text], False
 
     def _one(_i):
         try:
@@ -316,8 +363,18 @@ def check(claim: Structure, evidence: list[Structure],
     # decken. Sonst entsteht unerlaubte Komposition: die Relation aus Beleg A, die Reichweite
     # aus Beleg B - obwohl kein einzelner Beleg die Kombination trägt. (Live gefunden an einer
     # MSCE-Kontrolle, die dadurch faelschlich als 'entailed' durchging.)
-    relevant = [e for e in evidence if e.relation == claim.relation
-                or (claim.relation in CAUSAL and e.relation in CAUSAL)]
+    #
+    # Relevanz verlangt AUCH Entitaetsbezug, nicht nur Relationsgleichheit. Ohne das war der
+    # Auditor durch **Evidenz-Auffuellen** angreifbar: zwei voellig unverwandte Belege mit
+    # universellem Quantor ("Every container image has a base layer") hoben das Maximum und
+    # kippten "Binary wheels fail on all musl systems" von compatible_not_entailed auf
+    # ENTAILED. Mehr Evidenz war damit monoton besser - und da ein L3-Generator seine
+    # evidenceIds selbst waehlt, ist das eine ausnutzbare Flaeche, kein Randfall.
+    relevant = [e for e in evidence
+                if (e.relation == claim.relation
+                    or (claim.relation in CAUSAL and e.relation in CAUSAL))
+                and (_overlaps(e.subject, claim.subject) or _overlaps(e.object, claim.object)
+                     or _overlaps(e.subject, claim.object) or _overlaps(e.object, claim.subject))]
     if not relevant:
         relevant = evidence          # keine passende Relation -> unten faengt missing_premise
     ev_modal = max(MODAL_RANK.get(e.modality, 4) for e in relevant)

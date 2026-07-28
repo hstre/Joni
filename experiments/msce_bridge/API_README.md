@@ -77,6 +77,13 @@ your own L3 output contains exactly this shape ("… are candidates only; they d
 authority"). The response now carries `propositions` and `per_proposition` so you can see how a
 statement was split and which part failed.
 
+**Irrelevant evidence cannot help.** Relevance requires entity overlap, not merely a matching
+relation. Without that, padding a claim with unrelated universally-quantified statements ("Every
+container image has a base layer") raised the aggregate and flipped the verdict to `entailed` —
+more evidence was monotonically better, and a generator that picks its own evidence ids could
+exploit it. **What the auditor still cannot see: relevant evidence that was *not* cited.** It
+judges the derivation from what you give it.
+
 **Normalisation is sampled, not asked.** Each field is drawn *k* times and decided by strict
 majority. A field without a majority is *undetermined*, and the verdict becomes `insufficient` —
 never a guessed judgement. (Asking a model for its own confidence returns a one-hot vector; asking
