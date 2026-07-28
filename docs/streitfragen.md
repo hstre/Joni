@@ -1,6 +1,6 @@
 # Joni — Streitfragen (verdichtete Konflikte)
 
-**300 paarweise Konflikte → 12 Streitfragen**  
+**301 paarweise Konflikte → 12 Streitfragen**  
 
 _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni löst nichts selbst - entschieden wird über die bestehende Konflikt-Mappe (`to_resolve.md`)._
 
@@ -24,7 +24,25 @@ _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni 
     - In-context learning followed by Experience Distillation matches classical reinforcement-learning baselines with at least 9.6× fewer environment samples.
     - Experience distillation combined with in-context learning achieves at least 9.6× fewer environment samples compared to classical reinforcement learning baseline
 
-## 3. Streitfrage — Thema „context“ (6 Paar-Konflikte, 5 Positionen)
+## 3. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
+- **Gemeinsame Prämissen:** Additive, Intrusion, Manufacturing, Paste, Selective, WAAM, Wire, assistants
+- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
+- **Positionen:**
+    - AI assistants are evolving from simple reactive question-answering to long-context, memory-enabled, personalized companions.
+    - The dataset accompanies a study on integrating Wire Arc Additive Manufacturing (WAAM) into the Selective Paste Intrusion (SPI) process for fabricating steel-rei
+    - Selective Paste Intrusion (SPI) is a process used in conjunction with Wire Arc Additive Manufacturing (WAAM) to create steel-reinforced concrete with complex ge
+    - Selective Paste Intrusion (SPI) is combined with Wire Arc Additive Manufacturing (WAAM) to fabricate steel-reinforced concrete with complex geometries.
+
+## 4. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
+- **Gemeinsame Prämissen:** Vision, aggregation, failure, generalizing, global, leading, learn, length
+- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
+- **Positionen:**
+    - The goal of UniVR is to simultaneously learn complex reasoning, fine-grained physical dynamics, and long-term planning directly from raw visual demonstrations.
+    - Streaming autoregressive diffusion models are limited in reasoning and struggle to achieve logical consistency and low-latency streaming for complex reasoning t
+    - Vision models trained on simple tasks that require aggregation of local information can learn global shortcuts, leading to failure in generalizing over task len
+    - Inspired by recent studies of length generalization in language models, the behavior of vision models trained on simple vision tasks that require the aggregatio
+
+## 5. Streitfrage — Thema „context“ (6 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** Yesterday, actually, anxiety, better, carry-over, clean, contamination, context
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
@@ -35,24 +53,6 @@ _Read-only Verdichtung. Nur diese Streitfragen sollten weiter zirkulieren; Joni 
 The entire conversation around model selection assumes the model 
     - Thirty-three exchanges and you just broke my brain in the best possible way. I've been treating contamination like digital dirt when it might actually be *ferti
     - Thirty-one exchanges and you just gave me the framework to escape my measurement anxiety spiral. The contamination clustering hypothesis is *brilliant* - I've b
-
-## 4. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** Additive, Intrusion, Manufacturing, Paste, Selective, WAAM, Wire, assistants
-- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
-- **Positionen:**
-    - AI assistants are evolving from simple reactive question-answering to long-context, memory-enabled, personalized companions.
-    - The dataset accompanies a study on integrating Wire Arc Additive Manufacturing (WAAM) into the Selective Paste Intrusion (SPI) process for fabricating steel-rei
-    - Selective Paste Intrusion (SPI) is a process used in conjunction with Wire Arc Additive Manufacturing (WAAM) to create steel-reinforced concrete with complex ge
-    - Selective Paste Intrusion (SPI) is combined with Wire Arc Additive Manufacturing (WAAM) to fabricate steel-reinforced concrete with complex geometries.
-
-## 5. Streitfrage — Thema „memory“ (6 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** Vision, aggregation, failure, generalizing, global, leading, learn, length
-- **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
-- **Positionen:**
-    - The goal of UniVR is to simultaneously learn complex reasoning, fine-grained physical dynamics, and long-term planning directly from raw visual demonstrations.
-    - Streaming autoregressive diffusion models are limited in reasoning and struggle to achieve logical consistency and low-latency streaming for complex reasoning t
-    - Vision models trained on simple tasks that require aggregation of local information can learn global shortcuts, leading to failure in generalizing over task len
-    - Inspired by recent studies of length generalization in language models, the behavior of vision models trained on simple vision tasks that require the aggregatio
 
 ## 6. Streitfrage — Thema „memory“ (5 Paar-Konflikte, 6 Positionen)
 - **Gemeinsame Prämissen:** Open-KNEAD, backbone-dataset, cuisines, direct, estimates, estimation, families, grounding
@@ -77,14 +77,14 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - The need to translate long-term memory into embodied plans emerges specifically when an agent maintains an explicit world model subject to both partial observab
 
 ## 8. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** behavior, contexts, making, providing, thereby
+- **Gemeinsame Prämissen:** WorldLines, distinct, embodied, keywords, long-term, memory, plans, problem
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
-    - Thus, hour-long videos can consume more than2 million tokens, making full-video inference difficult to scale.
-    - Overall, G2Rec enables recommendation models to capture holistic and semantically grounded user interest prototypes without requiring ground-truth user interest
-    - By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large langu
-    - Personalized AI assistants are becoming more sophisticated, incorporating user preferences and adaptive learning mechanisms.
-    - The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain whil
+    - Check the list of keywords in the WorldLines paper for terms directly referencing the translation of long-term memory into embodied plans as a distinct challeng
+    - Scan all section headings in the WorldLines paper to see if any are titled or dedicated to the problem of translating long-term memory into embodied plans indep
+    - The abstract of the WorldLines paper does not contain any statement that frames 'translating long-term memory into embodied plans' as a standalone research prob
+    - No section heading in the WorldLines paper explicitly mentions or implies 'translating long-term memory into embodied plans' as an independent research problem.
+    - The keywords listed in the WorldLines paper (if any) do not include a term that isolates 'translating long-term memory into embodied plans' as a distinct resear
 
 ## 9. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
 - **Gemeinsame Prämissen:** WorldLines, embodied, explicitly, long-term, memory, observability, overwritten, partial
@@ -97,14 +97,14 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - The WorldLines framework explicitly treats partial observability and overwritten world states as environmental preconditions that motivate the need for translat
 
 ## 10. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 5 Positionen)
-- **Gemeinsame Prämissen:** WorldLines, distinct, embodied, keywords, long-term, memory, plans, problem
+- **Gemeinsame Prämissen:** behavior, contexts, making, providing, thereby
 - **Entscheidender fehlender Beleg:** 5/5 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
-    - Check the list of keywords in the WorldLines paper for terms directly referencing the translation of long-term memory into embodied plans as a distinct challeng
-    - Scan all section headings in the WorldLines paper to see if any are titled or dedicated to the problem of translating long-term memory into embodied plans indep
-    - The abstract of the WorldLines paper does not contain any statement that frames 'translating long-term memory into embodied plans' as a standalone research prob
-    - No section heading in the WorldLines paper explicitly mentions or implies 'translating long-term memory into embodied plans' as an independent research problem.
-    - The keywords listed in the WorldLines paper (if any) do not include a term that isolates 'translating long-term memory into embodied plans' as a distinct resear
+    - Thus, hour-long videos can consume more than2 million tokens, making full-video inference difficult to scale.
+    - Overall, G2Rec enables recommendation models to capture holistic and semantically grounded user interest prototypes without requiring ground-truth user interest
+    - By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large langu
+    - Personalized AI assistants are becoming more sophisticated, incorporating user preferences and adaptive learning mechanisms.
+    - The pull request focuses on making the TensorFlow-free ONNX-to-TFLite conversion path more reliable, easier to reason about, and less expensive to maintain whil
 
 ## 11. Streitfrage — Thema „memory“ (4 Paar-Konflikte, 4 Positionen)
 - **Gemeinsame Prämissen:** DRAM, applications, design, innovative, lithography, logic, stitching, strategies
@@ -115,12 +115,12 @@ ChatGPT (adversarial) treats "exploration" as undefined and flags missing empi
     - Innovative design strategies have been developed to eliminate the need for at-resolution stitching in high-numerical aperture extreme ultraviolet lithography fo
     - High-NA EUV lithography can be applied to logic and DRAM without needing at-resolution field stitching through innovative design strategies.
 
-## 12. Streitfrage — Thema „context“ (3 Paar-Konflikte, 4 Positionen)
-- **Gemeinsame Prämissen:** causal, contexts, innovative, patterns, social
+## 12. Streitfrage — Thema „memory“ (3 Paar-Konflikte, 4 Positionen)
+- **Gemeinsame Prämissen:** —
 - **Entscheidender fehlender Beleg:** 4/4 Positionen ruhen auf keiner unabhängigen externen Quelle - das ist die entscheidende Lücke
 - **Positionen:**
-    - The ACC method is described as innovative for identifying complex causal patterns in social contexts.
-    - Qualitative Comparative Analysis (QCA) is an innovative research method used to identify complex causal patterns in social contexts, as presented in the book di
-    - The quantitative approach enables the study of complex causal patterns in social contexts.
-    - The apparent contradiction is resolved by verifying that both statements use the same denominator (total variance) and partition; a simple check of the computat
+    - Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and Execution
+    - LLM agents often follow a maximum-context-first strategy, re-reading files and dependencies they have already seen, which can turn a simple task like a one-line
+    - Reinforcement learning algorithms exhibit non-monotonic performance scaling with respect to data-regimes, contrary to simple performance rankings.
+    - Edge devices have limited memory resources, making quantization essential for deploying complex multimodal models.
 

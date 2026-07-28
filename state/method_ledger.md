@@ -1,6 +1,6 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 671 · 363 Methoden** — proposed 234 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 129  
+**Cycle 672 · 363 Methoden** — proposed 219 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 144  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
@@ -8,28 +8,13 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 |---|---|---|---|---|
 | Formalizzazione avanzata e rigorosa di un sistema di Rappresentazione della Cono | **proposed** | candidate | 0 | — |
 | S-AI-Recursive: A Bio-Inspired and Temporal Sparse AI Architecture for Iterative | **proposed** | candidate | 0 | — |
-| reasoning-as-a-lens | **proposed** | candidate | 0 | — |
-| supervision-as-a-lens | **proposed** | candidate | 0 | — |
-| Two English Preprint Manuscripts on CODATA 2026 Central-Value Forecasts and CMB  | **proposed** | candidate | 0 | — |
-| Polynomial equivalence of the global transverse-field Ising model and the gate m | **proposed** | candidate | 0 | — |
-| AutoMem: Automated Learning of Memory as a Cognitive Skill | **proposed** | candidate | 0 | — |
 | memory-dependent-as-a-lens | **proposed** | candidate | 0 | — |
 | maintaining-as-a-lens | **proposed** | candidate | 0 | — |
-| Women's Education from the Perspective of Islamic Philosophy of Education: Betwe | **proposed** | candidate | 0 | — |
 | Long Short-Term Memory | **proposed** | candidate | 0 | — |
 | Ultrafast and memory-efficient alignment of short DNA sequences to the human gen | **proposed** | candidate | 0 | — |
-| Building to the Test: Coding Agents Deliver What You Check, Not What You Request | **proposed** | candidate | 0 | — |
 | HEFT: Heavy-Payload Full-size Humanoid Teleoperation with Privileged Motion Guid | **proposed** | candidate | 0 | — |
-| Grounded autonomous research: a fault-tolerant LLM pipeline from corpus to manus | **proposed** | candidate | 0 | — |
 | Morphing into Hybrid Attention Models | **proposed** | candidate | 0 | — |
-| Multi-Resolution Flow Matching: Training-Free Diffusion Acceleration via Staged  | **proposed** | candidate | 0 | — |
 | mrflow-as-a-lens | **proposed** | candidate | 0 | — |
-| WorldDirector: Building Controllable World Simulators with Persistent Dynamic Me | **proposed** | candidate | 0 | — |
-| Alignment Is All You Need For X-to-4D Generation | **proposed** | candidate | 0 | — |
-| AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents | **proposed** | candidate | 0 | — |
-| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **proposed** | candidate | 0 | — |
-| The Static and Dynamic Geographical Distribution and the Spatial Construction of | **proposed** | candidate | 0 | — |
-| Memory Models And Information Processing As Foundations Of Artificial Intelligen | **proposed** | candidate | 0 | — |
 | ResNet Architectures and Applications: A Practical Guide From Theoretical Optimi | **proposed** | candidate | 0 | — |
 | ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning | **proposed** | candidate | 0 | — |
 | From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **proposed** | candidate | 0 | — |
@@ -272,19 +257,34 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | retrieve-as-a-lens | **retired** | rejected | 0 | — |
 | Distributed Deep Learning and Intelligent Soil–Water Analytics in Precision Agri | **retired** | rejected | 0 | — |
 | Evaluating edge-enabled smart waste management in smart cities: A design-oriente | **retired** | rejected | 0 | — |
+| reasoning-as-a-lens | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
 | QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
 | DataEvolver: Self-Evolving Multi-Agent Data Construction for Text-Rich Image Gen | **retired** | rejected | 0 | — |
 | FaceMoE: Mixture of Experts for Low-Resolution Face Recognition | **retired** | rejected | 0 | — |
 | QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
+| supervision-as-a-lens | **retired** | rejected | 0 | — |
 | Lexical Consensus: Grounded Word Learning and Shared Meaning in Artificial Agent | **retired** | rejected | 0 | — |
 | Surrogate-Assisted Inverse Thermal Characterization of Façade Elements in Testin | **retired** | rejected | 0 | — |
 | The AO-Petalometer Test Bench: a laboratory facility for segmented mirror emulat | **retired** | rejected | 0 | — |
 | Efficient entanglement of three remote single-atom quantum-network nodes | **retired** | rejected | 0 | — |
 | openclaw-as-a-lens | **retired** | rejected | 0 | — |
 | DEMUN: Fast and accurate discovery of music notation in very large collections | **retired** | rejected | 0 | — |
+| Two English Preprint Manuscripts on CODATA 2026 Central-Value Forecasts and CMB  | **retired** | rejected | 0 | — |
+| Polynomial equivalence of the global transverse-field Ising model and the gate m | **retired** | rejected | 0 | — |
+| AutoMem: Automated Learning of Memory as a Cognitive Skill | **retired** | rejected | 0 | — |
+| Women's Education from the Perspective of Islamic Philosophy of Education: Betwe | **retired** | rejected | 0 | — |
+| Building to the Test: Coding Agents Deliver What You Check, Not What You Request | **retired** | rejected | 0 | — |
 | The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups | **retired** | rejected | 0 | — |
+| Grounded autonomous research: a fault-tolerant LLM pipeline from corpus to manus | **retired** | rejected | 0 | — |
+| Multi-Resolution Flow Matching: Training-Free Diffusion Acceleration via Staged  | **retired** | rejected | 0 | — |
+| WorldDirector: Building Controllable World Simulators with Persistent Dynamic Me | **retired** | rejected | 0 | — |
+| Alignment Is All You Need For X-to-4D Generation | **retired** | rejected | 0 | — |
+| AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
+| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **retired** | rejected | 0 | — |
+| The Static and Dynamic Geographical Distribution and the Spatial Construction of | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
+| Memory Models And Information Processing As Foundations Of Artificial Intelligen | **retired** | rejected | 0 | — |
 | awesome-openclaw-usecases-as-a-lens | **retired** | rejected | 0 | — |
 | From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **retired** | rejected | 0 | — |
 | FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |

@@ -6,7 +6,7 @@
 > ein, zwei Beispielen. Die Lehre ist deterministisch; eine LLM-Fassung (falls vorhanden)
 > schärft nur die Sprache, nie die Auswahl.
 
-_Stand: Tick 25 · 885 korrigierte(r) Irrtum/Irrtümer (+5313 Housekeeping in Sink-Themen) · 640 Lehre(n)._
+_Stand: Tick 25 · 885 korrigierte(r) Irrtum/Irrtümer (+5314 Housekeeping in Sink-Themen) · 640 Lehre(n)._
 
 ## attention · Tiefe 95 (threshold)
 
