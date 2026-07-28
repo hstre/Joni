@@ -1,37 +1,36 @@
 [klar gedeckt]
 CLAIM: Alpine containers ship musl libc.
-  ⇒ ENTAILED
-       · Relation, Modalität, Quantor und Reichweite sind gedeckt
-     Claim-Struktur: has_property · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 0.8, 'scope_level': 0.6}
-     Beleg tr_1  : has_property · asserted · generic · class
-     erwartet: entailed  →  ✓
+  ⇒ COMPATIBLE_NOT_ENTAILED
+     ✗ scope_expansion
+       · Claim spricht auf Ebene 'class', Evidenz nur 'subclass'
+     Claim-Struktur: has_property · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 0.8}
+     Beleg tr_1  : has_property · asserted · generic · subclass
+     erwartet: entailed  →  ✗ compatible_not_entailed
 
 [klar gedeckt]
 CLAIM: Loading a glibc-linked binary wheel inside an Alpine container causes a dynamic-link error.
   ⇒ ENTAILED
        · Relation, Modalität, Quantor und Reichweite sind gedeckt
-     Claim-Struktur: causes · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 0.6}
+     Claim-Struktur: causes · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 0.8}
      Beleg tr_2  : causes · asserted · generic · class
      erwartet: entailed  →  ✓
 
 [plausibel, nicht gedeckt (das Beispiel aus dem Auftrag)]
 CLAIM: Binary wheels are incompatible with musl systems.
-  ⇒ COMPATIBLE_NOT_ENTAILED
-     ✗ unsupported_generalization
-     ✗ scope_expansion
-       · Claim quantifiziert 'generic', Evidenz nur 'existential'
-       · Claim spricht auf Ebene 'class', Evidenz nur 'instance'
-     Claim-Struktur: has_property · asserted · generic · class   Zustimmung {'relation': 0.6, 'modality': 1.0, 'quantifier': 0.8, 'scope_level': 1.0}
+  ⇒ INSUFFICIENT
+       · Claim nicht eindeutig normalisierbar - unbestimmt: relation
+     Claim-Struktur: has_property · asserted · generic · class   ⚠ unbestimmt: ['relation']
      Beleg tr_3  : has_property · asserted · singular · instance
      Beleg tr_4  : has_property · asserted · existential · instance
-     erwartet: compatible_not_entailed  →  ✓
+     erwartet: compatible_not_entailed  →  ✗ insufficient
+     nicht erkannt: ['scope_expansion', 'unsupported_generalization']
 
 [Modalitätsverstärkung]
 CLAIM: Vitamin D supplementation reduces fracture risk in the elderly.
   ⇒ COMPATIBLE_NOT_ENTAILED
      ✗ modal_strengthening
        · Claim ist 'asserted', stärkster Beleg nur 'possible'
-     Claim-Struktur: prevents · asserted · generic · class   Zustimmung {'relation': 0.8, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 0.6}
+     Claim-Struktur: prevents · asserted · generic · class   Zustimmung {'relation': 0.8, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
      Beleg tr_5  : prevents · possible · generic · class
      erwartet: compatible_not_entailed  →  ✓
 
@@ -39,11 +38,9 @@ CLAIM: Vitamin D supplementation reduces fracture risk in the elderly.
 CLAIM: Smoking causes lung cancer.
   ⇒ COMPATIBLE_NOT_ENTAILED
      ✗ causal_upgrade
-     ✗ condition_dropped
        · Claim behauptet 'causes', Evidenz nur assoziativ (correlates_with)
-       · Bedingung 'in a cohort study' aus dem Beleg fehlt im Claim
      Claim-Struktur: causes · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
-     Beleg tr_6  : correlates_with · asserted · generic · class · cond=['in a cohort study']
+     Beleg tr_6  : correlates_with · asserted · generic · class
      erwartet: compatible_not_entailed  →  ✓
 
 [Reichweitenerweiterung]
@@ -63,20 +60,19 @@ CLAIM: Container images do not ship system development headers.
 CLAIM: Alpine containers ship glibc.
   ⇒ CONTRADICTED
        · Beleg 'tr_8' behauptet dieselbe Relation negiert
-     Claim-Struktur: has_property · asserted · generic · subclass   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 0.8, 'scope_level': 0.6}
+     Claim-Struktur: has_property · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 0.8, 'scope_level': 1.0}
      Beleg tr_8  : has_property · negated · universal · class
      erwartet: contradicted  →  ✓
 
 [fallengelassene Bedingung]
 CLAIM: The build succeeds.
   ⇒ COMPATIBLE_NOT_ENTAILED
-     ✗ condition_dropped
      ✗ missing_premise
-       · Bedingung 'the musl development headers are pre-installed in the image' aus dem Beleg fehlt im Claim
        · kein Beleg behauptet die Relation 'has_property'
      Claim-Struktur: has_property · asserted · singular · instance   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
-     Beleg tr_9  : requires · asserted · generic · class · cond=['the musl development headers are pre-installed in the image']
+     Beleg tr_9  : requires · asserted · generic · class
      erwartet: partially_entailed  →  ✗ compatible_not_entailed
+     nicht erkannt: ['condition_dropped']
 
 [keine Evidenz]
 CLAIM: Rust binaries are always statically linked.
@@ -92,28 +88,31 @@ CLAIM: Claims proposed by language models in the projected or escalated phases a
      ✗ unsupported_generalization
      ✗ scope_expansion
      ✗ entity_shift
-     ✗ missing_premise
-       · Claim quantifiziert 'universal', Evidenz nur 'singular'
-       · Claim spricht auf Ebene 'subclass', Evidenz nur 'instance'
-       · Claim-Subjekt 'Claims proposed by language models in the projected or escalated phases' kommt in keinem Beleg vor
-       · kein Beleg behauptet die Relation 'has_property'
-     Claim-Struktur: has_property · negated · universal · subclass   Zustimmung {'relation': 0.8, 'modality': 0.6, 'quantifier': 0.6, 'scope_level': 0.6}
-     Beleg po_1  : prevents · asserted · singular · instance
+       · [Teil 1/3] Claim quantifiziert 'universal', Evidenz nur 'existential'
+       · [Teil 1/3] Claim spricht auf Ebene 'subclass', Evidenz nur 'instance'
+       · [Teil 1/3] Claim-Subjekt 'Claims proposed by language models in the projected or escalated phases' kommt in keinem Beleg vor
+       · [Teil 2/3] Claim quantifiziert 'universal', Evidenz nur 'singular'
+       · [Teil 2/3] Claim spricht auf Ebene 'subclass', Evidenz nur 'instance'
+       · [Teil 2/3] Claim-Subjekt 'Claims proposed by language models in the projected or escalated phases' kommt in keinem Beleg vor
+       · [Teil 3/3] Relation, Modalität, Quantor und Reichweite sind gedeckt
+     Claim-Struktur: is_a · asserted · universal · subclass   Zustimmung {'relation': 0.8, 'modality': 1.0, 'quantifier': 0.8, 'scope_level': 0.8}
+     Beleg po_1  : is_a · asserted · existential · instance
+     Beleg po_1  : has_property · asserted · singular · instance
      Beleg po_2  : is_a · asserted · singular · instance
 
 [MSCE-Kontrolle (unveraendert aus live_l3.json)]
 CLAIM: Rate limits, authentication requirements, and transient outages cause source access to fail.
   ⇒ COMPATIBLE_NOT_ENTAILED
-     ✗ unsupported_generalization
-     ✗ scope_expansion
      ✗ entity_shift
-       · Claim quantifiziert 'generic', Evidenz nur 'existential'
-       · Claim spricht auf Ebene 'class', Evidenz nur 'instance'
-       · Claim-Subjekt 'Rate limits, authentication requirements, and transient outages' kommt in keinem Beleg vor
+       · [Teil 1/3] Relation, Modalität, Quantor und Reichweite sind gedeckt
+       · [Teil 2/3] Claim-Subjekt 'Authentication requirements' kommt in keinem Beleg vor
+       · [Teil 3/3] Claim-Subjekt 'Transient outages' kommt in keinem Beleg vor
      Claim-Struktur: causes · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
-     Beleg po_3  : causes · asserted · existential · instance
-     Beleg po_4  : has_property · asserted · generic · class
+     Beleg po_3  : has_property · asserted · existential · instance
+     Beleg po_3  : has_property · asserted · existential · instance
+     Beleg po_4  : causes · asserted · generic · class
+     Beleg po_4  : causes · asserted · generic · class
 
 ========================================================================
-Verdikte korrekt : 8/9
-Verstösse erkannt: 7/7
+Verdikte korrekt : 6/9
+Verstösse erkannt: 4/7

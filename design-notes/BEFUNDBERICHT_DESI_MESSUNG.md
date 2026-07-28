@@ -683,10 +683,44 @@ Lücke: das Normalisierungsschema ist zu dünn für zusammengesetzte Aussagen. U
 Daten — die MSCE-Kontrolle *„…are candidates only; they do not have decision authority…"* ist
 genauso gebaut.
 
-**Konsequenz:** Vor jedem Angebot an Dritte muss die Normalisierung Konjunktionen entweder
-*zerlegen* (eine Struktur je Konjunkt, Verdikt über alle) oder sie **erkennen und ablehnen**
-(`insufficient` statt Teilparse). Bis dahin ist jedes `entailed` auf einer zusammengesetzten
-Aussage wertlos.
+### Behoben: Zerlegung, mit Ablehnung als Sicherung
+
+Umgesetzt wurde **beides** — zerlegen wo eindeutig, ablehnen wo nicht:
+
+* `split_propositions()` teilt eine Aussage in atomare Propositionen; die **Anzahl** wird über k
+  Ziehungen per strikter Mehrheit bestimmt. Ohne Mehrheit über die Anzahl ist die Zerlegung
+  unbestimmt ⇒ `insufficient`, statt auf einem Teilparse zu urteilen.
+* Jeder Konjunkt wird **einzeln** geparst und geprüft. `combine()` verknüpft deterministisch in
+  Sicherheitsreihenfolge: **ein** widersprochener Konjunkt macht das Ganze `contradicted`, und
+  `entailed` verlangt, dass **jeder** Teil trägt.
+* Belege werden ebenfalls zerlegt — jeder atomare Teil ist ein eigener Beleg. Das kann Stützung nur
+  sichtbarer machen, nie verstecken.
+
+Ergebnis am auslösenden Fall:
+
+```
+Claim: "Alpine containers ship musl libc, no glibc."   Beleg: "Alpine containers ship glibc."
+  zerlegt in 2 → Teil 1 entailed · Teil 2 contradicted  ⇒  CONTRADICTED   ✓ (vorher ENTAILED)
+```
+
+Und an der echten MSCE-Konjunktion („… are candidates only; they do not have decision authority")
+wird jetzt korrekt in zwei Propositionen zerlegt und jede einzeln geprüft.
+
+**Der gefährliche Fehler ist weg — das Band wurde dadurch aber NICHT enger:**
+
+| Konfiguration | Verdikte | Verstösse | Läufe |
+|---|---|---|---|
+| k=5, vor den HTTP-Fixes | 8/9 – 9/9 | 6/7 – 7/7 | 4 |
+| k=5, nach den HTTP-Fixes | 7/9 – 9/9 | **4/7** – 7/7 | 4 |
+| **k=5 + Zerlegung** | **6/9 – 9/9** | 4/7 – 7/7 | **4** |
+
+Die Antwort trägt jetzt `propositions` und `per_proposition`, sodass sichtbar ist, *wie* zerlegt
+wurde und welcher Teil woran scheiterte.
+
+**Preis:** die Kosten steigen. Ein Zerlegungsschritt je Aussage kommt hinzu, bei zwei Konjunkten
+also grob das Dreifache. Für ein Gate an einer Konsolidierungsgrenze vertretbar; für Volumen
+bräuchte es eine Vorprüfung, die nur zusammengesetzte Aussagen in den vollen Pfad schickt — nicht
+gebaut.
 
 ---
 

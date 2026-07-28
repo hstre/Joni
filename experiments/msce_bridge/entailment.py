@@ -119,8 +119,70 @@ Return JSON exactly:
   "scope_level":"...","conditions":["..."]}}"""
 
 
+_SPLIT_SYSTEM = """You split ONE statement into its atomic propositions. You judge nothing.
+
+An atomic proposition asserts exactly ONE thing about ONE subject-object pair. A statement that
+asserts several things (joined by "and", ";", ",", "but", or a relative clause that adds a second
+claim) has several.
+
+Examples:
+  "Alpine containers ship musl libc, no glibc."
+      -> ["Alpine containers ship musl libc.", "Alpine containers do not ship glibc."]
+  "Model proposals are candidates only; they do not have decision authority."
+      -> ["Model proposals are candidates only.",
+          "Model proposals do not have decision authority."]
+  "Alpine containers ship musl libc."
+      -> ["Alpine containers ship musl libc."]
+
+Keep each proposition a self-contained sentence: resolve pronouns, repeat the subject.
+Do NOT split a single claim that merely has a qualifier or a condition.
+
+Return JSON exactly: {"propositions": ["...", "..."]}"""
+
+
 #: Ziehungen je Aussage. Ungerade, damit eine strikte Mehrheit möglich ist.
 K_DRAWS = int(os.getenv("ENTAIL_K", "5"))
+
+
+def split_propositions(text: str, *, builder: str = None, k: int = None) -> tuple[list[str], bool]:
+    """Zerlege eine Aussage in atomare Propositionen. Rückgabe: (Propositionen, unbestimmt).
+
+    Grund (§7f des Befundberichts): das ``Structure``-Schema fasst genau **eine** Proposition. Bei
+    einer Konjunktion fiel der zweite Konjunkt bisher ersatzlos weg - und damit konnte ein Claim,
+    der etwas ausdrücklich verneint, als ``entailed`` durchgehen. Ein falsches ``entailed`` ist das
+    gefährlichste Verdikt des Systems.
+
+    Die **Anzahl** der Propositionen wird über k Ziehungen per strikter Mehrheit bestimmt. Gibt es
+    darüber keine Mehrheit, ist die Zerlegung *unbestimmt* - und dann wird nicht geraten, sondern
+    abgelehnt (``insufficient``). Zerlegen wo eindeutig, ablehnen wo nicht.
+    """
+    builder = PARSER if builder is None else builder
+    k = K_DRAWS if k is None else k
+
+    def _one(_i):
+        try:
+            raw = sb._call(sb.BUILDERS[builder], f"{_SPLIT_SYSTEM}\n\nSTATEMENT: {text}",
+                           temperature=0.0)
+        except Exception:  # noqa: BLE001
+            return None
+        props = [str(p).strip() for p in (raw.get("propositions") or []) if str(p).strip()]
+        return props[:6] or None
+
+    with ThreadPoolExecutor(max_workers=min(k, 8)) as pool:
+        draws = [d for d in pool.map(_one, range(k)) if d]
+    if not draws:
+        return [text], False                      # Zerlegung nicht möglich -> unverändert weiter
+
+    counts: dict[int, int] = {}
+    for d in draws:
+        counts[len(d)] = counts.get(len(d), 0) + 1
+    top_n, votes = max(counts.items(), key=lambda kv: kv[1])
+    if votes * 2 <= len(draws):                   # keine strikte Mehrheit über die ANZAHL
+        return [text], True                       # unbestimmt -> Aufrufer lehnt ab
+    for d in draws:                               # erste Ziehung mit der Mehrheitsanzahl
+        if len(d) == top_n:
+            return d, False
+    return [text], True
 
 #: Felder, auf denen ein Verdikt ruht. Ist eines davon unbestimmt, wird nicht geurteilt.
 CORE_FIELDS = ("relation", "modality", "quantifier", "scope_level")
@@ -311,18 +373,71 @@ def check(claim: Structure, evidence: list[Structure],
     return "compatible_not_entailed", violations, notes
 
 
+def combine(verdicts: list[str]) -> str:
+    """Ein Claim aus mehreren Konjunkten ist nur so stark wie sein schwächster Teil.
+
+    Deterministisch, ohne Modell. Die Reihenfolge ist die Sicherheitsreihenfolge: ein einziger
+    widersprochener Konjunkt macht den ganzen Claim widersprochen, und ``entailed`` verlangt, dass
+    **jeder** Teil getragen ist. So kann ein weggefallener oder ungedeckter Konjunkt nie mehr in
+    ein Gütesiegel für das Ganze münden (§7f).
+    """
+    if not verdicts:
+        return "insufficient"
+    if "contradicted" in verdicts:
+        return "contradicted"
+    if all(v == "entailed" for v in verdicts):
+        return "entailed"
+    if "insufficient" in verdicts:
+        return "insufficient"
+    if all(v in ("entailed", "partially_entailed") for v in verdicts):
+        return "partially_entailed"
+    return "compatible_not_entailed"
+
+
 def audit(claim: str, evidence: list[dict], *, declared_assumptions: tuple[str, ...] = (),
           context: str = "", builder: str = PARSER) -> dict:
-    """Volle Prüfung. Parsen parallel (LLM), urteilen deterministisch."""
+    """Volle Prüfung. Zerlegen → parsen (LLM, parallel) → deterministisch urteilen.
+
+    Zusammengesetzte Aussagen werden in atomare Propositionen zerlegt und **jede einzeln** geprüft;
+    das Gesamturteil ist das schwächste Teilurteil (``combine``). Ist die Zerlegung selbst nicht
+    eindeutig, wird abgelehnt statt geraten.
+    """
+    claim_props, split_undet = split_propositions(claim, builder=builder)
+    if split_undet:
+        return {"claim": claim, "context": context, "verdict": "insufficient", "violations": [],
+                "notes": ["Zerlegung der Aussage nicht eindeutig - es wird nicht auf einem "
+                          "Teilparse geurteilt"],
+                "claim_structure": {}, "evidence_structures": [], "propositions": [claim]}
+
+    # Belege ebenfalls zerlegen: jeder atomare Teil ist ein eigenständiger Beleg. Das kann nur
+    # mehr Stützung sichtbar machen, nie weniger.
+    ev_items: list[dict] = []
+    for e in evidence:
+        parts, undet = split_propositions(e["text"], builder=builder)
+        if undet:
+            parts = [e["text"]]
+        ev_items += [{"text": p, "source_id": e.get("source_id", "")} for p in parts]
+
     with ThreadPoolExecutor(max_workers=8) as pool:
-        c_fut = pool.submit(parse, claim, builder=builder)
-        e_futs = [pool.submit(parse, e["text"], source_id=e.get("source_id", ""), builder=builder)
-                  for e in evidence]
-        c = c_fut.result()
+        c_futs = [pool.submit(parse, p, builder=builder) for p in claim_props]
+        e_futs = [pool.submit(parse, e["text"], source_id=e["source_id"], builder=builder)
+                  for e in ev_items]
+        cs = [f.result() for f in c_futs]
         ev = [f.result() for f in e_futs]
-    verdict, violations, notes = check(c, ev, declared_assumptions)
+
+    per_part = [check(c, ev, declared_assumptions) for c in cs]
+    verdict = combine([v for v, _vi, _n in per_part])
+    violations = list(dict.fromkeys(v for _vd, vi, _n in per_part for v in vi))
+    notes: list[str] = []
+    for i, (_vd, _vi, ns) in enumerate(per_part):
+        prefix = f"[Teil {i + 1}/{len(cs)}] " if len(cs) > 1 else ""
+        notes += [prefix + n for n in ns]
+    c = cs[0]
     return {"claim": claim, "context": context, "verdict": verdict, "violations": violations,
             "notes": notes,
+            "propositions": [c.text for c in cs],
+            "per_proposition": [{"text": cs[i].text, "verdict": per_part[i][0],
+                                 "violations": per_part[i][1]} for i in range(len(cs))],
             "claim_structure": {"subject": c.subject, "relation": c.relation, "object": c.object,
                                 "modality": c.modality, "quantifier": c.quantifier,
                                 "scope_level": c.scope_level, "conditions": list(c.conditions),

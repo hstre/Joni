@@ -24,7 +24,8 @@ measured limits as part of the contract:
 |---|---|
 | Test set | **9 cases** — a demonstration set, *not* a validation corpus |
 | Verdict variance (1 draw/statement) | 6/9 – 9/9 across 5 runs on identical input |
-| Verdict variance (5 draws/statement) | **7/9 – 9/9** across 7 runs on identical input |
+| Verdict variance (5 draws/statement) | 7/9 – 9/9 across 7 runs on identical input |
+| Verdict variance (5 draws + proposition splitting) | **6/9 – 9/9** across 4 runs; violations 4/7 – 7/7 — splitting fixed a dangerous defect but did **not** narrow the band |
 | Parser calibration | **none performed** against an inter-annotator gold standard |
 | Model dependency | verdicts shift with the parser model (measured) |
 | Residual disagreement | 1 of 9 is a *contested* gold item — the parser consistently (agreement 1.0) picks a defensible alternative reading of a conditional |
@@ -62,6 +63,19 @@ Each response carries both layers separately, so you can audit where each part c
   "draws_per_statement": 5
 }
 ```
+
+**Compound statements are decomposed, never truncated.** A statement asserting several things is
+split into atomic propositions (majority vote on the count) and each is audited separately. The
+overall verdict is the **weakest part**: one contradicted conjunct makes the whole claim
+contradicted, and `entailed` requires *every* part to hold. If the split itself has no majority,
+the verdict is `insufficient` rather than a judgement on a partial parse.
+
+This closes a defect we found by direction-testing: before decomposition, a claim was normalised to
+its **first conjunct only**, so a claim explicitly denying X could be reported `entailed` by
+evidence asserting X. A false `entailed` is the most dangerous verdict this system can produce, and
+your own L3 output contains exactly this shape ("… are candidates only; they do not have decision
+authority"). The response now carries `propositions` and `per_proposition` so you can see how a
+statement was split and which part failed.
 
 **Normalisation is sampled, not asked.** Each field is drawn *k* times and decided by strict
 majority. A field without a majority is *undetermined*, and the verdict becomes `insufficient` —
@@ -141,8 +155,12 @@ uvicorn api:app --host 0.0.0.0 --port 8080
 Nothing is stored, nothing is written back, no state is kept between requests. Run it yourself — we
 would rather you did not send data anywhere.
 
-**Cost:** `k` model calls per statement. An L3 row with *n* entries citing *m* distinct evidence
-items costs roughly `k · (n + m)` calls.
+**Cost:** `k` model calls to split each statement, plus `k` per resulting proposition. A simple
+claim with one evidence item costs about `4k`; a two-conjunct claim roughly `6k`. An L3 row with
+*n* entries and *m* evidence items scales as `k · (n + m) · (1 + average conjuncts)`.
+
+If that is too expensive at volume, the cheap mitigation is a pre-filter that sends only compound
+or otherwise suspicious statements through the full path — we have not built it.
 
 ---
 

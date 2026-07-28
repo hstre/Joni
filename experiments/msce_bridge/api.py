@@ -135,6 +135,12 @@ def capabilities() -> dict:
             "draws_per_statement": ent.K_DRAWS,
             "aggregation": "strict majority per field; no majority -> field undetermined",
             "undetermined_field_policy": "verdict is 'insufficient' — never a guessed judgement",
+            "compound_statements": (
+                "split into atomic propositions (majority vote on the count), each audited "
+                "separately; the overall verdict is the weakest part — one contradicted "
+                "conjunct makes the whole claim contradicted, and 'entailed' requires every "
+                "part to hold. If the split itself has no majority, the verdict is "
+                "'insufficient' rather than a judgement on a partial parse."),
         },
         # These numbers are measured, not aspirational. A caller must be able to see the state of
         # the evidence before relying on a verdict.
@@ -143,6 +149,13 @@ def capabilities() -> dict:
             "test_set_note": "a demonstration set, NOT a validation corpus",
             "verdict_variance_k1": "6/9 to 9/9 across 5 runs on identical input",
             "verdict_variance_k5": "8/9 to 9/9 across 4 runs on identical input",
+            "verdict_variance_k5_with_split": (
+                "6/9 to 9/9 across 4 runs; violations 4/7 to 7/7. Splitting fixed a dangerous "
+                "defect but did NOT narrow the band — the split step adds its own variance."),
+            "fixed_defect_false_entailed": (
+                "before proposition splitting, a compound claim was normalised to its FIRST "
+                "conjunct only — a claim explicitly denying X could be reported 'entailed' by "
+                "evidence asserting X. Found by direction-testing, fixed by decomposition."),
             "residual_disagreement": ("1 of 9 cases is a contested gold-standard item: the parser "
                                       "consistently (agreement 1.0) chooses a defensible "
                                       "alternative reading of a conditional"),
