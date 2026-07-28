@@ -6,6 +6,26 @@ Dieses Dokument ist eigenständig lesbar. Es fasst zusammen, was eine Reihe von 
 Layer 9 und dem Semantic Projection Layer ergeben hat — ausgelöst durch eine Kooperationsanfrage,
 die eine unangenehme Frage erzwungen hat: *Können wir eigentlich, was wir behaupten?*
 
+## Kurzfassung
+
+1. **Die Governance-Architektur hält.** Layer 9 verweigert ohne Messung das Urteil, statt zu raten —
+   unter echtem Test bestätigt (§2).
+2. **Joni fährt einen Notbetrieb**, der den vorgesehenen SPL-Pfad umgeht. Die dort gefundenen
+   Defekte — Frame-Rateversuch, 43 % falsche Widerspruchsurteile — betreffen diese Umgehung, nicht
+   die Architektur (§0b, §1, §3).
+3. **Dem SPL fehlte der Projektor** π(s): jede `P_r` im Repo ist ein Testliteral, der einzige
+   Builder baut die Verteilung aus einem LLM-Skalar (§4).
+4. **π(s) wurde gebaut** und funktioniert — aber `H_norm` misst die Entschiedenheit des *Modells*,
+   nicht die Mehrdeutigkeit des *Textes*. Zwischen Anbietern kehrt sich das Vorzeichen um (§5, §6b).
+   Es ist **kein** Grösseneffekt: ein gleich kleines Modell derselben Familie arbeitet korrekt (§6c).
+5. **Die eigentliche Kurskorrektur:** Epistemische Berechtigung ist keine Skalargrösse, sondern eine
+   **Ableitungsprüfung**. Der Claim-Evidence-Entailment-Auditor ist gebaut, gemessen und hat eine
+   HTTP-API (§7b–§7d).
+6. **Gegen MSCE gibt es keinen belastbaren Befund** — ein früherer Fixture-basierter Befund wurde
+   am echten Lauf widerlegt (§7).
+7. **Neun Fälle desselben Fehlermusters** an einem Tag, zwei davon im Fundament, einer im Code, der
+   ausdrücklich dagegen gebaut wurde (§8). Dazu zweimal der Gegenfehler: zu früh positiv geurteilt.
+
 ---
 
 ## 0. Die beteiligten Teile
@@ -412,6 +432,174 @@ nicht als kausal erkannt (Muster kannte nur `cause`/`lead`).
 
 ---
 
+## 7b. Die Kurskorrektur: es ist gar keine Skalarfrage
+
+Bis hierher sucht dieser Bericht eine **einzelne Messgrösse für epistemische Berechtigung** und
+stellt fest, dass keine existiert. Das war ein **Kategorienfehler**.
+
+Für den MSCE-Fall lautet die relevante Prüfung nicht *„wie mehrdeutig ist dieser Satz"*, sondern:
+
+```
+gegebene Evidenz + zulässige Prämissen   ⟹   L3-Claim ?
+```
+
+Das ist **Claim-Evidence-Entailment**, nicht semantische Entropie. Damit ordnen sich die Ebenen:
+
+| Ebene | Frage |
+|---|---|
+| **Semantic Layer / SPL** | *Was* behauptet der Satz? Relation, Modalität, Reichweite — und wie eindeutig ist diese Lesart? |
+| **DESi** | Folgt dieser normalisierte Claim aus den angegebenen Belegen? |
+| **Layer 9** | Welches Ergebnis darf persistent werden? |
+
+Der Semantic Layer ist **Zulieferer**. Seine Modellabhängigkeit (§6b/§6c) ist ein Problem der
+*Normalisierung* — sie macht die Governance nicht hinfällig. Und `H_norm` sollte epistemische
+Berechtigung nie allein leisten; dass es das nicht kann, ist kein Defekt, sondern eine
+Zuständigkeitsfrage.
+
+**Damit ist §10 Punkt 2 der früheren Fassung erledigt**, nicht durch eine Antwort, sondern durch
+eine bessere Frage.
+
+---
+
+## 7c. Der Entailment-Auditor — gebaut und gemessen
+
+`experiments/msce_bridge/entailment.py`. Eingang: `claim`, `evidence[{text, source_id}]`,
+`declared_assumptions`, `context`. Ausgang: Verdikt + Verstösse + Begründung.
+
+**Verdikte:** `entailed` · `partially_entailed` · `compatible_not_entailed` · `contradicted` ·
+`insufficient`
+
+**Verstösse:** `missing_premise` · `causal_upgrade` · `modal_strengthening` · `scope_expansion` ·
+`unsupported_generalization` · `entity_shift` · `condition_dropped`
+
+### Die Bauweise ist die Lehre aus §8
+
+**Das LLM parst, die Regeln urteilen.** Claim und Belege werden in eine Struktur überführt —
+Subjekt, Relation, **Modalität**, **Quantor**, **Reichweitenebene**, Bedingungen — alles aus
+geschlossenen Vokabularen:
+
+```
+modality    : negated < hypothetical < possible < probable < asserted
+quantifier  : singular < existential < generic < universal
+scope_level : instance < subclass < class
+```
+
+Das Verdikt entsteht dann aus einem **Ordnungsvergleich**. Ein Quantorensprung ist
+`QUANT_RANK[claim] > QUANT_RANK[evidence]` — kein Wortfund. Damit ist der Fehlermodus aus §8
+konstruktiv ausgeschlossen: es gibt keine lexikalische Regel mehr, die ein semantisches Urteil trägt.
+
+### Das Beispiel aus dem Auftrag
+
+```
+Evidence: Alpine uses musl. / A binary wheel failed to load in one Alpine container.
+Claim:    Binary wheels are incompatible with musl systems.
+
+⇒ COMPATIBLE_NOT_ENTAILED
+   ✗ unsupported_generalization · Claim quantifiziert 'generic', Evidenz nur 'existential'
+   ✗ scope_expansion           · Claim spricht auf Ebene 'class', Evidenz nur 'instance'
+```
+
+Das Urteil behauptet **nicht**, der Claim sei falsch. Es sagt: die genannten Belege tragen ihn nicht.
+
+### Drei Regelfehler, die der Testsatz gefunden hat
+
+1. **Negation in der Relation statt in der Modalität.** „ships glibc" → `has_property`, „does not
+   ship glibc" → `prevents`. Zwei Relationen für dieselbe Proposition — der echte Widerspruch blieb
+   unerkannt.
+2. **Bedingung in die Relation gefaltet.** „succeeds *when* X" → `requires` mit leerem `conditions`.
+3. **Unerlaubte Komposition** — der schwerste, und meiner. Ich nahm das Maximum **pro Dimension
+   unabhängig über alle Belege**. Damit konnte ein Claim die Relation aus Beleg A und die Reichweite
+   aus Beleg B beziehen, obwohl kein einzelner Beleg die Kombination trägt. Eine MSCE-Kontrolle ging
+   dadurch fälschlich als `entailed` durch. Jetzt werden Modalität, Quantor und Reichweite nur gegen
+   jene Belege geprüft, die **die behauptete Relation berühren**.
+
+### Der Engpass war wieder die Normalisierung
+
+Identischer Code, identische Eingabe, fünf Läufe mit **einer** Ziehung je Aussage:
+
+```
+9/9 · 6/9 · 7/9 · 8/9 · 8/9        (Spanne 3)
+```
+
+Der Parser ist trotz `temperature=0.0` nicht deterministisch. **Hätte ich nach dem 9/9-Lauf
+aufgehört, wäre ein funktionierender Auditor gemeldet worden — es war der beste von fünf Würfen.**
+
+**Fix: Mehrheitsentscheid pro Feld.** Jedes Strukturfeld wird *k*-mal gezogen und ausgezählt. Fehlt
+die **strikte Mehrheit**, gilt das Feld als *unbestimmt*, und die Regeln urteilen nicht mehr darauf,
+sondern geben `insufficient` zurück — Uneinigkeit wird vom Fehler zum Signal.
+
+```
+k=5, vier Läufe:  9/9 · 8/9 · 8/9 · 8/9     (Spanne 1)
+```
+
+Beobachtete Feld-Zustimmung: **0.6 – 1.0**. In den geprüften Läufen blieb **kein** Feld unbestimmt —
+die `insufficient`-Notbremse musste nie greifen. Die Streuung bei k=1 kam also von einzelnen
+Ausreissern, nicht von echter Unentscheidbarkeit.
+
+### Der verbleibende Fehler ist kein Fehler
+
+Reproduzierbar scheitert **derselbe** Fall, mit Zustimmung **1.0** auf allen Feldern: Das Modell
+liest *„The build succeeds **when** the musl headers are pre-installed"* konsistent als `requires` —
+als Voraussetzungsrelation. Das ist eine vertretbare Lesart, möglicherweise die bessere. Mein
+Testfall hatte die andere als Wahrheit gesetzt, ohne das zu begründen.
+
+> **Nicht der Parser lag falsch, sondern mein Gold-Standard ist an dieser Stelle strittig.**
+
+Dasselbe bei zwei „nicht erkannten" Verstössen: Beim Alpine-Fall ist der Claim `generic` und der
+Beleg „Alpine uses musl" ebenfalls — es *gibt* keinen Quantorensprung; die Verallgemeinerung
+erscheint korrekt als `scope_expansion`. Meine Erwartung war überspezifiziert.
+
+**Konsequenz für die Kalibrierungsfrage (§10.3b):** Ein Gold-Standard für strukturelles Parsen
+enthält genuin strittige Items. Damit ist die **Annotator-Übereinstimmung die Obergrenze** jeder
+Builder-Kalibrierung — „das bessere Modell" kann sie nicht überschreiten. Ein Eignungstest braucht
+deshalb *zwei* Kategorien: unstrittige Items, an denen ein Builder nicht scheitern darf, und
+strittige, bei denen nur **Konsistenz** zählt, nicht Übereinstimmung mit einer Referenz.
+
+---
+
+## 7d. Die API — und der neunte Fehlschlag
+
+`experiments/msce_bridge/api.py` (FastAPI). `POST /v1/audit`, `POST /v1/audit/batch`,
+`GET /v1/capabilities`, `GET /v1/health`. Read-only, speichert nichts, hält keine Zugangsdaten.
+
+Zwei Entscheidungen:
+
+- **Die Antwort trennt Modell von Regel.** Jedes Ergebnis trägt
+  `determinism: {model_derived: ["structures"], rule_derived: ["verdict","violations",
+  "justification"], parser_model, draws_per_statement}`. Der Aufrufer muss nicht glauben, dass die
+  Regeln entscheiden — er sieht es.
+- **`/v1/capabilities` liefert die gemessenen Grenzen als Teil des Vertrags**: Testsatzgrösse 9
+  („a demonstration set, NOT a validation corpus"), die Streuungsbänder, der strittige Gold-Fall,
+  die Modellabhängigkeit, die fehlende Kalibrierung, die Kostenformel `k · (n + m)` Aufrufe.
+
+### Der neunte Fall des Musters — in eigenem neuen Code
+
+Der erste HTTP-Aufruf lieferte für den Alpine-Fall `contradicted` statt `compatible_not_entailed`.
+Ursache: *„A binary wheel **failed** to load"* wurde als `modality: negated` geparst. Aber „failed"
+ist **negative Valenz, keine Verneinung der Proposition** — der Satz behauptet, dass ein Fehlschlag
+eintrat, und **stützt** den Claim.
+
+Das ist strukturell exakt `_polarity_clash` aus §3. Zwei Fixes: der Prompt unterscheidet jetzt
+„berichtet einen Fehlschlag" von „leugnet die Aussage", und ein Widerspruch verlangt zusätzlich
+**Objekt**überlappung, also dieselbe Proposition — nicht bloss Relationsgleichheit plus Subjektnähe.
+
+Gefunden hat das die HTTP-Schnittstelle, **nicht** der Testsatz.
+
+### Ehrlich zum Ergebnis nach dem Fix
+
+Die beiden Fehler sind behoben und direkt verifiziert. **Der Testsatz-Score wurde dadurch aber nicht
+besser:**
+
+```
+k=5 vor den Fixes:   9/9 · 8/9 · 8/9 · 8/9        (Spanne 8–9)
+k=5 nach den Fixes:  8/9 · 8/9 · 7/9 · 8/9        (Spanne 7–9)
+```
+
+Bei so wenigen Läufen sind die Bänder nicht unterscheidbar. Die Restvarianz wird von diesen beiden
+Fehlern **nicht** erklärt. Verstösse im selben Zeitraum: 4/7 bis 7/7.
+
+---
+
 ## 8. Das Meta-Muster — der wichtigste Befund
 
 An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
@@ -426,6 +614,7 @@ An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
 | 6 | `must` / `do not` / `-ing` | beschreibende Modalität ⇒ „Vorschrift" |
 | 7 | Frame-Detector **im Notbetrieb** | 69 Stichwörter ⇒ „Frame" (§1: dort in einer Rolle, die er nicht hat) |
 | 8 | `clinical_spl._build_P_r` | ein Skalar ⇒ „Verteilung" |
+| 9 | Entailment-Parser (§7d) | „failed" ⇒ „negiert" — negative Valenz als Verneinung gelesen |
 
 > **Eine lexikalische Regel kann ein semantisches Urteil nicht tragen.**
 > Und: Ein reicher Formalismus über einer dünnen Eingabe misst die Eingabe, nicht die Welt.
@@ -434,8 +623,27 @@ Nr. 8 ist die schmerzhafteste — sie steht nicht in der Peripherie, sondern im 
 *vorgesehenen* Architektur. Nr. 7 relativiert sich nach der Korrektur in §1: dort ist die
 Stichwortliste ein Rückfall, den erst der Notbetrieb zur Hauptsache macht.
 
+**Nr. 9 ist die lehrreichste**, weil sie in Code entstand, der ausdrücklich gegen dieses Muster
+gebaut wurde (§7c: „das LLM parst, die Regeln urteilen"). Die Regelseite war sauber — der Fehler
+rutschte über die *Normalisierung* wieder herein, weil ein Modell „failed" für eine Verneinung
+hielt. Das Muster lässt sich also nicht an einer Stelle abstellen; es wandert dorthin, wo Sprache
+in Struktur übersetzt wird.
+
 Die Nummern 1–6 teilen sich denselben Ursprung: **wo eine semantische Messung fehlt, tritt eine
 lexikalische Regel an ihre Stelle** — und niemand merkt es, weil sie plausible Ausgaben liefert.
+
+### Der Gegenfehler, zweimal
+
+Ebenso wichtig: **zweimal wurde in die andere Richtung zu früh geschlossen.**
+
+* Aus vier Sätzen mit `H_norm = 0` wurde „der Kanal ist tot" gefolgert. Alle vier waren auf
+  Relationsebene *eindeutig* — Null war die **richtige** Antwort. Ein korrektes Messergebnis wurde
+  als Defekt gelesen.
+* Nach *einem* 9/9-Lauf des Entailment-Auditors stand „es funktioniert" fest. Es war der beste von
+  fünf Würfen (§7c).
+
+Beide Richtungen haben dieselbe Wurzel: **Urteil auf zu wenig Daten.** Deshalb steht in diesem
+Bericht zu jeder Zahl die Anzahl der Läufe.
 
 **Und die Gegenrichtung:** Einmal wurde zu früh in die andere Richtung geschlossen — aus vier
 Sätzen mit `H_norm = 0` wurde „der Kanal ist tot" gefolgert. Alle vier waren auf Relationsebene
@@ -458,9 +666,23 @@ Beide Fehler haben dieselbe Wurzel: Urteil auf zu wenig Daten.
 | Frame-Detector als Klassifikator | Notbetrieb | Rolle verfehlt — er liest Deklarationen (§1) |
 | Widerspruchsregel (Embedding + Negations-Heuristik) | Notbetrieb | **defekt**, 43 % Falschmeldungen (§3) |
 
+| Entailment-Regeln (Ordnungsvergleich) | DESi | **funktioniert**, deterministisch (§7c) |
+| Entailment-Normalisierung | Zulieferer | mit k=5 brauchbar, Restvarianz bleibt (§7c/§7d) |
+| API-Schnittstelle | — | lauffähig, Grenzen maschinenlesbar (§7d) |
+
 Die beiden „defekt"-Zeilen betreffen **den Notbetrieb, nicht die vorgesehene Architektur**. Sie sind
 trotzdem ernst, weil Joni diesen Pfad produktiv fährt. Und sie haben eine gemeinsame Ursache: ohne
 Brücke muss etwas anderes deren Arbeit tun.
+
+### Was sich gegenüber der ersten Fassung geändert hat
+
+Die frühere Fassung schloss: *„es gibt keine gemessene Grösse, die epistemische Berechtigung
+abbildet"* — und behandelte das als DESis zentrale Lücke. **Das war die falsche Frage** (§7b).
+Berechtigung ist keine Skalargrösse, sondern eine Ableitungsprüfung, und die ist gebaut, läuft und
+ist gemessen.
+
+Der Stand ist damit deutlich besser als am Morgen — und die verbleibende Schwäche liegt woanders,
+als der Bericht ursprünglich vermutete: **nicht im Urteil, sondern in der Normalisierung.**
 
 **Die entscheidende Einschränkung:** Der Builder liefert ein Ergebnis, aber `H_norm` misst die
 Entschiedenheit des Modells, nicht die Mehrdeutigkeit des Textes. Mit zwei unabhängigen Buildern
@@ -480,10 +702,16 @@ epistemische Berechtigung abbildet.** Weder der Frame-Layer, noch `H_norm`, noch
    *Braucht DESi beides — und wie sähe ein Entitäts-/Frame-Projektor aus, der nicht wieder eine
    Stichwortliste ist?*
 
-2. **`H_norm` misst Mehrdeutigkeit, nicht Berechtigung.** „The approach seems promising" bekommt
-   H=0: bestimmt formuliert, epistemisch leer. Für Layer 9s eigentliche Frage („ist diese
-   Behauptung durch die Evidenz gedeckt?") fehlt die zweite Größe komplett.
-   *Was misst epistemische Berechtigung? Das ist das ungelöste Kernproblem.*
+2. ~~**`H_norm` misst Mehrdeutigkeit, nicht Berechtigung** — das ungelöste Kernproblem.~~
+   **ERLEDIGT durch §7b/§7c, nicht durch eine Antwort, sondern durch eine bessere Frage.**
+   Berechtigung ist keine Skalargrösse. Die Prüfung ist Claim-Evidence-Entailment, sie ist gebaut
+   und gemessen. `H_norm` gehört zur *Normalisierung* (was behauptet der Satz, wie eindeutig), nicht
+   zum Urteil. Dass „The approach seems promising" H=0 bekommt, ist korrekt: der Satz **ist**
+   eindeutig formuliert. Dass er nichts trägt, entscheidet der Auditor — und tut es (`insufficient`
+   ohne Evidenz).
+   *Neue Restfrage: der Auditor prüft die Ableitung aus den **zitierten** Belegen. Wer prüft, ob die
+   zitierten Belege die relevanten sind? Ein Claim mit sorgfältig ausgewählter Teilevidenz besteht
+   die Prüfung.*
 
 3. **Der Builder ist kein stabiler Schätzer** (nicht-i.i.d. Ziehungen, mehr Samples ⇒ mehr Varianz)
    **und nicht modellinvariant** (§6b: `H_norm` kehrt zwischen Anbietern das Vorzeichen um).
@@ -506,10 +734,25 @@ epistemische Berechtigung abbildet.** Weder der Frame-Layer, noch `H_norm`, noch
 5. **Governance-Zuschnitt:** `desi_layer9/semantics/` — wo die epistemischen Urteile fallen — liegt
    außerhalb des Schutz-Locks. *Sollte es hinein?*
 
-6. **Gegenüber MSCE:** Ein Provenienz-/Typisierungsangebot ist dünn und hat sich in der Messung
-   nicht bewährt. Ein **funktionierender Projektor mit Mehrdeutigkeits-Messung an der L2→L3-Grenze**
-   ist dagegen etwas, das ihr Tor nicht hat — jetzt vorführbar statt behauptet.
-   *Mit welchen Einschränkungen wird das ehrlich kommuniziert?*
+6. **Gegenüber MSCE:** Das Angebot ist jetzt ein **laufender Entailment-Auditor mit HTTP-API**
+   (§7c/§7d) — genau das Tor, das sie beschrieben haben, und genau der Prototyp, um den Yang
+   schriftlich gebeten hat. Ihre eigene Nachprüfung ist rein strukturell (§7); dies prüft die
+   Ableitung.
+   *Was es **nicht** ist: validiert. 9 Testfälle, unkalibrierter Parser, Score im Band 7–9,
+   Modellabhängigkeit nachgewiesen. Als „DESi validiert eure L3-Abstraktionen" verkauft, fliegt es
+   beim ersten ernsthaften Lauf auf.*
+   Der tragfähige Zuschnitt: **eine Messung**, nicht mehr Features — *von den Einträgen, die das Tor
+   als nicht gedeckt markiert: wie viele waren tatsächlich falsch?* In beide Richtungen brauchbar.
+
+7. **Reichweite des Auditors.** Er prüft Modalität, Quantor, Reichweite, Relationsfamilie,
+   Bedingungen, Entitätsbezug. Er prüft **nicht**: ob alternative Ursachen ausgeschlossen wurden, ob
+   die Stichprobe trägt, ob eine Kausalbehauptung ein plausibles Mechanismus-Modell hat.
+   *Reicht die Verstossliste, oder fehlen Kategorien?*
+
+8. **Kosten.** `k · (n + m)` Modellaufrufe je L3-Zeile (k=5). Für eine Zeile mit 18 Einträgen und
+   mehreren Belegen sind das schnell mehrere hundert Aufrufe.
+   *Ist das für einen Konsolidierungs-Gate tragbar, oder braucht es eine billige Vorfilterung, die
+   nur strittige Fälle an den Auditor gibt?*
 
 ---
 
@@ -523,7 +766,30 @@ Alle Zahlen stammen aus ausgeführtem Code im Joni-Repo unter `experiments/msce_
 | `semantic_probe.py` | DESis Semantic Layer über alle Paare, mit/ohne Embedding |
 | `live_run.py` | MSCEs Prompts verbatim auf echten Traces, echtes LLM |
 | `spl_builder.py` | π(s) — der LLM-Builder |
-| `stability.py` + `stability_results.txt` | die Stabilitätsmessung |
+| `stability.py` + `stability_results.txt` | Stabilität des Builders |
+| `compare_builders.py` + `compare_results*.txt` | Granite vs. DeepSeek, plus Grössen-Kontrolle |
+| **`entailment.py`** | **der Claim-Evidence-Auditor** (§7c) |
+| `entailment_cases.json` | der Testsatz (9 bewertete Fälle + 2 MSCE-Kontrollen) |
+| `run_entailment.py` + `entailment_results.txt` | Auditor gegen den Testsatz |
+| `entailment_stability*.txt` | Streuung über Läufe, k=1 und k=5, vor/nach den Fixes |
+| **`api.py`** | **HTTP-Schnittstelle** (§7d) |
+| `API_README.md` | Übergabe-Dokument für das MSCE-Team |
+
+### Zahlenübersicht (jede Zahl mit Anzahl der Läufe)
+
+| Messung | Ergebnis | Läufe |
+|---|---|---|
+| Widerspruchsregel im Notbetrieb | 66/153 Paare (43 %) falsch `contradictory` | 1 (alle Paare) |
+| … mit simuliertem Fix | 66 → 0 Falschmeldungen | 1 |
+| SPL-Builder, scharf vs. mehrdeutig (DeepSeek pro) | H 0.000 vs. 0.382–0.75 | mehrere |
+| SPL-Builder, Granite | H **0.650** scharf vs. **0.252** mehrdeutig (invertiert) | 1 |
+| SPL-Builder, DeepSeek flash (Grössen-Kontrolle) | H 0.000 vs. 0.878, 4/4 korrekt | 1 |
+| Cross-Vendor-JSD vs. Familien-JSD | Ø 0.508 vs. Ø 0.070 | je 1 |
+| Builder-Stabilität, Grenzfall | E2/E3-Wechsel bei n=15 | 4 |
+| Entailment, k=1 | 6/9 – 9/9 | 5 |
+| Entailment, k=5 vor HTTP-Fixes | 8/9 – 9/9 | 4 |
+| Entailment, k=5 nach HTTP-Fixes | 7/9 – 9/9, Verstösse 4/7 – 7/7 | 4 |
+| MSCE-Ausgabe, Verankerung (echter Lauf) | 18/18 | 1 |
 
 Voraussetzungen: `DESI_ROOT` (hstre/DESi), `SPL_ROOT` (Alexandria-SPL), `pip install fastembed`,
 ein LLM-Key in der Umgebung.
