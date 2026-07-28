@@ -20,7 +20,10 @@ die eine unangenehme Frage erzwungen hat: *Können wir eigentlich, was wir behau
    Es ist **kein** Grösseneffekt: ein gleich kleines Modell derselben Familie arbeitet korrekt (§6c).
 5. **Die eigentliche Kurskorrektur:** Epistemische Berechtigung ist keine Skalargrösse, sondern eine
    **Ableitungsprüfung**. Der Claim-Evidence-Entailment-Auditor ist gebaut, gemessen und hat eine
-   HTTP-API (§7b–§7d).
+   HTTP-API (§7b–§7d). Auf einer **externen Blind-Evaluation** erreicht er allerdings nur 7/20 —
+   und die Messung in **§7h entscheidet die Architekturfrage gegen ihn**: dasselbe Modell, das
+   nur normalisieren sollte, urteilt direkt mit **17–18/20 und null Falschdurchlässen**.
+   Regeln sind richtig für Governance und falsch für Entailment.
 6. **Gegen MSCE gibt es keinen belastbaren Befund** — ein früherer Fixture-basierter Befund wurde
    am echten Lauf widerlegt (§7).
 7. **Neun Fälle desselben lexikalischen Fehlermusters** an einem Tag, zwei davon im Fundament, einer
@@ -779,6 +782,60 @@ nicht mehr. Regression: 3 Läufe, alle 8/9 (Verstösse 7/7, 6/7, 6/7). Nur drei 
 
 **Offen bleibt die Umkehrung:** fehlende *relevante* Evidenz erkennt der Auditor weiterhin nicht
 (§10.7). Er prüft, ob das Zitierte trägt — nicht, ob das Nichtzitierte widerspräche.
+
+---
+
+## 7h. Die entscheidende Messung: das Modell urteilt besser als die Regeln
+
+Nach dem externen Befund (7/20) lautete die Diagnose: Entailment braucht Weltwissen und
+mehrstufige Komposition, beides steckt im Modell. Daraus folgte der Vorschlag „Modell urteilt,
+Regeln vetoen" — **eine Vermutung.** Sie wurde geprüft, bevor darauf gebaut wurde.
+
+Fair angelegt: dasselbe Verdikt- und Verstoss-Vokabular mit denselben Definitionen, dieselbe
+Stichprobenzahl k=5 mit Mehrheitsentscheid, derselbe Dev-Satz, ein bewusst **starker** Prompt
+(ein Strohmann hätte nichts bewiesen). Der Blind-Satz blieb versiegelt.
+
+| Verfahren | Verdikte | Falschdurchlässe | Läufe |
+|---|---|---|---|
+| Regeln, vor der Verschärfung | **7/20** | **3** | 1 |
+| Regeln, nach der Verschärfung | **5/20** | 1 | 1 |
+| **Modell `deepseek-v4-flash`, k=5** | **18, 17, 17 /20** | **0, 0, 0** | **3** |
+| Modell `deepseek-v4-pro`, k=5 | 15/20 | 1 | 1 |
+
+**Die Architekturfrage ist damit empirisch entschieden.** 17–18/20 gegen 7/20 ist keine
+Justierungsfrage, und die Bandbreite über drei Läufe beträgt 1 — stabiler als alles, was die
+Regelpipeline je erreicht hat.
+
+Das Modell trifft **genau die Fälle**, die als „für Regeln architektonisch unmöglich" diagnostiziert
+waren: DEV-004 (Fieber/CRP-Weltwissen), DEV-011 (Abhängigkeitskette), DEV-012 (gerissene Kette),
+DEV-014 (Abduktion), DEV-017 (Abwesenheit von Evidenz).
+
+**Null Falschdurchlässe in allen drei Läufen** — ausgerechnet die Richtung, in der den Regeln die
+Sicherheit zugetraut wurde. Beide Fehler des Modells sind Falschsperren, also die harmlose Seite.
+
+**Und wieder: das kleine Modell schlägt das grosse.** `flash` 17–18/20 gegen `pro` 15/20, und `pro`
+produziert sogar einen Falschdurchlass. Dasselbe Muster wie §6c. Grösser ist hier messbar nicht
+besser.
+
+### Was zurückzunehmen ist
+
+Dieser Bericht verteidigt an mehreren Stellen „LLM parst, **Regeln urteilen**" — gestützt auf neun
+lexikalische Fehlschläge (§8). Der Grundsatz stimmt, die Konsequenz war falsch:
+
+> **Regeln sind richtig für Governance und falsch für Entailment.** Eine Ableitungsprüfung braucht
+> Weltwissen und Komposition; Regeln über einer dünnen Struktur haben dafür nicht die Auflösung.
+
+Die revidierte Aufteilung — jetzt auf Zahlen statt auf Vermutung:
+
+* **Das Modell urteilt** über die Ableitung.
+* **Die Regeln vetoen**: sie prüfen die gemessenen Fehlermodi (Evidenz-Auffüllen §7g,
+  Konjunktionsverlust §7f, epistemischer Hedge, Modalitäts-/Quantoren-Eskalation) und dürfen ein
+  `entailed` **herabstufen, niemals eines erzeugen**.
+* **Regelbestand (§7i) und Weltwissens-Adapter** benennen Annahmen und liefern Zitate — keine
+  Urteile.
+
+Das ist DESis eigenes Prinzip, richtig herum: Modelle schlagen vor, Regeln **beschränken**. Hier
+liessen die Regeln **urteilen** statt beschränken.
 
 ---
 
