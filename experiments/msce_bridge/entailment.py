@@ -98,8 +98,12 @@ Fill every field from the CLOSED vocabularies. Do not invent values.
   modality   : negated | hypothetical | possible | probable | asserted
                ("may/might/could"=possible, "likely/probably"=probable, plain claim=asserted,
                 "if/suppose"=hypothetical, explicit denial=negated)
-               IMPORTANT: negation belongs HERE, never in the relation. "X does not ship Y"
+               IMPORTANT 1: negation belongs HERE, never in the relation. "X does not ship Y"
                is relation=has_property with modality=negated - NOT relation=prevents.
+               IMPORTANT 2: "negated" means the statement DENIES its proposition. A statement
+               that REPORTS a failure or a negative outcome is asserted, not negated:
+               "A wheel failed to load" = modality=asserted (a failure did occur).
+               "A wheel does not fail to load" = modality=negated.
   quantifier : singular | existential | generic | universal
                (one named case=singular, "a/some/at least one"=existential,
                 "typically/in general"=generic, "all/every/always/no exceptions"=universal)
@@ -226,8 +230,15 @@ def check(claim: Structure, evidence: list[Structure],
     notes: list[str] = []
 
     # Widerspruch: ein Beleg behauptet dieselbe Relation zwischen denselben Entitäten, negiert.
+    # Ein Widerspruch verlangt DIESELBE Proposition, einmal behauptet und einmal geleugnet -
+    # nicht bloss Relationsgleichheit plus Subjektnaehe. Ohne die Objektpruefung meldete der
+    # Auditor "A binary wheel failed to load" als Widerspruch zu "Binary wheels are incompatible
+    # with musl", obwohl der Beleg den Claim STUETZT. (Live an der HTTP-Schnittstelle gefunden -
+    # derselbe Fehlermodus wie _polarity_clash in DESi: negative Valenz als Verneinung gelesen.)
     for e in evidence:
-        same = e.relation == claim.relation and _overlaps(e.subject, claim.subject)
+        same = (e.relation == claim.relation
+                and _overlaps(e.subject, claim.subject)
+                and _overlaps(e.object, claim.object))
         if same and (e.modality == "negated") != (claim.modality == "negated"):
             return "contradicted", [], [
                 f"Beleg '{e.source_id or e.text[:40]}' behauptet dieselbe Relation negiert"]
