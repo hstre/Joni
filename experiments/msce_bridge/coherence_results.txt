@@ -1,0 +1,48 @@
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+     F Builder : has_property     H_norm=0.722
+     G Parser  : has_property     Uneinigkeit=0.000  ✓ gleich
+[scharf    ] Smoking is associated with lung cancer.
+     F Builder : correlates_with  H_norm=0.000
+     G Parser  : correlates_with  Uneinigkeit=0.000  ✓ gleich
+[scharf    ] Loading a glibc-linked binary wheel inside Alpine ra
+     F Builder : causes           H_norm=0.000
+     G Parser  : causes           Uneinigkeit=0.000  ✓ gleich
+[mehrdeutig] Vitamin D supplementation may reduce fracture risk i
+     F Builder : prevents         H_norm=0.000
+     G Parser  : prevents         Uneinigkeit=0.400  ✓ gleich
+[mehrdeutig] Regular exercise is good for cardiovascular health.
+     F Builder : supports         H_norm=0.722
+     G Parser  : supports         Uneinigkeit=0.200  ✓ gleich
+[leer      ] The approach seems promising.
+     F Builder : has_property     H_norm=0.000
+     G Parser  : has_property     Uneinigkeit=0.000  ✓ gleich
+
+  P1: Relation identisch in 6/6 Fällen
+  P2: Korrelation H_norm ↔ Parser-Uneinigkeit  r = -0.000
+
+── P3 Konflikt (Layer-9 classify vs Entailment-Auditor) ──
+
+  inhaltlich: widerspruch
+     A: Alpine containers ship musl libc, no glibc.
+     B: Alpine containers ship glibc.
+     E Layer-9 : insufficient-semantic-evidence
+     H Auditor : compatible_not_entailed  ['unsupported_generalization']
+  inhaltlich: uebereinstimmung
+     A: Alpine containers ship musl libc, no glibc.
+     B: Alpine uses musl libc.
+     E Layer-9 : insufficient-semantic-evidence
+     H Auditor : compatible_not_entailed  ['unsupported_generalization', 'scope_expansion']
+  inhaltlich: unverwandt
+     A: Binary wheels fail on musl.
+     B: Node projects group source under src/.
+     E Layer-9 : insufficient-semantic-evidence
+     H Auditor : compatible_not_entailed  ['entity_shift']
+
+── P4 Anschlussfähigkeit (FrameDetector) ──
+
+  Frames über 6 Sätze: {'frame_undeclared': 6}
+  brauchbar (nicht 'undeclared'): 0/6
+  -> Kante A→E trägt nur, wenn stromaufwärts jemand Frames DEKLARIERT.
+

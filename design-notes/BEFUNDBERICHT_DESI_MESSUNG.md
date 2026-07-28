@@ -23,8 +23,13 @@ die eine unangenehme Frage erzwungen hat: *Können wir eigentlich, was wir behau
    HTTP-API (§7b–§7d).
 6. **Gegen MSCE gibt es keinen belastbaren Befund** — ein früherer Fixture-basierter Befund wurde
    am echten Lauf widerlegt (§7).
-7. **Neun Fälle desselben Fehlermusters** an einem Tag, zwei davon im Fundament, einer im Code, der
-   ausdrücklich dagegen gebaut wurde (§8). Dazu zweimal der Gegenfehler: zu früh positiv geurteilt.
+7. **Neun Fälle desselben lexikalischen Fehlermusters** an einem Tag, zwei davon im Fundament, einer
+   im Code, der ausdrücklich dagegen gebaut wurde (§8). Dazu zweimal der Gegenfehler: zu früh
+   positiv geurteilt.
+8. **Ein zehnter Fund anderer Art (§7f):** Das Normalisierungsschema fasst nur *eine* Proposition
+   je Aussage. Bei einer Konjunktion fällt der zweite Konjunkt weg — und damit kann ein Claim, der
+   etwas ausdrücklich verneint, als `entailed` durchgehen. Ein falsches `entailed` ist das
+   gefährlichste Verdikt des Systems. **Das muss vor jedem Angebot an Dritte behoben sein.**
 
 ---
 
@@ -600,6 +605,91 @@ Fehlern **nicht** erklärt. Verstösse im selben Zeitraum: 4/7 bis 7/7.
 
 ---
 
+## 7e. Kohärenz-Sonde: welche Teile sind aneinander anschlussfähig?
+
+Statt einer Kompatibilitätsmatrix eine **Messung**: dieselben Sätze durch mehrere Bauteile schicken
+und vergleichen (`coherence.py`, 6 Aussagen, 3 Paare, ein Lauf).
+
+### P1 — Redundanz bestätigt: **6/6**
+
+SPL-Builder (F) und Entailment-Parser (G) bestimmen bei **allen sechs** Sätzen dieselbe Relation.
+F ist auf dieser Dimension vollständig in G enthalten. Zwei Modellaufruf-Pfade für dieselbe
+Information.
+
+### P2 — meine Synthese-Hypothese: **widerlegt** (r = −0.000)
+
+Ich hatte vermutet, `H_norm` (F) und die Feld-Uneinigkeit des Parsers (G) messen dasselbe. Sie
+korrelieren nicht. Aber der Grund ist nicht, dass sie Verschiedenes messen — sondern:
+
+| Satz | `H_norm` (F) | Parser-Uneinigkeit (G) |
+|---|---|---|
+| „Alpine containers ship musl libc" (scharf) | **0.722** ✗ | **0.000** ✓ |
+| „Smoking is associated with…" (scharf) | 0.000 ✓ | 0.000 ✓ |
+| „…raises a dynamic-link error" (scharf) | 0.000 ✓ | 0.000 ✓ |
+| „Vitamin D **may** reduce…" (mehrdeutig) | **0.000** ✗ | **0.400** ✓ |
+| „Regular exercise is good for…" (mehrdeutig) | 0.722 ✓ | 0.200 ✓ |
+| „The approach seems promising" (leer) | 0.000 | 0.000 |
+
+**Der Parser trifft in allen sechs Fällen richtig; `H_norm` liegt bei zwei von sechs daneben — und
+zwar bei den beiden entscheidenden.** In diesem Lauf hat `H_norm` den scharfen Satz für mehrdeutig
+und den mehrdeutigen für scharf gehalten, also genau invertiert gegenüber früheren Läufen (§5).
+Die Korrelation lief mithin gegen eine instabile Referenz.
+
+> Die Synthese-Idee überlebt — in der **umgekehrten** Richtung als gedacht: nicht „G validieren an
+> F", sondern **F durch G ersetzen**. Die Feld-Uneinigkeit des Parsers ist das stabilere
+> Mehrdeutigkeitsmass. (Sechs Sätze, ein Lauf — ein Hinweis, keine Aussage.)
+
+### P3 — nicht vergleichbar, aber ein Fund
+
+Layer 9 gab für alle drei Paare `insufficient-semantic-evidence` zurück: in dieser Umgebung war
+`fastembed` deinstalliert, also kein Projektor, also — korrekterweise — kein Urteil (§2). Die
+E-Seite war damit dunkel; ein Vergleich E↔H fand nicht statt.
+
+Dafür fiel beim Nachfassen ein **schwerer Fehler im Auditor** auf (siehe §7f).
+
+### P4 — Kante A→E ist tot: **0/6**
+
+Der FrameDetector liefert über alle sechs Sätze `frame_undeclared`. Kein einziger brauchbarer Frame.
+Die Kante zu Layer 9 trägt nur, wenn stromaufwärts jemand Frames **deklariert** — und im Notbetrieb
+tut das niemand (§0b, §1).
+
+---
+
+## 7f. Der schwerste Fund des Tages: falsches `entailed` bei Konjunktionen
+
+Beim Richtungstest zum Widerspruchsfall:
+
+```
+Richtung 1   Claim: "Alpine containers ship glibc."
+             Beleg: "Alpine containers do not ship glibc."
+             → contradicted                                    ✓
+
+Richtung 2   Claim: "Alpine containers ship musl libc, no glibc."
+             Beleg: "Alpine containers ship glibc."
+             → ENTAILED                                        ✗✗✗
+             geparst als: subj='Alpine containers' obj='musl libc' asserted
+```
+
+Der Parser hat **„no glibc" ersatzlos verschluckt.** Die Aussage ist eine **Konjunktion** zweier
+Propositionen; das `Structure`-Schema fasst nur *eine* — und die weggefallene war genau die, in der
+der Widerspruch sass. Ergebnis: der Auditor bescheinigt einem Claim, der glibc ausdrücklich
+verneint, er folge aus einem Beleg, der glibc behauptet.
+
+**Ein falsches `entailed` ist das gefährlichste Verdikt, das dieses System produzieren kann** —
+es lässt eine unbegründete Behauptung mit Gütesiegel passieren.
+
+Das ist **kein** lexikalisches Übertriggern wie die Fälle 1–9, sondern eine **repräsentationale**
+Lücke: das Normalisierungsschema ist zu dünn für zusammengesetzte Aussagen. Und es trifft echte
+Daten — die MSCE-Kontrolle *„…are candidates only; they do not have decision authority…"* ist
+genauso gebaut.
+
+**Konsequenz:** Vor jedem Angebot an Dritte muss die Normalisierung Konjunktionen entweder
+*zerlegen* (eine Struktur je Konjunkt, Verdikt über alle) oder sie **erkennen und ablehnen**
+(`insufficient` statt Teilparse). Bis dahin ist jedes `entailed` auf einer zusammengesetzten
+Aussage wertlos.
+
+---
+
 ## 8. Das Meta-Muster — der wichtigste Befund
 
 An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
@@ -615,6 +705,7 @@ An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
 | 7 | Frame-Detector **im Notbetrieb** | 69 Stichwörter ⇒ „Frame" (§1: dort in einer Rolle, die er nicht hat) |
 | 8 | `clinical_spl._build_P_r` | ein Skalar ⇒ „Verteilung" |
 | 9 | Entailment-Parser (§7d) | „failed" ⇒ „negiert" — negative Valenz als Verneinung gelesen |
+| **10** | **Entailment-Schema (§7f)** | **Konjunktion ⇒ erster Konjunkt; der Rest fällt weg — kein lexikalischer, sondern ein REPRÄSENTATIONALER Fehler** |
 
 > **Eine lexikalische Regel kann ein semantisches Urteil nicht tragen.**
 > Und: Ein reicher Formalismus über einer dünnen Eingabe misst die Eingabe, nicht die Welt.
