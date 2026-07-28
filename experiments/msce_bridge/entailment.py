@@ -80,6 +80,11 @@ class Structure:
     scope_level: str = "instance"
     conditions: tuple[str, ...] = field(default_factory=tuple)
     source_id: str = ""
+    #: Felder, bei denen die k Ziehungen keine strikte Mehrheit ergaben. Sie sind NICHT bestimmt -
+    #: ein Urteil, das auf ihnen ruht, wäre geraten.
+    undetermined: tuple[str, ...] = field(default_factory=tuple)
+    #: Übereinstimmungsgrad je Feld (Anteil der Mehrheitsstimme), für die Sichtbarkeit.
+    agreement: tuple[tuple[str, float], ...] = field(default_factory=tuple)
 
     def key(self) -> tuple[str, str]:
         return (self.subject.lower().strip(), self.object.lower().strip())
@@ -110,22 +115,80 @@ Return JSON exactly:
   "scope_level":"...","conditions":["..."]}}"""
 
 
-def parse(text: str, *, source_id: str = "", builder: str = PARSER) -> Structure:
-    """Sprache → Struktur. Der einzige Modellaufruf im ganzen Auditor."""
+#: Ziehungen je Aussage. Ungerade, damit eine strikte Mehrheit möglich ist.
+K_DRAWS = int(os.getenv("ENTAIL_K", "5"))
+
+#: Felder, auf denen ein Verdikt ruht. Ist eines davon unbestimmt, wird nicht geurteilt.
+CORE_FIELDS = ("relation", "modality", "quantifier", "scope_level")
+
+
+def _pick(val, allowed, default):
+    v = str(val or "").strip().lower()
+    return v if v in allowed else default
+
+
+def _draw(text: str, builder: str) -> dict | None:
     system = _PARSE_SYSTEM.format(relations=" | ".join(sb.RELATIONS))
-    raw = sb._call(sb.BUILDERS[builder], f"{system}\n\nSTATEMENT: {text}", temperature=0.0)
-    def _pick(val, allowed, default):
-        v = str(val or "").strip().lower()
-        return v if v in allowed else default
-    return Structure(
-        text=text, source_id=source_id,
-        subject=str(raw.get("subject", ""))[:120],
-        relation=_pick(raw.get("relation"), sb.RELATIONS, ""),
-        object=str(raw.get("object", ""))[:120],
-        modality=_pick(raw.get("modality"), MODALITY, "asserted"),
-        quantifier=_pick(raw.get("quantifier"), QUANTIFIER, "singular"),
-        scope_level=_pick(raw.get("scope_level"), SCOPE, "instance"),
-        conditions=tuple(str(c)[:80] for c in (raw.get("conditions") or [])[:6]))
+    try:
+        raw = sb._call(sb.BUILDERS[builder], f"{system}\n\nSTATEMENT: {text}", temperature=0.0)
+    except Exception:  # noqa: BLE001 - eine misslungene Ziehung ist Datum, kein Absturz
+        return None
+    return {
+        "subject": str(raw.get("subject", ""))[:120],
+        "relation": _pick(raw.get("relation"), sb.RELATIONS, ""),
+        "object": str(raw.get("object", ""))[:120],
+        "modality": _pick(raw.get("modality"), MODALITY, "asserted"),
+        "quantifier": _pick(raw.get("quantifier"), QUANTIFIER, "singular"),
+        "scope_level": _pick(raw.get("scope_level"), SCOPE, "instance"),
+        "conditions": tuple(str(c)[:80] for c in (raw.get("conditions") or [])[:6]),
+    }
+
+
+def parse(text: str, *, source_id: str = "", builder: str = PARSER,
+          k: int = None) -> Structure:
+    """Sprache → Struktur, per **Mehrheitsentscheid über k Ziehungen**.
+
+    Der Parser ist trotz ``temperature=0.0`` nicht deterministisch - gemessen schwankte das
+    Endverdikt über fünf Läufe zwischen 6/9 und 9/9. Ein einzelner Wurf ist deshalb keine
+    Normalisierung, sondern eine Stichprobe.
+
+    Jedes Feld wird über k Ziehungen ausgezählt. Fehlt einem Feld die **strikte Mehrheit**, gilt es
+    als *unbestimmt* und wandert nach ``undetermined``. Die Regeln urteilen darauf nicht mehr,
+    sondern geben ``insufficient`` zurück - die Uneinigkeit wird damit vom Fehler zum Signal, genau
+    wie Layer 9 es an anderer Stelle schon hält.
+    """
+    k = K_DRAWS if k is None else k
+    with ThreadPoolExecutor(max_workers=min(k, 8)) as pool:
+        draws = [d for d in pool.map(lambda _: _draw(text, builder), range(k)) if d]
+    if not draws:
+        return Structure(text=text, source_id=source_id, undetermined=CORE_FIELDS)
+
+    chosen: dict = {}
+    undetermined: list[str] = []
+    agreement: list[tuple[str, float]] = []
+    for f in ("subject", "relation", "object", "modality", "quantifier", "scope_level"):
+        counts: dict = {}
+        for d in draws:
+            counts[d[f]] = counts.get(d[f], 0) + 1
+        top, n = max(counts.items(), key=lambda kv: kv[1])
+        share = n / len(draws)
+        chosen[f] = top
+        if f in CORE_FIELDS:
+            agreement.append((f, round(share, 2)))
+            if n * 2 <= len(draws):          # keine strikte Mehrheit
+                undetermined.append(f)
+    # Bedingungen: übernehmen, was in der Mehrheit der Ziehungen überhaupt genannt wurde
+    cond_counts: dict = {}
+    for d in draws:
+        for c in d["conditions"]:
+            cond_counts[c] = cond_counts.get(c, 0) + 1
+    conditions = tuple(c for c, n in cond_counts.items() if n * 2 > len(draws))
+
+    return Structure(text=text, source_id=source_id, conditions=conditions,
+                     undetermined=tuple(undetermined), agreement=tuple(agreement),
+                     **{f: chosen[f] for f in
+                        ("subject", "relation", "object", "modality", "quantifier",
+                         "scope_level")})
 
 
 # ── Der deterministische Teil: Strukturvergleich, kein Modell ────────────────────────────────────
@@ -143,6 +206,21 @@ def check(claim: Structure, evidence: list[Structure],
     """Verdikt + Verstösse + Begründungen. Rein deterministisch über die Strukturen."""
     if not evidence:
         return "insufficient", ["missing_premise"], ["keine Evidenz angegeben"]
+
+    # Unbestimmte Normalisierung ⇒ kein Urteil. Wenn die k Ziehungen sich über ein tragendes Feld
+    # nicht einigen konnten, ist die Aussage nicht normalisiert - und ein Verdikt darauf wäre
+    # geraten, nicht abgeleitet. Das ist der Unterschied zwischen 'wir wissen es nicht' und einem
+    # Zufallsergebnis, das wie ein Urteil aussieht.
+    if claim.undetermined:
+        return "insufficient", [], [
+            f"Claim nicht eindeutig normalisierbar - unbestimmt: {', '.join(claim.undetermined)}"]
+    unstable_ev = [e for e in evidence if e.undetermined]
+    if unstable_ev and len(unstable_ev) == len(evidence):
+        return "insufficient", [], [
+            "kein Beleg eindeutig normalisierbar - unbestimmt: "
+            + ", ".join(sorted({f for e in unstable_ev for f in e.undetermined}))]
+    # Belege mit unbestimmten Kernfeldern tragen nichts - sie werden ausgeschlossen, nicht geraten.
+    evidence = [e for e in evidence if not e.undetermined]
 
     violations: list[str] = []
     notes: list[str] = []
@@ -236,11 +314,14 @@ def audit(claim: str, evidence: list[dict], *, declared_assumptions: tuple[str, 
             "notes": notes,
             "claim_structure": {"subject": c.subject, "relation": c.relation, "object": c.object,
                                 "modality": c.modality, "quantifier": c.quantifier,
-                                "scope_level": c.scope_level, "conditions": list(c.conditions)},
+                                "scope_level": c.scope_level, "conditions": list(c.conditions),
+                                "undetermined": list(c.undetermined),
+                                "agreement": dict(c.agreement)},
             "evidence_structures": [
                 {"source_id": e.source_id, "relation": e.relation, "modality": e.modality,
                  "quantifier": e.quantifier, "scope_level": e.scope_level,
-                 "conditions": list(e.conditions)} for e in ev]}
+                 "conditions": list(e.conditions), "undetermined": list(e.undetermined),
+                 "agreement": dict(e.agreement)} for e in ev]}
 
 
 def render(res: dict) -> str:

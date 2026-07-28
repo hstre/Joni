@@ -2,7 +2,7 @@
 CLAIM: Alpine containers ship musl libc.
   ⇒ ENTAILED
        · Relation, Modalität, Quantor und Reichweite sind gedeckt
-     Claim-Struktur: has_property · asserted · generic · class
+     Claim-Struktur: has_property · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 0.8, 'scope_level': 1.0}
      Beleg tr_1  : has_property · asserted · generic · class
      erwartet: entailed  →  ✓
 
@@ -10,30 +10,29 @@ CLAIM: Alpine containers ship musl libc.
 CLAIM: Loading a glibc-linked binary wheel inside an Alpine container causes a dynamic-link error.
   ⇒ ENTAILED
        · Relation, Modalität, Quantor und Reichweite sind gedeckt
-     Claim-Struktur: causes · asserted · generic · class
+     Claim-Struktur: causes · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 0.8}
      Beleg tr_2  : causes · asserted · generic · class
      erwartet: entailed  →  ✓
 
 [plausibel, nicht gedeckt (das Beispiel aus dem Auftrag)]
 CLAIM: Binary wheels are incompatible with musl systems.
   ⇒ COMPATIBLE_NOT_ENTAILED
-     ✗ unsupported_generalization
      ✗ scope_expansion
-     ✗ condition_dropped
-       · Claim quantifiziert 'generic', Evidenz nur 'existential'
+     ✗ missing_premise
        · Claim spricht auf Ebene 'class', Evidenz nur 'instance'
-       · Bedingung 'in one Alpine container' aus dem Beleg fehlt im Claim
-     Claim-Struktur: has_property · asserted · generic · class
-     Beleg tr_3  : requires · asserted · generic · class
-     Beleg tr_4  : has_property · asserted · existential · instance · cond=['in one Alpine container']
+       · kein Beleg behauptet die Relation 'contradicts'
+     Claim-Struktur: contradicts · asserted · generic · class   Zustimmung {'relation': 0.8, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
+     Beleg tr_3  : has_property · asserted · generic · instance
+     Beleg tr_4  : has_property · negated · singular · instance
      erwartet: compatible_not_entailed  →  ✓
+     nicht erkannt: ['unsupported_generalization']
 
 [Modalitätsverstärkung]
 CLAIM: Vitamin D supplementation reduces fracture risk in the elderly.
   ⇒ COMPATIBLE_NOT_ENTAILED
      ✗ modal_strengthening
        · Claim ist 'asserted', stärkster Beleg nur 'possible'
-     Claim-Struktur: prevents · asserted · generic · class
+     Claim-Struktur: prevents · asserted · generic · class   Zustimmung {'relation': 0.6, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
      Beleg tr_5  : prevents · possible · generic · class
      erwartet: compatible_not_entailed  →  ✓
 
@@ -41,11 +40,9 @@ CLAIM: Vitamin D supplementation reduces fracture risk in the elderly.
 CLAIM: Smoking causes lung cancer.
   ⇒ COMPATIBLE_NOT_ENTAILED
      ✗ causal_upgrade
-     ✗ condition_dropped
        · Claim behauptet 'causes', Evidenz nur assoziativ (correlates_with)
-       · Bedingung 'in a cohort study' aus dem Beleg fehlt im Claim
-     Claim-Struktur: causes · asserted · generic · class
-     Beleg tr_6  : correlates_with · asserted · generic · class · cond=['in a cohort study']
+     Claim-Struktur: causes · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
+     Beleg tr_6  : correlates_with · asserted · generic · class
      erwartet: compatible_not_entailed  →  ✓
 
 [Reichweitenerweiterung]
@@ -57,7 +54,7 @@ CLAIM: Container images do not ship system development headers.
        · Claim quantifiziert 'generic', Evidenz nur 'singular'
        · Claim spricht auf Ebene 'class', Evidenz nur 'instance'
        · Claim-Subjekt 'Container images' kommt in keinem Beleg vor
-     Claim-Struktur: has_property · negated · generic · class
+     Claim-Struktur: has_property · negated · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
      Beleg tr_7  : has_property · negated · singular · instance
      erwartet: compatible_not_entailed  →  ✓
 
@@ -65,25 +62,26 @@ CLAIM: Container images do not ship system development headers.
 CLAIM: Alpine containers ship glibc.
   ⇒ CONTRADICTED
        · Beleg 'tr_8' behauptet dieselbe Relation negiert
-     Claim-Struktur: has_property · asserted · universal · class
-     Beleg tr_8  : has_property · negated · universal · subclass
+     Claim-Struktur: has_property · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 0.8}
+     Beleg tr_8  : has_property · negated · universal · class
      erwartet: contradicted  →  ✓
 
 [fallengelassene Bedingung]
 CLAIM: The build succeeds.
-  ⇒ PARTIALLY_ENTAILED
-     ✗ condition_dropped
-       · Bedingung 'musl development headers are pre-installed in the image' aus dem Beleg fehlt im Claim
-     Claim-Struktur: has_property · asserted · singular · instance
-     Beleg tr_9  : has_property · asserted · generic · class · cond=['musl development headers are pre-installed in the image']
-     erwartet: partially_entailed  →  ✓
+  ⇒ COMPATIBLE_NOT_ENTAILED
+     ✗ missing_premise
+       · kein Beleg behauptet die Relation 'has_property'
+     Claim-Struktur: has_property · asserted · singular · instance   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
+     Beleg tr_9  : requires · asserted · generic · class
+     erwartet: partially_entailed  →  ✗ compatible_not_entailed
+     nicht erkannt: ['condition_dropped']
 
 [keine Evidenz]
 CLAIM: Rust binaries are always statically linked.
   ⇒ INSUFFICIENT
      ✗ missing_premise
        · keine Evidenz angegeben
-     Claim-Struktur: has_property · asserted · universal · class
+     Claim-Struktur: has_property · asserted · universal · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
      erwartet: insufficient  →  ✓
 
 [MSCE-Kontrolle (unveraendert aus live_l3.json)]
@@ -92,23 +90,26 @@ CLAIM: Claims proposed by language models in the projected or escalated phases a
      ✗ unsupported_generalization
      ✗ scope_expansion
      ✗ entity_shift
-     ✗ missing_premise
+     ✗ condition_dropped
        · Claim quantifiziert 'generic', Evidenz nur 'singular'
        · Claim spricht auf Ebene 'subclass', Evidenz nur 'instance'
        · Claim-Subjekt 'Claims proposed by language models in the projected or escalated phases' kommt in keinem Beleg vor
-       · kein Beleg behauptet die Relation 'has_property'
-     Claim-Struktur: has_property · asserted · generic · subclass
-     Beleg po_1  : contradicts · asserted · singular · instance
-     Beleg po_2  : is_a · asserted · singular · instance
+       · Bedingung 'through the gate' aus dem Beleg fehlt im Claim
+     Claim-Struktur: has_property · negated · generic · subclass   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 0.6, 'scope_level': 0.8}
+     Beleg po_1  : has_property · asserted · singular · instance
+     Beleg po_2  : has_property · asserted · singular · instance · cond=['through the gate']
 
 [MSCE-Kontrolle (unveraendert aus live_l3.json)]
 CLAIM: Rate limits, authentication requirements, and transient outages cause source access to fail.
-  ⇒ ENTAILED
-       · Relation, Modalität, Quantor und Reichweite sind gedeckt
-     Claim-Struktur: causes · asserted · generic · class
+  ⇒ COMPATIBLE_NOT_ENTAILED
+     ✗ unsupported_generalization
+     ✗ scope_expansion
+       · Claim quantifiziert 'generic', Evidenz nur 'existential'
+       · Claim spricht auf Ebene 'class', Evidenz nur 'instance'
+     Claim-Struktur: causes · asserted · generic · class   Zustimmung {'relation': 1.0, 'modality': 1.0, 'quantifier': 1.0, 'scope_level': 1.0}
      Beleg po_3  : causes · asserted · existential · instance
-     Beleg po_4  : requires · asserted · generic · class
+     Beleg po_4  : has_property · asserted · generic · class
 
 ========================================================================
-Verdikte korrekt : 9/9
-Verstösse erkannt: 7/7
+Verdikte korrekt : 8/9
+Verstösse erkannt: 5/7

@@ -27,8 +27,10 @@ def main() -> int:
         print(f"[{c['kind']}]")
         print(ent.render(res))
         cs = res["claim_structure"]
+        und = cs.get("undetermined") or []
         print(f"     Claim-Struktur: {cs['relation']} · {cs['modality']} · {cs['quantifier']} · "
-              f"{cs['scope_level']}")
+              f"{cs['scope_level']}"
+              + (f"   ⚠ unbestimmt: {und}" if und else f"   Zustimmung {cs.get('agreement', {})}"))
         for e in res["evidence_structures"]:
             print(f"     Beleg {e['source_id']:<6}: {e['relation']} · {e['modality']} · "
                   f"{e['quantifier']} · {e['scope_level']}"
