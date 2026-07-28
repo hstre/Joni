@@ -221,6 +221,62 @@ per Definition ein Grenzfall und gehört zu `HUMAN_REVIEW_REQUIRED`. Praktisch: 
 
 ---
 
+## 6b. Zweiter Builder (IBM Granite) — die Messung repliziert **nicht**
+
+Die Ergebnisse aus §5/§6 beruhten auf **einer Modellfamilie** (`deepseek-v4-pro` / `-flash`). Der
+Gegentest mit einem unabhängigen Builder — **IBM Granite 4.1-8b via OpenRouter**, anderes Haus,
+andere Trainingsdaten — kippt die Schlussfolgerung.
+
+| | Granite Ø | DeepSeek Ø |
+|---|---|---|
+| `H_norm` bei **scharfen** Aussagen | **0.650** | **0.000** |
+| `H_norm` bei **mehrdeutigen** Aussagen | **0.252** | **0.747** |
+
+**Die Entropie ist zwischen den Modellen antikorreliert.** Granite ist unsicher, wo die Aussage klar
+ist, und sicher, wo sie mehrdeutig ist. DeepSeek zeigt das umgekehrte — und richtige — Muster.
+
+> **`H_norm` misst nicht die Mehrdeutigkeit der Aussage, sondern die Entschiedenheit des Modells.**
+> Bei DeepSeek fiel beides zufällig zusammen. Bei Granite fällt es auseinander.
+
+Folgen:
+
+- **Bei 4 von 7 Sätzen urteilen die Builder verschieden** — `granite=E3` (blockieren) gegen
+  `deepseek=E1` (emittieren), am selben Satz. Ein Tor, dessen Verdikt vom eingesetzten Builder
+  abhängt, misst nicht die Eingabe.
+- **Bedeutungsumkehr:** „Loading a glibc-linked binary wheel **raises** a dynamic-link error" →
+  Granite antwortet in ⅔ der Ziehungen `prevents`. Keine Unschärfe, sondern eine Inversion. Wären
+  beide Builder gleichermassen sicher und gleichermassen falsch, ginge das als E1 glatt durch —
+  nichts in der Kette fängt gemeinsamen Irrtum.
+- **Cross-Vendor-JSD Ø 0.508, max 1.000** (innerhalb der DeepSeek-Familie: 0.000–0.257). Bei
+  τ₄ = 0.40 würde E4 auf der Mehrheit der Paare feuern. Geschwister-Builder sind also systematisch
+  zu blind — aber die Gegenrichtung ist genauso unbrauchbar: verzweigt fast alles, entscheidet
+  nichts mehr.
+
+**Was funktioniert hat:**
+
+- **E0 griff sauber.** Bei „Vitamin D may reduce fracture risk" antwortete Granite in **8 von 9**
+  Ziehungen ausserhalb des geschlossenen Relationsraums (`p_illegal = 0.889`) → strukturelle
+  Zurückweisung. Genau dafür ist die Regel da.
+- **Der Idealfall trägt.** „Smoking is associated with lung cancer" → beide Builder
+  `correlates_with`, beide H=0, JSD=0.000. Stimmen zwei unabhängige Modelle überein und sind
+  sicher, ist die Messung belastbar.
+
+**Zurückgenommen:** Die Formulierung aus §5/§9, die Lücke sei „exakt eine Komponente breit" und der
+Builder „funktioniere", beruhte auf einer Modellfamilie und hält dem Gegentest nicht stand.
+
+**Genauere Fassung:** `H_norm` misst **Modellunsicherheit**. Ob die der Textmehrdeutigkeit folgt,
+hängt vollständig von der Builderqualität ab — ein starkes Modell approximiert sie, ein schwaches
+nicht. Und die Builderqualität wird nirgends gemessen. Die Zwei-Builder-JSD kann das nicht leisten,
+weil zwei schwache Builder sich auch einig sein können.
+
+**Ehrliche Asymmetrie:** Granite 4.1-8b (8 Mrd. Parameter) ist deutlich kleiner als
+`deepseek-v4-pro`. Der Unterschied kann Modellgrösse sein statt Anbieter — das ist kein
+grössenkontrollierter Vergleich. Grössere Granite-Versionen bietet OpenRouter nicht an
+(verfügbar sind nur `granite-4.0-h-micro` und `granite-4.1-8b`). Aber genau das ist der Punkt: wenn
+die Messung von der Modellgüte abhängt, ist sie keine Eigenschaft des Textes.
+
+---
+
 ## 7. MSCE-seitig: kein belastbarer Befund
 
 Was an ihrer Pipeline gemessen wurde:
@@ -287,9 +343,16 @@ Beide Fehler haben dieselbe Wurzel: Urteil auf zu wenig Daten.
 | SPL-Formalismus (JSD, H_norm, E0–E4) | korrekt und brauchbar |
 | Frame-/Logic-Layer | **misst nichts** auf freistehenden Behauptungen |
 | Widerspruchsregel | **defekt** (43 % Falschmeldungen) |
-| π(s) / Projektor | **fehlte; jetzt gebaut und funktionsfähig** |
+| π(s) / Projektor | gebaut und lauffähig — aber **modellabhängig, nicht textabhängig** (§6b) |
+| E0 (strukturelle Zurückweisung) | funktioniert, im Gegentest bestätigt |
 
-Die Lücke war exakt eine Komponente breit und in ~150 Zeilen zu schließen.
+**Die entscheidende Einschränkung:** Der Builder liefert ein Ergebnis, aber `H_norm` misst die
+Entschiedenheit des Modells, nicht die Mehrdeutigkeit des Textes. Mit zwei unabhängigen Buildern
+kehrt sich das Vorzeichen um, und die Emissionsregel wechselt bei 4 von 7 Sätzen. Eine Grösse, die
+vom eingesetzten Modell abhängt, ist keine Messung der Eingabe.
+
+Damit steht die Kernfrage offen wie zuvor — nur präziser: **es gibt keine gemessene Grösse, die
+epistemische Berechtigung abbildet.** Weder der Frame-Layer, noch `H_norm`, noch die JSD.
 
 ---
 
@@ -306,9 +369,15 @@ Die Lücke war exakt eine Komponente breit und in ~150 Zeilen zu schließen.
    Behauptung durch die Evidenz gedeckt?") fehlt die zweite Größe komplett.
    *Was misst epistemische Berechtigung? Das ist das ungelöste Kernproblem.*
 
-3. **Der Builder ist kein stabiler Schätzer** (nicht-i.i.d. Ziehungen, mehr Samples ⇒ mehr Varianz).
-   *Ist die Sampling-Konstruktion überhaupt legitim? Wären Logprobs der bessere Weg? Oder ist die
-   Instabilität an der Schwelle ein Feature, das man als Prüfbereich institutionalisiert?*
+3. **Der Builder ist kein stabiler Schätzer** (nicht-i.i.d. Ziehungen, mehr Samples ⇒ mehr Varianz)
+   **und nicht modellinvariant** (§6b: `H_norm` kehrt zwischen Anbietern das Vorzeichen um).
+   *Ist die Sampling-Konstruktion überhaupt legitim? Wären Logprobs der bessere Weg?*
+
+3b. **Die härteste Frage, die aus §6b folgt:** Wenn die Messung von der Builderqualität abhängt —
+   **woran misst man den Builder?** Ein Gold-Standard für Relationszuordnungen wäre nötig, aber
+   dann ist der Gold-Standard das Instrument und der Builder nur seine Näherung. Die
+   Zwei-Builder-JSD löst es nicht: zwei schwache Builder können sich einig sein, und gemeinsamer
+   Irrtum (Granites `prevents` statt `causes`) passiert die Kette ungebremst.
 
 4. **Der `_polarity_clash`-Fix** (66 → 0 Falschmeldungen, aber Verlust des einen echten
    Widerspruchs): *anwenden? Er betrifft Jonis Konfliktbildung und AleXiona mit.*

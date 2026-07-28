@@ -1,0 +1,47 @@
+Granite (ibm-granite/granite-4.1-8b) vs DeepSeek (deepseek-v4-pro), n=9 Ziehungen
+
+[scharf    ] A surface-code qubit needs many physical qubits per logi
+    erwartet: requires
+    granite : requires         ✓  H=0.918  {'requires': 0.67, 'is_a': 0.33}  p_ill=0.0
+    deepseek: requires         ✓  H=0.000  {'requires': 1.0}
+    Regel granite=E3 · deepseek=E1 · cross-JSD=0.191
+
+[scharf    ] Smoking is associated with lung cancer.
+    erwartet: correlates_with
+    granite : correlates_with  ✓  H=0.000  {'correlates_with': 1.0}  p_ill=0.0
+    deepseek: correlates_with  ✓  H=0.000  {'correlates_with': 1.0}
+    Regel granite=E1 · deepseek=E1 · cross-JSD=0.000
+
+[scharf    ] Loading a glibc-linked binary wheel inside Alpine raises
+    erwartet: causes
+    granite : prevents         ✗  H=0.918  {'prevents': 0.67, 'causes': 0.33}  p_ill=0.0
+    deepseek: causes           ✓  H=0.000  {'causes': 1.0}
+    Regel granite=E3 · deepseek=E1 · cross-JSD=0.459
+
+[scharf    ] Avoid binary wheels on Alpine.
+    erwartet: recommends
+    granite : recommends       ✓  H=0.764  {'recommends': 0.78, 'prevents': 0.22}  p_ill=0.0
+    deepseek: recommends       ✓  H=0.000  {'recommends': 1.0}
+    Regel granite=E3 · deepseek=E1 · cross-JSD=0.121
+
+[mehrdeutig] Vitamin D supplementation may reduce fracture risk in th
+    granite : H=0.000  {'correlates_with': 1.0}  p_ill=0.8889
+    deepseek: H=0.503  {'prevents': 0.89, 'causes': 0.11}
+    Regel granite=E0 · deepseek=E2 · cross-JSD=1.000
+
+[mehrdeutig] Regular exercise is good for cardiovascular health.
+    granite : H=0.503  {'correlates_with': 0.89, 'supports': 0.11}  p_ill=0.0
+    deepseek: H=0.991  {'causes': 0.44, 'supports': 0.56}
+    Regel granite=E2 · deepseek=E3 · cross-JSD=0.783
+
+[leer      ] The approach seems promising.
+    granite : H=0.773  {'recommends': 0.11, 'supports': 0.67, 'correlates_with': 0.22}  p_ill=0.0
+    deepseek: H=0.000  {'has_property': 1.0}
+    Regel granite=E3 · deepseek=E1 · cross-JSD=1.000
+
+========================================================================
+Einigkeit bei scharfen Aussagen: 3/4
+H_norm scharf     - granite Ø 0.650 · deepseek Ø 0.000
+H_norm mehrdeutig - granite Ø 0.252 · deepseek Ø 0.747
+cross-vendor JSD  - Ø 0.508 · max 1.000
+illegale Masse    - granite Ø 0.127

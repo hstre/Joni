@@ -53,7 +53,18 @@ from spl import (  # noqa: E402
     compute_jsd,
 )
 
-ENDPOINT = "https://api.deepseek.com/v1/chat/completions"
+#: Provider-Routing. Ein Builder ist durch sein Modell definiert; woher es kommt, ergibt sich aus
+#: der Modell-ID. So lassen sich Builder ÜBER Anbietergrenzen hinweg paaren - und erst das macht
+#: JSD(alpha, beta) zu einer echten Divergenzmessung statt zu einem Vergleich zweier Geschwister.
+_PROVIDERS = {
+    "deepseek": ("https://api.deepseek.com/v1/chat/completions", "DEEPSEEK_API_KEY"),
+    "openrouter": ("https://openrouter.ai/api/v1/chat/completions", "OPENROUTER_API_KEY"),
+}
+
+
+def _route(model: str) -> tuple[str, str]:
+    """OpenRouter-IDs tragen ein '/' (``ibm-granite/granite-4.1-8b``), DeepSeek-IDs nicht."""
+    return _PROVIDERS["openrouter" if "/" in model else "deepseek"]
 
 #: Der geschlossene Relationsraum ℛ. Allgemein gehalten - er muss jede Aussage aufnehmen können,
 #: die ein Agent oder ein Paper über die Welt macht, ohne auf eine Domäne festgelegt zu sein.
@@ -75,7 +86,11 @@ RELATIONS: tuple[str, ...] = (
 MATRIX_VERSION = "v1.0.0-GENERAL"
 MATRIX_SEAL = hashlib.sha256(("|".join(RELATIONS) + MATRIX_VERSION).encode()).hexdigest()[:16]
 
-BUILDERS = {"alpha": "deepseek-v4-pro", "beta": "deepseek-v4-flash"}
+BUILDERS = {
+    "alpha": "deepseek-v4-pro",
+    "beta": "deepseek-v4-flash",
+    "granite": "ibm-granite/granite-4.1-8b",     # grösste auf OpenRouter verfügbare Granite-Version
+}
 
 # Erste Fassung fragte das Modell direkt nach einer Verteilung ("verteile Masse über den Raum").
 # Ergebnis über alle Testsätze: H_norm = 0.000, ausnahmslos - auch bei "Entropy increases in the
@@ -103,9 +118,10 @@ If the statement tells someone what to DO rather than what IS, the relation is "
 
 
 def _call(model: str, text: str, *, temperature: float) -> dict:
-    key = os.getenv("DEEPSEEK_API_KEY")
+    endpoint, key_var = _route(model)
+    key = os.getenv(key_var)
     if not key:
-        raise SystemExit("DEEPSEEK_API_KEY fehlt")
+        raise SystemExit(f"{key_var} fehlt")
     body = json.dumps({
         "model": model,
         "messages": [
@@ -116,7 +132,7 @@ def _call(model: str, text: str, *, temperature: float) -> dict:
         "temperature": temperature,
         "response_format": {"type": "json_object"},
     }).encode()
-    req = urllib.request.Request(ENDPOINT, data=body, headers={
+    req = urllib.request.Request(endpoint, data=body, headers={
         "Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=180) as r:      # noqa: S310 - fixed https endpoint
         payload = json.loads(r.read())
