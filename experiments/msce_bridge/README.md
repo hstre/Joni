@@ -107,6 +107,102 @@ Wichtiger als das Ergebnis:
    sie ist empirisch, nicht durch Nachdenken zu beantworten.
 4. **Es wurde kein Modell befragt.** Nur deterministische Prüfungen.
 
+---
+
+# Nachtrag: der Lauf **ohne** die Einschränkungen
+
+Die drei Grenzen oben wurden aufgehoben: `hstre/DESi` ausgecheckt (`DESI_ROOT`), `fastembed`
+installiert (BAAI/bge-small-en-v1.5), Semantic Layer und Widerspruchserkennung scharf.
+Reproduzierbar mit `experiments/msce_bridge/semantic_probe.py`.
+
+**Was nicht ging:** In dieser Umgebung liegt kein LLM-API-Key (der DeepSeek-Key ist ein
+GitHub-Secret, nur für den Runner). Echte L3-Produktionsausgabe erzeugen war deshalb weiterhin
+nicht möglich — der Korpus bleibt Fixtures.
+
+## Stufe 1 — Einzelsatz: keinerlei Differenzierung
+
+`FrameDetector` und `LogicalAuditor` liefern für **alle 18** Einträge dasselbe:
+`frame_undeclared` (confidence 0.0) und `gap_detected` („no 'Therefore' marker found").
+
+**Das ist kein Domänenproblem.** Dieselben Werte kommen für klinische Sätze heraus, für die DESi
+gebaut wurde. Die Komponenten beurteilen *Argumentationsketten mit expliziten Markern*, nicht
+freistehende Behauptungen. Ein L3-Eintrag ist eine freistehende Behauptung. Meine frühere Vermutung
+(„greift auf dieser Domäne vielleicht nicht") war richtig — aber aus dem falschen Grund.
+
+## Stufe 2 — ohne Embedding: Layer 9 verweigert korrekt
+
+> `insufficient` / `human-review-required` — *„frame undeclared / undecidable and no semantic
+> projector — cannot decide"*
+
+Kein lexikalischer Rückfall. Die Governance-Eigenschaft hält.
+
+## Stufe 3 — mit Embedding: der Befund
+
+| | IST | mit simuliertem Fix |
+|---|---|---|
+| `contradictory` | **66** | 0 |
+| `supports` | 43 | 43 |
+| `insufficient` | 29 | 95 |
+| `complementary` | 14 | 14 |
+| `duplicate` | 1 | 1 |
+
+**66 von 153 Paaren (43 %) als Widerspruch geurteilt** — in einem Korpus, der fast ausschließlich
+aus einander *stützenden* Aussagen über dieselbe Umgebung besteht. Kein einziges echtes A-und-nicht-A.
+
+Beispiele für Fehlurteile:
+
+```
+Alpine uses musl libc                 ||  Alpine containers ship musl libc, no glibc
+musl no glibc                         ||  shared libs musl-only
+Binary wheels fail musl incompatible  ||  pip fails binary wheels mismatch
+```
+
+Alle drei Paare **stimmen überein**.
+
+### Ursache, präzise
+
+`_polarity_clash = antonym_clash(a,b) or (is_negated(a) != is_negated(b))`.
+In allen geprüften Fehlurteilen ist `antonym_clash` **False** — es feuert allein die
+**Negationswort-Asymmetrie**. Das trifft in `decision._from_distance` auf:
+
+```python
+if d <= DIST_SUPPORTS and m.polarity_clash:
+    return (CONTRADICTORY, SYNTHESIS_REJECTED, "close in meaning but opposed in polarity")
+```
+
+Nah beieinander + ein Negationswort auf *einer* Seite ⇒ Widerspruch **behauptet**. Damit steht an
+genau dieser Stelle eine lexikalische Heuristik als semantisches Urteil — die Regel, die das Modul
+an jeder anderen Stelle ausdrücklich verbietet.
+
+### Vorgeschlagener Fix (simuliert, **nicht** angewandt)
+
+Eine lexikalische Polarität darf eine Verschmelzung *verhindern*, aber keinen Widerspruch
+*behaupten*. Bei undeklarierten Frames also `insufficient / human-review-required`.
+Wirkung: 66 → 0 Falschmeldungen.
+
+**Der ehrliche Preis:** das eine echte Gegensatzpaar („ships musl libc, no glibc" vs. „ships
+glibc") wird dann ebenfalls nur zur menschlichen Prüfung geleitet statt abgelehnt. Mit Embedding +
+Negationsmarker allein ist es von einer Übereinstimmung nicht unterscheidbar — beide sind nah und
+negations-asymmetrisch.
+
+Für ein Validierungs-Tor ist das die richtige Richtung (nicht entscheiden ist sicher, korrektes
+Wissen verwerfen nicht). Es heißt aber auch: **DESi liefert auf diesen Daten derzeit keine
+Widerspruchserkennung.**
+
+`decision.py` liegt *außerhalb* von `joni_core.lock` (gesperrt sind 17 Module direkt unter
+`desi_layer9/`, nicht das `semantics/`-Unterpaket). Der Fix wäre technisch erlaubt — er wird hier
+trotzdem nicht angewandt, weil er Jonis Konfliktbildung, AleXiona und alles andere mitbetrifft, was
+auf dieser Regel steht. Architekturentscheidung, kein Nebenbefund.
+
+## Was der Lauf ohne Einschränkungen unterm Strich sagt
+
+Der Wert des Prototyps kam **vollständig aus den fünf deterministischen Prüfungen** (Verankerung,
+Typisierung, Drift). Der semantische Kern hat nichts beigetragen: Stufe 1 differenziert nicht,
+Stufe 2 verweigert, Stufe 3 produziert überwiegend Falschmeldungen.
+
+Dem MSCE-Team „DESi validiert eure L3-Abstraktionen" zu schreiben, wäre damit **nicht gedeckt**.
+Gedeckt ist: eine Provenienz- und Typisierungsdisziplin, die ihr strukturelles Tor heute nicht hat.
+
 ## Was als Nächstes zu messen wäre
 
 Nicht Benchmarks. Zuerst: einen Satz **echter** L3-Zeilen aus einem MSCE-Lauf durch C1–C4 schicken
