@@ -100,6 +100,14 @@ class Method(EpistemicObject):
     supporting_runs: tuple[str, ...] = ()
     failed_runs: tuple[str, ...] = ()
     parent_methods: tuple[str, ...] = ()
+    #: Die Vorfaelle, die diese Methode noetig gemacht haben - Episoden-, Konflikt- oder
+    #: Vorfall-IDs. NICHT dasselbe wie ``supporting_runs``: jene sagen, wo die Methode
+    #: funktioniert hat, dieses Feld sagt, warum es sie ueberhaupt gibt.
+    #:
+    #: Das ist die Rueckreferenz, ohne die eine Regel geglaubt statt geprueft wird. Mit ihr ist
+    #: "warum mache ich das so" ein Nachschlagen statt einer Erinnerung - und eine Methode ohne
+    #: einen einzigen Vorfall dahinter faellt als unbegruendet auf.
+    motivated_by: tuple[str, ...] = ()
     version: int = 1
     superseded_by: str | None = None
 

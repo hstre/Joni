@@ -79,6 +79,7 @@ def snapshot(cs) -> list[dict]:
             "state": _state_for(m.status, vs),
             "n_trials": len(vs),
             "last_verdict": vs[-1] if vs else None,
+            "motivated_by": list(getattr(m, "motivated_by", ()) or ()),
         })
     rows.sort(key=lambda r: (r["state"], r["method_id"]))
     return rows
@@ -155,3 +156,16 @@ def run_ledger(cs, proto, cycle: int, *, paths) -> dict:
         with contextlib.suppress(Exception):
             proto.record(cycle, "method_ledger", f"[ledger error, skipped] {type(exc).__name__}")
         return {}
+
+
+def unmotivated(rows: list[dict]) -> list[dict]:
+    """Methoden ohne einen einzigen Vorfall dahinter - die verdaechtigen.
+
+    Eine Methode entsteht aus einem Fehler, den man nicht wiederholen will. Steht keiner dahinter,
+    ist sie entweder aus einer Vermutung gebaut oder ihre Herkunft ist verlorengegangen; beides
+    ist ein Grund, sie anzusehen, bevor man ihr folgt.
+
+    Kein Urteil, keine Semantik, kein Modell: Feldpraesenz. Wie ``memory.undeclared()`` prueft das
+    nicht, ob die Methode gut ist, sondern ob jemand gesagt hat, woher sie kommt.
+    """
+    return [r for r in rows if not r.get("motivated_by")]
