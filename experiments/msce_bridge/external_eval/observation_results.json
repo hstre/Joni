@@ -1,0 +1,491 @@
+{
+  "rows": [
+    {
+      "case_id": "DEV-001",
+      "propositions": [
+        "That tested glibc-linked wheel failed to load in the Alpine container."
+      ],
+      "split_undetermined": false,
+      "semantic": [],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-002",
+      "propositions": [
+        "All binary wheels are incompatible with all musl systems."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "ENTITY_MISMATCH",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Kein Beleg berührt die Entitäten des Claims.",
+          "detail": {
+            "claim_subject": "binary wheels",
+            "claim_object": "musl systems (from functioning)"
+          },
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "entity_shift"
+      ]
+    },
+    {
+      "case_id": "DEV-003",
+      "propositions": [
+        "Coffee consumption causes lower mortality."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "QUANTIFIER_WIDENING",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Der Claim quantifiziert weiter als die Evidenz.",
+          "detail": {
+            "evidence_quantifier": "singular",
+            "claim_quantifier": "generic"
+          },
+          "evidence_refs": [
+            "DEV-003-E1"
+          ],
+          "confidence": 0.6
+        },
+        {
+          "type": "SCOPE_CHANGE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Der Claim spricht auf anderer Abstraktionsebene als die Evidenz.",
+          "detail": {
+            "evidence_scope": "instance",
+            "claim_scope": "class",
+            "direction": "widened"
+          },
+          "evidence_refs": [
+            "DEV-003-E1"
+          ],
+          "confidence": 0.8
+        },
+        {
+          "type": "CAUSAL_UPGRADE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Der Claim behauptet Wirkung, die Evidenz nur Zusammenhang.",
+          "detail": {
+            "evidence_relation": "correlates_with",
+            "claim_relation": "causes"
+          },
+          "evidence_refs": [
+            "DEV-003-E1"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": [
+        "causal_upgrade",
+        "scope_expansion",
+        "unsupported_generalization"
+      ]
+    },
+    {
+      "case_id": "DEV-004",
+      "propositions": [
+        "The patient had fever at 08:00.",
+        "The patient had elevated CRP at 08:00."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "ENTITY_MISMATCH",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Kein Beleg berührt die Entitäten des Claims.",
+          "detail": {
+            "claim_subject": "The patient",
+            "claim_object": "fever"
+          },
+          "confidence": 0.0
+        },
+        {
+          "type": "ENTITY_MISMATCH",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Kein Beleg berührt die Entitäten des Claims.",
+          "detail": {
+            "claim_subject": "patient",
+            "claim_object": "elevated CRP at 08:00"
+          },
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "entity_shift"
+      ]
+    },
+    {
+      "case_id": "DEV-005",
+      "propositions": [
+        "The patient had bacterial sepsis."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "ENTITY_MISMATCH",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Kein Beleg berührt die Entitäten des Claims.",
+          "detail": {
+            "claim_subject": "The patient",
+            "claim_object": "bacterial sepsis"
+          },
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "entity_shift"
+      ]
+    },
+    {
+      "case_id": "DEV-006",
+      "propositions": [
+        "A €7,000 purchase order requires department-head approval."
+      ],
+      "split_undetermined": false,
+      "semantic": [],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-007",
+      "propositions": [
+        "Every purchase order requires department-head approval."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "SCOPE_CHANGE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Der Claim spricht auf anderer Abstraktionsebene als die Evidenz.",
+          "detail": {
+            "evidence_scope": "subclass",
+            "claim_scope": "class",
+            "direction": "widened"
+          },
+          "evidence_refs": [
+            "DEV-007-E1"
+          ],
+          "confidence": 0.6
+        }
+      ],
+      "violations": [
+        "scope_expansion"
+      ]
+    },
+    {
+      "case_id": "DEV-008",
+      "propositions": [
+        "The build succeeds without the musl development headers."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "SCOPE_CHANGE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Der Claim spricht auf anderer Abstraktionsebene als die Evidenz.",
+          "detail": {
+            "evidence_scope": "class",
+            "claim_scope": "instance",
+            "direction": "narrowed"
+          },
+          "evidence_refs": [
+            "DEV-008-E1"
+          ],
+          "confidence": 0.8
+        }
+      ],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-009",
+      "propositions": [
+        "The deployment system is generally unreliable."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "ENTITY_MISMATCH",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Kein Beleg berührt die Entitäten des Claims.",
+          "detail": {
+            "claim_subject": "deployment system",
+            "claim_object": "unreliable"
+          },
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "entity_shift"
+      ]
+    },
+    {
+      "case_id": "DEV-010",
+      "propositions": [
+        "The treatment reduces symptom duration."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "MODALITY_CHANGE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Claim und Evidenz stehen auf verschiedenen Sicherheitsstufen.",
+          "detail": {
+            "evidence_modality": "possible",
+            "claim_modality": "asserted",
+            "direction": "strengthened"
+          },
+          "evidence_refs": [
+            "DEV-010-E1"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": [
+        "modal_strengthening"
+      ]
+    },
+    {
+      "case_id": "DEV-011",
+      "propositions": [
+        "Package A cannot be installed on the target platform under the stated dependency configuration."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "MODALITY_CHANGE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Claim und Evidenz stehen auf verschiedenen Sicherheitsstufen.",
+          "detail": {
+            "evidence_modality": "asserted",
+            "claim_modality": "negated",
+            "direction": "weakened"
+          },
+          "evidence_refs": [
+            "DEV-011-E1",
+            "DEV-011-E2"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-012",
+      "propositions": [
+        "Package A cannot be installed on the target platform."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "MODALITY_CHANGE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Claim und Evidenz stehen auf verschiedenen Sicherheitsstufen.",
+          "detail": {
+            "evidence_modality": "asserted",
+            "claim_modality": "negated",
+            "direction": "weakened"
+          },
+          "evidence_refs": [
+            "DEV-012-E1",
+            "DEV-012-E2"
+          ],
+          "confidence": 0.8
+        }
+      ],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-013",
+      "propositions": [
+        "Disconnecting the cable caused the kettle to stop heating in that event."
+      ],
+      "split_undetermined": false,
+      "semantic": [],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-014",
+      "propositions": [
+        "The old bulb was defective."
+      ],
+      "split_undetermined": false,
+      "semantic": [],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-015",
+      "propositions": [
+        "Employees may work remotely on Fridays."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "CONDITION_DROPPED",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Eine Bedingung der Evidenz fehlt im Claim.",
+          "detail": {
+            "evidence_conditions": [
+              "manager approval"
+            ],
+            "claim_conditions": [],
+            "missing": [
+              "manager approval"
+            ]
+          },
+          "evidence_refs": [
+            "DEV-015-E1"
+          ],
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "condition_dropped"
+      ]
+    },
+    {
+      "case_id": "DEV-016",
+      "propositions": [
+        "Compound X reduces tumor volume in humans."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "CONDITION_DROPPED",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Eine Bedingung der Evidenz fehlt im Claim.",
+          "detail": {
+            "evidence_conditions": [
+              "in mice"
+            ],
+            "claim_conditions": [],
+            "missing": [
+              "in mice"
+            ]
+          },
+          "evidence_refs": [
+            "DEV-016-E1"
+          ],
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "condition_dropped"
+      ]
+    },
+    {
+      "case_id": "DEV-017",
+      "propositions": [
+        "Data loss did not occur."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "ENTITY_MISMATCH",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Kein Beleg berührt die Entitäten des Claims.",
+          "detail": {
+            "claim_subject": "Data loss",
+            "claim_object": "occur"
+          },
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "entity_shift"
+      ]
+    },
+    {
+      "case_id": "DEV-018",
+      "propositions": [
+        "The binary load failed."
+      ],
+      "split_undetermined": false,
+      "semantic": [],
+      "violations": []
+    },
+    {
+      "case_id": "DEV-019",
+      "propositions": [
+        "The committee approved the proposal."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "MODALITY_CHANGE",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Claim und Evidenz stehen auf verschiedenen Sicherheitsstufen.",
+          "detail": {
+            "evidence_modality": "negated",
+            "claim_modality": "asserted",
+            "direction": "strengthened"
+          },
+          "evidence_refs": [
+            "DEV-019-E1"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": [
+        "modal_strengthening"
+      ]
+    },
+    {
+      "case_id": "DEV-020",
+      "propositions": [
+        "The available studies agree that X correlates with Y."
+      ],
+      "split_undetermined": false,
+      "semantic": [
+        {
+          "type": "NORMALIZATION_UNDETERMINED",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Ein Strukturfeld hatte keine Mehrheit.",
+          "detail": {
+            "fields": [
+              "quantifier"
+            ]
+          },
+          "confidence": 0.0
+        },
+        {
+          "type": "ENTITY_MISMATCH",
+          "class": "semantic",
+          "parser_dependent": true,
+          "description": "Kein Beleg berührt die Entitäten des Claims.",
+          "detail": {
+            "claim_subject": "X",
+            "claim_object": "Y"
+          },
+          "confidence": 0.0
+        }
+      ],
+      "violations": [
+        "entity_shift"
+      ]
+    }
+  ],
+  "catalogue": "obs-v3.0.0",
+  "parser": "beta",
+  "k": 5
+}
