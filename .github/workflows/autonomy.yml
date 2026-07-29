@@ -10,8 +10,10 @@ name: joni-autonomy
 # There is no per-15-min schedule: the loop *is* the cadence. The hourly schedule below is
 # only a re-launcher - it starts the next continuous job when the previous one ends (the
 # concurrency group keeps exactly one running at a time, so jobs hand off without overlap).
+# ABGESCHALTET 2026-07-29 (Projektabschluss): automatische Ausloeser stillgelegt.
+# Es feuert nichts mehr von selbst; ein Lauf ist nur noch von Hand ueber
+# workflow_dispatch moeglich. Zum Reaktivieren die Kommentarzeichen unten entfernen.
 on:
-  # FRESH START 2026-06-19: reset to zero. The accumulated state hit GitHub's 100 MB/file limit
   # (the fast-load snapshot dump inside state/layer9.json grew to ~103 MB), so every cycle's push
   # was rejected and Joni could no longer persist. The prior memory is backed up on branch
   # backup/joni-2026-06-19 (and backup/joni-2026-06-18). State is reset to a fresh seeded core,
@@ -50,8 +52,8 @@ on:
   # Pro (joni-hard, DEEPSEEK_API_KEY). This week observes: does the method-breakdown show missing
   # benchmarks or non-procedures, does the hypothesis backlog drain, does the review-trigger lead to
   # real digestion. To re-park: re-comment the schedule.
-  schedule:
-    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
+#  schedule:
+#    - cron: "7 * * * *"     # hourly: relaunch the continuous loop when the last job ends
   workflow_dispatch:
 
 concurrency:
