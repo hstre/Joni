@@ -1,0 +1,28 @@
+{
+  "run_id": "blind-2-5856242b",
+  "config": {
+    "commit": "c8969d2b",
+    "model_id": "deepseek-v4-flash",
+    "model_alias": "beta",
+    "second_opinion_model_id": "google/gemma-4-31b-it",
+    "second_opinion_alias": "gemma",
+    "provider": "deepseek + openrouter",
+    "k": 5,
+    "judge_prompt_sha256_16": "f73dd7f139054b7d",
+    "parse_prompt_sha256_16": "87ccaff4f22ded86",
+    "active_controls": [
+      "conjunction_coverage",
+      "epistemic_hedge",
+      "modality_escalation",
+      "quantifier_escalation",
+      "scope_escalation"
+    ],
+    "inactive_controls": [
+      "evidence_padding"
+    ],
+    "architecture": "v2 - Modell urteilt, Kontrollen vetoen (nur abwärts)"
+  },
+  "n_cases": 40,
+  "predictions_file": "blind_predictions_run2.jsonl",
+  "predictions_sha256": "46025b747b4b6ab82d53dd4efbd1ff5b1f8edd0f13738a1e9d61471ebcbc92f2"
+}
