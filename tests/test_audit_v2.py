@@ -132,3 +132,34 @@ def test_the_result_attributes_every_part_to_its_origin():
     assert d["provenance"]["controls_can_upgrade"] is False
     assert d["downgraded"] is True
     assert d["vetoes"][0]["can_upgrade"] is False
+
+
+# ── Triage: Zweitmeinung markiert, urteilt aber nicht ───────────────────────────────────────────
+
+def test_the_second_opinion_flags_but_never_changes_the_verdict():
+    """Uneinigkeit ist ein Signal fuer Pruefung - kein Urteilsverbesserer.
+
+    Als Kombinationsregel bringt ein Ensemble nichts, zweimal gemessen: flash+pro und flash+gemma
+    landen beide bei 17/20 statt 18, weil die Uneinigkeiten genau die Faelle sind, in denen einer
+    richtig und einer falsch liegt. Als SIGNAL faengt dieselbe Uneinigkeit auf dem Dev-Satz zwei
+    von drei Fehlern bei 10 Prozent markierter Faelle."""
+    assert v2.needs_review("entailed", "compatible_not_entailed") is True
+    assert v2.needs_review("entailed", "entailed") is False
+
+
+def test_review_required_is_reported_separately_from_the_verdict():
+    r = v2.Result(claim="c", verdict="entailed", model_verdict="entailed",
+                  model_agreement=1.0, review_required=True, second_opinion="insufficient")
+    d = r.to_dict()
+    assert d["verdict"] == "entailed"          # unveraendert
+    assert d["review_required"] is True         # aber markiert
+    assert d["second_opinion"] == "insufficient"
+
+
+def test_the_second_opinion_must_come_from_another_house():
+    """Geschwistermodelle taugen nicht - gemessen: deepseek flash/pro waren sich bei 18 von 20
+    Faellen einig, also fast nie uneinig, also als Triage blind."""
+    import spl_builder as sb
+    primary = sb.BUILDERS[ent.PARSER]
+    second = sb.BUILDERS[v2.SECOND_OPINION]
+    assert primary.split("/")[0].split("-")[0] != second.split("/")[0]

@@ -90,6 +90,13 @@ BUILDERS = {
     "alpha": "deepseek-v4-pro",
     "beta": "deepseek-v4-flash",
     "granite": "ibm-granite/granite-4.1-8b",     # grösste auf OpenRouter verfügbare Granite-Version
+    # Drei kleine Modelle aus DREI verschiedenen Häusern. Die Auswahl folgt dem Befund, dass das
+    # Ensemble aus deepseek-flash und -pro nichts brachte: sie waren sich bei 18 von 20 Fällen
+    # einig, also nicht divers genug. Verschiedene Anbieter sollten das ändern - oder zeigen,
+    # dass die Aufgabe selbst wenig Spielraum lässt.
+    "gemma": "google/gemma-4-31b-it",                        # Google
+    "qwen": "qwen/qwen3-30b-a3b-instruct-2507",              # Alibaba, MoE
+    "mistral": "mistralai/mistral-small-3.2-24b-instruct",   # Mistral
 }
 
 # Erste Fassung fragte das Modell direkt nach einer Verteilung ("verteile Masse über den Raum").

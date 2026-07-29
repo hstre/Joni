@@ -69,6 +69,11 @@ CONTROLS = ("evidence_padding", "conjunction_coverage", "epistemic_hedge",
 ACTIVE_CONTROLS = frozenset(CONTROLS) - {"evidence_padding"}
 
 
+#: Zweitmeinung für die Triage. Ein Modell aus einem ANDEREN Haus - Geschwistermodelle taugen
+#: nicht, das ist gemessen (deepseek flash/pro waren sich bei 18 von 20 Fällen einig).
+SECOND_OPINION = "gemma"
+
+
 @dataclass(frozen=True)
 class Veto:
     """Eine ausgelöste Kontrolle. Trägt ihren Grund und die Stufe, auf die sie herabsetzt."""
@@ -175,9 +180,14 @@ class Result:
     violations: list[str] = field(default_factory=list)
     vetoes: list[Veto] = field(default_factory=list)
     justification: list[str] = field(default_factory=list)
+    #: Triage-Signal, KEIN Urteil: zwei Modelle aus verschiedenen Häusern waren uneinig.
+    review_required: bool = False
+    second_opinion: str = ""
 
     def to_dict(self) -> dict:
         return {"claim": self.claim, "verdict": self.verdict,
+                "review_required": self.review_required,
+                "second_opinion": self.second_opinion,
                 "model_verdict": self.model_verdict,
                 "model_agreement": self.model_agreement,
                 "violations": self.violations,
@@ -189,9 +199,33 @@ class Result:
                                "controls_can_upgrade": False}}
 
 
+def needs_review(primary: str, second: str) -> bool:
+    """Uneinigkeit zweier Modelle aus verschiedenen Häusern ⇒ Prüfung verlangen.
+
+    **Kein Urteilsverbesserer, sondern ein Triage-Signal.** Als Kombinationsregel bringt ein
+    Ensemble nichts - zweimal gemessen: flash+pro und flash+gemma landen beide bei 17/20 statt 18,
+    weil die Uneinigkeiten genau die Fälle sind, in denen einer richtig und einer falsch liegt, und
+    keine blinde Regel wählen kann.
+
+    Als *Signal* ist dieselbe Uneinigkeit dagegen scharf. Gemessen auf dem Dev-Satz mit flash und
+    gemma-4-31b (beide 18/20, beide null Falschdurchlässe, aber fast komplementär falsch):
+
+        Uneinigkeit bei  2 von 20 Fällen  (10 %)
+        Fehler insgesamt 3
+        davon erfasst    2                (DEV-005, DEV-013)
+        entwischt        1                (DEV-010 - der konstruktionsbedingt unbehebbare Fall)
+
+    Zwei Drittel aller Fehler bei 10 % markierter Fälle. Das ist die dritte Schicht der Architektur
+    („Prüfung verlangen"), und sie hat damit erstmals einen gemessenen Auslöser.
+
+    Ehrliche Grenze: 20 Fälle, je ein Lauf. Ob das trägt, sagt der Blind-Satz.
+    """
+    return primary != second
+
+
 def audit(claim: str, evidence: list[dict], *, declared_assumptions: tuple[str, ...] = (),
-          model_alias: str = None, k: int = None) -> Result:
-    """Volle Kette: Modell urteilt → Kontrollen vetoen → Ergebnis mit Herkunft."""
+          model_alias: str = None, k: int = None, second_opinion: str | None = None) -> Result:
+    """Volle Kette: Modell urteilt → Kontrollen vetoen → Zweitmeinung triagiert."""
     model_alias = model_alias or ent.PARSER
     k = k or ent.K_DRAWS
 
@@ -228,9 +262,21 @@ def audit(claim: str, evidence: list[dict], *, declared_assumptions: tuple[str, 
     just += [f"Kontrolle {v.control}: {v.reason}" for v in all_vetoes]
     if final != verdict:
         just.append(f"herabgestuft {verdict} → {final}")
+
+    # Triage: Zweitmeinung aus einem anderen Haus. Sie ändert das Verdikt NICHT - sie markiert nur.
+    review = False
+    second = ""
+    if second_opinion:
+        s = base.judge(case, model_alias=second_opinion, k=k)
+        second = s["verdict"]
+        review = needs_review(final, second)
+        if review:
+            just.append(f"Zweitmeinung ({second_opinion}) sagt '{second}' - Prüfung verlangt")
+
     return Result(claim=claim, verdict=final, model_verdict=verdict,
                   model_agreement=judged["agreement"], violations=judged["violations"],
-                  vetoes=all_vetoes, justification=just)
+                  vetoes=all_vetoes, justification=just,
+                  review_required=review, second_opinion=second)
 
 
 __all__ = ["audit", "Result", "Veto", "run_controls", "apply_vetoes", "LADDER", "PASSING",
