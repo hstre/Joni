@@ -169,6 +169,15 @@ def run_controls(claim: ent.Structure, evidence: list[ent.Structure], *,
     return vetoes
 
 
+def _struct_dict(s: ent.Structure) -> dict:
+    """Protokollform einer Struktur - für die Vorhersagedatei, nicht für eine Entscheidung."""
+    return {"text": s.text, "source_id": s.source_id, "subject": s.subject,
+            "relation": s.relation, "object": s.object, "modality": s.modality,
+            "quantifier": s.quantifier, "scope_level": s.scope_level,
+            "conditions": list(s.conditions), "epistemic_hedge": s.epistemic_hedge,
+            "undetermined": list(s.undetermined), "agreement": dict(s.agreement)}
+
+
 # ── Die Kette ───────────────────────────────────────────────────────────────────────────────────
 
 @dataclass
@@ -183,6 +192,12 @@ class Result:
     #: Triage-Signal, KEIN Urteil: zwei Modelle aus verschiedenen Häusern waren uneinig.
     review_required: bool = False
     second_opinion: str = ""
+    #: **Reines Protokoll, kein Entscheidungspfad.** Das Auswertungsprotokoll des externen
+    #: Testsatzes verlangt, dass jede Vorhersage die normalisierten Strukturen und die
+    #: Feldzustimmung mitführt, damit Normalisierungsfehler von Regelfehlern getrennt werden
+    #: können (Schritt 8). Wird nur befüllt, wenn die Kontrollen überhaupt liefen - die
+    #: Kostenregel bleibt unangetastet.
+    structures: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {"claim": self.claim, "verdict": self.verdict,
@@ -276,7 +291,10 @@ def audit(claim: str, evidence: list[dict], *, declared_assumptions: tuple[str, 
     return Result(claim=claim, verdict=final, model_verdict=verdict,
                   model_agreement=judged["agreement"], violations=judged["violations"],
                   vetoes=all_vetoes, justification=just,
-                  review_required=review, second_opinion=second)
+                  review_required=review, second_opinion=second,
+                  structures={"propositions": list(props), "split_undetermined": split_undet,
+                              "claim": [_struct_dict(s) for s in claim_structs],
+                              "evidence": [_struct_dict(s) for s in ev_structs]})
 
 
 __all__ = ["audit", "Result", "Veto", "run_controls", "apply_vetoes", "LADDER", "PASSING",
