@@ -8,9 +8,14 @@ Joni's first visible "I've changed my mind".
 
 from __future__ import annotations
 
-from .models import ClaimStatus, Horizon, Trigger
+from .models import Basis, ClaimStatus, Horizon, Trigger
 from .operators import adopt_goal, assert_claim, form_preference
 from .state import Layer9
+
+#: Herkunft der Grundueberzeugungen. Sie sind hier im Quelltext gesetzt, nicht hergeleitet und
+#: nicht gelesen - REPORTED mit dieser Quelle sagt genau das. Wer spaeter fragt, warum Joni etwas
+#: glaubt, findet im Gedaechtnis "steht in seed.py" statt einer stillen Selbstverstaendlichkeit.
+SEED_SOURCE = "seed.seed_identity"
 
 
 def seed_identity(name: str = "Joni") -> Layer9:
@@ -18,12 +23,16 @@ def seed_identity(name: str = "Joni") -> Layer9:
 
     # Beliefs (some strong, two deliberately weak so the harvester can overturn them).
     assert_claim(state, "Local-first models keep data fully private", "privacy",
+                 basis=Basis.REPORTED, sources=(SEED_SOURCE,),
                  support=0.5, status=ClaimStatus.ACTIVE, trigger=Trigger.SELF_REVIEW)
     assert_claim(state, "Self-improvement can run unbounded if it is monitored", "drift",
+                 basis=Basis.REPORTED, sources=(SEED_SOURCE,),
                  support=0.4, status=ClaimStatus.ACTIVE, trigger=Trigger.SELF_REVIEW)
     assert_claim(state, "Most turns can be answered by a small local model", "routing",
+                 basis=Basis.REPORTED, sources=(SEED_SOURCE,),
                  support=0.66, status=ClaimStatus.ACTIVE, trigger=Trigger.SUPPORTING_EVIDENCE)
     assert_claim(state, "Continuity comes from episodic memory, not summaries", "memory",
+                 basis=Basis.REPORTED, sources=(SEED_SOURCE,),
                  support=0.68, status=ClaimStatus.ACTIVE, trigger=Trigger.SUPPORTING_EVIDENCE)
 
     # Goals - the long horizon is what reads, from outside, as 'having direction'.

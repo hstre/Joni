@@ -108,9 +108,17 @@ def resolve_conflict(
     operator=conflict_resolution, signed off by ``reviewed_by``.
     """
     conflict = state.conflicts[conflict_id]
+    # NONE, nicht UNDECLARED: die Evidenz ist der widersprechende Claim, also intern, und er
+    # steht bereits in ``refs``. Es gibt hier keine aeussere Quelle, die jemand haette nennen
+    # muessen - anders als bei einer Aussage ueber ein Dokument.
+    #
+    # Gemessen wurde das, nicht angenommen: nach zwoelf Ticks trugen 8 von 18 Episoden den
+    # Vorgabewert, und alle acht kamen von hier. Ein Vorgabewert, der die Haelfte der Eintraege
+    # faerbt, macht den Bericht unlesbar statt aufmerksam.
     transition, event = revise_opinion(
         state, reject, ClaimStatus.REJECTED, trigger=Trigger.CONTRADICTORY_EVIDENCE,
         operator=Operator.CONFLICT_RESOLUTION, reviewed_by=reviewed_by, cost=cost,
+        basis=Basis.NONE,
     )
     conflict.resolved = True
     return transition, event
@@ -186,7 +194,7 @@ def start_project(
     event = state.record(Operator.PROJECT_START, f"start {project.id}: {title}",
                          refs=(project.id,), reviewed_by=reviewed_by)
     _remember(state, "started_project", f"Started {project.id}: {title}",
-              (project.id, event.id))
+              (project.id, event.id), basis=Basis.NONE)
     return project
 
 

@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 
 from .conflict import detect_conflicts, weaker_claim
 from .creativity import CreativityEngine, LocalCreativity
-from .models import ClaimStatus, LedgerEvent, ProjectStatus
+from .models import Basis, ClaimStatus, LedgerEvent, ProjectStatus
 from .operators import (
     abandon_project,
     advance_goal,
@@ -54,11 +54,19 @@ DEFAULT_FINDINGS: dict[str, list[tuple[str, float]]] = {
 
 @dataclass
 class ResearchHarvester:
-    """Feeds deterministic findings, one per topic per visit. Replay-stable."""
+    """Feeds deterministic findings, one per topic per visit. Replay-stable.
+
+    ``source_id`` sagt, woher die Funde stammen, und wandert in jede daraus gebildete
+    Ueberzeugung. Der Vorgabewert nennt den Fixture-Bestand beim Namen: Was hier geerntet wird,
+    ist keine Erkenntnis aus der Welt, sondern eine Liste im Quelltext. Ein echter Harvester
+    setzt seine eigene Quelle - und dann steht sie ebenso im Gedaechtnis.
+    """
 
     findings: dict[str, list[tuple[str, float]]] = field(
         default_factory=lambda: {k: list(v) for k, v in DEFAULT_FINDINGS.items()}
     )
+    #: Herkunft der Funde. Vorgabe: der eingebaute Bestand, ausdruecklich benannt.
+    source_id: str = "loops.DEFAULT_FINDINGS"
     _cursor: dict[str, int] = field(default_factory=dict)
 
     def next_for(self, topic: str) -> tuple[str, float] | None:
@@ -89,8 +97,12 @@ def run_tick(
     if finding is not None:
         text, support = finding
         route = router.route(needs_language=False)
+        # REPORTED, nicht READ: der Fund ist eine fremde Behauptung aus dem Bestand, nicht eine
+        # gelesene Quelle. Damit steht im Gedaechtnis, dass Jonis "Forschung" aus einer Liste
+        # kommt - eine Tatsache, die bisher nur im Docstring stand und in keiner Episode.
         assert_claim(state, text, topic, support=support, status=ClaimStatus.ACTIVE,
-                     reviewed_by=route.model_name)
+                     reviewed_by=route.model_name,
+                     basis=Basis.REPORTED, sources=(harvester.source_id,))
 
     # 2. Detect contradictions the new claim may have created.
     detect_conflicts(state)

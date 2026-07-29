@@ -168,3 +168,42 @@ def test_record_memory_schreibt_die_grundlage_in_den_ledger():
                   basis=Basis.READ, sources=("SSRN-6395042",))
     assert "read" in s.ledger[-1].summary
     assert "SSRN-6395042" in s.ledger[-1].summary
+
+
+# ── Der Lauf an echten Daten ────────────────────────────────────────────────────────────────────
+
+def test_zwoelf_ticks_lassen_keinen_vorgabewert_uebrig():
+    """Nach einem echten Lauf darf keine Episode mehr unerklaert sein.
+
+    Der Test haelt das Ergebnis einer Messung fest, nicht eine Annahme. Der erste Lauf ergab
+    8 von 18 mit Vorgabewert; die Vermutung, sie kaemen aus der Konfliktaufloesung, traf auf
+    genau eine zu. Die uebrigen sieben waren Seed-Claims und Projektstarts. Erst das Nachsehen
+    hat die drei Stellen gefunden, die zu verdrahten waren.
+    """
+    from joni.loops import ResearchHarvester, run_tick
+    from joni.router import Router
+    from joni.seed import seed_identity
+
+    s = seed_identity()
+    h, r = ResearchHarvester(), Router()
+    for _ in range(12):
+        run_tick(s, r, h)
+
+    assert [e.id for e in s.memory if e.basis is Basis.UNDECLARED] == []
+    assert undeclared(s) == []
+
+
+def test_die_ueberzeugungen_stammen_erkennbar_aus_dem_quelltext():
+    """Joni erntet aus einer Liste. Das steht jetzt in den Episoden, nicht nur im Docstring."""
+    from joni.loops import ResearchHarvester, run_tick
+    from joni.router import Router
+    from joni.seed import seed_identity
+
+    s = seed_identity()
+    h, r = ResearchHarvester(), Router()
+    for _ in range(12):
+        run_tick(s, r, h)
+
+    quellen = {q for e in s.memory for q in e.sources}
+    assert quellen == {"seed.seed_identity", "loops.DEFAULT_FINDINGS"}
+    assert all(e.basis is Basis.REPORTED for e in s.memory if e.sources)
