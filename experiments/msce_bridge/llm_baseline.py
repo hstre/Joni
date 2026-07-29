@@ -69,6 +69,11 @@ Rules of judgement:
 - Absence of evidence is NOT refutation.
 - "No evidence of X was found" is a statement about a search, not about X.
 - An intervention that removes a symptom does not prove the cause.
+  (A narrower version of this rule was tried - exempting singular, event-scoped causal claims -
+  and REVERTED: it fixed DEV-013, a harmless false BLOCK, at the price of turning DEV-014 into a
+  consistent false PASS. Trading a false block for a false pass is exactly the trade the
+  architecture forbids. The spot-check that seemed to clear DEV-014 sat at agreement 0.8 and was
+  already wobbling - a single measurement read as a result.)
 - Domain conventions (what counts as "fever", "elevated") may be assumed if standard, but if
   the claim depends on a threshold the evidence does not state, that is missing_premise.
 
