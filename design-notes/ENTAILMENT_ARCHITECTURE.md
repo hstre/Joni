@@ -107,6 +107,38 @@ Jede Kontrolle nennt den gemessenen Fall, der sie nötig gemacht hat.
 widersprochenen Konjunkt — dort greift die Konjunktionsregel aus v1 (das Ganze ist so stark wie
 sein schwächster Teil), aber auch die nur nach unten.
 
+### Blindtest-Befund: der Katalog ist widerlegt
+
+Auf 40 versiegelten Fällen, zwei Läufe, 80 Urteile:
+
+    Reparaturen durch eine Kontrolle    0
+    Schäden durch eine Kontrolle        6
+
+Jede der sechs Herabstufungen zog ein **korrektes** `entailed` auf `partially_entailed`. Die
+Trefferquote fiel dadurch von 33/40 (Modell allein) auf 29/40 bzw. 31/40.
+
+* `epistemic_hedge` verwechselt *„eine Quelle sagt X"* mit *„zu X wurde nichts gefunden"*
+  (TEST-007, TEST-030).
+* `modality_escalation` liest Negation in der Evidenz („haben **keine** Befugnis") als
+  Modalitätsabfall, den der Claim dann scheinbar unzulässig übersteigt (TEST-030, TEST-038).
+* `scope_escalation` feuerte einmal falsch (TEST-026).
+* `conjunction_coverage` feuerte kein einziges Mal.
+* `evidence_padding` war schon vorher abgeschaltet (§7g).
+
+**Jede Kontrolle dieses Katalogs stammt aus genau einem beobachteten Fehlschlag, und keine hat je
+einen zweiten gefangen.** Das ist die Definition einer Überanpassung. Die Herkunftsspalte oben war
+als Qualitätsmerkmal gemeint — sie war in Wahrheit die Warnung.
+
+Die Messregel unten verlangte „mindestens die Baseline". Die Kontrollen haben sie blind
+**unterschritten**, und die Regel sagt, was daraus folgt: sie sind zu scharf.
+
+> **Wirkungslosigkeit auf den Entwicklungsdaten ist kein Nachweis der Unschädlichkeit.** Sie
+> belegt nur, dass diese Daten die Kontrolle nie herausgefordert haben.
+
+Abgeschaltet wurde der Katalog **nicht** im selben Zug: eine Konfigurationsänderung nach Sicht des
+Schlüssels wäre eine Anpassung an den Testsatz, und 33/40 ist eine Gegenprobe auf denselben Daten,
+keine unabhängige Messung. Die Abschaltung braucht einen frischen versiegelten Satz.
+
 ---
 
 ## Kostenregel
@@ -150,3 +182,9 @@ das Modell zu schwach.
 **Der Blind-Satz bleibt versiegelt**, bis v2 steht: einmal laufen, Vorhersagen einfrieren, dann
 erst den Schlüssel öffnen — und danach nicht mehr nachjustieren. Der Dev-Satz ist als
 Messinstrument verbraucht, weil an ihm diagnostiziert wurde.
+
+**Durchgeführt** (Commit `c8969d2b`, zwei Läufe, versiegelt unter `b99aa58e…` / `46025b74…` vor
+Öffnung des Schlüssels). Ergebnis in §7j des Befundberichts. Damit ist **auch der Blind-Satz als
+Messinstrument verbraucht**: jede Änderung, die aus seinen Ergebnissen folgt — die Abschaltung des
+Katalogs, die Angleichung der Labelkonvention — muss auf einem neuen, unabhängig gebauten Satz
+gemessen werden, sonst misst sie sich selbst.

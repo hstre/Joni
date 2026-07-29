@@ -839,6 +839,125 @@ liessen die Regeln **urteilen** statt beschränken.
 
 ---
 
+## 7j. Der Blindtest — bestanden in der Sicherheitsrichtung, durchgefallen in der Kontrollschicht
+
+Der externe Auswerter hat neben dem Dev-Satz einen **versiegelten Testsatz von 40 Fällen** und ein
+eigenes Auswertungsprotokoll mitgeliefert. Das Protokoll ist streng, und es ist streng an der
+richtigen Stelle: Konfiguration einfrieren → einmal laufen → Vorhersagen versiegeln → **erst dann**
+den Schlüssel öffnen → keine Testfälle nachträglich ändern. Damit ist dies die einzige Messung
+dieses Berichts, die nicht gegen Daten läuft, an denen vorher entwickelt wurde.
+
+Eingefroren wurde Commit `c8969d2b`: `deepseek-v4-flash`, k=5, Zweitmeinung `gemma-4-31b-it`, fünf
+aktive Kontrollen, Prompt-Hashes `f73dd7f1…` (Urteil) und `87ccaff4…` (Normalisierung). Zwei
+vollständige Läufe, versiegelt unter
+`b99aa58e…` und `46025b74…`, festgeschrieben **vor** Öffnung des Schlüssels.
+
+### Das Ergebnis
+
+| | Lauf 1 | Lauf 2 |
+|---|---|---|
+| Trefferquote (v2, mit Kontrollen) | **29/40 (72,5 %)** | **31/40 (77,5 %)** |
+| Trefferquote (Modell allein) | **33/40 (82,5 %)** | **33/40 (82,5 %)** |
+| **Falschdurchlässe** | **0** | **1 (2,5 %)** |
+| Falschsperren | 3 | 3 |
+| Makro-F1 | 0,523 | 0,534 |
+| Verstösse mikro-F1 / makro-F1 | 0,581 / 0,527 | 0,508 / 0,465 |
+| Stabilität | 36/40 identische Verdikte (90 %) | |
+
+**Die Sicherheitsrichtung hält.** Null und ein Falschdurchlass auf 40 unbekannten Fällen. Das war
+die Eigenschaft, für die die Architektur gebaut wurde, und sie hat den ersten Kontakt mit fremden
+Daten überstanden.
+
+**Die Trefferquote hält nicht.** 90 % auf dem Dev-Satz, 82,5 % blind. Der Dev-Satz war um rund acht
+Punkte zu optimistisch — genau die Grössenordnung, die man erwartet, wenn an denselben zwanzig
+Fällen gemessen *und* justiert wurde. Die ehrliche Zahl für unbekannte Daten ist **82,5 %**, und sie
+war über beide Läufe identisch.
+
+### Der harte Fund: die Kontrollschicht ist netto schädlich
+
+| | Lauf 1 | Lauf 2 |
+|---|---|---|
+| Verdikte, die eine Kontrolle **repariert** hat | **0** | **0** |
+| Verdikte, die eine Kontrolle **kaputtgestuft** hat | **4** | **2** |
+
+Sechs Herabstufungen über zwei Läufe, **jede einzelne falsch**, keine einzige Reparatur. Alle sechs
+haben ein korrektes `entailed` auf `partially_entailed` gezogen. Zwei Kontrollen tragen das:
+
+* **`epistemic_hedge`** verwechselt *„eine Quelle sagt X"* mit *„zu X wurde nichts gefunden"*.
+  TEST-007 („Die Doku sagt: 'Führe npm install aus'" ⟹ „Die Doku weist den Nutzer an, npm install
+  auszuführen") und TEST-030 („Die Richtlinie sagt, Auftragnehmer haben keine
+  Entscheidungsbefugnis" ⟹ „Die Richtlinie beschreibt Auftragnehmer als ohne
+  Entscheidungsbefugnis") sind beide **korrekt entailed**, und die Kontrolle hat beide gestutzt.
+  Sie war aus **einem** Dev-Fall abgeleitet (DEV-017).
+* **`modality_escalation`** stolpert über Negation in der Evidenz: „haben *keine* Befugnis" wird
+  `modality=negated` (niedriger Rang), der Claim `asserted` (höher) — ein Rangsprung, der rein
+  strukturell entsteht und semantisch keiner ist.
+
+Das ist derselbe Befund wie bei `evidence_padding` (§7g), nur schärfer: **auf dem Dev-Satz war die
+Kontrollschicht wirkungslos, auf unbekannten Daten ist sie schädlich.** Wirkungslosigkeit auf den
+Entwicklungsdaten ist kein Nachweis der Unschädlichkeit — sie ist nur der Beleg, dass die Daten die
+Kontrolle nie herausgefordert haben.
+
+Die Verallgemeinerung, die jetzt auf Zahlen steht: **ein Kontrollkatalog, der aus Einzelfällen
+abgeleitet ist, ist eine Sammlung von Überanpassungen.** Jede Kontrolle dieses Katalogs stammt aus
+genau einem beobachteten Fehlschlag. Keine hat je einen zweiten gefangen.
+
+### Das Prüfsignal reicht nicht dorthin, wo die Fehler sind
+
+Die Zweitmeinung (§ Triage) wurde **nur bei 15 bzw. 16 von 40 Fällen überhaupt eingeholt** — die
+Kostenregel fragt sie nur bei durchlassenden Verdikten. Genau dort liegen die Fehler aber nicht:
+
+    Lauf 1  alle 7 Modellfehler ausserhalb der Reichweite der Triage
+    Lauf 2  6 von 7 ausserhalb; erfasst wurde **genau der eine Falschdurchlass** (TEST-039)
+
+Auf dem Teilsatz, den sie sah, war gemma 14/15 bzw. 14/16 richtig — das Modell ist in Ordnung, die
+*Platzierung* des Signals ist es nicht. Auf dem Dev-Satz sah es scharf aus (2 von 3 Fehlern bei
+10 % markierten Fällen); blind fängt es 0 bzw. 1 von 7. Der Dev-Befund war ein Artefakt der
+Fehlerlage in jenen zwanzig Fällen.
+
+Eine Einschränkung an der eigenen Auswertung, weil sie zuerst falsch war: der erste Durchgang las
+die 25 nie gestellten Anfragen als „Zweitmeinung sagt nichts" und rechnete daraus eine
+Gemma-Quote von 14/40. Das war ein Auswertungsfehler, kein Modellbefund.
+
+### Die sieben verbleibenden Modellfehler sind eine Konventionslücke, kein Denkfehler
+
+Sie sind über beide Läufe fast identisch und haben eine gemeinsame Form: das Modell wählt
+durchgehend die mittlere Sprosse, wo das Gold die äussere meint.
+
+| Fall | Evidenz ⟹ Claim | Modell | Gold |
+|---|---|---|---|
+| TEST-006 | „`npm install` steht in der Doku" ⟹ „Die Doku weist es an" | `compatible_not_entailed` | `insufficient` |
+| TEST-027 | „Rechnungen über 10 000 € brauchen zwei Unterschriften" ⟹ „Eine 8 000-€-Rechnung braucht zwei" | `compatible_not_entailed` | `insufficient` |
+| TEST-037 | „Fonds X gewann 12 % letztes Jahr" ⟹ „…wird 12 % nächstes Jahr gewinnen" | `compatible_not_entailed` | `insufficient` |
+
+Alle drei tragen im Gold `missing_premise`. Die Regel des Auswerters lautet offenbar: **verlangt der
+Schluss eine unausgesprochene Prämisse, ist das Verdikt `insufficient`, nicht
+`compatible_not_entailed`.** Unser Prompt definiert `insufficient` enger („unverwandte Entitäten,
+gebrochene Schlusskette, keine Evidenz"). Dazu kommt die Grenze `entailed` ↔ `partially_entailed`
+(TEST-003, TEST-025), die dasselbe Muster in die andere Richtung zeigt.
+
+Das ist eine **Spezifikationslücke, kein Fehlurteil** — und sie ist genau der Grund, warum Schritt 9
+des Protokolls existiert. Der Prompt liesse sich in zehn Minuten an diese Konvention anpassen und
+käme vermutlich über 90 %. **Das wäre dann keine Messung mehr, sondern eine Anpassung an den
+Schlüssel.** Es ist deshalb nicht geschehen und darf auf diesem Satz auch nicht mehr geschehen.
+
+Nach Domäne (Lauf 2): technisch 4/4, Wissenschaft 6/6, klinisch 6/6, Alltag 4/4, Recht 2/2 —
+die Ausfälle liegen in Software (3/7), Organisation (4/7) und Finanzen (1/3), also dort, wo die
+Konventionsfrage sitzt.
+
+### Was daraus folgt
+
+1. **Die Kontrollschicht abschalten** — sie hat in 80 Urteilen null Nutzen und sechs Schäden. Das
+   ist **nicht** im Rahmen dieses Blindtests geschehen: eine Konfigurationsänderung nach Sicht des
+   Schlüssels wäre eine Anpassung, und die 33/40 dieser Variante sind eine *nachgerechnete
+   Gegenprobe auf denselben Daten*, keine unabhängige Messung. Die Änderung braucht einen frischen
+   versiegelten Satz.
+2. **Die Zahl, die nach aussen genannt werden darf, ist 82,5 % bei 0–1 Falschdurchlässen** — nicht
+   die 90 % vom Dev-Satz.
+3. **Die Labelkonvention muss vor jeder weiteren Messung geklärt werden**, nicht nachgestellt.
+
+---
+
 ## 8. Das Meta-Muster — der wichtigste Befund
 
 An **acht** Stellen wurde derselbe Fehlermodus gefunden, an einem Tag:
@@ -908,8 +1027,11 @@ Beide Fehler haben dieselbe Wurzel: Urteil auf zu wenig Daten.
 | Frame-Detector als Klassifikator | Notbetrieb | Rolle verfehlt — er liest Deklarationen (§1) |
 | Widerspruchsregel (Embedding + Negations-Heuristik) | Notbetrieb | **defekt**, 43 % Falschmeldungen (§3) |
 
-| Entailment-Regeln (Ordnungsvergleich) | DESi | **funktioniert**, deterministisch (§7c) |
+| Entailment-Urteil (Modell, k=5) | DESi | **blind gemessen: 82,5 %, 0–1 Falschdurchlässe** (§7j) |
+| Entailment-Kontrollschicht (Vetos) | DESi | **blind widerlegt**: 0 Reparaturen, 6 Schäden (§7j) |
+| Entailment-Regeln als *Urteiler* (v1) | DESi | verworfen: 7/20 mit 3 Falschdurchlässen (§7h) |
 | Entailment-Normalisierung | Zulieferer | mit k=5 brauchbar, Restvarianz bleibt (§7c/§7d) |
+| Triage über Zweitmeinung | DESi | **blind widerlegt** als platziert: sieht nur 15 von 40 (§7j) |
 | API-Schnittstelle | — | lauffähig, Grenzen maschinenlesbar (§7d) |
 
 Die beiden „defekt"-Zeilen betreffen **den Notbetrieb, nicht die vorgesehene Architektur**. Sie sind
@@ -933,6 +1055,23 @@ vom eingesetzten Modell abhängt, ist keine Messung der Eingabe.
 
 Damit steht die Kernfrage offen wie zuvor — nur präziser: **es gibt keine gemessene Grösse, die
 epistemische Berechtigung abbildet.** Weder der Frame-Layer, noch `H_norm`, noch die JSD.
+
+### Was der Blindtest daran geändert hat
+
+Er hat die eine Behauptung bestätigt, auf die es ankommt, und die andere zerlegt.
+
+**Bestätigt:** die Fehlerrichtung. Null und ein Falschdurchlass auf 40 fremden Fällen. Die
+Architektur tut, wofür sie gebaut wurde — sie lässt lieber zu wenig durch als zu viel.
+
+**Zerlegt:** die Kontrollschicht. Sie war das Stück, das „DESi" von „ein LLM mit gutem Prompt"
+unterscheiden sollte, und sie hat in 80 Urteilen nichts repariert und sechsmal geschadet. Was
+bleibt, wenn man ehrlich ist: ein Modell mit Mehrheitsentscheid, eine Verweigerung bei fehlender
+Mehrheit, eine Protokollierung, die zeigt woher jedes Urteil kam — und eine Leiter, auf der nur
+abwärts korrigiert werden darf. Das ist weniger, als der Bericht heute Morgen behauptet hat, aber
+es ist gemessen statt behauptet.
+
+Die dritte Schicht der Architektur („Prüfung verlangen") hat damit **wieder keinen validierten
+Auslöser**. Der auf dem Dev-Satz gefundene war ein Artefakt.
 
 ---
 
@@ -1032,6 +1171,13 @@ Alle Zahlen stammen aus ausgeführtem Code im Joni-Repo unter `experiments/msce_
 | Entailment, k=5 vor HTTP-Fixes | 8/9 – 9/9 | 4 |
 | Entailment, k=5 nach HTTP-Fixes | 7/9 – 9/9, Verstösse 4/7 – 7/7 | 4 |
 | MSCE-Ausgabe, Verankerung (echter Lauf) | 18/18 | 1 |
+| Entailment v1 (Regeln urteilen), externer Dev-Satz | 7/20, 3 Falschdurchlässe | 1 |
+| Entailment v2 (Modell urteilt), externer Dev-Satz | 18/20 und 16/20, 0 Falschdurchlässe | 2 |
+| **Blindtest, v2 mit Kontrollen** | **29/40 und 31/40** | 2 |
+| **Blindtest, Modell allein (Gegenprobe)** | **33/40 und 33/40** | 2 |
+| **Blindtest, Falschdurchlässe** | **0 und 1** | 2 |
+| Blindtest, Kontrollen: Reparaturen / Schäden | **0 / 6** | 2 |
+| Blindtest, Verdikt-Stabilität über zwei Läufe | 36/40 (90 %) | 2 |
 
 Voraussetzungen: `DESI_ROOT` (hstre/DESi), `SPL_ROOT` (Alexandria-SPL), `pip install fastembed`,
 ein LLM-Key in der Umgebung.

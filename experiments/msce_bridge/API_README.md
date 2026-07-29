@@ -23,11 +23,14 @@ measured limits as part of the contract:
 | | |
 |---|---|
 | **Architecture** | **v2 — model proposes, controls constrain** |
-| Dev set (external, independently built) | **18/20 and 16/20** across 2 runs · **zero false passes** · 0–1 downgrades |
+| **Blind set (40 cases, sealed, one-shot)** | **29/40 and 31/40** across 2 runs · **0 and 1 false pass** · macro-F1 0.52 |
+| **Blind set, model alone (post-hoc recount)** | **33/40 in both runs** — the control layer *cost* 4 and 2 correct verdicts |
+| **Control layer status** | **falsified on unseen data**: 0 repairs, 6 damages in 80 verdicts. See below. |
+| Dev set (external, independently built) | 18/20 and 16/20 across 2 runs · zero false passes |
 | Model baseline alone (no controls) | 17–18/20 across 3 runs · zero false passes |
 | Superseded v1 (rules judged) | **7/20** with **3 false passes** |
-| Control layer status | **inert on this data** — no control has yet caught a real model failure; the catalogue is *unvalidated* |
-| Blind set (40 cases) | **sealed** — not yet run, one-shot |
+| Verdict stability (blind, 2 runs) | 36/40 identical (90 %) |
+| Second-opinion triage | **not usefully placed**: consulted on only 15–16 of 40 cases; caught 0 and 1 of 7 model errors |
 | Test set (internal demo, superseded) | 9 cases — a demonstration set, *not* a validation corpus |
 | Verdict variance (1 draw/statement) | 6/9 – 9/9 across 5 runs on identical input |
 | Verdict variance (5 draws/statement) | 7/9 – 9/9 across 7 runs on identical input |
@@ -39,6 +42,40 @@ measured limits as part of the contract:
 We report this because a caller must be able to see the state of the evidence before relying on a
 verdict. Please treat the numbers above as the reason to run it on **your** data rather than as a
 claim about how well it works.
+
+### What the blind test actually established
+
+The evaluation set came with its own protocol: freeze the configuration, run once, seal the
+predictions, and only then open the key. We followed it, and both prediction files are hashed and
+committed from before the key was opened (`b99aa58e…`, `46025b74…`, commit `c8969d2b`).
+
+**The safety property held.** Zero and one false pass across 80 verdicts on unseen data. That is the
+one property this gate exists for: it errs toward blocking, not toward certifying.
+
+**The accuracy claim did not.** 90 % on the dev set, **82.5 %** blind. The dev figure was about eight
+points optimistic — the size of gap you expect when the same twenty cases were used to both measure
+and adjust.
+
+**The control layer was falsified.** Every one of the six downgrades it produced was wrong, and it
+repaired nothing. Two controls carry it: `epistemic_hedge` confuses *"a source states X"* with
+*"no evidence of X was found"*, and `modality_escalation` reads negation in the evidence
+("contractors *do not have* authority") as a modality drop the claim then illegitimately climbs.
+Both were derived from a single dev case each.
+
+> A control catalogue derived from individual observed failures is a collection of overfits. On the
+> development data this layer was merely *inert*; inertness there was never evidence of harmlessness.
+
+We have **not** switched it off in this commit. Changing the configuration after seeing the key
+would turn an evaluation into a fit, and the 33/40 above is a recount on the same data, not an
+independent measurement. Disabling it needs a fresh sealed set — and that is a decision for whoever
+adopts this, not for us to quietly make.
+
+**The remaining seven model errors are a label-convention gap, not reasoning failures.** Where the
+key says `insufficient` (the inference needs an unstated premise: *"npm install appears in the docs"*
+⟹ *"the docs instruct the user to run it"*), our prompt's definition steers to
+`compatible_not_entailed`. Three of seven errors are exactly this, all carrying `missing_premise` in
+the key. Aligning the prompt to that convention would likely push the score past 90 % — which is
+precisely why we did not do it on this set.
 
 ---
 
