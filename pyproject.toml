@@ -45,6 +45,10 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
+# Der externe Governance-Benchmark liegt UNVERAENDERT im Repo - Datensatz, Protokoll und der
+# Scorer des Auswerters. Sein Stil ist nicht unserer, und ihn zu formatieren hiesse, ein
+# fremdes Messinstrument anzufassen.
+extend-exclude = ["experiments/msce_bridge/gov_eval"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
