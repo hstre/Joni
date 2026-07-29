@@ -71,6 +71,20 @@ local DESi core
 └── renderer         the two views, produced together         (renderer.py)
 ```
 
+> **Zum Namen „Layer 9".** Das Modul hier (`state.py`, `src/joni/layer9_v2/`) ist ein
+> **lokales Testanalogon** und **keine Implementierung** des Papiers *Layer 9 — The Missing
+> Top Layer of the Internet* (SSRN 6694758). Der Name ist historisch: Joni sollte „sowas"
+> zum Ausprobieren lokal enthalten. Es besteht keine inhaltliche Entsprechung — das Papier
+> beschreibt eine claim-native Meta-Schicht des Internets aus fünf Komponenten (SPL,
+> Alexandria, PES, EPC, MIVP), dieses Modul hält Zustand, Rollen und Claims eines einzelnen
+> Prozesses. **Messungen an diesem Modul sagen nichts über das Papier aus**, und umgekehrt.
+>
+> *Note on the name.* This module is a **local test analogue**, **not an implementation** of
+> the paper *Layer 9 — The Missing Top Layer of the Internet* (SSRN 6694758). The name is
+> historical. There is no correspondence in substance, and **measurements of this module say
+> nothing about that paper**, or the reverse.
+
+
 Each apparently personal trait maps to a mechanism:
 
 | Looks like… | Is actually… |
