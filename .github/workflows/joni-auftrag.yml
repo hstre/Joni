@@ -17,9 +17,11 @@ name: joni-auftrag
 # For INSTANT builds instead of daily, add `issues: {types: [labeled]}` (the pick step already
 # handles it) - more responsive, less cost-paced.
 
+# ABGESCHALTET 2026-07-29 (Projektabschluss): automatische Ausloeser stillgelegt.
+# Es feuert nichts mehr von selbst; ein Lauf ist nur noch von Hand ueber
+# workflow_dispatch moeglich. Zum Reaktivieren die Kommentarzeichen unten entfernen.
 on:
-  schedule:
-    - cron: "23 18 * * *"    # daily: clear the oldest open Auftrag (one Claude build/run, max)
+#    - cron: "23 18 * * *"    # daily: clear the oldest open Auftrag (one Claude build/run, max)
   workflow_dispatch:
 
 permissions:
