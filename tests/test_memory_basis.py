@@ -113,3 +113,58 @@ def test_bericht_zaehlt_und_nennt():
     assert r["by_basis"] == {"undeclared": 1, "read": 1, "inferred": 1}
     assert r["undeclared_with_sources"] == ["M-1"]
     assert r["inferred"] == ["M-3"]
+
+
+# ── Kommt die Grundlage bei den Operatoren tatsaechlich an? ─────────────────────────────────────
+
+def test_assert_claim_reicht_grundlage_an_die_episode_durch():
+    """Eine Ueberzeugung, die aus einer gelesenen Quelle stammt, traegt das auch im Gedaechtnis."""
+    from joni.operators import assert_claim
+    s = Layer9()
+    assert_claim(s, "SPL definiert pi als Schnittstelle.", "spl",
+                 basis=Basis.READ, sources=("SSRN-6395042",))
+    assert s.memory[-1].basis is Basis.READ
+    assert s.memory[-1].sources == ("SSRN-6395042",)
+    assert undeclared(s) == []
+
+
+def test_assert_claim_ohne_angabe_faellt_auf_wenn_quelle_genannt():
+    from joni.operators import assert_claim
+    s = Layer9()
+    assert_claim(s, "Layer 9 faellt unter die Widerlegungen.", "layer9",
+                 sources=("SSRN-6694758",))
+    assert [e.id for e in undeclared(s)] == [s.memory[-1].id]
+
+
+def test_interne_vorgaenge_behaupten_ueber_keine_quelle():
+    """Ein erreichtes Ziel ist kein Befund ueber die Welt - es bekommt NONE, nicht UNDECLARED.
+
+    Der Unterschied ist nicht kosmetisch: UNDECLARED heisst "keiner hat es gesagt", NONE heisst
+    "es gibt nichts zu sagen". Nur das erste ist ein Mangel."""
+    from joni.operators import adopt_goal, advance_goal
+    s = Layer9()
+    g = adopt_goal(s, "Budget pruefen")
+    advance_goal(s, g.id, by=1.0)
+    assert s.memory[-1].kind == "achieved_goal"
+    assert s.memory[-1].basis is Basis.NONE
+
+
+def test_revise_opinion_reicht_grundlage_durch():
+    from joni.models import ClaimStatus, Trigger
+    from joni.operators import assert_claim, revise_opinion
+    s = Layer9()
+    c = assert_claim(s, "Der Vergleichsarm misst etwas.", "methode", basis=Basis.NONE)
+    revise_opinion(s, c.id, ClaimStatus.REJECTED, trigger=Trigger.CONTRADICTORY_EVIDENCE,
+                   basis=Basis.READ, sources=("DESI_FALSIFIKATION.md",))
+    assert s.memory[-1].basis is Basis.READ
+    assert s.memory[-1].sources == ("DESI_FALSIFIKATION.md",)
+
+
+def test_record_memory_schreibt_die_grundlage_in_den_ledger():
+    """Im append-only Protokoll muss ohne Episodendurchsicht lesbar sein, worauf es beruhte."""
+    from joni.operators import record_memory
+    s = Layer9()
+    record_memory(s, "learned", "Formalismus haelt.",
+                  basis=Basis.READ, sources=("SSRN-6395042",))
+    assert "read" in s.ledger[-1].summary
+    assert "SSRN-6395042" in s.ledger[-1].summary

@@ -44,8 +44,13 @@ def assert_claim(
     state: Layer9, text: str, topic: str, *, support: float = 0.5,
     status: ClaimStatus = ClaimStatus.TENTATIVE, reviewed_by: str = "deterministic",
     trigger: Trigger = Trigger.USER_INPUT, cost: float = 0.0,
+    basis: Basis = Basis.UNDECLARED, sources: tuple[str, ...] = (),
 ) -> Claim:
-    """Bring a new belief into being, audited from birth."""
+    """Bring a new belief into being, audited from birth.
+
+    ``basis`` und ``sources`` sagen, worauf die Ueberzeugung beruht. Wer eine aeussere Quelle
+    nennt, ohne die Grundlage anzugeben, faellt in ``memory.undeclared()`` auf - der Vorgabewert
+    behauptet nichts."""
     claim = Claim(
         id=state.next_id("C"), text=text, topic=topic, status=status,
         support=round(min(1.0, max(0.0, support)), 4),
@@ -57,14 +62,15 @@ def assert_claim(
         refs=(claim.id,), reviewed_by=reviewed_by, cost=cost,
     )
     # The birth of a belief is itself a recallable episode (continuity).
-    _remember(state, "learned", f"Came to hold {claim.id}: {text}", (claim.id, event.id))
+    _remember(state, "learned", f"Came to hold {claim.id}: {text}", (claim.id, event.id),
+              basis=basis, sources=sources)
     return claim
 
 
 def revise_opinion(
     state: Layer9, claim_id: str, new_status: ClaimStatus, *, trigger: Trigger,
     operator: Operator = Operator.OPINION_REVISE, reviewed_by: str = "deterministic",
-    cost: float = 0.0,
+    cost: float = 0.0, basis: Basis = Basis.UNDECLARED, sources: tuple[str, ...] = (),
 ) -> tuple[Transition, LedgerEvent]:
     """Change a belief's status - the audited unit of 'changing one's mind'."""
     claim = state.claims[claim_id]
@@ -86,7 +92,7 @@ def revise_opinion(
     _remember(
         state, "changed_mind",
         f"Revised {claim_id} from {old} to {new_status} due to {trigger}",
-        (claim_id, event.id),
+        (claim_id, event.id), basis=basis, sources=sources,
     )
     return transition, event
 
@@ -138,7 +144,8 @@ def advance_goal(
     if goal.progress >= 1.0:
         goal.status = GoalStatus.ACHIEVED
         summary += " (achieved)"
-        _remember(state, "achieved_goal", f"Reached {goal_id}: {goal.text}", (goal_id,))
+        _remember(state, "achieved_goal", f"Reached {goal_id}: {goal.text}", (goal_id,),
+              basis=Basis.NONE)
     state.record(Operator.GOAL_ADVANCE, summary, refs=(goal_id,), reviewed_by=reviewed_by)
     return goal
 
@@ -219,10 +226,16 @@ def _remember(state: Layer9, kind: str, summary: str, refs: tuple[str, ...], *,
 def record_memory(
     state: Layer9, kind: str, summary: str, *, refs: tuple[str, ...] = (),
     reviewed_by: str = "deterministic",
+    basis: Basis = Basis.UNDECLARED, sources: tuple[str, ...] = (),
 ) -> MemoryEpisode:
-    """Explicitly record an episode and audit it (the MEMORY_RECORD operator)."""
-    episode = _remember(state, kind, summary, refs)
-    state.record(Operator.MEMORY_RECORD, f"record {episode.id} [{kind}]: {summary}",
+    """Explicitly record an episode and audit it (the MEMORY_RECORD operator).
+
+    Die Grundlage steht mit im Ledger-Eintrag. Damit ist im append-only Protokoll nachlesbar,
+    ob eine Aussage auf einer gelesenen Quelle beruhte oder erschlossen war - ohne dass jemand
+    die Episoden dafuer durchsehen muss."""
+    episode = _remember(state, kind, summary, refs, basis=basis, sources=sources)
+    quelle = f" ({basis}" + (f": {', '.join(sources)}" if sources else "") + ")"
+    state.record(Operator.MEMORY_RECORD, f"record {episode.id} [{kind}]{quelle}: {summary}",
                  refs=(episode.id, *refs), reviewed_by=reviewed_by)
     return episode
 
