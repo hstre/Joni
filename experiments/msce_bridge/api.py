@@ -12,11 +12,24 @@ specific violations that produced it, with an auditable justification.
 **Read-only by construction.** Nothing is stored, nothing is written back, no state is kept between
 requests. The service returns a judgement about a derivation; it never modifies the caller's data.
 
-**The split that matters.** A language model is used for exactly one thing — normalising each
-statement into a fixed structure (relation, modality, quantifier, scope, conditions) drawn from
-closed vocabularies. Every verdict is then computed by deterministic rules over those structures.
-No model decides anything. The response carries both layers separately (``structures`` vs
-``verdict``/``violations``) so the caller can audit where each part came from.
+**The split that matters (architecture v2).** The model *proposes* the verdict; deterministic
+controls may only *constrain* it. Concretely:
+
+    model        proposes verdict + reasoning (k draws, strict majority)
+    controls     deterministic, check measured danger patterns
+    DESi         accept · downgrade · require review
+    Layer 9      persists only what was governed
+
+**Controls can only move a verdict DOWN the pass ladder** (entailed > partially_entailed >
+compatible_not_entailed > insufficient). They never create a verdict, never raise one, and never
+assert ``contradicted`` — claiming a contradiction is a positive statement, and rules demonstrably
+fail at that.
+
+This reverses the error direction. A parser slip can now only miss a control (model verdict stands)
+or fire one wrongly (a downgrade). Both are the safe side; neither can produce a false pass.
+
+v1 let rules *judge* and scored 7/20 on an external blind evaluation with three false passes. The
+same model judging directly scores 17–18/20 with zero false passes.
 
 **Limits are served, not hidden.** ``GET /v1/capabilities`` returns the measured properties of this
 prototype — parser model, sample count, observed run-to-run variance, test-set size. They are part
@@ -39,6 +52,7 @@ from pydantic import BaseModel, Field
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import audit_v2 as v2  # noqa: E402
 import entailment as ent  # noqa: E402
 import spl_builder as sb  # noqa: E402
 
@@ -89,8 +103,12 @@ class AuditResponse(BaseModel):
                                           "compatible_not_entailed | contradicted | insufficient")
     violations: list[str]
     justification: list[str] = Field(..., description="Why the rules produced this verdict.")
-    structures: dict = Field(..., description="The LLM-normalised structures the rules read. "
-                                              "Includes per-field agreement across draws.")
+    model_verdict: str = Field(..., description="What the model proposed, before any control.")
+    model_agreement: float = Field(..., description="Share of the majority across k draws.")
+    downgraded: bool = Field(..., description="Whether a control lowered the model's verdict.")
+    vetoes: list[dict] = Field(default_factory=list,
+                               description="Controls that fired, each with its reason and the "
+                                           "level it lowered to. None can raise a verdict.")
     determinism: dict = Field(..., description="Which parts are model-derived vs rule-derived.")
 
 
@@ -126,9 +144,22 @@ def capabilities() -> dict:
             "scope_level": list(ent.SCOPE),
         },
         "architecture": {
-            "model_used_for": "normalising each statement into the closed vocabularies above",
-            "model_used_for_nothing_else": True,
-            "verdict_computed_by": "deterministic rules over the normalised structures",
+            "version": "v2 — model proposes, controls constrain",
+            "verdict_proposed_by": "language model (k draws, strict majority)",
+            "verdict_constrained_by": "deterministic controls over normalised structures",
+            "controls_can_upgrade": False,
+            "controls_can_assert_contradicted": False,
+            "control_ladder": list(v2.LADDER),
+            "controls_run_only_on": sorted(v2.PASSING),
+            "controls_registered": list(v2.CONTROLS),
+            "controls_active": sorted(v2.ACTIVE_CONTROLS),
+            "why_a_control_is_inactive": (
+                "evidence_padding is registered but OFF: measured harmful. The catalogue was "
+                "inherited from v1's defect list without checking whether v2 inherits those "
+                "defects — it does not. The model is immune to the padding attack (same verdict, "
+                "agreement 1.0 with and without padding), while the control caused three false "
+                "blocks on the dev set and caught zero attacks. A control catalogue must be "
+                "derived from the measured failures of the system it guards, not its predecessor."),
         },
         "parser": {
             "model": sb.BUILDERS[ent.PARSER],
@@ -149,6 +180,12 @@ def capabilities() -> dict:
             "test_set_note": "a demonstration set, NOT a validation corpus",
             "verdict_variance_k1": "6/9 to 9/9 across 5 runs on identical input",
             "verdict_variance_k5": "8/9 to 9/9 across 4 runs on identical input",
+            "v2_architecture_dev": (
+                "18/20 and 16/20 across 2 runs, zero false passes, 0-1 downgrades — i.e. at "
+                "baseline, with a control layer that is currently INERT on this data. No control "
+                "has yet caught a real model failure; the catalogue is unvalidated."),
+            "v1_architecture_dev": "7/20 with 3 false passes (rules judged) — superseded",
+            "model_baseline_dev": "17-18/20 across 3 runs, zero false passes (model judges)",
             "verdict_variance_k5_with_split": (
                 "6/9 to 9/9 across 4 runs; violations 4/7 to 7/7. Splitting fixed a dangerous "
                 "defect but did NOT narrow the band — the split step adds its own variance."),
@@ -179,19 +216,25 @@ def capabilities() -> dict:
     }
 
 
-def _to_response(req: AuditRequest, res: dict) -> AuditResponse:
+def _to_response(req: AuditRequest, res) -> AuditResponse:
+    d = res.to_dict()
     return AuditResponse(
         claim_id=req.claim_id,
-        claim=res["claim"],
-        verdict=res["verdict"],
-        violations=res["violations"],
-        justification=res["notes"],
-        structures={"claim": res["claim_structure"], "evidence": res["evidence_structures"]},
+        claim=d["claim"],
+        verdict=d["verdict"],
+        model_verdict=d["model_verdict"],
+        model_agreement=d["model_agreement"],
+        downgraded=d["downgraded"],
+        vetoes=d["vetoes"],
+        violations=d["violations"],
+        justification=d["justification"],
         determinism={
-            "model_derived": ["structures"],
-            "rule_derived": ["verdict", "violations", "justification"],
-            "parser_model": sb.BUILDERS[ent.PARSER],
-            "draws_per_statement": ent.K_DRAWS,
+            "verdict_proposed_by": "model",
+            "verdict_constrained_by": "deterministic controls",
+            "controls_can_upgrade": False,
+            "model": sb.BUILDERS[ent.PARSER],
+            "draws": ent.K_DRAWS,
+            "active_controls": sorted(v2.ACTIVE_CONTROLS),
         },
     )
 
@@ -201,11 +244,10 @@ def audit(req: AuditRequest) -> AuditResponse:
     if not req.claim.strip():
         raise HTTPException(status_code=422, detail="claim must not be empty")
     try:
-        res = ent.audit(req.claim,
-                        [{"text": e.text, "source_id": e.source_id} for e in req.evidence],
-                        declared_assumptions=tuple(req.declared_assumptions),
-                        context=req.context)
-    except SystemExit as exc:            # fehlender API-Key im Parser
+        res = v2.audit(req.claim,
+                       [{"text": e.text, "source_id": e.source_id} for e in req.evidence],
+                       declared_assumptions=tuple(req.declared_assumptions))
+    except SystemExit as exc:            # fehlender API-Key
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     return _to_response(req, res)
 

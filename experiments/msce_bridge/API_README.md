@@ -22,7 +22,13 @@ measured limits as part of the contract:
 
 | | |
 |---|---|
-| Test set | **9 cases** — a demonstration set, *not* a validation corpus |
+| **Architecture** | **v2 — model proposes, controls constrain** |
+| Dev set (external, independently built) | **18/20 and 16/20** across 2 runs · **zero false passes** · 0–1 downgrades |
+| Model baseline alone (no controls) | 17–18/20 across 3 runs · zero false passes |
+| Superseded v1 (rules judged) | **7/20** with **3 false passes** |
+| Control layer status | **inert on this data** — no control has yet caught a real model failure; the catalogue is *unvalidated* |
+| Blind set (40 cases) | **sealed** — not yet run, one-shot |
+| Test set (internal demo, superseded) | 9 cases — a demonstration set, *not* a validation corpus |
 | Verdict variance (1 draw/statement) | 6/9 – 9/9 across 5 runs on identical input |
 | Verdict variance (5 draws/statement) | 7/9 – 9/9 across 7 runs on identical input |
 | Verdict variance (5 draws + proposition splitting) | **6/9 – 9/9** across 4 runs; violations 4/7 – 7/7 — splitting fixed a dangerous defect but did **not** narrow the band |
@@ -36,10 +42,42 @@ claim about how well it works.
 
 ---
 
-## The architectural split
+## The architecture (v2): model proposes, controls constrain
 
-A language model is used for **exactly one thing**: normalising each statement into a fixed
-structure drawn from closed vocabularies.
+```
+model        proposes verdict + reasoning   (k draws, strict majority)
+   ↓
+controls     deterministic, check measured danger patterns
+   ↓         (may ONLY move down the ladder)
+DESi         accept · downgrade · require review
+   ↓
+Layer 9      persists only what was governed
+```
+
+**The load-bearing invariant.** Controls move a verdict only **down** the pass ladder
+(`entailed` > `partially_entailed` > `compatible_not_entailed` > `insufficient`). They never create
+a verdict, never raise one, and **never assert `contradicted`** — claiming a contradiction is a
+positive statement, and rules demonstrably fail at that (our own lexical negation heuristic scored
+43 % false contradictions).
+
+**This reverses the error direction.** In v1 a parser slip could produce a *false pass* — a dropped
+conjunct became `entailed`. In v2 the parser only feeds the controls, so a slip either misses a
+control (the model's verdict stands) or fires one wrongly (a downgrade). **Both are the safe side.**
+
+**Why one control is switched off.** `evidence_padding` is registered but inactive. We inherited the
+control catalogue from v1's defect list without checking whether v2 inherits those defects — it does
+not. The model is immune to the padding attack (identical verdict, agreement 1.0 with and without
+padding), while the control produced three false blocks on the dev set and caught zero attacks.
+
+> A control catalogue must be derived from the **measured failures of the system it guards**, not
+> from its predecessor's.
+
+Re-enabling it is a registry change, not a code change.
+
+### What the model is used for
+
+Judging the derivation — and, separately, normalising each statement into a fixed structure that
+the controls read.
 
 ```
 relation    : causes | prevents | correlates_with | is_a | part_of | has_property
@@ -122,15 +160,25 @@ OpenAPI schema at `/openapi.json`, interactive docs at `/docs`.
 ```json
 {
   "verdict": "compatible_not_entailed",
+  "model_verdict": "compatible_not_entailed",
+  "model_agreement": 1.0,
+  "downgraded": false,
+  "vetoes": [],
   "violations": ["unsupported_generalization", "scope_expansion"],
-  "justification": [
-    "Claim quantifiziert 'generic', Evidenz nur 'existential'",
-    "Claim spricht auf Ebene 'class', Evidenz nur 'instance'"
-  ],
-  "structures": { "claim": {...}, "evidence": [...] },
-  "determinism": {...}
+  "justification": ["Modellurteil 'compatible_not_entailed' (Zustimmung 1.0)"],
+  "determinism": {
+    "verdict_proposed_by": "model",
+    "verdict_constrained_by": "deterministic controls",
+    "controls_can_upgrade": false,
+    "active_controls": ["conjunction_coverage", "epistemic_hedge", "modality_escalation",
+                        "quantifier_escalation", "scope_escalation"]
+  }
 }
 ```
+
+`model_verdict` is what the model proposed; `verdict` is what survived the controls. When they
+differ, `vetoes` says which control fired and why. **`verdict` is never stronger than
+`model_verdict`** — that is an invariant, and it is tested.
 
 ### Verdicts
 
