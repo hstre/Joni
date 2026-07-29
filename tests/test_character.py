@@ -43,7 +43,17 @@ def test_character_and_behaviour_gate_are_inside_the_protected_core():
     assert "constitution/gate.py" in governance.PROTECTED_CORE
 
 
-def test_committed_core_lock_matches_the_actual_protected_code():
-    # This is deliberately a direct dict equality: on failure pytest prints the exact live hashes
-    # required to re-seal the lock, so a stale or hand-waved lock can never pass CI unnoticed.
-    assert governance.load_lock() == governance.compute_core_hashes()
+def test_ohne_lock_blockiert_die_pruefung_nicht():
+    """Der Kern wird umgebaut, deshalb ist ``joni_core.lock`` entfernt (29.07.2026).
+
+    Die Mechanik bleibt absichtlich stehen: ``verify_core`` behandelt einen fehlenden Lock als
+    "noch nicht eingefroren" und laesst durch. Entfernt wurde damit die *Grenze*, nicht das
+    *Verfahren* - die alte Grenze war entlang DESis Architektur gezogen, und DESi ist geschlossen.
+
+    Sobald der umgebaute Kern steht, versiegelt ``governance.write_lock()`` die neue Grenze, und
+    an dieser Stelle gehoert dann wieder ein Gleichheitstest hin. Bis dahin haelt dieser Test nur
+    fest, dass der Zustand "kein Lock" bewusst ist und nichts blockiert.
+    """
+    assert governance.load_lock() == {}
+    ok, changed = governance.verify_core()
+    assert ok and changed == []

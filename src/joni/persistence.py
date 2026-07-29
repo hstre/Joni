@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 from .models import (
+    Basis,
     Claim,
     ClaimStatus,
     Conflict,
@@ -90,7 +91,7 @@ def to_dict(state: Layer9) -> dict:
         ],
         "memory": [
             {"id": m.id, "tick": m.tick, "kind": m.kind, "summary": m.summary,
-             "refs": list(m.refs)}
+             "refs": list(m.refs), "basis": str(m.basis), "sources": list(m.sources)}
             for m in state.memory
         ],
         "conflicts": [
@@ -155,6 +156,10 @@ def from_dict(d: dict) -> Layer9:
         state.memory.append(MemoryEpisode(
             id=m["id"], tick=m["tick"], kind=m["kind"], summary=m["summary"],
             refs=tuple(m.get("refs", ())),
+            # Altbestand traegt die Felder nicht. Er wird UNDECLARED, nicht READ: was nie
+            # erklaert wurde, wird nicht nachtraeglich zur gelesenen Quelle erklaert.
+            basis=Basis(m.get("basis", Basis.UNDECLARED)),
+            sources=tuple(m.get("sources", ())),
         ))
 
     for x in d.get("conflicts", []):

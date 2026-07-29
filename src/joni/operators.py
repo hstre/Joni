@@ -17,6 +17,7 @@ exactly one append-only ledger event. None of them is an LLM call.
 from __future__ import annotations
 
 from .models import (
+    Basis,
     Claim,
     ClaimStatus,
     Conflict,
@@ -199,10 +200,17 @@ def abandon_project(
 # --------------------------------------------------------------------------- #
 
 
-def _remember(state: Layer9, kind: str, summary: str, refs: tuple[str, ...]) -> MemoryEpisode:
-    """Append an autobiographical episode. Used by operators that constitute one."""
+def _remember(state: Layer9, kind: str, summary: str, refs: tuple[str, ...], *,
+              basis: Basis = Basis.UNDECLARED,
+              sources: tuple[str, ...] = ()) -> MemoryEpisode:
+    """Append an autobiographical episode. Used by operators that constitute one.
+
+    ``basis`` bleibt vorgabegemaess UNDECLARED. Wer eine aeussere Quelle nennt, soll auch sagen,
+    ob er sie gelesen oder erschlossen hat - und wer es nicht sagt, faellt in der Pruefung auf,
+    statt als gelesen durchzugehen."""
     episode = MemoryEpisode(
-        id=state.next_id("M"), tick=state.tick, kind=kind, summary=summary, refs=refs
+        id=state.next_id("M"), tick=state.tick, kind=kind, summary=summary, refs=refs,
+        basis=basis, sources=sources,
     )
     state.memory.append(episode)
     return episode

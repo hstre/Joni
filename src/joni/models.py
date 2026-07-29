@@ -43,6 +43,26 @@ class ClaimStatus(StrEnum):
     SUPERSEDED = "superseded"    # replaced by a better claim
 
 
+class Basis(StrEnum):
+    """Woher eine Episode ihr Wissen hat. Geschlossen, damit eine Regel darauf prüfen kann.
+
+    Der Vorgabewert ist bewusst ``UNDECLARED`` und **nicht** ``READ``. Eine unmarkierte Episode
+    behauptet damit nichts über ihre Grundlage - sie sagt, dass keine angegeben wurde. Das ist der
+    ehrliche Zustand und zugleich der einzige, auf dem eine Prüfung ohne Semantik arbeiten kann:
+    Abwesenheit einer Erklärung ist selbst eine Beobachtung.
+
+    Der Fall, der das nötig gemacht hat: Über ein Papier wurde geurteilt, das nie geöffnet wurde -
+    erschlossen aus einem gleichnamigen Modul. Mit ``READ`` als Vorgabe wäre genau diese Episode
+    als gelesen durchgegangen.
+    """
+
+    UNDECLARED = "undeclared"    # keine Angabe - der Vorgabewert, nie eine Behauptung
+    READ = "read"                # die Quelle lag vor und wurde gelesen
+    INFERRED = "inferred"        # erschlossen: aus Titel, Name, Nachbarschaft - ohne die Quelle
+    REPORTED = "reported"        # fremdberichtet: jemand anders hat über die Quelle berichtet
+    NONE = "none"                # keine äussere Quelle beteiligt (Episode über eigenen Zustand)
+
+
 class Trigger(StrEnum):
     """Why a transition happened. Every opinion change names one of these."""
 
@@ -174,6 +194,11 @@ class MemoryEpisode:
     kind: str                   # e.g. "learned", "changed_mind", "started_project"
     summary: str
     refs: tuple[str, ...] = ()  # ids of claims/goals/projects involved
+    #: Worauf die Episode beruht. Vorgabe ``UNDECLARED`` - siehe :class:`Basis`.
+    basis: Basis = Basis.UNDECLARED
+    #: Die äusseren Quellen, über die die Episode etwas behauptet (Dokument-IDs, URLs, Pfade).
+    #: Leer heisst: die Episode behauptet über keine äussere Quelle.
+    sources: tuple[str, ...] = ()
 
 
 @dataclass
