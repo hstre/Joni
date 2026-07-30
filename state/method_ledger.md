@@ -1,105 +1,27 @@
 # Joni — Methoden-Zustandsbuch
 
-**Cycle 670 · 363 Methoden** — proposed 250 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 113  
+**Cycle 675 · 363 Methoden** — proposed 172 · trialed 0 · ready 0 · shelved 0 · active 0 · retired 191  
 
 _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie — es entscheidet keine Verdikte und schreibt nichts nach Layer 9._
 
 | Methode | Zustand | Status | Trials | letztes Verdikt |
 |---|---|---|---|---|
 | Formalizzazione avanzata e rigorosa di un sistema di Rappresentazione della Cono | **proposed** | candidate | 0 | — |
-| EventVLA: Event-Driven Visual Evidence Memory for Long-Horizon Vision-Language-A | **proposed** | candidate | 0 | — |
-| APPLICATION OF MACHINE LEARNING AND REGRESSION MODELS IN THE PREDICTION OF BALL  | **proposed** | candidate | 0 | — |
-| σ-IASI | **proposed** | candidate | 0 | — |
-| A HYBRID STRATEGIC PROBABILISTIC FRAMEWORK FOR FUNCTIONAL ASSESSMENT AND RISK CO | **proposed** | candidate | 0 | — |
-| retrieve-as-a-lens | **proposed** | candidate | 0 | — |
-| Distributed Deep Learning and Intelligent Soil–Water Analytics in Precision Agri | **proposed** | candidate | 0 | — |
-| Evaluating edge-enabled smart waste management in smart cities: A design-oriente | **proposed** | candidate | 0 | — |
 | S-AI-Recursive: A Bio-Inspired and Temporal Sparse AI Architecture for Iterative | **proposed** | candidate | 0 | — |
-| reasoning-as-a-lens | **proposed** | candidate | 0 | — |
-| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **proposed** | candidate | 0 | — |
-| DataEvolver: Self-Evolving Multi-Agent Data Construction for Text-Rich Image Gen | **proposed** | candidate | 0 | — |
-| FaceMoE: Mixture of Experts for Low-Resolution Face Recognition | **proposed** | candidate | 0 | — |
-| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **proposed** | candidate | 0 | — |
-| supervision-as-a-lens | **proposed** | candidate | 0 | — |
-| Lexical Consensus: Grounded Word Learning and Shared Meaning in Artificial Agent | **proposed** | candidate | 0 | — |
-| Surrogate-Assisted Inverse Thermal Characterization of Façade Elements in Testin | **proposed** | candidate | 0 | — |
-| The AO-Petalometer Test Bench: a laboratory facility for segmented mirror emulat | **proposed** | candidate | 0 | — |
-| Efficient entanglement of three remote single-atom quantum-network nodes | **proposed** | candidate | 0 | — |
-| DEMUN: Fast and accurate discovery of music notation in very large collections | **proposed** | candidate | 0 | — |
-| Two English Preprint Manuscripts on CODATA 2026 Central-Value Forecasts and CMB  | **proposed** | candidate | 0 | — |
-| Polynomial equivalence of the global transverse-field Ising model and the gate m | **proposed** | candidate | 0 | — |
-| AutoMem: Automated Learning of Memory as a Cognitive Skill | **proposed** | candidate | 0 | — |
-| memory-dependent-as-a-lens | **proposed** | candidate | 0 | — |
-| maintaining-as-a-lens | **proposed** | candidate | 0 | — |
-| Women's Education from the Perspective of Islamic Philosophy of Education: Betwe | **proposed** | candidate | 0 | — |
-| Long Short-Term Memory | **proposed** | candidate | 0 | — |
 | Ultrafast and memory-efficient alignment of short DNA sequences to the human gen | **proposed** | candidate | 0 | — |
-| Building to the Test: Coding Agents Deliver What You Check, Not What You Request | **proposed** | candidate | 0 | — |
 | HEFT: Heavy-Payload Full-size Humanoid Teleoperation with Privileged Motion Guid | **proposed** | candidate | 0 | — |
-| Grounded autonomous research: a fault-tolerant LLM pipeline from corpus to manus | **proposed** | candidate | 0 | — |
 | Morphing into Hybrid Attention Models | **proposed** | candidate | 0 | — |
-| Multi-Resolution Flow Matching: Training-Free Diffusion Acceleration via Staged  | **proposed** | candidate | 0 | — |
-| mrflow-as-a-lens | **proposed** | candidate | 0 | — |
-| WorldDirector: Building Controllable World Simulators with Persistent Dynamic Me | **proposed** | candidate | 0 | — |
-| Alignment Is All You Need For X-to-4D Generation | **proposed** | candidate | 0 | — |
-| AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents | **proposed** | candidate | 0 | — |
-| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **proposed** | candidate | 0 | — |
-| The Static and Dynamic Geographical Distribution and the Spatial Construction of | **proposed** | candidate | 0 | — |
-| Memory Models And Information Processing As Foundations Of Artificial Intelligen | **proposed** | candidate | 0 | — |
-| ResNet Architectures and Applications: A Practical Guide From Theoretical Optimi | **proposed** | candidate | 0 | — |
-| ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning | **proposed** | candidate | 0 | — |
-| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **proposed** | candidate | 0 | — |
-| ELiSE: A tool to support algorithmic design for HPC co-scheduling | **proposed** | candidate | 0 | — |
-| query-conditioned-as-a-lens | **proposed** | candidate | 0 | — |
-| DuoMem: Towards Capable On-Device Memory Agents via Dual-Space Distillation | **proposed** | candidate | 0 | — |
-| gatemem-as-a-lens | **proposed** | candidate | 0 | — |
-| AutoMem: Automated Learning of Memory as a Cognitive Skill | **proposed** | candidate | 0 | — |
-| distillation-as-a-lens | **proposed** | candidate | 0 | — |
 | Parameter-Efficient Quantum-Inspired Fast Weight Programmers for Traffic-Matrix  | **proposed** | candidate | 0 | — |
 | When Should Experience Become Parameters? Selection, Not Volume, Governs Online  | **proposed** | candidate | 0 | — |
-| multi-principal-as-a-lens | **proposed** | candidate | 0 | — |
-| ARTIFICIAL INTELLIGENCE AS A DRIVER OF BANKING SERVICES DEVELOPMENT: MODERN APPR | **proposed** | candidate | 0 | — |
-| quispe-colca-as-a-lens | **proposed** | candidate | 0 | — |
-| Scaling Laws for Grid-Based Approximate Nearest Neighbor Search in High Dimensio | **proposed** | candidate | 0 | — |
-| shared-memory-as-a-lens | **proposed** | candidate | 0 | — |
-| acceleration-as-a-lens | **proposed** | candidate | 0 | — |
-| Master Equation Revisited: Reflected Kähler Flow and the Viability Body. A singl | **proposed** | candidate | 0 | — |
-| Operator Geometries, Hankel Matrices, and the Transference of Computational Cons | **proposed** | candidate | 0 | — |
-| skills-as-a-lens | **proposed** | candidate | 0 | — |
-| github.com/phylyc/somatic_workflow/PhylogicNDT | **proposed** | candidate | 0 | — |
-| multi-objective-as-a-lens | **proposed** | candidate | 0 | — |
-| CVE-2026-14440: Cloudflare Universal SSL, CAA, RFC 8657, and the 2023 jabber.ru  | **proposed** | candidate | 0 | — |
-| effort-as-a-lens | **proposed** | candidate | 0 | — |
-| PEDAGOGICAL CONDITIONS FOR THE FORMATION OF COGNITIVE SKILLS IN PRESCHOOL CHILDR | **proposed** | candidate | 0 | — |
 | pitta-as-a-lens | **proposed** | candidate | 0 | — |
-| Pre-Geometric Information Networks versus String Theory as Foundations for Emerg | **proposed** | candidate | 0 | — |
 | sadhaka-as-a-lens | **proposed** | candidate | 0 | — |
-| Cutting-Edge Cybersecurity Methods for Protecting IoT-Based Networks and Devices | **proposed** | candidate | 0 | — |
 | bids-validator | **proposed** | candidate | 0 | — |
 | mex | **proposed** | candidate | 0 | — |
 | nassl-as-a-lens | **proposed** | candidate | 0 | — |
-| The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the  | **proposed** | candidate | 0 | — |
-| EFFECTIVENESS OF INTEGRATED SOCIAL WELFARE DATA CONTROL (DTKS) IN REALIZED TARGE | **proposed** | candidate | 0 | — |
 | VLA-Corrector: Lightweight Detect-and-Correct Inference for Adaptive Action Hori | **proposed** | candidate | 0 | — |
 | adaptive-as-a-lens | **proposed** | candidate | 0 | — |
-| IMPLEMENTATION OF THE ONE DATA INDONESIA POLICY IN MINAHASA REGENCY | **proposed** | candidate | 0 | — |
-| Interpretation-Oriented Cloud Removal via Observation-Anchored Residual Flow wit | **proposed** | candidate | 0 | — |
-| MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question A | **proposed** | candidate | 0 | — |
-| A Multidimensional Cybercrime Annotation Dataset for a Closed-Access Russian–Eng | **proposed** | candidate | 0 | — |
-| Trust and Performance Data | **proposed** | candidate | 0 | — |
-| From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **proposed** | candidate | 0 | — |
-| rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | hacking-as-a-lens | **proposed** | candidate | 0 | — |
-| GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation | **proposed** | candidate | 0 | — |
-| ResearchStudio-Reel: Automate the Last Mile of Research from Paper to Poster, Vi | **proposed** | candidate | 0 | — |
-| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **proposed** | candidate | 0 | — |
-| REDDIT: Correcting Model-Generated Timestamp Drift in ASR without Forgetting via | **proposed** | candidate | 0 | — |
-| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **proposed** | candidate | 0 | — |
-| OmniOpt: Taxonomy, Geometry, and Benchmarking of Modern Optimizers | **proposed** | candidate | 0 | — |
-| KVpop -- Key-Value Cache Compression with Predictive Online Pruning | **proposed** | candidate | 0 | — |
-| XIN-Annotations: A Multidimensional Cybercrime Annotation Dataset for a Closed-A | **proposed** | candidate | 0 | — |
 | A Triphasic Sleep-Consolidated Neuro-Symbolic Framework for Lifelong Agent Auton | **proposed** | candidate | 0 | — |
-| Deform360: A Massive Multi-view Visuotactile Dataset for Deformable World Models | **proposed** | candidate | 0 | — |
 | InFlux++: Real and Synthetic Data for Estimating Dynamic Camera Intrinsics | **proposed** | candidate | 0 | — |
 | rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **proposed** | candidate | 0 | — |
 | Andha-Dhun: A First Look at Audio Descriptions in Hindi | **proposed** | candidate | 0 | — |
@@ -279,17 +201,95 @@ _Read-only View auf das versiegelte Trial-Ledger. Es projiziert die Historie —
 | The Nexus Recursive Harmonic Framework: A Meta-Computational Ontology of Univers | **retired** | rejected | 0 | — |
 | The Ontology of the Ground State - Pure Reflection, Shape, and Base-Free Symmetr | **retired** | rejected | 0 | — |
 | Replication package for: "A Surrogate-based Approach for Fast Multi-objective Ar | **retired** | rejected | 0 | — |
+| EventVLA: Event-Driven Visual Evidence Memory for Long-Horizon Vision-Language-A | **retired** | rejected | 0 | — |
 | ESFRI's contribution to the planned Charter of Access for Industrial Users to Re | **retired** | rejected | 0 | — |
 | ChartWalker: Benchmarking the Cross-Chart RAG Task | **retired** | rejected | 0 | — |
+| APPLICATION OF MACHINE LEARNING AND REGRESSION MODELS IN THE PREDICTION OF BALL  | **retired** | rejected | 0 | — |
+| σ-IASI | **retired** | rejected | 0 | — |
+| A HYBRID STRATEGIC PROBABILISTIC FRAMEWORK FOR FUNCTIONAL ASSESSMENT AND RISK CO | **retired** | rejected | 0 | — |
+| retrieve-as-a-lens | **retired** | rejected | 0 | — |
+| Distributed Deep Learning and Intelligent Soil–Water Analytics in Precision Agri | **retired** | rejected | 0 | — |
+| Evaluating edge-enabled smart waste management in smart cities: A design-oriente | **retired** | rejected | 0 | — |
+| reasoning-as-a-lens | **retired** | rejected | 0 | — |
 | Participatory Soundscapes: Innovation in Teaching Through Sound Art. Chapter 3.  | **retired** | rejected | 0 | — |
+| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
+| DataEvolver: Self-Evolving Multi-Agent Data Construction for Text-Rich Image Gen | **retired** | rejected | 0 | — |
+| FaceMoE: Mixture of Experts for Low-Resolution Face Recognition | **retired** | rejected | 0 | — |
+| QVal: Cheaply Evaluating Dense Supervision Signals for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
+| supervision-as-a-lens | **retired** | rejected | 0 | — |
+| Lexical Consensus: Grounded Word Learning and Shared Meaning in Artificial Agent | **retired** | rejected | 0 | — |
+| Surrogate-Assisted Inverse Thermal Characterization of Façade Elements in Testin | **retired** | rejected | 0 | — |
+| The AO-Petalometer Test Bench: a laboratory facility for segmented mirror emulat | **retired** | rejected | 0 | — |
+| Efficient entanglement of three remote single-atom quantum-network nodes | **retired** | rejected | 0 | — |
 | openclaw-as-a-lens | **retired** | rejected | 0 | — |
+| DEMUN: Fast and accurate discovery of music notation in very large collections | **retired** | rejected | 0 | — |
+| Two English Preprint Manuscripts on CODATA 2026 Central-Value Forecasts and CMB  | **retired** | rejected | 0 | — |
+| Polynomial equivalence of the global transverse-field Ising model and the gate m | **retired** | rejected | 0 | — |
+| AutoMem: Automated Learning of Memory as a Cognitive Skill | **retired** | rejected | 0 | — |
+| memory-dependent-as-a-lens | **retired** | rejected | 0 | — |
+| maintaining-as-a-lens | **retired** | rejected | 0 | — |
+| Women's Education from the Perspective of Islamic Philosophy of Education: Betwe | **retired** | rejected | 0 | — |
+| Long Short-Term Memory | **retired** | rejected | 0 | — |
+| Building to the Test: Coding Agents Deliver What You Check, Not What You Request | **retired** | rejected | 0 | — |
 | The Token Is a Group Element: On Lie-Algebra Attention over Matrix Lie Groups | **retired** | rejected | 0 | — |
+| Grounded autonomous research: a fault-tolerant LLM pipeline from corpus to manus | **retired** | rejected | 0 | — |
+| Multi-Resolution Flow Matching: Training-Free Diffusion Acceleration via Staged  | **retired** | rejected | 0 | — |
+| mrflow-as-a-lens | **retired** | rejected | 0 | — |
+| WorldDirector: Building Controllable World Simulators with Persistent Dynamic Me | **retired** | rejected | 0 | — |
+| Alignment Is All You Need For X-to-4D Generation | **retired** | rejected | 0 | — |
+| AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents | **retired** | rejected | 0 | — |
+| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **retired** | rejected | 0 | — |
+| The Static and Dynamic Geographical Distribution and the Spatial Construction of | **retired** | rejected | 0 | — |
 | How Do Instructions Shape Speech? Cross-Attention Attribution for Style-Captione | **retired** | rejected | 0 | — |
+| Memory Models And Information Processing As Foundations Of Artificial Intelligen | **retired** | rejected | 0 | — |
+| ResNet Architectures and Applications: A Practical Guide From Theoretical Optimi | **retired** | rejected | 0 | — |
+| ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning | **retired** | rejected | 0 | — |
+| From SRA to Self-Flow: Data Augmentation or Self-Supervision? | **retired** | rejected | 0 | — |
+| ELiSE: A tool to support algorithmic design for HPC co-scheduling | **retired** | rejected | 0 | — |
+| query-conditioned-as-a-lens | **retired** | rejected | 0 | — |
+| DuoMem: Towards Capable On-Device Memory Agents via Dual-Space Distillation | **retired** | rejected | 0 | — |
+| gatemem-as-a-lens | **retired** | rejected | 0 | — |
+| AutoMem: Automated Learning of Memory as a Cognitive Skill | **retired** | rejected | 0 | — |
+| distillation-as-a-lens | **retired** | rejected | 0 | — |
 | awesome-openclaw-usecases-as-a-lens | **retired** | rejected | 0 | — |
+| multi-principal-as-a-lens | **retired** | rejected | 0 | — |
+| ARTIFICIAL INTELLIGENCE AS A DRIVER OF BANKING SERVICES DEVELOPMENT: MODERN APPR | **retired** | rejected | 0 | — |
+| quispe-colca-as-a-lens | **retired** | rejected | 0 | — |
+| Scaling Laws for Grid-Based Approximate Nearest Neighbor Search in High Dimensio | **retired** | rejected | 0 | — |
+| shared-memory-as-a-lens | **retired** | rejected | 0 | — |
+| acceleration-as-a-lens | **retired** | rejected | 0 | — |
+| Master Equation Revisited: Reflected Kähler Flow and the Viability Body. A singl | **retired** | rejected | 0 | — |
+| Operator Geometries, Hankel Matrices, and the Transference of Computational Cons | **retired** | rejected | 0 | — |
+| skills-as-a-lens | **retired** | rejected | 0 | — |
+| github.com/phylyc/somatic_workflow/PhylogicNDT | **retired** | rejected | 0 | — |
+| multi-objective-as-a-lens | **retired** | rejected | 0 | — |
+| CVE-2026-14440: Cloudflare Universal SSL, CAA, RFC 8657, and the 2023 jabber.ru  | **retired** | rejected | 0 | — |
+| effort-as-a-lens | **retired** | rejected | 0 | — |
+| PEDAGOGICAL CONDITIONS FOR THE FORMATION OF COGNITIVE SKILLS IN PRESCHOOL CHILDR | **retired** | rejected | 0 | — |
+| Pre-Geometric Information Networks versus String Theory as Foundations for Emerg | **retired** | rejected | 0 | — |
+| Cutting-Edge Cybersecurity Methods for Protecting IoT-Based Networks and Devices | **retired** | rejected | 0 | — |
+| The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the  | **retired** | rejected | 0 | — |
+| EFFECTIVENESS OF INTEGRATED SOCIAL WELFARE DATA CONTROL (DTKS) IN REALIZED TARGE | **retired** | rejected | 0 | — |
+| IMPLEMENTATION OF THE ONE DATA INDONESIA POLICY IN MINAHASA REGENCY | **retired** | rejected | 0 | — |
+| Interpretation-Oriented Cloud Removal via Observation-Anchored Residual Flow wit | **retired** | rejected | 0 | — |
+| MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question A | **retired** | rejected | 0 | — |
+| A Multidimensional Cybercrime Annotation Dataset for a Closed-Access Russian–Eng | **retired** | rejected | 0 | — |
+| Trust and Performance Data | **retired** | rejected | 0 | — |
 | From Efficiency to Leakage -- Privacy Backdoor in Federated Language Model Fine- | **retired** | rejected | 0 | — |
 | FTC-Skystone-Dark-Angels-Romania-2020 | **retired** | rejected | 0 | — |
+| From Algorithmic Error to Legal Deception: Redefining Responsibility in the Empl | **retired** | rejected | 0 | — |
+| rneat (rusty-neat): a Rust toolkit for simulating NGS read data, including tumor | **retired** | rejected | 0 | — |
+| GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation | **retired** | rejected | 0 | — |
+| ResearchStudio-Reel: Automate the Last Mile of Research from Paper to Poster, Vi | **retired** | rejected | 0 | — |
+| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **retired** | rejected | 0 | — |
+| REDDIT: Correcting Model-Generated Timestamp Drift in ASR without Forgetting via | **retired** | rejected | 0 | — |
+| MV-Forcing: Long Multi-View Video Generation via 4D-Grounded Spatio-Temporal Sel | **retired** | rejected | 0 | — |
+| OmniOpt: Taxonomy, Geometry, and Benchmarking of Modern Optimizers | **retired** | rejected | 0 | — |
+| KVpop -- Key-Value Cache Compression with Predictive Online Pruning | **retired** | rejected | 0 | — |
 | Major-project-list | **retired** | rejected | 0 | — |
 | The Mechanics, Material Constraints, and Causal Preservation of Superluminal Met | **retired** | rejected | 0 | — |
+| XIN-Annotations: A Multidimensional Cybercrime Annotation Dataset for a Closed-A | **retired** | rejected | 0 | — |
+| Deform360: A Massive Multi-view Visuotactile Dataset for Deformable World Models | **retired** | rejected | 0 | — |
 | When silence is safer: a review and decision-theoretic framework for LLM abstent | **retired** | rejected | 0 | — |
 | CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward | **retired** | rejected | 0 | — |
 | Designing an LLM Agent for Enterprise Question Answering over Heterogeneous Docu | **retired** | rejected | 0 | — |
