@@ -238,7 +238,20 @@ One cycle (`python -m joni.autonomy run`):
    itself, so DESi's paid classifier is never invoked); falls back to Joni's own frugal
    layer when DESi is absent. Install: `pip install -e ".[desi]"` (or `-e ../DESi`).
 7. **publish** — append the [append-only protocol](protocol/protocol.jsonl) and regenerate
-   the static site under [`docs/`](docs/) (GitHub Pages).
+   the loop's status page `docs/status.html` (GitHub Pages).
+
+### The architecture map (`docs/index.html`)
+
+`python -m joni.architecture` regenerates the public page from the source itself: the
+dependency graph is read from the `import` statements with `ast`, and each module's
+explanatory text is the first paragraph of its own docstring. Nothing on it is written by
+hand except the German one-line note per package, which is marked as such on the page.
+
+The point is that a hand-written architecture page describes what its author believed they
+were building, while this one describes what is there — so a misunderstanding shows up as a
+difference instead of hiding inside a charitable description. Rebuild it after every change;
+`test_architecture.py` fails if the page no longer matches the source (the check lives in the
+test suite rather than CI because the workflow triggers are switched off).
 
 ```bash
 python -m joni.autonomy lock      # (human) freeze the protected core

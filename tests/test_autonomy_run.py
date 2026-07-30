@@ -22,8 +22,8 @@ def test_one_cycle_produces_protocol_site_and_state(monkeypatch, tmp_path):
     assert summary["asks"] == 0
     assert summary["spend"] == 0.0        # deterministic -> free
 
-    assert (root / "docs" / "index.html").exists()
-    assert "Joni" in (root / "docs" / "index.html").read_text()
+    assert (root / "docs" / "status.html").exists()
+    assert "Joni" in (root / "docs" / "status.html").read_text()
     assert (root / "protocol" / "protocol.jsonl").read_text().strip()
     assert (root / "state" / "layer9.json").exists()        # the authoritative core
     assert summary["days_running"] == 0                      # real time, no tick jump
@@ -63,7 +63,7 @@ def test_runtime_window_retires_after_a_week(monkeypatch, tmp_path):
         json.dumps({"start": old, "runs": 5, "retired": False}))
     summary = one_cycle()
     assert summary["retired"] is True
-    assert "RETIRED" in (root / "docs" / "index.html").read_text()
+    assert "RETIRED" in (root / "docs" / "status.html").read_text()
 
 
 def test_tampered_core_stops_the_cycle(monkeypatch, tmp_path):
@@ -110,5 +110,5 @@ def test_full_cycle_data_flow_source_to_model_to_gate_to_persist_to_reload(monke
     assert any(str(s).startswith("granite:") for s in c.provenance.source_ids)
 
     # and it is reflected on the public site (not just present in state)
-    html = (root / "docs" / "index.html").read_text()
+    html = (root / "docs" / "status.html").read_text()
     assert "Joni" in html and summary["cycle"] == 1

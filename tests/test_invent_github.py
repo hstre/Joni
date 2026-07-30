@@ -64,4 +64,4 @@ def test_cycle_reports_invention(monkeypatch, tmp_path):
     from joni.autonomy.run import one_cycle
     summary = one_cycle()
     assert "invented" in summary
-    assert "hypotheses" in (tmp_path / "docs" / "index.html").read_text()
+    assert "hypotheses" in (tmp_path / "docs" / "status.html").read_text()

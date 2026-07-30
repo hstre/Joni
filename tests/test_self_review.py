@@ -136,7 +136,7 @@ def test_review_shows_up_on_the_site(monkeypatch, tmp_path):
     from joni.autonomy.run import one_cycle
     summary = one_cycle()
     assert summary["reviewed"] is True                            # first cycle reviews
-    html = (tmp_path / "docs" / "index.html").read_text()
+    html = (tmp_path / "docs" / "status.html").read_text()
     assert "Self-review" in html
     ext = json.loads((tmp_path / "state" / "extensions.json").read_text())
     assert ext["last_review"]["assessments"]

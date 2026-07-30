@@ -76,7 +76,8 @@ def test_cycle_writes_the_layer9_map(monkeypatch, tmp_path):
     one_cycle()
     page = tmp_path / "docs" / "layer9.html"
     assert page.exists() and "Layer 9" in page.read_text()
-    assert "layer9.html" in (tmp_path / "docs" / "index.html").read_text()   # linked from dashboard
+    # linked from dashboard
+    assert "layer9.html" in (tmp_path / "docs" / "status.html").read_text()
 
 
 def test_governance_keeps_taint_out_of_authority_and_the_flag_clean():

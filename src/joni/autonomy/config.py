@@ -230,7 +230,11 @@ class Paths:
 
     @property
     def docs_index(self) -> Path:
-        return self.root / "docs" / "index.html"
+        # ``index.html`` gehoert seit 2026-07-30 der Architekturkarte (``joni.architecture``).
+        # Die Statusseite der Schleife liegt daneben unter ``status.html``: sonst haette ein
+        # spaeterer Lauf der Autonomie-Schleife die Karte still ueberschrieben - und zwar genau
+        # dann, wenn niemand hinsieht.
+        return self.root / "docs" / "status.html"
 
     @property
     def docs_data(self) -> Path:

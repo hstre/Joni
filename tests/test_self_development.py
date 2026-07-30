@@ -92,7 +92,7 @@ def test_cycle_reports_development(monkeypatch, tmp_path):
     from joni.autonomy.run import one_cycle
     summary = one_cycle()
     assert "developed" in summary
-    assert "evidence links" in (tmp_path / "docs" / "index.html").read_text()
+    assert "evidence links" in (tmp_path / "docs" / "status.html").read_text()
 
 
 def test_corroborate_is_idempotent():

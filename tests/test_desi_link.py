@@ -57,4 +57,4 @@ def test_cycle_routes_through_desi_when_enabled(monkeypatch, tmp_path):
     protocol = (tmp_path / "protocol" / "protocol.jsonl").read_text()
     assert '"kind": "routed"' in protocol          # DESi model-routing decision logged
     assert '"kind": "tooled"' in protocol          # DESi tool used (runtime age)
-    assert "DESi" in (tmp_path / "docs" / "index.html").read_text()
+    assert "DESi" in (tmp_path / "docs" / "status.html").read_text()
