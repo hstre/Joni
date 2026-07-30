@@ -51,6 +51,11 @@
    "weight": 7
   },
   {
+   "from": "joni",
+   "to": "desi_layer9",
+   "weight": 6
+  },
+  {
    "from": "joni.solution_space",
    "to": "joni.method_trial",
    "weight": 6
@@ -69,11 +74,6 @@
    "from": "joni.solution_space",
    "to": "desi_layer9",
    "weight": 5
-  },
-  {
-   "from": "joni",
-   "to": "desi_layer9",
-   "weight": 4
   },
   {
    "from": "joni.layer9_v2.runtime",
@@ -163,6 +163,11 @@
   {
    "from": "joni.autonomy",
    "to": "joni.solution_space",
+   "weight": 1
+  },
+  {
+   "from": "joni",
+   "to": "joni.autonomy",
    "weight": 1
   },
   {
@@ -375,7 +380,7 @@
   },
   {
    "label": "Kern",
-   "loc": 2998,
+   "loc": 3527,
    "modules": [
     "joni",
     "joni.__main__",
@@ -388,6 +393,8 @@
     "joni.conflict",
     "joni.creativity",
     "joni.desi_link",
+    "joni.epistemic_map",
+    "joni.epistemic_page",
     "joni.epistemics",
     "joni.guard",
     "joni.identity",
@@ -663,6 +670,7 @@
   "joni.autonomy.strengthen",
   "joni.autonomy.trial_event_schema",
   "joni.autonomy.trials",
+  "joni.epistemic_map",
   "joni.epistemics",
   "joni.layer9_v2.runtime.desi_store",
   "joni.method_trial.lifecycle",
@@ -815,14 +823,15 @@
     "desi_layer9.semantics.adapter",
     "desi_layer9.semantics.decision",
     "desi_layer9.snapshot",
-    "desi_layer9.transitions"
+    "desi_layer9.transitions",
+    "joni.epistemic_map"
    ],
    "doc": "Closed enumerations for Layer 9.",
    "external": [
     "__future__",
     "enum"
    ],
-   "fan_in": 13,
+   "fan_in": 14,
    "fan_out": 0,
    "group": "desi_layer9",
    "imports": [],
@@ -998,13 +1007,14 @@
   {
    "deferred": [],
    "dependents": [
-    "desi_layer9.core"
+    "desi_layer9.core",
+    "joni.epistemic_map"
    ],
    "doc": "Who may request which operator.",
    "external": [
     "__future__"
    ],
-   "fan_in": 1,
+   "fan_in": 2,
    "fan_out": 1,
    "group": "desi_layer9",
    "imports": [
@@ -1419,7 +1429,8 @@
   {
    "deferred": [],
    "dependents": [
-    "joni.architecture"
+    "joni.architecture",
+    "joni.epistemic_page"
    ],
    "doc": "Die Darstellung der Architekturkarte - eine einzelne, in sich geschlossene HTML-Datei.",
    "external": [
@@ -1427,12 +1438,12 @@
     "html",
     "json"
    ],
-   "fan_in": 1,
+   "fan_in": 2,
    "fan_out": 0,
    "group": "joni",
    "imports": [],
    "in_cycle": false,
-   "loc": 345,
+   "loc": 351,
    "name": "joni.architecture_page",
    "path": "src/joni/architecture_page.py",
    "reachable": false
@@ -2144,7 +2155,8 @@
    "dependents": [
     "joni.autonomy.__main__",
     "joni.autonomy.improve",
-    "joni.autonomy.run"
+    "joni.autonomy.run",
+    "joni.epistemic_map"
    ],
    "doc": "Governance - the DESi rule Joni runs under when off the leash.",
    "external": [
@@ -2153,7 +2165,7 @@
     "json",
     "pathlib"
    ],
-   "fan_in": 3,
+   "fan_in": 4,
    "fan_out": 1,
    "group": "joni.autonomy",
    "imports": [
@@ -4225,6 +4237,62 @@
    "name": "joni.desi_link",
    "path": "src/joni/desi_link.py",
    "reachable": true
+  },
+  {
+   "deferred": [
+    "desi_layer9.enums",
+    "desi_layer9.policy",
+    "joni.autonomy.governance",
+    "joni.epistemic_page"
+   ],
+   "dependents": [],
+   "doc": "Wer darf was - die zweite Sicht, ebenfalls abgeleitet statt beschrieben.",
+   "external": [
+    "__future__",
+    "argparse",
+    "ast",
+    "collections",
+    "json",
+    "pathlib",
+    "sys"
+   ],
+   "fan_in": 0,
+   "fan_out": 4,
+   "group": "joni",
+   "imports": [
+    "desi_layer9.enums",
+    "desi_layer9.policy",
+    "joni.autonomy.governance",
+    "joni.epistemic_page"
+   ],
+   "in_cycle": false,
+   "loc": 287,
+   "name": "joni.epistemic_map",
+   "path": "src/joni/epistemic_map.py",
+   "reachable": false
+  },
+  {
+   "deferred": [],
+   "dependents": [
+    "joni.epistemic_map"
+   ],
+   "doc": "Die Darstellung der epistemischen Karte - ``docs/flow.html``.",
+   "external": [
+    "__future__",
+    "html",
+    "json"
+   ],
+   "fan_in": 1,
+   "fan_out": 1,
+   "group": "joni",
+   "imports": [
+    "joni.architecture_page"
+   ],
+   "in_cycle": false,
+   "loc": 236,
+   "name": "joni.epistemic_page",
+   "path": "src/joni/epistemic_page.py",
+   "reachable": false
   },
   {
    "deferred": [],
@@ -6328,10 +6396,10 @@
   }
  ],
  "totals": {
-  "edges": 521,
+  "edges": 526,
   "groups": 20,
-  "loc": 30774,
-  "modules": 215
+  "loc": 31303,
+  "modules": 217
  },
  "undocumented": [
   "joni.__main__",
@@ -6359,6 +6427,8 @@
   "joni.autonomy.verifier.safety",
   "joni.autonomy.verifier.scorer",
   "joni.constitution",
+  "joni.epistemic_map",
+  "joni.epistemic_page",
   "joni.epistemics",
   "joni.layer9_v2",
   "joni.layer9_v2.adapters",

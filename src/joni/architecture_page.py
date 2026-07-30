@@ -99,6 +99,10 @@ margin-top:-3px}
 .bar>i{display:block;height:100%;background:var(--acc)}
 footer{padding:0 22px 40px;color:var(--mut);font-size:12.5px;max-width:880px}
 footer a{color:var(--acc)}
+.hint{margin:4px 0 8px;color:var(--mut);max-width:760px}
+.nav{padding:0 22px;margin-top:8px}
+.nav a{color:var(--acc);margin-right:16px;font-size:13px}
+.nav a.on{color:var(--ink);border-bottom:2px solid var(--acc);padding-bottom:3px}
 """
 
 _JS = """
@@ -349,6 +353,8 @@ koennen es nicht.</p>
 <span><b>{len(data["undocumented"])}</b> ohne Docstring</span>
 </div>
 </header>
+<div class=nav><a href=# class=on>Architektur</a><a href=flow.html>Wer darf was</a>
+<a href=status.html>Statusseite (angehalten)</a></div>
 
 <div class=wrap>
 <div class=card>

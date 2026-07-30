@@ -253,6 +253,22 @@ difference instead of hiding inside a charitable description. Rebuild it after e
 `test_architecture.py` fails if the page no longer matches the source (the check lives in the
 test suite rather than CI because the workflow triggers are switched off).
 
+### The epistemic map (`docs/flow.html`)
+
+`python -m joni.epistemic_map` builds the second view: not *which module imports which*, but
+**who may write what**. Four derived sources, no prose:
+
+- the permission table is *computed* — `policy.may_request` is called for every
+  (origin × operator) pair, so the page shows the behaviour of the running code;
+- the write sites come from `ast` over the `make_proposal` / `_op` calls, with file and line;
+- the single write gate is derived from the assignments to the object store and journal in
+  `desi_layer9/core.py`, not from its docstring;
+- the observed cycle comes from the 54,791 events actually recorded in
+  `protocol/protocol.jsonl`.
+
+It cannot show control flow, and says so: the ordering is measured frequency, not cause and
+effect. A runtime trace would need the loop running, and the loop is stopped.
+
 ```bash
 python -m joni.autonomy lock      # (human) freeze the protected core
 python -m joni.autonomy verify    # check core vs lock
