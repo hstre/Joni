@@ -100,6 +100,34 @@ ueber Geltung - und die gehoert nicht in eine Karte, die sie gefunden hat. Sie s
 sie getroffen werden kann.</p></div>"""
 
 
+def _boundary(b: dict) -> str:
+    """Wer ein Modell erreichen kann - und wer nachweislich nicht."""
+    det, tot = len(b["deterministic"]), b["modules"]
+    kern = ('<span class="pill good">modellfrei</span>' if b["kernel_model_free"]
+            else '<span class="pill rej">nicht mehr modellfrei</span>')
+    return f"""<div class="card full"><h2>Wo die Grenze zwischen Modell und Regel verlaeuft</h2>
+<p class=hint>Die Architektur sagt seit jeher „Sprache vom Modell, Logik von Regeln". Das ist
+zeigbar: Wer ein LLM-SDK importiert, ist eine <b>Modelltuer</b>; wer eine Tuer transitiv
+importiert, <em>kann</em> dorthin gelangen; alle uebrigen koennen es nicht.
+<b>{det} von {tot}</b> Modulen koennen kein Modell erreichen.</p>
+<p class=hint>Die Grenze ist bewusst zu weit gezogen, nie zu eng: gezaehlt wird Erreichbarkeit,
+nicht der Aufruf. Ein Modul, das eine Tuer importiert und nie benutzt, steht auf der
+Modellseite. Was hier als deterministisch steht, <em>ist</em> es deshalb auch.</p>
+<h3>Modelltueren ({len(b["model_doors"])})</h3>
+<div class=list>{"".join(f"<button>{_esc(m)}</button>" for m in b["model_doors"])}</div>
+<h3>Netztueren ({len(b["network_doors"])})</h3>
+<p class=hint>Der weitere Ring: nach aussen sprechen, ohne Modell. Papiere holen gehoert dazu.</p>
+<div class=list>{"".join(f"<button>{_esc(m)}</button>" for m in b["network_doors"])}</div>
+<h3>Der eingebettete Kern {kern}</h3>
+<p class=hint>{len(b["kernel_modules"])} Module unter <code>desi_layer9</code>, und keines davon
+kann ein Modell erreichen. Das ist die tragende Zusage der ganzen Anlage - dass die Stelle, die
+ueber Geltung entscheidet, nicht fragen kann, was ein Modell davon haelt. Bisher stand sie in
+Docstrings. Jetzt faellt sie aus dem Importgraphen, und ein Test haelt sie fest.</p>
+<h3>Weder Modell noch Netz ({len(b["offline"])})</h3>
+<p class=hint>Der Teil, der ohne jede Aussenverbindung laeuft - und damit ohne Kosten und ohne
+fremde Verfuegbarkeit auskommt.</p></div>"""
+
+
 def _cycle(cyc: dict, *, limit: int = 26) -> str:
     """Der beobachtete Ablauf - gemessene erste Position im Zyklus, keine gedachte Reihenfolge."""
     ev = cyc["events"][:limit]
@@ -213,6 +241,8 @@ Verhalten des laufenden Codes. Aendert jemand die Regel, aendert sich die Tabell
 Bau von selbst.</p></div>
 
 {_trust(perm)}
+
+{_boundary(data["boundaries"])}
 
 <div class=card><h2>Beobachteter Zyklus</h2>
 <p class=hint>Waagerecht die gemessene <em>erste</em> Stelle, an der eine Ereignisart im Zyklus

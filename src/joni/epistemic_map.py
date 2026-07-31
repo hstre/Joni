@@ -43,6 +43,65 @@ from pathlib import Path
 #: Der einzige schreibende Eingang des Kerns. Alles andere liest.
 WRITE_GATE = "submit"
 
+#: Bibliotheken, deren Import ein Modul zur **Modelltuer** macht. Bewusst eng: ein LLM-SDK ist
+#: eindeutig, "irgendwas mit Netz" waere es nicht.
+MODEL_SDKS = frozenset({"openai", "anthropic"})
+
+#: Bibliotheken, die ein Modul zur **Netztuer** machen - der weitere Ring. Papiere holen ist
+#: nach aussen sprechen, auch wenn kein Modell beteiligt ist.
+NETWORK_LIBS = frozenset({"urllib", "httpx", "requests", "aiohttp", "socket", "http"})
+
+
+def boundaries(arch: dict) -> dict:
+    """Welcher Teil von Joni kann ueberhaupt ein Modell erreichen - und welcher nachweislich nicht.
+
+    Das ist die Grenze, die die Architektur seit jeher behauptet ("Sprache vom Modell, Logik von
+    Regeln"), aber nie gezeigt hat. Sie laesst sich zeigen: Wer ein LLM-SDK importiert, ist eine
+    Tuer; wer eine Tuer (transitiv) importiert, *kann* dorthin gelangen; alle uebrigen koennen es
+    nicht. Das ist eine Aussage ueber Erreichbarkeit, nicht ueber Aufrufe - ein Modul, das eine
+    Tuer importiert und nie benutzt, zaehlt hier mit. Die Grenze ist damit zu weit gezogen, nie
+    zu eng: was hier als deterministisch steht, *ist* es.
+
+    Die Tuerliste wird nicht gepflegt, sondern aus den Importen gelesen. Meine erste, von Hand
+    geratene Liste enthielt ``kevin_llm`` - das aber gar keine Tuer ist, sondern ueber
+    ``model_call`` geht. Genau dafuer ist das Ableiten da.
+    """
+    by = {m["name"]: m for m in arch["modules"]}
+
+    def doors(libs: frozenset[str]) -> list[str]:
+        return sorted(n for n, m in by.items() if libs & set(m["external"]))
+
+    def upstream(seeds: list[str]) -> set[str]:
+        """Alles, was eine dieser Tueren (transitiv) importiert - inklusive der Tueren selbst."""
+        seen: set[str] = set()
+        todo = list(seeds)
+        while todo:
+            cur = todo.pop()
+            if cur in seen or cur not in by:
+                continue
+            seen.add(cur)
+            todo.extend(by[cur]["dependents"])
+        return seen
+
+    model_doors = doors(MODEL_SDKS)
+    net_doors = doors(NETWORK_LIBS)
+    can_model = upstream(model_doors)
+    can_net = upstream(net_doors)
+    offline = sorted(set(by) - can_model - can_net)
+
+    kernel = sorted(n for n in by if n.split(".")[0] == "desi_layer9")
+    return {
+        "model_doors": model_doors,
+        "network_doors": net_doors,
+        "can_reach_model": sorted(can_model),
+        "deterministic": sorted(set(by) - can_model),
+        "offline": offline,
+        "modules": len(by),
+        # Die Kernzusage, gemessen: der eingebettete Kern entscheidet ohne Modell.
+        "kernel_modules": kernel,
+        "kernel_model_free": sorted(set(kernel) & can_model) == [],
+    }
+
 #: Kurze deutsche Einordnung je Operator - **von Hand**, wie bei den Paketen der ersten Sicht,
 #: und auf der Seite genauso markiert. Ein Operator ohne Eintrag bekommt keinen erfundenen Satz.
 OPERATOR_NOTES = {
@@ -279,10 +338,14 @@ def analyse(src: Path, repo: Path) -> dict:
     used = {k for k in by_op if k != "<nicht literal>"}
     unused = sorted(set(perm["operators"]) - used)
 
+    from joni.architecture import analyse as _arch
+    bounds = boundaries(_arch(src, repo))
+
     return {
         "permissions": perm,
         "write_sites": sites,
         "unused_operators": unused,
+        "boundaries": bounds,
         "by_operator": {k: sorted(v, key=lambda s: (s["module"], s["line"]))
                         for k, v in sorted(by_op.items())},
         "gate": gate,

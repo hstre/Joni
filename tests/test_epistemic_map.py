@@ -145,6 +145,50 @@ def test_ein_zweiter_schreiber_wuerde_auffallen(tmp_path):
     assert g["single_gate"] is False
 
 
+# ── Die Grenze zwischen Modell und Regel ────────────────────────────────────────────────────────
+
+def test_der_eingebettete_kern_kann_kein_modell_erreichen(data):
+    """Die tragende Zusage der ganzen Anlage - und ab jetzt eine gepruefte, keine behauptete.
+
+    Die Stelle, die ueber Geltung entscheidet, darf nicht fragen koennen, was ein Modell davon
+    haelt. Wenn dieser Test je rot wird, ist nicht der Test falsch: dann ist ein Modell in den
+    Kern verdrahtet worden, und das ist eine Entscheidung, die niemand nebenbei treffen darf.
+    """
+    b = data["boundaries"]
+    assert b["kernel_model_free"] is True
+    assert b["kernel_modules"], "Ohne Kernmodule prueft der Test nichts."
+    assert not (set(b["kernel_modules"]) & set(b["can_reach_model"]))
+
+
+def test_die_tueren_werden_gelesen_nicht_gepflegt(tmp_path):
+    """Meine von Hand geratene Tuerliste enthielt ein Modul, das gar keine Tuer ist."""
+    arch = {"modules": [
+        {"name": "a", "external": ["openai"], "dependents": ["b"]},
+        {"name": "b", "external": ["json"], "dependents": []},
+        {"name": "c", "external": ["json"], "dependents": []},
+        {"name": "d", "external": ["urllib"], "dependents": []},
+    ]}
+    b = em.boundaries(arch)
+    assert b["model_doors"] == ["a"]
+    assert b["network_doors"] == ["d"]
+    assert b["can_reach_model"] == ["a", "b"]      # b importiert a
+    assert b["deterministic"] == ["c", "d"]
+    assert b["offline"] == ["c"]                   # d spricht nach aussen, nur ohne Modell
+
+
+def test_die_grenze_wird_lieber_zu_weit_als_zu_eng_gezogen(tmp_path):
+    """Erreichbarkeit, nicht Aufruf: wer eine Tuer importiert, zaehlt - auch ungenutzt.
+
+    Andersherum waere der Fehler toedlich: ein Modul faelschlich als deterministisch zu fuehren
+    heisst, eine Zusage zu geben, die nicht haelt.
+    """
+    arch = {"modules": [
+        {"name": "tuer", "external": ["openai"], "dependents": ["nutzt_nie"]},
+        {"name": "nutzt_nie", "external": [], "dependents": []},
+    ]}
+    assert em.boundaries(arch)["deterministic"] == []
+
+
 # ── Der beobachtete Zyklus ──────────────────────────────────────────────────────────────────────
 
 def test_der_zyklus_kommt_aus_echten_ereignissen(data):
