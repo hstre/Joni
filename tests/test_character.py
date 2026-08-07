@@ -43,17 +43,30 @@ def test_character_and_behaviour_gate_are_inside_the_protected_core():
     assert "constitution/gate.py" in governance.PROTECTED_CORE
 
 
-def test_ohne_lock_blockiert_die_pruefung_nicht():
-    """Der Kern wird umgebaut, deshalb ist ``joni_core.lock`` entfernt (29.07.2026).
+def test_der_lock_deckt_den_kern_und_stimmt_mit_ihm_ueberein():
+    """Wieder versiegelt (07.08.2026) - und diesmal traegt der Lock mehr als vorher.
 
-    Die Mechanik bleibt absichtlich stehen: ``verify_core`` behandelt einen fehlenden Lock als
-    "noch nicht eingefroren" und laesst durch. Entfernt wurde damit die *Grenze*, nicht das
-    *Verfahren* - die alte Grenze war entlang DESis Architektur gezogen, und DESi ist geschlossen.
-
-    Sobald der umgebaute Kern steht, versiegelt ``governance.write_lock()`` die neue Grenze, und
-    an dieser Stelle gehoert dann wieder ein Gleichheitstest hin. Bis dahin haelt dieser Test nur
-    fest, dass der Zustand "kein Lock" bewusst ist und nichts blockiert.
+    Er war am 29.07. entfernt worden, weil die alte Grenze entlang DESis Architektur gezogen war
+    und der Kern umgebaut wurde. Das war richtig, solange ein Mensch jede Aenderung freigab.
+    Seit die Auftragskette ohne menschliche Freigabe merged, ist der Lock eine von genau zwei
+    Absicherungen des geschuetzten Kerns - die andere ist das Pfad-Gate im Workflow.
     """
-    assert governance.load_lock() == {}
+    lock = governance.load_lock()
+    assert lock, "Ohne Lock besteht verify_core leer - der Kern waere ungedeckt."
     ok, changed = governance.verify_core()
-    assert ok and changed == []
+    assert ok and changed == [], f"Kern weicht vom Lock ab: {changed}"
+
+
+def test_eine_kernaenderung_wird_erkannt(tmp_path, monkeypatch):
+    """Der Test, der den vorigen erst aussagekraeftig macht.
+
+    Ein Lock, der nie anschlaegt, ist keine Absicherung, sondern eine Beruhigung.
+    """
+    lock = governance.load_lock()
+    assert lock
+    verfaelscht = dict(lock)
+    ziel = next(iter(verfaelscht))
+    verfaelscht[ziel] = "0" * 64
+    monkeypatch.setattr(governance, "load_lock", lambda *a, **k: verfaelscht)
+    ok, changed = governance.verify_core()
+    assert not ok and changed == [ziel]

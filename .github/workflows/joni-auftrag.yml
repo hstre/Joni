@@ -182,8 +182,23 @@ jobs:
           #    that touches the protected core lock, the Layer-9 kernel, the workflows, the
           #    packaging, or the helper scripts - regardless of what the (LLM-authored) issue asked.
           #    Only a human may change those paths.
-          bad=$(git diff --name-only "origin/main...$sha" \
+          #
+          #    Zwei unabhaengige Absicherungen, seit der Mensch aus der Freigabe heraus ist:
+          #    (a) dieses Pfad-Gate und (b) `joni.autonomy verify` gegen joni_core.lock weiter
+          #    unten. (b) allein reicht NICHT: ohne Lock-Datei besteht verify_core leer
+          #    (`return True, []`), und dann waere der geschuetzte Kern voellig ungedeckt.
+          #    Die Kernpfade werden aus dem Lock GELESEN, nicht hier gedoppelt - sonst haetten
+          #    wir zwei Listen, die auseinanderlaufen koennen. Nur stdlib, keine Repo-Importe:
+          #    dieser Schritt laeuft vor `pip install`.
+          python -c "import json;print('\n'.join('src/joni/'+k for k in json.load(open('joni_core.lock'))))" > /tmp/core_paths.txt
+          if [ ! -s /tmp/core_paths.txt ]; then
+            gh pr comment "$pr" --repo "$repo" --body "Auto-merge refused: joni_core.lock is missing or empty, so the protected core cannot be checked. A human must re-seal it (\`python -m joni.autonomy lock\`)."
+            echo "no usable joni_core.lock - refusing to auto-merge"; exit 1
+          fi
+          changed=$(git diff --name-only "origin/main...$sha")
+          bad=$(printf '%s\n' "$changed" \
                 | grep -E '^(joni_core\.lock|\.github/|scripts/|pyproject\.toml|src/desi_layer9/)' || true)
+          bad=$(printf '%s\n%s\n' "$bad" "$(printf '%s\n' "$changed" | grep -Fxf /tmp/core_paths.txt || true)" | sed '/^$/d')
           if [ -n "$bad" ]; then
             gh pr comment "$pr" --repo "$repo" --body "Auto-merge refused: this PR changes protected paths ($(echo $bad | tr '\n' ' ')). An Auftrag is non-core only; core/CI/packaging changes need a human."
             echo "PR #$pr touches protected paths - refusing:"; echo "$bad"; exit 1
