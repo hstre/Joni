@@ -14,10 +14,48 @@ where the room is.
 
 from __future__ import annotations
 
+#: Zeitbudget der Navigation je Zyklus, in Sekunden. Die Kartographie vergleicht ALLE Paare;
+#: bei n Punkten sind das n*(n-1)/2 Vergleiche zu gemessenen 6,2 us. Aus dem Budget folgt die
+#: Punktgrenze, nicht umgekehrt - so steht im Quelltext, was diese Zeile kosten darf, und nicht
+#: eine gegriffene Zahl.
+NAV_BUDGET_SECONDS = 5.0
+_US_PER_PAIR = 6.2e-6
 
-def run_navigation(core, *, top: int = 8, allow_model: bool = False, **kw) -> dict:
+
+def max_points(budget_seconds: float = NAV_BUDGET_SECONDS) -> int:
+    """Wie viele Punkte in ``budget_seconds`` paarweise vergleichbar sind."""
+    import math
+    return int(math.sqrt(2 * budget_seconds / _US_PER_PAIR)) + 1
+
+
+def run_navigation(core, *, top: int = 8, allow_model: bool = False,
+                   budget_seconds: float = NAV_BUDGET_SECONDS, **kw) -> dict:
     """Project ``core`` into a navigation agenda. ``allow_model`` defaults to False (deterministic
-    lexical embeddings — no network in the loop). Returns ``{"available": bool, ...report}``."""
+    lexical embeddings — no network in the loop). Returns ``{"available": bool, ...report}``.
+
+    **Begrenzt, und zwar sichtbar.** Am 07.08.2026 gemessen: bei 10.958 Claims vergleicht die
+    Kartographie 60.033.403 Paare und braucht dafuer 27 Minuten - je Zyklus, um *eine* beratende
+    Zeile zu erzeugen, die nichts entscheidet und den Kern nicht anfasst. Das ist keine
+    Langsamkeit, die man wegoptimiert, sondern ein Missverhaeltnis.
+
+    Ueberschreitet der Zustand die Grenze, wird **nicht gekuerzt**, sondern abgelehnt und der
+    Grund mitgegeben. Kuerzen hiesse zu entscheiden, welche Claims in die Karte gehoeren - eine
+    Festlegung ueber ihren Zweck, die in einer Kostenbremse nichts zu suchen hat. Ablehnen ist
+    genau das, was dieses Modul ohnehin fuer fehlende Daten vorsieht: ein leeres, klar
+    gekennzeichnetes Ergebnis statt eines stillen Halbergebnisses.
+    """
+    grenze = max_points(budget_seconds)
+    try:
+        import desi_layer9 as _l9
+        n = core.count(_l9.ObjectType.CLAIM)
+    except Exception:  # noqa: BLE001 - fail-open wie der Rest dieses Moduls
+        n = 0
+    if n > grenze:
+        return {"available": False, "agenda": [],
+                "skipped": (f"{n} Claims ueberschreiten die Punktgrenze {grenze} "
+                            f"({budget_seconds:.0f}s Budget bei paarweisem Vergleich; "
+                            f"{n * (n - 1) // 2:,} Paare waeren noetig)"),
+                "n_claims": n, "limit": grenze}
     try:
         from joni.solution_space import navigate_core
     except Exception:  # noqa: BLE001 -> package/optional dep missing: stay silent, never crash a cycle
@@ -30,8 +68,15 @@ def run_navigation(core, *, top: int = 8, allow_model: bool = False, **kw) -> di
 
 
 def top_agenda_line(core, **kw) -> str:
-    """A one-line human summary of the highest-priority next step (for a loop log). Empty if none."""
+    """A one-line human summary of the highest-priority next step (for a loop log).
+
+    Wurde die Navigation wegen ihrer Kosten abgelehnt, steht **das** in der Zeile. Eine leere
+    Zeile waere hier das Schlimmste: sie sieht aus wie "nichts zu tun" und heisst in Wahrheit
+    "nicht nachgesehen".
+    """
     rep = run_navigation(core, **kw)
+    if rep.get("skipped"):
+        return f"navigation: uebersprungen - {rep['skipped']}"
     agenda = rep.get("agenda") or []
     if not agenda:
         return ""

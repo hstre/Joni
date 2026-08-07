@@ -28,7 +28,7 @@
   {
    "from": "joni.autonomy",
    "to": "desi_layer9",
-   "weight": 35
+   "weight": 36
   },
   {
    "from": "joni.autonomy",
@@ -264,7 +264,7 @@
  "groups": [
   {
    "label": "Autonomie-Schleife",
-   "loc": 15532,
+   "loc": 15571,
    "modules": [
     "joni.autonomy",
     "joni.autonomy.__main__",
@@ -660,6 +660,7 @@
   "joni.autonomy.metacognition.supervisor",
   "joni.autonomy.method_ledger",
   "joni.autonomy.method_review",
+  "joni.autonomy.navigation_view",
   "joni.autonomy.persona",
   "joni.autonomy.plausibility",
   "joni.autonomy.qualify",
@@ -701,6 +702,7 @@
     "joni.autonomy.metacognition.supervisor",
     "joni.autonomy.method_ledger",
     "joni.autonomy.method_review",
+    "joni.autonomy.navigation_view",
     "joni.autonomy.persona",
     "joni.autonomy.plausibility",
     "joni.autonomy.qualify",
@@ -733,7 +735,7 @@
     "taint",
     "transitions"
    ],
-   "fan_in": 34,
+   "fan_in": 35,
    "fan_out": 0,
    "group": "desi_layer9",
    "imports": [],
@@ -2927,6 +2929,7 @@
   },
   {
    "deferred": [
+    "desi_layer9",
     "joni.solution_space"
    ],
    "dependents": [
@@ -2934,16 +2937,18 @@
    ],
    "doc": "Joni's navigation capability — run the solution-space navigation on the live Layer-9 core.",
    "external": [
-    "__future__"
+    "__future__",
+    "math"
    ],
    "fan_in": 1,
-   "fan_out": 1,
+   "fan_out": 2,
    "group": "joni.autonomy",
    "imports": [
+    "desi_layer9",
     "joni.solution_space"
    ],
    "in_cycle": false,
-   "loc": 33,
+   "loc": 72,
    "name": "joni.autonomy.navigation_view",
    "path": "src/joni/autonomy/navigation_view.py",
    "reachable": true
@@ -6400,9 +6405,9 @@
   }
  ],
  "totals": {
-  "edges": 527,
+  "edges": 528,
   "groups": 20,
-  "loc": 31445,
+  "loc": 31484,
   "modules": 217
  },
  "undocumented": [
