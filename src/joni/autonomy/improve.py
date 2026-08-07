@@ -72,13 +72,27 @@ class Relevance:
 
 
 def judge(state: Layer9, item: Item) -> Relevance:
-    """Deterministic relevance: does this touch what Joni already works on?"""
+    """Deterministic relevance: does this touch what Joni already works on?
+
+    Die Themenliste und die Claims je Thema kommen aus **einer** Gruppierung statt aus
+    ``topics()`` plus einem ``claims_on()`` je Thema. Das ist keine Optimierung am Rand: bei
+    201.195 Objekten kostete die alte Form 1 + 150 Vollscans zu je 0,58 s, also rund 80 s pro
+    Fundstueck - der Zyklus lief deshalb in 25 Minuten nicht durch und wurde abgeschnitten.
+
+    Das Ergebnis ist unveraendert. ``sorted(by_topic, key=(-len, name))`` ist genau ``topics()``,
+    und ``by_topic[t]`` ist genau ``claims_on(t)`` in derselben Reihenfolge; zwischen den
+    Lesezugriffen dieser Funktion wird nichts geschrieben, die Gruppierung kann also nicht
+    veralten. Ueber mehrere Fundstuecke hinweg gilt das *nicht* - ``learn()`` legt in der
+    Schleife darueber neue Claims an -, deshalb wird hier je Aufruf frisch gruppiert.
+    """
     text = _content(item.title + " " + item.summary)
-    known = state.topics()
+    by_topic = state.claims_by_topic() if hasattr(state, "claims_by_topic") else {
+        t: state.claims_on(t) for t in state.topics()}
+    known = sorted(by_topic, key=lambda t: (-len(by_topic[t]), t))
     best, best_overlap = None, 0
     for topic in known:
         overlap = len(text & _content(topic + " " + " ".join(
-            c.text for c in state.claims_on(topic))))
+            c.text for c in by_topic[topic])))
         if overlap > best_overlap:
             best, best_overlap = topic, overlap
     new_topic = next((t for t in sorted(text & NEW_TOPIC_HINTS) if t not in known), None)

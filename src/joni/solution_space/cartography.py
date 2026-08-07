@@ -95,8 +95,40 @@ def _sem_dist(a: SolutionPoint, b: SolutionPoint) -> float:
     return (1.0 - cos) / 2.0
 
 
+def _norms(pts: list[SolutionPoint]) -> list[float]:
+    """Die Vektorlaenge je Punkt - einmal statt einmal je Paar.
+
+    ``_sem_dist`` rechnet beide Laengen bei jedem Aufruf neu. Bei n Punkten wird jede Laenge
+    damit (n-1)-mal bestimmt: bei den gemessenen 10.958 Claims also fast 11.000-mal dieselbe
+    Zahl. Vorab berechnet fallen zwei der drei Durchlaeufe je Paar weg.
+    """
+    return [math.sqrt(sum(x * x for x in p.embedding)) if p.embedding else 0.0 for p in pts]
+
+
+def _sem_dist_pre(a: SolutionPoint, b: SolutionPoint, na: float, nb: float) -> float:
+    """Wie ``_sem_dist``, nur mit bereits bekannten Laengen - **dieselbe Arithmetik**.
+
+    Bewusst als eigene Funktion und nicht als Umbau von ``_sem_dist``: dessen Signatur wird
+    anderswo benutzt, und eine Distanzfunktion, die je nach Aufrufer anders rechnet, waere die
+    Art von stiller Aenderung, die hier nichts zu suchen hat. Die Gleichheit beider Wege ist
+    getestet, nicht angenommen.
+    """
+    va, vb = a.embedding, b.embedding
+    if not va or not vb:
+        return 0.0
+    dot = sum(x * y for x, y in zip(va, vb, strict=False))
+    if na == 0 or nb == 0:
+        return 1.0
+    cos = max(-1.0, min(1.0, dot / (na * nb)))
+    return (1.0 - cos) / 2.0
+
+
 def _combined(a, b, ranges, w_gov, w_sem) -> float:
     return w_gov * _gov_dist(a, b, ranges) + w_sem * _sem_dist(a, b)
+
+
+def _combined_pre(a, b, ranges, w_gov, w_sem, na, nb) -> float:
+    return w_gov * _gov_dist(a, b, ranges) + w_sem * _sem_dist_pre(a, b, na, nb)
 
 
 class _UnionFind:
@@ -127,10 +159,16 @@ def cartograph(points, *, tau: float = 0.35, w_gov: float = 0.5, w_sem: float = 
                            params={"tau": tau, "w_gov": w_gov, "w_sem": w_sem})
     ranges = _ranges(pts)
 
+    # Die Laengen einmal vorab: derselbe Vergleich, ein Drittel der Arbeit je Paar. Die Schleife
+    # bleibt quadratisch - bei den gemessenen 10.958 Claims sind das 60.033.403 Paare -, und das
+    # ist eine Eigenschaft dieser Karte, keine Nachlaessigkeit. Sie steht als solche im Protokoll,
+    # damit sie nicht unsichtbar teuer bleibt.
+    norms = _norms(pts)
     uf = _UnionFind(n)
     for i in range(n):
+        a, na = pts[i], norms[i]
         for j in range(i + 1, n):
-            if _combined(pts[i], pts[j], ranges, w_gov, w_sem) <= tau:
+            if _combined_pre(a, pts[j], ranges, w_gov, w_sem, na, norms[j]) <= tau:
                 uf.union(i, j)
 
     groups: dict[int, list[int]] = {}

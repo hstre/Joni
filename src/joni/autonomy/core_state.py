@@ -93,6 +93,31 @@ class CoreState:
         counts = Counter(c.topic for c in self._live_claims() if c.topic)
         return [t for t, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))]
 
+    def claims_by_topic(self) -> dict[str, list]:
+        """Alle lebenden Claims nach Thema - **ein** Scan statt einem je Thema.
+
+        ``topics()`` und ``claims_on()`` einzeln aufzurufen sieht harmlos aus und ist es bei
+        kleinem Zustand auch. Bei 201.195 Objekten kostet jeder dieser Aufrufe 0,58 s, weil
+        ``core.all()`` den ganzen Speicher durchgeht und von jedem Claim eine Tiefkopie zieht -
+        das ist die Schutzzusage des Kernels, nicht sein Fehler. Wer in einer Schleife ueber 150
+        Themen je ein ``claims_on`` aufruft, bezahlt sie 150-mal: gemessen 88 s pro
+        Bewertung, und der Zyklus lief in 25 Minuten nicht durch.
+
+        Diese Gruppierung ist gleichwertig, nicht ungefaehr gleichwertig:
+        ``claims_by_topic()[t]`` enthaelt genau ``claims_on(t)`` in derselben Reihenfolge, und
+        ``by_topic`` nach ``(-len, name)`` sortiert ergibt genau ``topics()``. Sie ersetzt beide
+        nicht - wer nur ein Thema braucht, nimmt weiter ``claims_on``.
+
+        **Kein Zwischenspeicher.** Das Ergebnis gilt nur, solange nicht geschrieben wird; es
+        wird bei jedem Aufruf frisch erhoben. Ein Cache ueber Schreibvorgaenge hinweg waere hier
+        falsch: ``learn()`` legt mitten in der Bewertungsschleife neue Claims an.
+        """
+        out: dict[str, list] = {}
+        for c in self._live_claims():
+            if c.topic:
+                out.setdefault(c.topic, []).append(c)
+        return out
+
     def research_topics(self, *, min_claims: int | None = None,
                         min_sources: int | None = None) -> list[str]:
         """The topics that have actually *earned* the status of a research direction - not every
